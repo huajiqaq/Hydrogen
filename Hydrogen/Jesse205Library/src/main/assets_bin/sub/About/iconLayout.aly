@@ -1,0 +1,31 @@
+{
+  LinearLayoutCompat;
+  id="iconLayout";
+  gravity="center|top";
+  layout_width="fill";
+  layout_height="fill";
+  {
+    MaterialCardView;
+    layout_marginTop="8dp";
+    layout_margin="16dp";
+    layout_width="fill";
+    layout_height="fill";
+    layout_marginBottom="8dp";
+    id="iconCard";
+    {
+      ScrollView;
+      layout_width="fill";
+      layout_height="fill";
+      fillViewport=true;
+      id="appIconGroupScrollView";
+      {
+        LinearLayoutCompat;
+        gravity="center|top";
+        layout_width="fill";
+        layout_height="fill";
+        padding="8dp";
+        id="appIconGroup";
+      };
+    };
+  };
+}

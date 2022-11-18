@@ -1,0 +1,26 @@
+{
+  {
+    name="Androlua",
+    message="Lua5.3.3 for android pro",
+    license="Androlua License",
+    url="https://github.com/nirenr/AndroLua_pro",
+  },
+  {
+    name="Material Components for Android",
+    license="Apache-2.0 License",
+    message="Modular and customizable Material Design UI components for Android",
+    url="https://github.com/material-components/material-components-android",
+  },
+  {
+    name="Glide",
+    message="An image loading and caching library for Android focused on smooth scrolling",
+    licenseName="BSD, part MIT and Apache 2.0.",
+    license="Glide Lincense",
+    url="https://github.com/bumptech/glide"
+  },
+  {
+    name="Zip4j",
+    message="A Java library for zip files and streams",
+    url="https://github.com/srikanth-lingala/zip4j"
+  },
+}

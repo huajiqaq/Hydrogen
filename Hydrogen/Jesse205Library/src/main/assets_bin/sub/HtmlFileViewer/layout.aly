@@ -1,0 +1,22 @@
+{
+  CoordinatorLayout;
+  id="mainLay";
+  layout_height="fill";
+  layout_width="fill";
+  {
+    ScrollView;
+    layout_height="fill";
+    layout_width="fill";
+    id="scrollView";
+    {
+      AppCompatTextView;
+      padding="16dp";
+      id="textView";
+      layout_height="fill";
+      layout_width="fill";
+      textIsSelectable=true;
+      textColor=theme.color.textColorPrimary;
+      --movementMethod=LinkMovementMethod.getInstance();
+    };
+  };
+};

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Jesse205" parent="Base.Theme.Jesse205">
+        <item name="android:navigationBarColor">@color/Jesse205_Grey</item>
+        <item name="windowLightNavigationBar">false</item>
+    </style>
+</resources>

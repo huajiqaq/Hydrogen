@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Jesse205.Welcome" parent="Theme.Jesse205.Default" >
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">@drawable/welcome</item>
+        <item name="android:windowDisablePreview">false</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    
+</resources>

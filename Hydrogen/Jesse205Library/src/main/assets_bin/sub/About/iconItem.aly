@@ -1,0 +1,35 @@
+{
+  LinearLayoutCompat;
+  layout_weight=1;
+  layout_width="fill";
+  --layout_height="fill";
+  id="mainIconLay",
+  {
+    LinearLayoutCompat;
+    orientation="vertical";
+    gravity="center";
+    layout_width="fill";
+    layout_height="fill";
+    layout_margin="4dp";
+    {
+      View;
+      layout_height="80dp";
+      layout_width="80dp";
+      id="icon";
+      elevation="4dp";
+    };
+    {
+      AppCompatTextView;
+      id="name";
+      textSize="16sp";
+      gravity="center";
+      layout_marginTop="4dp";
+      textColor=theme.color.textColorPrimary;
+    };
+    {
+      AppCompatTextView;
+      id="message";
+      gravity="center";
+    };
+  };
+};

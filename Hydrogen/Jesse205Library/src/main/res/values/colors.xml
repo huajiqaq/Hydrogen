@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="Jesse205_White">#ffffffff</color>
+    <color name="Jesse205_White_Dark">#FFEEEEEE</color>
+    <color name="Jesse205_White_Ripple">#22ffffff</color>
+    <color name="Jesse205_Red">#FFD32F2F</color>
+    <color name="Jesse205_Red_Dark">#FFB71C1C</color>
+    <color name="Jesse205_Red_Ripple">#22D32F2F</color>
+    <color name="Jesse205_Orange">#FFFFA000</color>
+    <color name="Jesse205_Orange_Dark">#FFFF9800</color>
+    <color name="Jesse205_Orange_Ripple">#22FFA000</color>
+    <color name="Jesse205_Black">#ff000000</color>
+    <color name="Jesse205_Black_Ripple">#22000000</color>
+    <color name="Jesse205_Blue">#ff4477e0</color>
+    <color name="Jesse205_Blue_Ripple">#224477e0</color>
+    <color name="Jesse205_Green">#ff009688</color>
+    <color name="Jesse205_Green_Ripple">#22009688</color>
+    <color name="Jesse205_Pink">#FFFF4081</color>
+    <color name="Jesse205_Pink_Light">#FFFF80AB</color>
+    <color name="Jesse205_Pink_Dark">#FFC2185B</color>
+    <color name="Jesse205_Pink_Dark_Ripple">#22C2185B</color>
+    <color name="Jesse205_Pink_Ripple">#22FF4081</color>
+    <color name="Jesse205_Grey">#FFBDBDBD</color>
+    <color name="Jesse205_Grey_Dark">#FF424242</color>
+    <color name="Jesse205_Grey_Ripple">#22BDBDBD</color>
+    <color name="design_default_color_on_surface">#ff000000</color>
+    <color name="design_dark_default_color_on_surface">#ffffffff</color>
+</resources>
