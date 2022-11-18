@@ -86,7 +86,8 @@
           layout_height="-2";
           radius="4dp";
           layout_gravity="center",
-          background=primaryc;
+          --background=primaryc;
+          CardBackgroundColor=primaryc;
           onClick=function()Editt.Text=kk 提示("恢复成功 请重新编辑") end;
           {
             TextView;
@@ -111,7 +112,8 @@
           layout_marginTop="10dp";
           radius="4dp";
           layout_gravity="center",
-          background=primaryc;
+          --background=primaryc;
+          CardBackgroundColor=primaryc;
           onClick=function()修改页面() end;
           {
             TextView;

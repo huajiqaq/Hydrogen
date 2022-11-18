@@ -67,7 +67,8 @@ background=backgroundc,
         layout_width="56dp";
         layout_height="56dp";
         radius=(56/2).."dp";
-        background=backgroundc;       
+        --background=backgroundc; 
+        CardBackgroundColor=backgroundc; 
         elevation="2dp";
         layout_gravity="center",
         {

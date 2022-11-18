@@ -60,7 +60,8 @@
       --background=textc;
       {
         CardView;
-        background=primaryc;
+        --background=primaryc;
+        CardBackgroundColor=primaryc;
         elevation="0";
         radius="4dp";
         layout_height="8dp";
