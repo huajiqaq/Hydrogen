@@ -112,8 +112,11 @@ function 数据添加(t,b)
 
   end)
 
-
+if activity.getSharedData("标题简略化")~="true" then
   _title.Text=b.question.title:gsub("/",[[ 或 ]])
+  else
+  _title.Text="回答"
+end
 
 
   if b.author.name=="知乎用户" then

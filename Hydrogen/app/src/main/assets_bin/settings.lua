@@ -36,6 +36,7 @@ data={
   --  {__type=4,subtitle="内部搜索(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("内部搜索(beta)"))}},
   {__type=4,subtitle="回答预加载(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
   {__type=4,subtitle="加载回答中存在的视频(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("加载回答中存在的视频(beta)"))}},
+    {__type=4,subtitle="标题简略化",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
   {__type=5,subtitle="字体大小",image=图标(""),status={
       minValue=10,
       value=tonumber(activity.getSharedData("font_size")),
@@ -47,7 +48,7 @@ data={
         end,
       },
       wrapSelectorWheel=false,
-    }}
+    }},
 }
 
 
@@ -469,7 +470,7 @@ settings_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     end
     (tab[tostring(v.Tag.subtitle.Text)] or function()end) (tab)
     adp.notifyDataSetChanged()--更新列表
-  end})
+end})
 
 
 if this.getSharedData("更新设置字体设置")=="true" then

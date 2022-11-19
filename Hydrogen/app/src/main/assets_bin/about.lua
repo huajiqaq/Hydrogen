@@ -146,7 +146,7 @@ versionCode=tonumber(packinfo.versionCode)]]
 appinfo=this.getPackageManager().getPackageInfo(this.getPackageName(),(0))
 
 versionName=tostring(appinfo.versionName)
-versionCode=15.13
+versionCode=15.14
 --versionCode=tonumber(appinfo.versionCode)
 
 data = {}
@@ -217,7 +217,7 @@ about_list.setOnItemClickListener(AdapterView.OnItemClickListener{
 
     if v.Tag.subtitle.Text=="当前版本" then
       check_update()
-      --      提示("您已是最新版本") 
+      --      提示("您已是最新版本")
     end
 
 

@@ -50,8 +50,10 @@ _title.text="加载中"
 liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onReceivedTitle=function(view, title)
     --_title.text=(liulan.getTitle())
-    if liulanurl~="https://www.zhihu.com" then
+    if liulanurl~="https://www.zhihu.com" and activity.getSharedData("标题简略化")~="true" then
       _title.text=(title)
+      else
+      _title.text="加载完成"
     end
   end,
   onProgressChanged=function(view,p)
@@ -337,7 +339,7 @@ a=MUKPopu({
 uploadMessageAboveL=0
 onActivityResult=function(req,res,intent)
   if (res == Activity.RESULT_CANCELED) then
-    if(uploadMessageAboveL~=nil )then
+    if(uploadMessageAboveL~=nil and uploadMessageAboveL~=0 )then
       uploadMessageAboveL.onReceiveValue(nil);
     end
   end

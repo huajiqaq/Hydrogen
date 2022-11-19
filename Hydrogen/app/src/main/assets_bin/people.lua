@@ -200,7 +200,8 @@ end)
 
 :setresultfunc(function(v)
   local 活动=v.action_text
-  local 预览内容=v.target.excerpt_new
+  --  local 预览内容=v.target.excerpt_new
+  local 预览内容=v.target.excerpt
   local 点赞数=tointeger(v.target.voteup_count)
   local 评论数=tointeger(v.target.comment_count)
   if v.target.type=="answer" then

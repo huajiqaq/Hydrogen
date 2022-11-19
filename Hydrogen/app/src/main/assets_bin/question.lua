@@ -370,3 +370,12 @@ a=MUKPopu({
     },
   }
 })
+
+if activity.getSharedData("问题提示0.01")==nil
+  AlertDialog.Builder(this)
+  .setTitle("小提示")
+  .setCancelable(false)
+  .setMessage("你可点击问题的标题下面的区域来展开问题")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("问题提示0.01","true") end})
+  .show()
+end

@@ -13,13 +13,12 @@ activity.setContentView(loadlayout("layout/home"))
 --设置视图
 
 
-
 初始化历史记录数据(true)
 
 local function videoanswer ()
   activity.setSharedData("加载回答中存在的视频(beta)","true")
   双按钮对话框("提示","软件默认开启「加载回答中存在的视频(beta)」 你可以在设置中手动设置此开关","我知道了","跳转设置",function()
-    关闭对话框(an) end,function()
+  关闭对话框(an) end,function()
     关闭对话框(an) 跳转页面("settings")
   end)
 end
@@ -45,7 +44,7 @@ end
 if ccc and kkk and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
   双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function()
-    关闭对话框(an) end,function()
+  关闭对话框(an) end,function()
     关闭对话框(an) 浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
   end)
 end
@@ -767,7 +766,8 @@ function 主页刷新(页数)
             local 评论数=tointeger(v.target.comment_count)
             local 标题,问题id等;
             local 作者=v.target.author.name
-            local 预览内容=作者.." : "..v.target.excerpt_new
+            --            local 预览内容=作者.." : "..v.target.excerpt_new
+            local 预览内容=作者.." : "..v.target.excerpt
             --     print(dump(v))
             xpcall(function()
               问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
@@ -798,7 +798,8 @@ function 主页刷新(页数)
           local 评论数=tointeger(v.target.comment_count)
           local 标题,问题id等;
           local 作者=v.target.author.name
-          local 预览内容=作者.." : "..v.target.excerpt_new
+          --          local 预览内容=作者.." : "..v.target.excerpt_new
+          local 预览内容=作者.." : "..v.target.excerpt
           --     print(dump(v))
           xpcall(function()
             问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
@@ -1720,7 +1721,7 @@ csr.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener{onRefresh=function
     收藏刷新()
     Handler().postDelayed(Runnable({
       run=function()
-        csr.setRefreshing(false); end,
+      csr.setRefreshing(false); end,
     }),1000)
 end})
 
@@ -1940,21 +1941,24 @@ function 关注刷新(ppage,url)
       for k,v in ipairs(data.data) do
         if v.type=="feed_group"
           --         for i=1, #require "cjson".decode(v.list) do
-          for d,e in ipairs(v) do
+          for d,e in ipairs(v.list) do
+
+
             local 关注作者头像=e.actors[1].avatar_url
             --        local 点赞数=tointeger(v.target.voteup_count)
             local 点赞数=tointeger(e.target.voteup_count)
             local 评论数=tointeger(e.target.comment_count)
-            local 标题=e.target.title
+            local 标题=e.target.title or e.target.question.title
             local 关注名字=e.action_text
             local 时间=时间戳(e.created_time)
-            local 预览内容=e.target.excerpt_new
+            --            local 预览内容=e.target.excerpt_new
+            local 预览内容=e.target.excerpt
             xpcall(function()
-              问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
-              标题=v.target.question.title
+              问题id等=tointeger(e.target.question.id or 1).."分割"..tointeger(e.target.id)
+              标题=e.target.question.title
               end,function()
-              问题id等="文章分割"..tointeger(v.target.id)
-              标题=v.target.title
+              问题id等="文章分割"..tointeger(e.target.id)
+              标题=e.target.title
             end)
             list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
           end
@@ -1966,7 +1970,8 @@ function 关注刷新(ppage,url)
           local 标题=v.target.title
           local 关注名字=v.action_text
           local 时间=时间戳(v.created_time)
-          local 预览内容=v.target.excerpt_new
+          --          local 预览内容=v.target.excerpt_new
+          local 预览内容=v.target.excerpt
           xpcall(function()
             问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
             标题=v.target.question.title
@@ -2049,7 +2054,7 @@ a=MUKPopu({
 
 appinfo=this.getPackageManager().getApplicationInfo(this.getPackageName(),(0))
 --versionCode=tonumber(appinfo.versionCode)
-versionCode=15.13
+versionCode=15.14
 local update_api= "https://huajicloud.gitee.io/hydrogen.html"
 
 --Http.get(update_api,function(code,ctt)
