@@ -53,6 +53,10 @@ if this.getSharedData("自动清理缓存") == nil then
   this.setSharedData("自动清理缓存","true")
 end
 
+if this.getSharedData("标题简略化") == nil then
+  this.setSharedData("标题简略化","false")
+end
+
 --侧滑滑动事件
 _drawer.setDrawerListener(DrawerLayout.DrawerListener{
   onDrawerSlide=function(v,z)
@@ -776,6 +780,10 @@ function 主页刷新(页数)
               问题id等="文章分割"..tointeger(v.target.id)
               标题=v.target.title
             end)
+            if v.target.type=="pin" then
+              问题id等="想法分割"..tointeger(v.target.id)
+              标题="一个想法"
+            end
             table.insert(list2.adapter.getData(),{点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等})
           end
           task(1,function() list2.adapter.notifyDataSetChanged()end)
@@ -808,6 +816,10 @@ function 主页刷新(页数)
             问题id等="文章分割"..tointeger(v.target.id)
             标题=v.target.title
           end)
+          if v.target.type=="pin" then
+            问题id等="想法分割"..tointeger(v.target.id)
+            标题="一个想法"
+          end
           table.insert(list2.adapter.getData(),{点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等})
         end
         task(1,function() list2.adapter.notifyDataSetChanged()end)
@@ -1734,6 +1746,12 @@ list2.setOnItemClickListener(AdapterView.OnItemClickListener{
     if tostring(v.Tag.链接2.text):find("文章分割") then
 
       activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("文章分割(.+)"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
+
+     elseif tostring(v.Tag.链接2.text):find("想法分割") then
+
+      activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("文章分割(.+)"),"想法"})
+
+
      else
       if open=="false" then
 
@@ -2054,7 +2072,7 @@ a=MUKPopu({
 
 appinfo=this.getPackageManager().getApplicationInfo(this.getPackageName(),(0))
 --versionCode=tonumber(appinfo.versionCode)
-versionCode=15.14
+versionCode=15.15
 local update_api= "https://huajicloud.gitee.io/hydrogen.html"
 
 --Http.get(update_api,function(code,ctt)
