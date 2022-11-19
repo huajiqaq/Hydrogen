@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Jesse205" parent="Base.Theme.Jesse205">
+        <item name="colorPrimaryDark">@color/Jesse205_Grey</item>
+        <item name="android:navigationBarColor">@color/Jesse205_Grey</item>
+        <item name="windowLightStatusBar">false</item>
+        <item name="windowLightNavigationBar">false</item>
+    </style>
+    <style name="Theme.Jesse205.DarkActionBar" parent="Theme.Jesse205">
+        <item name="colorPrimaryDark">?colorPrimary</item>
+        <item name="navigationViewColorAccent">?colorPrimary</item>
+        <item name="android:navigationBarColor">?colorPrimaryDark</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.Jesse205.Dark.ActionBar</item>
+        <item name="tabStyle">@style/Widget.Jesse205.TabLayout.Colored</item>
+        <item name="colorPrimary">?colorAccent</item>
+        <item name="windowLightStatusBar">false</item>
+    </style>
+</resources>

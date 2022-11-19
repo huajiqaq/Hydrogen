@@ -1,0 +1,1 @@
+--initApp为true时执行

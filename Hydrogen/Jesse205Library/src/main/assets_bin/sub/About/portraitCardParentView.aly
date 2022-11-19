@@ -1,0 +1,7 @@
+{
+  LinearLayoutCompat;
+  layout_width="fill";
+  id="portraitCardParent";
+  gravity="center";
+  minimumHeight=1;
+}

@@ -1,0 +1,15 @@
+{
+  CoordinatorLayout;
+  layout_height="fill";
+  layout_width="fill";
+  id="mainLay";
+  {
+    RecyclerView;
+    layout_height="fill";
+    layout_width="fill";
+    id="recyclerView";
+    paddingLeft="8dp";
+    paddingRight="8dp";
+    clipToPadding=false;
+  };
+}
