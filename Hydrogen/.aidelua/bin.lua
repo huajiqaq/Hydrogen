@@ -1,2 +1,0 @@
-function beforePack(path)
-end
