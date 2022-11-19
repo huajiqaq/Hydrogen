@@ -146,7 +146,7 @@ versionCode=tonumber(packinfo.versionCode)]]
 appinfo=this.getPackageManager().getPackageInfo(this.getPackageName(),(0))
 
 versionName=tostring(appinfo.versionName)
-versionCode=15.12
+versionCode=15.13
 --versionCode=tonumber(appinfo.versionCode)
 
 data = {}
