@@ -18,6 +18,12 @@ if 类型==nil or 类型:match("%d") then
   类型="默认"
 end
 
+if 类型=="默认" then
+  resul="文章"
+ elseif 类型=="想法" then
+  resul="想法"
+end
+
 
 ishavepic=true
 
@@ -162,6 +168,8 @@ function 刷新()
         提示("加载页面失败")
         _title.Text="加载失败"
         --task(2,恢复白色)
+       elseif activity.getSharedData("标题简略化")=="true" then
+        _title.Text=resul
        else
         content.setVisibility(0)
         _title.Text=url.title

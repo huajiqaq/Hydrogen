@@ -45,7 +45,8 @@ function changepage(z)
 end
 
 
-local api="https://api.zhihu.com/topics/"..topic_id
+--local api="https://api.zhihu.com/topics/"..topic_id
+local api="https://api.zhihu.com/v5.1/topics/"..topic_id.."?include=meta%2Cmeta.casts%2Cmeta.medias%2Cmeta.playlist%2Cmeta.awards%2Cmeta.pubinfo%2Cmeta.parameters%2Cvote%2Crank_list_info%2Cmeta.review_question%2Crelated_topics%2Crelated_topics.vote%2Cmeta.game_medias%2Cmeta.game_parameters%2Cmeta.team_parameters%2Cmeta.sports_parameters%2Cclub%2Ctimeline%2Cuniversity%2Cheader_video%2Cactivity%2Cpin_template"
 Http.get(api,head,function(code,content)
   if code==200 then
     data=require "cjson".decode(content)
@@ -175,7 +176,9 @@ pager=1
 
 function 精华刷新(pager,url)
 
-  local posturl = url or "https://www.zhihu.com/api/v4/topics/"..topic_id.."/feeds/essence"
+  --  local posturl = url or "https://www.zhihu.com/api/v4/topics/"..topic_id.."/feeds/essence"
+
+  local posturl = url or "https://api.zhihu.com/v5.1/topics/"..topic_id.."/feeds/essence"
 
   local head = { ["cookie"] = 获取Cookie("https://www.zhihu.com/") }
 
@@ -190,18 +193,42 @@ function 精华刷新(pager,url)
     if code==200 then
 
       for k,v in ipairs(json.decode(content).data) do
-        local name=v.target.author.name
-        local excerpt=name.." : "..v.target.excerpt:gsub("<b>",""):gsub("</b>","")
+        --        local name=v.target.author.name
+        --local excerpt=name.." : "..v.target.excerpt:gsub("<b>",""):gsub("</b>","")
+
         xpcall(function()
+          name=v.target.author.name
+          end,function()
+          name=""
+        end)
+        if name~="" then
+
+
+          local excerpt_data=v.target.excerpt or ""
+          local excerpt=name.." : "..excerpt_data
+          --[[        xpcall(function()
           title=v.target.question.title
           id=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
           end,function()
           title=v.target.title
           id="文章分割"..tointeger(v.target.id)
-        end)
-        local voteup_count=tointeger(v.target.voteup_count)
-        local comment_count=tointeger(v.target.comment_count)
-        best_list.Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
+        end)]]
+          if v.target.type=="answer" then
+            title=v.target.question.title
+            id=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
+           elseif v.target.type=="article" then
+            title=v.target.title
+            id="文章分割"..tointeger(v.target.id)
+
+           elseif v.target.type=="zvideo" then
+            title=v.target.title
+            id="视频分割"..v.target.video.playlist.sd.url
+          end
+
+          local voteup_count=tointeger(v.target.voteup_count)
+          local comment_count=tointeger(v.target.comment_count)
+          best_list.Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
+        end
       end
 
       local data=json.decode(content)
@@ -390,6 +417,8 @@ best_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     if tostring(v.Tag.best_id.text):find("文章分割") then
 
       activity.newActivity("column",{tostring(v.Tag.best_id.Text):match("文章分割(.+)"),tostring(v.Tag.best_id.Text):match("分割(.+)")})
+     elseif tostring(v.Tag.best_id.text):find("视频分割") then
+      activity.newActivity("huida",{tostring(v.Tag.best_id.Text):match("视频分割(.+)")})
      else
       if open=="false" then
 
