@@ -29,16 +29,16 @@ question_itemc=
     CardBackgroundColor=cardedge,
     Elevation="0";
     layout_width="fill";
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    radius="8dp";
+    layout_margin="0dp";
+    layout_marginTop="0dp";
+    layout_marginBottom="0dp";
+    radius="0dp";
     {
       CardView;
       CardElevation="0dp";
       CardBackgroundColor=backgroundc;
-      Radius=dp2px(8)-2;
-      layout_margin="2px";
+      Radius="0dp";
+      layout_margin="4px";
       layout_width="-1";
       layout_height="-1";
       {
@@ -51,7 +51,9 @@ question_itemc=
         {
           LinearLayout;
           orientation="horizontal";
-          padding="16dp";
+          padding="24dp";
+          paddingTop="18dp";
+          paddingBottom="18dp";
           {
             TextView;
             id="question_id";
@@ -84,14 +86,16 @@ question_itemc=
               textSize="12sp";
               id="question_art";
               MaxLines=3;--设置最大输入行数
+              letterSpacing="0.02";
               ellipsize="end",
               textColor=stextc;
-              layout_marginTop="2dp";
-              Typeface=字体("product-Medium");
+              layout_marginTop="9dp";
+              lineHeight="20sp";
+              Typeface=字体("product");
             };
             {
               LinearLayout;
-              layout_marginTop="2dp";
+              layout_marginTop="9dp";
               orientation="horizontal";
               {
                 ImageView;
@@ -228,6 +232,7 @@ end)
     show.setVisibility(0)
     show.loadUrl("")
   end
+  
   function imgReset()
     show.loadUrl("javascript:(function(){" ..
     "var objs = document.getElementsByTagName('img'); " ..

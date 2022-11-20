@@ -525,7 +525,7 @@ end
 波纹({open_source},"方主题")
 波纹({侧滑头},"方自适应")
 波纹({注销},"圆自适应")
-
+--主页布局
 itemc2=
 {
   LinearLayout;
@@ -560,7 +560,7 @@ itemc2=
 
         layout_height="fill";
         id="background";
-        padding="23dp";
+        padding="24dp";
         layout_width="fill";
         {
           TextView;
@@ -575,16 +575,18 @@ itemc2=
             textSize="14sp";
             lineHeight="20sp";
             id="标题2";
+            letterSpacing="0.02";
             textColor=textc;
             Typeface=字体("product-Bold");
           };
           {
             TextView;
             textSize="12sp";
-            lineHeight="19sp";
+            lineHeight="20sp";
             MaxLines=3;--设置最大输入行数
             ellipsize="end",
             id="文章2";
+            letterSpacing="0.02";
             textColor=stextc;
             layout_marginTop="10dp";
             Typeface=字体("product");
@@ -899,7 +901,7 @@ list2.setOnScrollListener{
     end
   end
 }
-
+--热榜布局
 itemc=
 {
   LinearLayout,
@@ -971,6 +973,7 @@ itemc=
                 textColor=textc;
                 textSize="14sp";
                 lineHeight="22sp";
+                letterSpacing="0.02";
                 Typeface=字体("product-Medium");
                 id="标题",
               };
@@ -1787,7 +1790,7 @@ list3.setOnItemClickListener(AdapterView.OnItemClickListener{
 
 
 
-
+--关注布局
 follow_itemc=
 {
   LinearLayout;
@@ -1801,16 +1804,16 @@ follow_itemc=
     CardBackgroundColor=cardedge,
     Elevation="0";
     layout_width="-1";
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    radius="8dp";
+    layout_margin="0dp";
+    layout_marginTop="0dp";
+    layout_marginBottom="0dp";
+    radius="0dp";
     {
       CardView;
       CardElevation="0dp";
       CardBackgroundColor=backgroundc;
-      Radius=dp2px(8)-2;
-      layout_margin="2px";
+      Radius="0dp";
+      layout_margin="4px";
       layout_width="-1";
       layout_height="-1";
       {
@@ -1824,7 +1827,9 @@ follow_itemc=
         {
           LinearLayout;
           orientation="horizontal";
-          padding="16dp";
+          padding="24dp";
+          paddingTop="16dp";
+          paddingBottom="16dp";
           {
             TextView;
             id="follow_id";
@@ -1835,7 +1840,7 @@ follow_itemc=
             orientation="vertical";
             {
               LinearLayout;
-              layout_marginTop="2dp";
+              layout_marginTop="0dp";
               orientation="horizontal";
               {
                 CircleImageView;
@@ -1869,23 +1874,26 @@ follow_itemc=
               textSize="14sp";
               id="follow_title";
               textColor=textc;
-              layout_marginTop="4dp";
+              layout_marginTop="12dp";
               Typeface=字体("product-Bold");
+              letterSpacing="0.02";
             };
 
             {
               TextView;
               textSize="12sp";
+              lineHeight="20sp";
               id="follow_art";
               textColor=stextc;
               MaxLines=3,--设置最大输入行数
               ellipsize="end",--设置内容超出控件大小时显示...
-              layout_marginTop="5dp";
-              Typeface=字体("product-Medium");
+              layout_marginTop="8dp";
+              Typeface=字体("product");
+              letterSpacing="0.02";
             };
             {
               LinearLayout;
-              layout_marginTop="4dp";
+              layout_marginTop="8dp";
               orientation="horizontal";
               {
                 ImageView;

@@ -27,16 +27,16 @@ people_itemc=
     CardBackgroundColor=cardedge,
     Elevation="0";
     layout_width="-1";
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    radius="8dp";
+    layout_margin="0dp";
+    layout_marginTop="0dp";
+    layout_marginBottom="0dp";
+    radius="0dp";
     {
       CardView;
       CardElevation="0dp";
       CardBackgroundColor=backgroundc;
-      Radius=dp2px(8)-2;
-      layout_margin="2px";
+      Radius="0dp";
+      layout_margin="4px";
       layout_width="-1";
       layout_height="-1";
       {
@@ -49,7 +49,9 @@ people_itemc=
         {
           LinearLayout;
           orientation="horizontal";
-          padding="16dp";
+          padding="24dp";
+          paddingTop="18dp";
+          paddingBottom="18dp";
           {
             TextView;
             id="people_url";
@@ -88,7 +90,8 @@ people_itemc=
               textSize="14sp";
               id="people_title";
               textColor=textc;
-              layout_marginTop="2dp";
+              letterSpacing="0.02";
+              layout_marginTop="8dp";
               Typeface=字体("product-Bold");
 
             };
@@ -98,13 +101,15 @@ people_itemc=
               id="people_art";
               textColor=stextc;
               MaxLines=3;--设置最大输入行数
+              letterSpacing="0.02";
               ellipsize="end",
-              layout_marginTop="2dp";
-              Typeface=字体("product-Medium");
+              lineHeight="20sp";
+              layout_marginTop="8dp";
+              Typeface=字体("product");
             };
             {
               LinearLayout;
-              layout_marginTop="2dp";
+              layout_marginTop="8dp";
               orientation="horizontal";
               id="people_palne",
               {
