@@ -114,8 +114,8 @@
             CardView;
             CardBackgroundColor=cardedge,
             Elevation="0";
-            radius="8dp";
-            layout_margin="16dp",
+            radius="0dp";
+            layout_margin="0dp",
             layout_marginTop="0dp",
             layout_marginBottom="0dp",
             layout_width="-1";
@@ -124,8 +124,8 @@
               CardView;
               CardElevation="0dp";
               CardBackgroundColor=backgroundc;
-              Radius=dp2px(8)-2;
-              layout_margin="2px";
+              Radius="0dp";
+              layout_margin="4px";
               layout_width="-1";
               layout_height="-1";
 
@@ -133,7 +133,9 @@
                 LinearLayout;
                 layout_width="-1";
                 orientation="vertical";
-                padding="16dp";
+                padding="24dp";
+                paddingTop="16dp";
+                paddingBottom="16dp";
                 layout_height="-1";
                 {
                   LinearLayout;
@@ -144,6 +146,7 @@
                     textSize="19.5sp";
                     Typeface=字体("product-Bold");
                     textColor=textc,
+                    letterSpacing="0.02";
                     id="title",
                     text="加载中";
                     layout_width="-1";
@@ -162,6 +165,8 @@
                     TextView;
                     typeface=字体("product");
                     textSize="12sp";
+                    letterSpacing="0.02"
+                    lineHeight="20sp";
                     textColor=textc,
                     MaxLines=3;
                     layout_width="-1";
@@ -258,7 +263,7 @@
             DividerHeight=0;
             layout_width="-1";
             layout_height="-1";
-            layout_marginTop="8dp",
+            layout_marginTop="24dp",
           };
         };
       };

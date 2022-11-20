@@ -131,18 +131,16 @@ function 刷新()
       Elevation="0";
       layout_gravity="center";
       CardBackgroundColor=cardedge,
-      layout_margin="16dp";
-      layout_marginTop="8dp";
-      layout_marginBottom="8dp";
+      layout_margin="0dp";
       layout_height="-2";
       layout_width="-1";
-      radius="8dp";
+      radius="0dp";
       {
         CardView;
         CardElevation="0dp";
         CardBackgroundColor=backgroundc;
-        Radius=dp2px(8)-2;
-        layout_margin="2px";
+        Radius="0dp";
+        layout_margin="4px";
         layout_width="-1";
         layout_height="-1";
 
@@ -159,7 +157,9 @@ function 刷新()
           ripple="圆自适应",
           {
             LinearLayout;
-            padding="8dp",
+            padding="24dp";
+            paddingTop="16dp";
+            paddingBottom="16dp";
             layout_height="fill";
             layout_width="fill";
             orientation="vertical";
@@ -199,7 +199,7 @@ function 刷新()
                 LinearLayout;
                 orientation="horizontal";
                 layout_marginTop="8dp",
-                layout_marginBottom="8dp",
+                layout_marginBottom="0dp",
                 gravity="bottom";
                 layout_gravity="bottom";
                 layout_width="fill",
