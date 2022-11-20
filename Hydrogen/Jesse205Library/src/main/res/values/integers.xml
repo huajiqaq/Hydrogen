@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer name="Jesse205_menu_showAsAction_600dp">0</integer>
-    <integer name="Jesse205_menu_showAsAction_800dp">0</integer>
-    <integer name="Jesse205_padWidthDp">600</integer>
-    <integer name="Jesse205_pcWidthDp">800</integer>
-</resources>
