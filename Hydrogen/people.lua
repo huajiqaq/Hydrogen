@@ -223,7 +223,7 @@ end)
    elseif v.target.type=="collection" then
     return
    elseif v.target.type=="pin" then
-    标题="一个想法"
+    标题=v.target.author.name.."发表了想法"
     问题id="想法分割"..v.target.id
     预览内容=v.target.content[1].content
    else

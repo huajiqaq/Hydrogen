@@ -8,7 +8,6 @@ import "com.michael.NoScrollGridView"
 import "android.widget.ImageView$ScaleType"
 
 
-
 activity.setContentView(loadlayout("layout/home"))
 --设置视图
 
@@ -378,15 +377,22 @@ page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
     if v==0 then
       Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
         if code==200 then
+          local decoded_content = require "cjson".decode(content)
           --    提示(require "cjson".decode(content).selected_sections[1].section_name)
-          for i=1, #require "cjson".decode(content).selected_sections do
+          for i=1, #decoded_content.selected_sections do
             --提示(tostring(i))
             if homehome~="ok" then
               hometab:addTab("全站",function() pcall(function()list2.adapter.clear()end) choosebutton=nil 随机推荐() end)
               homehome="ok"
             end
-            if hometab:getCount()<i+1 and require "cjson".decode(content).selected_sections[i].section_name~="圈子" then
-              hometab:addTab(require "cjson".decode(content).selected_sections[i].section_name,function() pcall(function()list2.adapter.clear()end) choosebutton=require "cjson".decode(content).selected_sections[i].section_id 主页推荐刷新(require "cjson".decode(content).selected_sections[i].section_id) end)
+            if hometab:getCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
+              hometab:addTab(
+                decoded_content.selected_sections[i].section_name,function() pcall(
+                  function()list2.adapter.clear()end
+                ) choosebutton=decoded_content.selected_sections[i].section_id 主页推荐刷新(
+                  decoded_content.selected_sections[i].section_id
+                ) end
+              )
             end
           end
         end
@@ -760,33 +766,39 @@ function 主页刷新(页数)
     }
   end
 
+  function resolve_feed(v)
+    local 点赞数=tointeger(v.target.voteup_count)
+    local 评论数=tointeger(v.target.comment_count)
+    local 标题,问题id等;
+    local 作者=v.target.author.name
+    --          local 预览内容=作者.." : "..v.target.excerpt_new
+    local 预览内容=作者.." : "..v.target.excerpt
+    --     print(dump(v))
+    if v.target.type=="pin" then
+      问题id等="想法分割"..v.target.url:match("(%d+)")--由于想法的id长达18位，而cJSON无法解析这么长的数字，所以暂时用截取url结尾的数字字符串来获取id
+      标题=作者.."发表了想法"
+    elseif v.target.type=="answer" then
+      问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
+      标题=v.target.question.title
+    elseif v.target.type=="article" then--????????没有测到这个推荐流
+      问题id等="文章分割"..tointeger(v.target.id)
+      标题=v.target.title
+    else
+      提示("未知类型"..v.target.type.." id"+v.target.id)
+    end
+    return {点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等}
+  end
+
   function 主页推荐刷新(result)
 
     local url= requrl[result] or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
     Http.get(url,access_token_head,function(code,content)
       if code==200 then
-        if require "cjson".decode(content).paging.is_end==false then
-          requrl[result]=require "cjson".decode(content).paging.next
-          for k,v in ipairs(require "cjson".decode(content).data) do
-            local 点赞数=tointeger(v.target.voteup_count)
-            local 评论数=tointeger(v.target.comment_count)
-            local 标题,问题id等;
-            local 作者=v.target.author.name
-            --            local 预览内容=作者.." : "..v.target.excerpt_new
-            local 预览内容=作者.." : "..v.target.excerpt
-            --     print(dump(v))
-            xpcall(function()
-              问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
-              标题=v.target.question.title
-              end,function()
-              问题id等="文章分割"..tointeger(v.target.id)
-              标题=v.target.title
-            end)
-            if v.target.type=="pin" then
-              问题id等="想法分割"..v.target.id
-              标题="一个想法"
-            end
-            table.insert(list2.adapter.getData(),{点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等})
+        decoded_content = require "cjson".decode(content)
+        if decoded_content.paging.is_end==false then
+          requrl[result]=decoded_content.paging.next
+          for k,v in ipairs(decoded_content.data) do
+            table.insert(list2.adapter.getData(),resolve_feed(v))
           end
           task(1,function() list2.adapter.notifyDataSetChanged()end)
         end
@@ -799,47 +811,29 @@ function 主页刷新(页数)
     local head = {
       ["cookie"] = 获取Cookie("https://www.zhihu.com/")
     }
-    local json=require "cjson"
-
     Http.get(posturl,head,function(code,content)
       if code==200 then
-        for k,v in ipairs(json.decode(content).data) do
-          local 点赞数=tointeger(v.target.voteup_count)
-          local 评论数=tointeger(v.target.comment_count)
-          local 标题,问题id等;
-          local 作者=v.target.author.name
-          --          local 预览内容=作者.." : "..v.target.excerpt_new
-          local 预览内容=作者.." : "..v.target.excerpt
-          --     print(dump(v))
-          xpcall(function()
-            问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
-            标题=v.target.question.title
-            end,function()
-            问题id等="文章分割"..tointeger(v.target.id)
-            标题=v.target.title
-          end)
-          if v.target.type=="pin" then
-            问题id等="想法分割"..v.target.id
-            标题="一个想法"
-          end
-          table.insert(list2.adapter.getData(),{点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等})
+        decoded_content = require "cjson".decode(content)
+        for k,v in ipairs(decoded_content.data) do
+          table.insert(list2.adapter.getData(),resolve_feed(v))
         end
         task(1,function() list2.adapter.notifyDataSetChanged()end)
        elseif code==401 then
+        提示("请登录后访问推荐，http错误码401")
         --[[      list2.Text="请先登录"
       list9.Text="请先登录"]]
-        list2.setVisibility(8)
-        empty2.setVisibility(0)
-        list9.setVisibility(8)
-        empty9.setVisibility(0)
+        -- list2.setVisibility(8)
+        -- empty2.setVisibility(0)
+        -- list9.setVisibility(8)
+        -- empty9.setVisibility(0)
        else
+        提示("获取数据失败，请检查网络是否正常，http错误码"..code)
         --[[      list2.text="获取数据失败"
       list9.text="获取数据失败"]]
-        提示("获取数据失败 请检查网络是否正常")
-        list2.setVisibility(8)
-        empty2.setVisibility(0)
-        list9.setVisibility(8)
-        empty9.setVisibility(0)
+        -- list2.setVisibility(8)
+        -- empty2.setVisibility(0)
+        -- list9.setVisibility(8)
+        -- empty9.setVisibility(0)
       end
 
     end)
@@ -1751,9 +1745,7 @@ list2.setOnItemClickListener(AdapterView.OnItemClickListener{
       activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("文章分割(.+)"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
 
      elseif tostring(v.Tag.链接2.text):find("想法分割") then
-
-      activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("文章分割(.+)"),"想法"})
-
+      activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
 
      else
       if open=="false" then
@@ -1776,7 +1768,11 @@ list3.setOnItemClickListener(AdapterView.OnItemClickListener{
 
     if tostring(v.Tag.导向链接.text):find("文章分割") then
       activity.newActivity("column",{tostring(v.Tag.导向链接.Text):match("文章分割(.+)"),tostring(v.Tag.导向链接.Text):match("分割(.+)")})
-     else
+      
+    elseif tostring(v.Tag.链接2.text):find("想法分割") then
+      提示("list3"..v.Tag.链接2.text)
+      activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
+    else
       if open=="false" then
         activity.newActivity("question",{v.Tag.导向链接.Text,nil})
        else
@@ -2179,6 +2175,8 @@ function onCreate()
         activity.newActivity("column",{intent:match("articles/(.-)?")})
        elseif intent:find "article" then
         activity.newActivity("column",{intent:match("article/(.-)?")})
+       else
+        提示("暂不支持的知乎意图"..intent)
       end
      elseif (intent:find("http://") or intent:find("https://")) and intent:find("zhihu.com") then
       检查链接(intent)
