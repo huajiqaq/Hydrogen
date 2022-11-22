@@ -15,13 +15,7 @@ import "com.androlua.LuaWebView$JsInterface"
 local result,类型=...
 
 if 类型==nil or 类型:match("%d") then
-  类型="默认"
-end
-
-if 类型=="默认" then
-  resul="文章"
- elseif 类型=="想法" then
-  resul="想法"
+  类型="文章"
 end
 
 
@@ -162,14 +156,14 @@ urls=0
 
 
 function 刷新()
-  if 类型=="默认" then
+  if 类型=="文章" then
     mcolumn:getDataAsyc(function(url)
       if url==false then
         提示("加载页面失败")
         _title.Text="加载失败"
         --task(2,恢复白色)
        elseif activity.getSharedData("标题简略化")=="true" then
-        _title.Text=resul
+        _title.Text=类型
        else
         content.setVisibility(0)
         _title.Text=url.title
@@ -180,8 +174,10 @@ function 刷新()
     end)
    elseif 类型=="想法" then
     content.setVisibility(0)
-    _title.Text="一个想法"
+    _title.Text="查看想法"
     content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
+    --对应api是https://www.zhihu.com/api/v4/pins/ID，或者https://api.zhihu.com/pins/ID，均可以取得内容，后续再做
+
     -- 恢复白色()
   end
   --[[      if #url.title_image>0 then
@@ -479,7 +475,7 @@ end
 
 --pop
 
-if 类型=="默认" then
+if 类型=="文章" then
   a=MUKPopu({
     tittle="文章",
     list={
