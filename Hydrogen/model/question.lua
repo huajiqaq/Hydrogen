@@ -75,7 +75,7 @@ function base_question:getData(callback)
   end)
   return self]]
 
-  Http.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count",{
+  Http.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,excerpt",{
     ["x-app-za"] = "OS=Android"
   }
   ,function(code,content)
