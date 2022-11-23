@@ -743,12 +743,11 @@ itemc2=
     };
   };
 };]]
-页数=0
 
 --创建table
 requrl={}
 
-function 主页刷新(页数)
+function 主页刷新()
 
   if activity.getSharedData("signdata")~=nil then
     local login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
@@ -807,7 +806,7 @@ function 主页刷新(页数)
   end
 
   function 随机推荐 ()
-    local posturl = "https://api.zhihu.com/feeds?after_id="..页数
+    local posturl = requrl[-1] or "https://api.zhihu.com/feeds"
     local head = {
       ["cookie"] = 获取Cookie("https://www.zhihu.com/")
     }
@@ -818,6 +817,7 @@ function 主页刷新(页数)
           table.insert(list2.adapter.getData(),resolve_feed(v))
         end
         task(1,function() list2.adapter.notifyDataSetChanged()end)
+        requrl[-1] = decoded_content.paging.next
        elseif code==401 then
         提示("请登录后访问推荐，http错误码401")
         --[[      list2.Text="请先登录"
@@ -840,7 +840,7 @@ function 主页刷新(页数)
   end
 
 
-  if 页数<1 then
+  if not requrl[-1] then
 
     local yxuan_adpqy=LuaAdapter(activity,itemc2)
     list2.adapter=yxuan_adpqy
@@ -859,7 +859,7 @@ function 主页刷新(页数)
     主页推荐刷新(choosebutton)
   end
 end
-主页刷新(页数)
+主页刷新()
 
 
 sr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
@@ -883,8 +883,7 @@ list2.setOnScrollListener{
     if a+b==list2.adapter.getCount() and isadd and list2.adapter.getCount()>0 then
       isadd=false
       sr.setRefreshing(true)
-      页数=页数+1
-      主页刷新(页数)
+      主页刷新()
       System.gc()
       Handler().postDelayed(Runnable({
         run=function()
@@ -2023,7 +2022,7 @@ end
 function onActivityResult(a,b,c)
   if b==100 then
     getuserinfo()
-    主页刷新(页数)
+    主页刷新()
     关注刷新(1)
    elseif b==1200 then --夜间模式开启
     activity.newActivity("home",android.R.anim.fade_in,android.R.anim.fade_out)
