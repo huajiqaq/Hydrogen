@@ -103,7 +103,6 @@ people_itemc=
               MaxLines=3;--设置最大输入行数
               letterSpacing="0.02";
               ellipsize="end",
-              lineHeight="20sp";
               layout_marginTop="8dp";
               Typeface=字体("product");
             };

@@ -90,7 +90,6 @@ question_itemc=
               ellipsize="end",
               textColor=stextc;
               layout_marginTop="9dp";
-              lineHeight="20sp";
               Typeface=字体("product");
             };
             {

@@ -75,8 +75,8 @@ adp=LuaMultiAdapter(this,data,help_item)
 --adp.add{__type=3,content=[[]]}
 --adp.add{__type=3,content=[[    原反馈接口已失效，请于官方群组中反馈]]}
 --adp.add{__type=3,content=[[]]}
-adp.add{__type=3,content="\n如若以下问题内没有你的问题 请点击下方反馈问题按钮\n"}
-adp.add{__type=1,title="常见问题"}
+--adp.add{__type=3,content="\n如若以下问题内没有你的问题 请点击下方反馈问题按钮\n"}
+--adp.add{__type=1,title="常见问题"}
 adp.add{__type=2,subtitle="权限"}
 adp.add{__type=3,content=[[    Hydrogen仅会申请本地存储权限，用于保存本地收藏以及一文文章，如您用不到上述功能，您可以选择不授予。]]}
 adp.add{__type=2,subtitle="声明"}
