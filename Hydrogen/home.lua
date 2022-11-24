@@ -2075,7 +2075,7 @@ a=MUKPopu({
 
 appinfo=this.getPackageManager().getApplicationInfo(this.getPackageName(),(0))
 --versionCode=tointeger(appinfo.versionCode)
-versionCode=15.15
+versionCode=15.16
 local update_api= "https://huajicloud.gitee.io/hydrogen.html"
 
 --Http.get(update_api,function(code,ctt)
