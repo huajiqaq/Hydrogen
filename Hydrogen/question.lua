@@ -216,7 +216,7 @@ end)
 end)
 :getData(function(tab)
 
-  if this.acticity.getSharedData("标题简略化")=="true" then
+  if this.getSharedData("标题简略化")=="true" then
     title.Text="问题"
   else
     title.Text=tab.title

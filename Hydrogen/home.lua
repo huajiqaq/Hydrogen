@@ -745,7 +745,7 @@ itemc2=
 --创建table
 requrl={}
 
-function 主页刷新()
+function 主页刷新(hometype)
 
   if activity.getSharedData("signdata")~=nil then
     local login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
@@ -840,7 +840,7 @@ function 主页刷新()
   end
 
 
-  if not requrl[-1] then
+  if not requrl[-1] or hometype=="refersh" then
 
     local yxuan_adpqy=LuaAdapter(activity,itemc2)
     list2.adapter=yxuan_adpqy
@@ -855,7 +855,7 @@ function 主页刷新()
   end
   if choosebutton==nil then
     随机推荐()
-   elseif choosebutton
+   elseif choosebutton then
     主页推荐刷新(choosebutton)
   end
 end
@@ -866,7 +866,7 @@ sr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
 sr.setColorSchemeColors({转0x(primaryc)});
 sr.setOnRefreshListener({
   onRefresh=function()
-    主页刷新(0)
+    主页刷新("refersh")
     Handler().postDelayed(Runnable({
       run=function()
         sr.setRefreshing(false);
@@ -1767,11 +1767,11 @@ list3.setOnItemClickListener(AdapterView.OnItemClickListener{
     if tostring(v.Tag.导向链接.text):find("文章分割") then
       activity.newActivity("column",{tostring(v.Tag.导向链接.Text):match("文章分割(.+)"),tostring(v.Tag.导向链接.Text):match("分割(.+)")})
 
-     elseif tostring(v.Tag.链接2.text):find("想法分割") then
-      提示("list3"..v.Tag.链接2.text)
+     elseif tostring(v.Tag.导向链接.text):find("想法分割") then
       activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
      else
       if open=="false" then
+      
         activity.newActivity("question",{v.Tag.导向链接.Text,nil})
        else
         activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.导向链接.Text)})
@@ -2074,7 +2074,7 @@ a=MUKPopu({
 
 appinfo=this.getPackageManager().getApplicationInfo(this.getPackageName(),(0))
 --versionCode=tointeger(appinfo.versionCode)
-versionCode=15.16
+
 local update_api= "https://huajicloud.gitee.io/hydrogen.html"
 
 --Http.get(update_api,function(code,ctt)
@@ -2130,7 +2130,7 @@ if activity.getSharedData("自动清理缓存")=="true" then
     end
     dar=tostring(ContextCompat.getDataDir(activity)).."/cache"
     getDirSize(tmp,dar)
-    getDirSize(tmp,"/sdcard/Android/data/"..activity.getPackageName().."/cache/")
+--    getDirSize(tmp,"/sdcard/Android/data/"..activity.getPackageName().."/cache/")
 
     local a1,a2=File("/data/data/"..activity.getPackageName().."/database/webview.db"),File("/data/data/"..activity.getPackageName().."/database/webviewCache.db")
     pcall(function()
@@ -2139,7 +2139,6 @@ if activity.getSharedData("自动清理缓存")=="true" then
       a2.delete()
     end)
     LuaUtil.rmDir(File(dar))
-    LuaUtil.rmDir(File("/sdcard/Android/data/"..activity.getPackageName().."/cache/images"))
 
     return tmp[1]
     end,APP_CACHEDIR,function(m)
