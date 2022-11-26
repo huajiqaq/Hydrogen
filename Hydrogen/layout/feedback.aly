@@ -151,7 +151,7 @@
       {
         TextView;
         layout_marginRight="16dp";
-        text="反馈问题",
+        text="仍要反馈问题",
         textSize="16sp",
         textColor=backgroundc,
       };

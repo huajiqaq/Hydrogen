@@ -166,7 +166,6 @@
                     typeface=字体("product");
                     textSize="12sp";
                     letterSpacing="0.02";
-                    lineHeight="20sp";
                     textColor=textc,
                     MaxLines=3;
                     layout_width="-1";

@@ -8,7 +8,6 @@ import "com.michael.NoScrollGridView"
 import "android.widget.ImageView$ScaleType"
 
 
-
 activity.setContentView(loadlayout("layout/home"))
 --设置视图
 
@@ -284,7 +283,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       task(300,function()activity.newActivity("history")end)
      elseif s=="消息" then
 
-      if empty2.getVisibility()==0 then
+      if 状态=="未登录" then
         提示("你可能需要登录")
        else
         task(20,function()
@@ -378,15 +377,22 @@ page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
     if v==0 then
       Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
         if code==200 then
+          local decoded_content = require "cjson".decode(content)
           --    提示(require "cjson".decode(content).selected_sections[1].section_name)
-          for i=1, #require "cjson".decode(content).selected_sections do
+          for i=1, #decoded_content.selected_sections do
             --提示(tostring(i))
             if homehome~="ok" then
               hometab:addTab("全站",function() pcall(function()list2.adapter.clear()end) choosebutton=nil 随机推荐() end)
               homehome="ok"
             end
-            if hometab:getCount()<i+1 and require "cjson".decode(content).selected_sections[i].section_name~="圈子" then
-              hometab:addTab(require "cjson".decode(content).selected_sections[i].section_name,function() pcall(function()list2.adapter.clear()end) choosebutton=require "cjson".decode(content).selected_sections[i].section_id 主页推荐刷新(require "cjson".decode(content).selected_sections[i].section_id) end)
+            if hometab:getCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
+              hometab:addTab(
+              decoded_content.selected_sections[i].section_name,function() pcall(
+                function()list2.adapter.clear()end
+                ) choosebutton=decoded_content.selected_sections[i].section_id 主页推荐刷新(
+                decoded_content.selected_sections[i].section_id
+                ) end
+              )
             end
           end
         end
@@ -573,7 +579,6 @@ itemc2=
           {
             TextView;
             textSize="14sp";
-            lineHeight="20sp";
             id="标题2";
             letterSpacing="0.02";
             textColor=textc;
@@ -582,7 +587,6 @@ itemc2=
           {
             TextView;
             textSize="12sp";
-            lineHeight="20sp";
             MaxLines=3;--设置最大输入行数
             ellipsize="end",
             id="文章2";
@@ -737,12 +741,11 @@ itemc2=
     };
   };
 };]]
-页数=0
 
 --创建table
 requrl={}
 
-function 主页刷新(页数)
+function 主页刷新(hometype)
 
   if activity.getSharedData("signdata")~=nil then
     local login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
@@ -760,33 +763,39 @@ function 主页刷新(页数)
     }
   end
 
+  function resolve_feed(v)
+    local 点赞数=tointeger(v.target.voteup_count)
+    local 评论数=tointeger(v.target.comment_count)
+    local 标题,问题id等;
+    local 作者=v.target.author.name
+    --          local 预览内容=作者.." : "..v.target.excerpt_new
+    local 预览内容=作者.." : "..v.target.excerpt
+    --     print(dump(v))
+    if v.target.type=="pin" then
+      问题id等="想法分割"..v.target.url:match("(%d+)")--由于想法的id长达18位，而cJSON无法解析这么长的数字，所以暂时用截取url结尾的数字字符串来获取id
+      标题=作者.."发表了想法"
+     elseif v.target.type=="answer" then
+      问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
+      标题=v.target.question.title
+     elseif v.target.type=="article" then--????????没有测到这个推荐流
+      问题id等="文章分割"..tointeger(v.target.id)
+      标题=v.target.title
+     else
+      提示("未知类型"..v.target.type.." id"+v.target.id)
+    end
+    return {点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等}
+  end
+
   function 主页推荐刷新(result)
 
     local url= requrl[result] or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
     Http.get(url,access_token_head,function(code,content)
       if code==200 then
-        if require "cjson".decode(content).paging.is_end==false then
-          requrl[result]=require "cjson".decode(content).paging.next
-          for k,v in ipairs(require "cjson".decode(content).data) do
-            local 点赞数=tointeger(v.target.voteup_count)
-            local 评论数=tointeger(v.target.comment_count)
-            local 标题,问题id等;
-            local 作者=v.target.author.name
-            --            local 预览内容=作者.." : "..v.target.excerpt_new
-            local 预览内容=作者.." : "..v.target.excerpt
-            --     print(dump(v))
-            xpcall(function()
-              问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
-              标题=v.target.question.title
-              end,function()
-              问题id等="文章分割"..tointeger(v.target.id)
-              标题=v.target.title
-            end)
-            if v.target.type=="pin" then
-              问题id等="想法分割"..v.target.id
-              标题="一个想法"
-            end
-            table.insert(list2.adapter.getData(),{点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等})
+        decoded_content = require "cjson".decode(content)
+        if decoded_content.paging.is_end==false then
+          requrl[result]=decoded_content.paging.next
+          for k,v in ipairs(decoded_content.data) do
+            table.insert(list2.adapter.getData(),resolve_feed(v))
           end
           task(1,function() list2.adapter.notifyDataSetChanged()end)
         end
@@ -795,58 +804,43 @@ function 主页刷新(页数)
   end
 
   function 随机推荐 ()
-    local posturl = "https://api.zhihu.com/feeds?after_id="..页数
+    local posturl = requrl[-1] or "https://api.zhihu.com/feeds"
     local head = {
       ["cookie"] = 获取Cookie("https://www.zhihu.com/")
     }
-    local json=require "cjson"
-
     Http.get(posturl,head,function(code,content)
       if code==200 then
-        for k,v in ipairs(json.decode(content).data) do
-          local 点赞数=tointeger(v.target.voteup_count)
-          local 评论数=tointeger(v.target.comment_count)
-          local 标题,问题id等;
-          local 作者=v.target.author.name
-          --          local 预览内容=作者.." : "..v.target.excerpt_new
-          local 预览内容=作者.." : "..v.target.excerpt
-          --     print(dump(v))
-          xpcall(function()
-            问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
-            标题=v.target.question.title
-            end,function()
-            问题id等="文章分割"..tointeger(v.target.id)
-            标题=v.target.title
-          end)
-          if v.target.type=="pin" then
-            问题id等="想法分割"..v.target.id
-            标题="一个想法"
-          end
-          table.insert(list2.adapter.getData(),{点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等})
+        decoded_content = require "cjson".decode(content)
+        for k,v in ipairs(decoded_content.data) do
+          table.insert(list2.adapter.getData(),resolve_feed(v))
         end
         task(1,function() list2.adapter.notifyDataSetChanged()end)
+        requrl[-1] = decoded_content.paging.next
        elseif code==401 then
+        提示("请登录后访问推荐，http错误码401")
+        状态="未登录"
         --[[      list2.Text="请先登录"
       list9.Text="请先登录"]]
-        list2.setVisibility(8)
-        empty2.setVisibility(0)
-        list9.setVisibility(8)
-        empty9.setVisibility(0)
+        -- list2.setVisibility(8)
+        -- empty2.setVisibility(0)
+        -- list9.setVisibility(8)
+        -- empty9.setVisibility(0)
        else
+        提示("获取数据失败，请检查网络是否正常，http错误码"..code)
+        状态="未登录"
         --[[      list2.text="获取数据失败"
       list9.text="获取数据失败"]]
-        提示("获取数据失败 请检查网络是否正常")
-        list2.setVisibility(8)
-        empty2.setVisibility(0)
-        list9.setVisibility(8)
-        empty9.setVisibility(0)
+        -- list2.setVisibility(8)
+        -- empty2.setVisibility(0)
+        -- list9.setVisibility(8)
+        -- empty9.setVisibility(0)
       end
 
     end)
   end
 
 
-  if 页数<1 then
+  if not requrl[-1] or hometype=="refersh" then
 
     local yxuan_adpqy=LuaAdapter(activity,itemc2)
     list2.adapter=yxuan_adpqy
@@ -861,18 +855,18 @@ function 主页刷新(页数)
   end
   if choosebutton==nil then
     随机推荐()
-   elseif choosebutton
+   elseif choosebutton then
     主页推荐刷新(choosebutton)
   end
 end
-主页刷新(页数)
+主页刷新()
 
 
 sr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
 sr.setColorSchemeColors({转0x(primaryc)});
 sr.setOnRefreshListener({
   onRefresh=function()
-    主页刷新(0)
+    主页刷新("refersh")
     Handler().postDelayed(Runnable({
       run=function()
         sr.setRefreshing(false);
@@ -889,8 +883,7 @@ list2.setOnScrollListener{
     if a+b==list2.adapter.getCount() and isadd and list2.adapter.getCount()>0 then
       isadd=false
       sr.setRefreshing(true)
-      页数=页数+1
-      主页刷新(页数)
+      主页刷新()
       System.gc()
       Handler().postDelayed(Runnable({
         run=function()
@@ -972,7 +965,6 @@ itemc=
                 TextView;
                 textColor=textc;
                 textSize="14sp";
-                lineHeight="22sp";
                 letterSpacing="0.02";
                 Typeface=字体("product-Medium");
                 id="标题",
@@ -1751,9 +1743,7 @@ list2.setOnItemClickListener(AdapterView.OnItemClickListener{
       activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("文章分割(.+)"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
 
      elseif tostring(v.Tag.链接2.text):find("想法分割") then
-
-      activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("文章分割(.+)"),"想法"})
-
+      activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
 
      else
       if open=="false" then
@@ -1776,8 +1766,12 @@ list3.setOnItemClickListener(AdapterView.OnItemClickListener{
 
     if tostring(v.Tag.导向链接.text):find("文章分割") then
       activity.newActivity("column",{tostring(v.Tag.导向链接.Text):match("文章分割(.+)"),tostring(v.Tag.导向链接.Text):match("分割(.+)")})
+
+     elseif tostring(v.Tag.导向链接.text):find("想法分割") then
+      activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
      else
       if open=="false" then
+      
         activity.newActivity("question",{v.Tag.导向链接.Text,nil})
        else
         activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.导向链接.Text)})
@@ -1882,7 +1876,6 @@ follow_itemc=
             {
               TextView;
               textSize="12sp";
-              lineHeight="20sp";
               id="follow_art";
               textColor=stextc;
               MaxLines=3,--设置最大输入行数
@@ -1954,80 +1947,81 @@ function 关注刷新(ppage,url)
     list9.Adapter=qqadpqy
   end
 
-  if empty2.getVisibility()~=0 then
-    提示("加载中 大约需5秒 请耐心等待")
-  end
+  if 状态=="未登录" then
+    提示("请登录后使用关注功能")
+   else
+    提示("加载中 大约需要5秒 请耐心等待")
+    local json=require "cjson"
+    Http.get(posturl,head,function(code,content)
+      if code==200 then
+        local data=json.decode(content)
+        moments_isend=data.paging.is_end
+        moments_nextUrl=data.paging.next
+        for k,v in ipairs(data.data) do
+          if v.type=="feed_group"
+            --         for i=1, #require "cjson".decode(v.list) do
+            for d,e in ipairs(v.list) do
 
-  local json=require "cjson"
-  Http.get(posturl,head,function(code,content)
-    if code==200 then
-      local data=json.decode(content)
-      moments_isend=data.paging.is_end
-      moments_nextUrl=data.paging.next
-      for k,v in ipairs(data.data) do
-        if v.type=="feed_group"
-          --         for i=1, #require "cjson".decode(v.list) do
-          for d,e in ipairs(v.list) do
 
-
-            local 关注作者头像=e.actors[1].avatar_url
+              local 关注作者头像=e.actors[1].avatar_url
+              --        local 点赞数=tointeger(v.target.voteup_count)
+              local 点赞数=tointeger(e.target.voteup_count)
+              local 评论数=tointeger(e.target.comment_count)
+              local 标题=e.target.title or e.target.question.title
+              local 关注名字=e.action_text
+              local 时间=时间戳(e.created_time)
+              --            local 预览内容=e.target.excerpt_new
+              local 预览内容=e.target.excerpt
+              xpcall(function()
+                问题id等=tointeger(e.target.question.id or 1).."分割"..tointeger(e.target.id)
+                标题=e.target.question.title
+                end,function()
+                问题id等="文章分割"..tointeger(e.target.id)
+                标题=e.target.title
+              end)
+              list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
+            end
+           elseif v.type=="feed" then
+            local 关注作者头像=v.actors[1].avatar_url
             --        local 点赞数=tointeger(v.target.voteup_count)
-            local 点赞数=tointeger(e.target.voteup_count)
-            local 评论数=tointeger(e.target.comment_count)
-            local 标题=e.target.title or e.target.question.title
-            local 关注名字=e.action_text
-            local 时间=时间戳(e.created_time)
-            --            local 预览内容=e.target.excerpt_new
-            local 预览内容=e.target.excerpt
+            local 点赞数=tointeger(v.target.voteup_count)
+            local 评论数=tointeger(v.target.comment_count)
+            local 标题=v.target.title
+            local 关注名字=v.action_text
+            local 时间=时间戳(v.created_time)
+            --          local 预览内容=v.target.excerpt_new
+            local 预览内容=v.target.excerpt
             xpcall(function()
-              问题id等=tointeger(e.target.question.id or 1).."分割"..tointeger(e.target.id)
-              标题=e.target.question.title
+              问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
+              标题=v.target.question.title
               end,function()
-              问题id等="文章分割"..tointeger(e.target.id)
-              标题=e.target.title
+              问题id等="文章分割"..tointeger(v.target.id)
+              标题=v.target.title
             end)
             list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
           end
-         elseif v.type=="feed" then
-          local 关注作者头像=v.actors[1].avatar_url
-          --        local 点赞数=tointeger(v.target.voteup_count)
-          local 点赞数=tointeger(v.target.voteup_count)
-          local 评论数=tointeger(v.target.comment_count)
-          local 标题=v.target.title
-          local 关注名字=v.action_text
-          local 时间=时间戳(v.created_time)
-          --          local 预览内容=v.target.excerpt_new
-          local 预览内容=v.target.excerpt
-          xpcall(function()
-            问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
-            标题=v.target.question.title
-            end,function()
-            问题id等="文章分割"..tointeger(v.target.id)
-            标题=v.target.title
-          end)
-          list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
+        end
+       elseif require "cjson".decode(content).error.message and code==401 then
+        authorerror=AlertDialog.Builder(this)
+        .setTitle("提示")
+        .setMessage("账号存在风险 请更改密码 由于风险问题 不更改密码会无法使用该功能")
+        .setCancelable(false)
+        .setPositiveButton("立即更改密码",nil)
+        .show()
+        authorerror.create()
+        authorerror.getButton(authorerror.BUTTON_POSITIVE).onClick=function()
+          activity.newActivity("huida",{"https://www.zhihu.com/account/password_reset?utm_id=0"})
         end
       end
-     elseif require "cjson".decode(content).error.message and code==401 then
-      authorerror=AlertDialog.Builder(this)
-      .setTitle("提示")
-      .setMessage("账号存在风险 请更改密码 由于风险问题 不更改密码会无法使用该功能")
-      .setCancelable(false)
-      .setPositiveButton("立即更改密码",nil)
-      .show()
-      authorerror.create()
-      authorerror.getButton(authorerror.BUTTON_POSITIVE).onClick=function()
-        activity.newActivity("huida",{"https://www.zhihu.com/account/password_reset?utm_id=0"})
-      end
-    end
 
-  end)
+    end)
+  end
 end
 
 function onActivityResult(a,b,c)
   if b==100 then
     getuserinfo()
-    主页刷新(页数)
+    主页刷新()
     关注刷新(1)
    elseif b==1200 then --夜间模式开启
     activity.newActivity("home",android.R.anim.fade_in,android.R.anim.fade_out)
@@ -2080,7 +2074,7 @@ a=MUKPopu({
 
 appinfo=this.getPackageManager().getApplicationInfo(this.getPackageName(),(0))
 --versionCode=tointeger(appinfo.versionCode)
-versionCode=15.15
+
 local update_api= "https://huajicloud.gitee.io/hydrogen.html"
 
 --Http.get(update_api,function(code,ctt)
@@ -2136,7 +2130,7 @@ if activity.getSharedData("自动清理缓存")=="true" then
     end
     dar=tostring(ContextCompat.getDataDir(activity)).."/cache"
     getDirSize(tmp,dar)
-    getDirSize(tmp,"/sdcard/Android/data/"..activity.getPackageName().."/cache/")
+--    getDirSize(tmp,"/sdcard/Android/data/"..activity.getPackageName().."/cache/")
 
     local a1,a2=File("/data/data/"..activity.getPackageName().."/database/webview.db"),File("/data/data/"..activity.getPackageName().."/database/webviewCache.db")
     pcall(function()
@@ -2145,7 +2139,6 @@ if activity.getSharedData("自动清理缓存")=="true" then
       a2.delete()
     end)
     LuaUtil.rmDir(File(dar))
-    LuaUtil.rmDir(File("/sdcard/Android/data/"..activity.getPackageName().."/cache/images"))
 
     return tmp[1]
     end,APP_CACHEDIR,function(m)
@@ -2179,6 +2172,8 @@ function onCreate()
         activity.newActivity("column",{intent:match("articles/(.-)?")})
        elseif intent:find "article" then
         activity.newActivity("column",{intent:match("article/(.-)?")})
+       else
+        提示("暂不支持的知乎意图"..intent)
       end
      elseif (intent:find("http://") or intent:find("https://")) and intent:find("zhihu.com") then
       检查链接(intent)

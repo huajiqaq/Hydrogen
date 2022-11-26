@@ -90,7 +90,6 @@ question_itemc=
               ellipsize="end",
               textColor=stextc;
               layout_marginTop="9dp";
-              lineHeight="20sp";
               Typeface=字体("product");
             };
             {
@@ -217,13 +216,15 @@ end)
 end)
 :getData(function(tab)
 
-  if this.acticity.getSharedData("标题简略化")=="true" then
+  if this.getSharedData("标题简略化")=="true" then
     title.Text="问题"
+  else
+    title.Text=tab.title
   end
-  title.Text=tab.title
-  _comment.Text=tointeger(tab.comment_count)..""
-  _star.Text=tointeger(tab.follower_count)..""
-  _title.Text="共"..tointeger(tab.answer_count).."个回答"
+  _comment.Text=tostring(tointeger(tab.comment_count))
+  _star.Text=tostring(tointeger(tab.follower_count))
+  _title.Text="共"..tostring(tointeger(tab.answer_count)).."个回答"
+
 
   if #tab.excerpt>0 then
     description.Text=tab.excerpt

@@ -3,7 +3,7 @@ require "import"
 import "android.app.*"
 import "android.os.*"
 import "android.widget.*"
-import 'org.jsoup.*'
+--import 'org.jsoup.*'
 import "android.view.*"
 import "android.view.animation.*"
 import "android.view.animation.Animation$AnimationListener"

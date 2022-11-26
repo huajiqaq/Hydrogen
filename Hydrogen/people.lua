@@ -103,7 +103,6 @@ people_itemc=
               MaxLines=3;--设置最大输入行数
               letterSpacing="0.02";
               ellipsize="end",
-              lineHeight="20sp";
               layout_marginTop="8dp";
               Typeface=字体("product");
             };
@@ -223,7 +222,7 @@ end)
    elseif v.target.type=="collection" then
     return
    elseif v.target.type=="pin" then
-    标题="一个想法"
+    标题=v.target.author.name.."发表了想法"
     问题id="想法分割"..v.target.id
     预览内容=v.target.content[1].content
    else
