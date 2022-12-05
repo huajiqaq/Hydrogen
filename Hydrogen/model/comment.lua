@@ -59,13 +59,14 @@ function base:next(callback)
     Http.get(self.nextUrl or self:getUrlByType(self.id,self.type),head ,function(code,body)
 
       if code==200 then
-        self.nextUrl=require "cjson".decode(body).paging.next
-        self.is_end=require "cjson".decode(body).paging.is_end
-        self.common_counts=tointeger(require "cjson".decode(body).common_counts)
+        decoded_content=require "cjson".decode(body)
+        self.nextUrl=decoded_content.paging.next
+        self.is_end=decoded_content.paging.is_end
+        self.common_counts=tointeger(decoded_content.common_counts)
         if self.type=="pins" then
-        self.common_counts_pins=tointeger(#require "cjson".decode(body))
+        self.common_counts_pins=tointeger(#decoded_content)
         end
-        for k,v in ipairs(require "cjson".decode(body).data) do
+        for k,v in ipairs(decoded_content.data) do
           if self.data[v.id] then
            else
             self.data[v.id]=v --(概率需要(如果以后需要扩张功能的话))
