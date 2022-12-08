@@ -26,6 +26,11 @@ webview.loadUrl("file://"..内置存储文件("Download/"..urlEncode(title).."/"
 _title.text=title
 xxx=读取文件(内置存储文件("Download/"..title.."/"..author.."/detail.txt"))
 
+if not(xxx:match("question_id")) then
+  activity.finish()
+  activity.newActivity("huida",{"file://"..内置存储文件("Download/"..urlEncode(title).."/"..urlEncode(author).."/mht.mht"),nil,nil,xxx:match('url="(.-)"')})
+end
+
 username.text=xxx:match[[author="(.-)"]]
 userheadline.text=xxx:match[[headline="(.-)"]]
 thanks_count.text=xxx:match[[thanks_count="(.-)"]]

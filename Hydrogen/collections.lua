@@ -550,22 +550,23 @@ if collections_url=="local" then
   }
   list5.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(parent,v,pos,id)
-      保存历史记录(v.Tag.catitle.Text,v.Tag.cid.Text,50)
 
       local open=activity.getSharedData("内部浏览器查看回答")
 
-      if open=="false" then
-        if tostring(v.Tag.cid.text):find("回答分割") then
-          activity.newActivity("answer",{tostring(v.Tag.cid.Text):match("(.+)回答分割"),tostring(v.Tag.cid.Text):match("回答分割(.+)")})
-         elseif tostring(v.Tag.cid.text):find("文章分割") then
-          activity.newActivity("column",{tostring(v.Tag.cid.Text):match("文章分割(.+)")})
-         elseif tostring(v.Tag.cid.text):find("想法分割") then
-          activity.newActivity("column",{tostring(v.Tag.cid.Text):match("想法分割(.+)"),"想法"})
-        end
-       else
-        activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.cid.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.cid.Text):match("分割(.+)")})
-      end
 
+      if tostring(v.Tag.cid.text):find("文章分割") then
+        activity.newActivity("column",{tostring(v.Tag.cid.Text):match("文章分割(.+)")})
+       elseif tostring(v.Tag.cid.text):find("想法分割") then
+        activity.newActivity("column",{tostring(v.Tag.cid.Text):match("想法分割(.+)"),"想法"})
+       else
+        保存历史记录(v.Tag.catitle.Text,v.Tag.cid.Text,50)
+        if open=="false" then
+          activity.newActivity("answer",{tostring(v.Tag.cid.Text):match("(.+)回答分割"),tostring(v.Tag.cid.Text):match("回答分割(.+)")})
+         else
+
+          activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.cid.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.cid.Text):match("分割(.+)")})
+        end
+      end
     end
   })
 

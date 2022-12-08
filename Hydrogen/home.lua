@@ -14,14 +14,14 @@ activity.setContentView(loadlayout("layout/home"))
 
 初始化历史记录数据(true)
 
-local function videoanswer ()
+--[[local function videoanswer ()
   activity.setSharedData("加载回答中存在的视频(beta)","true")
   双按钮对话框("提示","软件默认开启「加载回答中存在的视频(beta)」 你可以在设置中手动设置此开关","我知道了","跳转设置",function()
   关闭对话框(an) end,function()
     关闭对话框(an) 跳转页面("settings")
   end)
 end
-
+]]
 local ccc=activity.getSharedData("第一次提示")
 if ccc ==nil then
   双按钮对话框("注意","该软件仅供交流学习，严禁用于商业用途，请于下载后的24小时内卸载","登录","知道了",function()
@@ -36,9 +36,9 @@ if ccc ==nil then
 end
 
 local kkk=activity.getSharedData("加载回答中存在的视频(beta)")
-if kkk==nil and ccc~=nil then
+--[[if kkk==nil and ccc~=nil then
   videoanswer ()
-end
+end]]
 
 if ccc and kkk and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
@@ -489,12 +489,13 @@ page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
         list9.setOnItemClickListener(AdapterView.OnItemClickListener{
           onItemClick=function(parent,v,pos,id)
 
-            保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
-
             local open=activity.getSharedData("内部浏览器查看回答")
             if tostring(v.Tag.follow_id.text):find("文章分割") then
               activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
              else
+
+              保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
+
               if open=="false" then
                 activity.newActivity("answer",{tostring(v.Tag.follow_id.Text):match("(.+)分割"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
                else
@@ -1735,8 +1736,6 @@ end})
 list2.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
 
-    保存历史记录(v.Tag.标题2.Text,v.Tag.链接2.Text,50)
-
     local open=activity.getSharedData("内部浏览器查看回答")
     if tostring(v.Tag.链接2.text):find("文章分割") then
 
@@ -1746,6 +1745,9 @@ list2.setOnItemClickListener(AdapterView.OnItemClickListener{
       activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
 
      else
+
+      保存历史记录(v.Tag.标题2.Text,v.Tag.链接2.Text,50)
+
       if open=="false" then
 
         activity.newActivity("answer",{tostring(v.Tag.链接2.Text):match("(.+)分割"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
@@ -1759,9 +1761,6 @@ list2.setOnItemClickListener(AdapterView.OnItemClickListener{
 list3.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
 
-    保存历史记录(v.Tag.标题.Text,v.Tag.导向链接.Text,50)
-
-
     local open=activity.getSharedData("内部浏览器查看回答")
 
     if tostring(v.Tag.导向链接.text):find("文章分割") then
@@ -1770,8 +1769,9 @@ list3.setOnItemClickListener(AdapterView.OnItemClickListener{
      elseif tostring(v.Tag.导向链接.text):find("想法分割") then
       activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
      else
+      保存历史记录(v.Tag.标题.Text,v.Tag.导向链接.Text,50)
       if open=="false" then
-      
+
         activity.newActivity("question",{v.Tag.导向链接.Text,nil})
        else
         activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.导向链接.Text)})
@@ -2130,7 +2130,7 @@ if activity.getSharedData("自动清理缓存")=="true" then
     end
     dar=tostring(ContextCompat.getDataDir(activity)).."/cache"
     getDirSize(tmp,dar)
---    getDirSize(tmp,"/sdcard/Android/data/"..activity.getPackageName().."/cache/")
+    --    getDirSize(tmp,"/sdcard/Android/data/"..activity.getPackageName().."/cache/")
 
     local a1,a2=File("/data/data/"..activity.getPackageName().."/database/webview.db"),File("/data/data/"..activity.getPackageName().."/database/webviewCache.db")
     pcall(function()

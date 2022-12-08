@@ -393,11 +393,14 @@ all_list.setOnScrollListener{
 
 all_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
-    保存历史记录(v.Tag.all_title.Text,v.Tag.all_id.Text,50)
+
     local open=activity.getSharedData("内部浏览器查看回答")
     if tostring(v.Tag.all_id.text):find("文章分割") then
       activity.newActivity("column",{tostring(v.Tag.all_id.Text):match("文章分割(.+)"),tostring(v.Tag.all_id.Text):match("分割(.+)")})
      else
+
+      保存历史记录(v.Tag.all_title.Text,v.Tag.all_id.Text,50)
+
       if open=="false" then
         activity.newActivity("question",{v.Tag.all_id.Text,nil})
        else
@@ -411,7 +414,6 @@ all_list.setOnItemClickListener(AdapterView.OnItemClickListener{
 best_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
 
-    保存历史记录(v.Tag.best_title.Text,v.Tag.best_id.Text,50)
 
     local open=activity.getSharedData("内部浏览器查看回答")
     if tostring(v.Tag.best_id.text):find("文章分割") then
@@ -420,6 +422,9 @@ best_list.setOnItemClickListener(AdapterView.OnItemClickListener{
      elseif tostring(v.Tag.best_id.text):find("视频分割") then
       activity.newActivity("huida",{tostring(v.Tag.best_id.Text):match("视频分割(.+)")})
      else
+
+      保存历史记录(v.Tag.all_title.Text,v.Tag.all_id.Text,50)
+
       if open=="false" then
 
         activity.newActivity("answer",{tostring(v.Tag.best_id.Text):match("(.+)分割"),tostring(v.Tag.best_id.Text):match("分割(.+)")})

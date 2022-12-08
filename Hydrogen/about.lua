@@ -236,5 +236,6 @@ about_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
     end
 
+
     adp.notifyDataSetChanged()--更新列表
 end})

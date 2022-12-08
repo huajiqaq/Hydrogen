@@ -18,6 +18,7 @@ if 类型==nil or 类型:match("%d") then
   类型="文章"
 end
 
+初始化历史记录数据(true)
 
 ishavepic=true
 
@@ -166,15 +167,23 @@ function 刷新()
         _title.Text=类型
        else
         content.setVisibility(0)
+        autoname=url.author.name
         _title.Text=url.title
         urls=url
         --  恢复白色()
         content.loadUrl("https://www.zhihu.com/appview/p/"..result)
+        保存历史记录(_title.Text,"文章分割"..result,50)
       end
     end)
    elseif 类型=="想法" then
     content.setVisibility(0)
+
     _title.Text="查看想法"
+    Http.get("https://www.zhihu.com/api/v4/pins/"..result,function(code,content)
+      simpletitle=require "cjson".decode(content).excerpt_title
+      autoname=require "cjson".decode(content).author.name
+      保存历史记录(require "cjson".decode(content).excerpt_title,"想法分割"..result,50)
+    end)
     content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
     --对应api是https://www.zhihu.com/api/v4/pins/ID，或者https://api.zhihu.com/pins/ID，均可以取得内容，后续再做
 
@@ -509,6 +518,18 @@ if 类型=="文章" then
           加入收藏夹(result,"article")
 
         end
+      },
+      {
+        src=图标("save"),text="保存在本地",onClick=function()
+          创建文件夹(内置存储文件("Download/".._title.Text))
+          创建文件夹(内置存储文件("Download/".._title.Text.."/"..autoname))
+          content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..autoname.."/mht.mht"))
+          创建文件(内置存储文件("Download/".._title.Text.."/"..autoname.."/detail.txt"))
+
+          写入文件(内置存储文件("Download/".._title.Text.."/"..autoname.."/detail.txt"),'article_url="'..content.getUrl()..'"')
+
+          提示("保存成功")
+        end
       }
     }
   })
@@ -538,6 +559,19 @@ if 类型=="文章" then
         src=图标("explore"),text="收藏文件夹",onClick=function()
           加入收藏夹(result,"pin")
 
+        end
+      },
+      {
+        src=图标("save"),text="保存在本地",onClick=function()
+          创建文件夹(内置存储文件("Download/"..simpletitle))
+          创建文件夹(内置存储文件("Download/"..simpletitle.."/"..autoname))
+
+          创建文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"))
+
+          写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"),'pin_url="'..content.getUrl()..'"')
+
+          content.saveWebArchive(内置存储文件("Download/"..simpletitle.."/"..autoname.."/mht.mht"))
+          提示("保存成功")
         end
       }
     }

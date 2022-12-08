@@ -111,11 +111,18 @@ history_list.onItemClick=function(l,v,c,b)
     activity.newActivity("column",{(recordii[b]):match("文章分割(.+)"),(recordii[b]):match("分割(.+)")})
    elseif (recordii[b]):find("想法分割") then
     activity.newActivity("column",{(recordii[b]):match("想法分割(.+)"),"想法"})
-   else
+    --TOOD 对于回答记录的点击
+   elseif (recordii[b]):find("分割") then
     if open=="false" then
       activity.newActivity("answer",{(recordii[b]):match("(.+)分割"),(recordii[b]):match("分割(.+)")})
      else
       activity.newActivity("huida",{"https://www.zhihu.com/question/"..(recordii[b]):match("(.+)分割").."/answer/"..(recordii[b]):match("分割(.+)")})
+    end
+   else
+    if open=="false" then
+      activity.newActivity("question",{(recordii[b])})
+     else
+      activity.newActivity("huida",{"https://www.zhihu.com/question/"..(recordii[b])})
     end
   end
 end
@@ -124,15 +131,21 @@ a=MUKPopu({
   list={
     {
       src=图标("list_alt"),text="清理历史记录",onClick=function()
-        清除历史记录()
-        提示("已清除,即将重启")
-        task(200,function()
-          import "android.os.Process"
-          local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
-          intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-          activity.startActivity(intent);
-          Process.killProcess(Process.myPid());
+        双按钮对话框("提示","确定要清理历史记录吗 清除将会重启应用","我知道了","暂不清理",function()
+          关闭对话框(an)
+          清除历史记录()
+          提示("已清除,即将重启")
+          task(200,function()
+            import "android.os.Process"
+            local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            activity.startActivity(intent);
+            Process.killProcess(Process.myPid());
+          end)
+          end,function()
+          关闭对话框(an)
         end)
+
     end},
   }
 })
