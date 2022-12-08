@@ -14,7 +14,6 @@ question_id=...
 波纹({discussion,view,description},"方自适应")
 
 
-
 --卡片布局
 question_itemc=
 {
@@ -218,7 +217,7 @@ end)
 
   if this.getSharedData("标题简略化")=="true" then
     title.Text="问题"
-  else
+   else
     title.Text=tab.title
   end
   _comment.Text=tostring(tointeger(tab.comment_count))

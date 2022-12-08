@@ -267,7 +267,6 @@ end
 
 people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
-    保存历史记录(v.Tag.people_title.Text,v.Tag.people_url.Text,50)
     local open=activity.getSharedData("内部浏览器查看回答")
     if tostring(v.Tag.people_question.text):find("文章分割") then
       activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("文章分割(.+)"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
@@ -279,6 +278,7 @@ people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("想法分割(.+)"),"想法"})
      else
       if open=="false" then
+        保存历史记录(v.Tag.people_title.Text,v.Tag.people_url.Text,50)
         activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
        else
         activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})

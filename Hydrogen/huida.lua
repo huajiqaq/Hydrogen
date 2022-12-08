@@ -7,7 +7,7 @@ client = import "com.lua.LuaWebViewclient"
 callback = import "com.androlua.LuaWebView$LuaWebViewClient"
 
 
-liulanurl,docode,ischeck=...
+liulanurl,docode,ischeck,fxurl=...
 
 activity.setContentView(loadlayout("layout/huida"))
 
@@ -52,7 +52,7 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     --_title.text=(liulan.getTitle())
     if liulanurl~="https://www.zhihu.com" and activity.getSharedData("标题简略化")~="true" then
       _title.text=(title)
-      else
+     else
       _title.text="加载完成"
     end
   end,
@@ -327,7 +327,11 @@ a=MUKPopu({
     end},--添加项目(菜单项)
 
     {src=图标("share"),text="分享",onClick=function()
-        复制文本(liulan.getUrl())
+        if fxurl then
+          复制文本(fxurl)
+         else
+          复制文本(liulan.getUrl())
+        end
         提示("已复制网页链接到剪切板")
     end},
 

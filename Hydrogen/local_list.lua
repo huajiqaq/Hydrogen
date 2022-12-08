@@ -159,9 +159,11 @@ function 加载笔记()
   -- xpcall(function()
   notedata={}
   for i,v in ipairs(luajava.astable(File(内置存储文件("Download")).listFiles())) do
+    local vv=v
     local v=tostring(v)
     local _,name=v:match("(.+)/(.+)")
     notedata[#notedata+1]={
+      timestamp=vv.lastModified(),
       catitle=name,
       --    cid=name,
       file=(v),
@@ -172,6 +174,11 @@ function 加载笔记()
 ]=]
     }
   end
+
+  table.sort(notedata,function(a, b)
+    return a.timestamp > b.timestamp
+  end)
+
   noteadp=LuaAdapter(activity,notedata,local_item)
   local_listview.setAdapter(noteadp)
   --      end,function()
