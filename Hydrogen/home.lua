@@ -805,7 +805,7 @@ function 主页刷新(hometype)
   end
 
   function 随机推荐 ()
-    local posturl = requrl[-1] or "https://api.zhihu.com/feeds"
+    local posturl = requrl[-1] or "https://api.zhihu.com/topstory?action=down"--"https://api.zhihu.com/feeds"
     local head = {
       ["cookie"] = 获取Cookie("https://www.zhihu.com/")
     }

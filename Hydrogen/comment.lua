@@ -205,22 +205,41 @@ function 刷新()
                 layout_width="fill",
                 {
                   TextView;
-                  Typeface=字体("product");
-                  textColor=stextc;
-                  id="comment_toast",
-                  textSize="12sp";
-
-                  gravity="left";
-                  text="查看对话列表",
-                };
-                {
-                  TextView;
                   layout_weight="1",
-                  gravity="right";
+                  gravity="left";
                   Typeface=字体("product");
                   textColor=stextc;
                   textSize="12sp";
                   id="comment_time",
+                };
+                {
+                  TextView;
+                  Typeface=字体("product");
+                  textColor=textc;
+                  id="comment_toast",
+                  textSize="12sp";
+                  textColor="#FF767676",
+                  gravity="right";
+                  text="查看对话列表",
+                };
+                {
+                  layout_marginLeft="10dp",
+                  ImageView;
+                  layout_gravity="right",
+                  layout_height="16dp",
+                  layout_width="16dp",
+                  src=图标("vote_up"),
+                  ColorFilter=textc;
+                };
+                {
+                  layout_marginLeft="3dp",
+                  TextView;
+                  Typeface=字体("product");
+                  textColor=stextc;
+                  id="comment_vote",
+                  textSize="12sp";
+                  gravity="right";
+                  text="",
                 };
               };
             }
@@ -238,6 +257,10 @@ function 刷新()
   :setresultfunc(function(v)
     local 头像=v.author.member.avatar_url
     local 内容=v.content
+    local 点赞数=tointeger(v.vote_count)
+    if 点赞数==0 then
+      comment_vote.setVisibility(8)
+    end
     local 时间=时间戳(v.created_time)
     local 名字,id=v.author.member.name,"没有id"
     local function isauthor(v)
@@ -253,9 +276,9 @@ function 刷新()
     end)
     if 内容:find("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]") then
       评论链接=内容:match("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]")
-      comment_list.Adapter.add{comment_toast={Visibility=(id=="没有id" and 8 or 0)},comment_id=id,comment_art={Text=setstyle(Html.fromHtml(内容)),MovementMethod=LinkMovementMethod.getInstance()},comment_author=名字,comment_image=头像,comment_time=时间,commentrootview={onLongClick=function() savecommentfile() 提示(comment_id.Text) end,onClick=function() if id~="没有id" and _title.text~="对话列表" then activity.newActivity("comment",{id,"comments",answer_title,answer_author}) end end}}
+      comment_list.Adapter.add{comment_toast={Visibility=(id=="没有id" and 8 or 0)},comment_id=id,comment_art={Text=setstyle(Html.fromHtml(内容)),MovementMethod=LinkMovementMethod.getInstance()},comment_author=名字,comment_image=头像,comment_time=时间,comment_vote=点赞数,commentrootview={onLongClick=function() savecommentfile() 提示(comment_id.Text) end,onClick=function() if id~="没有id" and _title.text~="对话列表" then activity.newActivity("comment",{id,"comments",answer_title,answer_author}) end end}}
      else
-      comment_list.Adapter.add{comment_toast={Visibility=(id=="没有id" and 8 or 0)},comment_id=id,comment_art=Html.fromHtml(内容),comment_author=名字,comment_image=头像,comment_time=时间}
+      comment_list.Adapter.add{comment_toast={Visibility=(id=="没有id" and 8 or 0)},comment_id=id,comment_art=Html.fromHtml(内容),comment_author=名字,comment_image=头像,comment_time=时间,comment_vote=点赞数}
     end
   end)
 
