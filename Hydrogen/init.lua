@@ -13,5 +13,6 @@ debugmode=false
 user_permission={
   "INTERNET",
   "READ_EXTERNAL_STORAGE",
+  "REQUEST_INSTALL_PACKAGES",
   "WRITE_EXTERNAL_STORAGE"
 }

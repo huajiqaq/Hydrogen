@@ -6,7 +6,7 @@ import "mods.muk"
 import "android.text.method.LinkMovementMethod"
 activity.setContentView(loadlayout("layout/comment"))
 
-comment_id,comment_type,answer_title,answer_author=...
+comment_id,comment_type,answer_title,answer_author,comment_count=...
 波纹({fh,_more},"圆主题")
 
 local function setstyle(styleee)
@@ -258,9 +258,10 @@ function 刷新()
     local 头像=v.author.member.avatar_url
     local 内容=v.content
     local 点赞数=tointeger(v.vote_count)
-    if 点赞数==0 then
+    --[[    if 点赞数==0 then
       comment_vote.setVisibility(8)
     end
+    ]]
     local 时间=时间戳(v.created_time)
     local 名字,id=v.author.member.name,"没有id"
     local function isauthor(v)
@@ -293,7 +294,7 @@ function 刷新()
           if comment_type~="pins" then
             _title.text=string.format("共%s条评论",comment_base.common_counts )
            else
-            _title.text=string.format("共%s条评论",comment_base.common_counts_pins+1)
+            _title.text=string.format("共%s条评论",comment_count)
           end
         end
       end

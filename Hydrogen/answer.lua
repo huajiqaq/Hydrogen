@@ -14,7 +14,7 @@ import "android.content.pm.ActivityInfo"
 import "android.graphics.PathMeasure"
 
 
-问题id,回答id,问题对象=...
+问题id,回答id,问题对象,是否记录历史记录=...
 
 activity.setContentView(loadlayout("layout/answer"))
 
@@ -121,6 +121,7 @@ function 数据添加(t,b)
   end
 
 
+
   if b.author.name=="知乎用户" then
     Http.get("https://api.zhihu.com/people/"..b.author.id,head,function(code,content)
       if code==200 then
@@ -219,6 +220,12 @@ function 数据添加(t,b)
     回答id=tointeger(b.id)
   end
 
+if 是否记录历史记录 and not(已记录) then
+初始化历史记录数据(true)
+保存历史记录(_title.Text,问题id.."分割"..回答id,50)
+已记录=true
+end
+
   t.content.removeView(t.content.getChildAt(0))
   --t.content.setbackground(0x01000000)
 
@@ -281,12 +288,28 @@ function 数据添加(t,b)
 	waitForKeyElements(' [class="AnswerReward"]', yh);
    ]])
 
-      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
+--      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
+      if b.editable_content:find("video%-link") then
+          Http.get("https://www.zhihu.com/api/v4/me",{
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    },function(code,content)
+       if code==401 then
+              AlertDialog.Builder(this)
+        .setTitle("提示")
+        .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
+        .setCancelable(false)
+        .setPositiveButton("我知道了",nil)
+        .show()
+        end
+        return
+     end)
+      加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
         加载js(view,[[
-  var setvideo=(function() {
+  function setvideo () {
     if (document.getElementsByClassName("video-box").length>0 && typeof(document.getElementsByClassName("video-box")[0].href)!="undefined") {
     for (i = 0; i<document.getElementsByClassName("video-box").length; i++) {
         (function(i){
+       
             var k =decodeURIComponent(document.getElementsByClassName("video-box")[i].href).match(/\/video\/(\S*)/)[1]
             var xhr = new XMLHttpRequest();
             var url = "https://lens.zhihu.com/api/v4/videos/"+k;
@@ -296,7 +319,16 @@ function 数据添加(t,b)
 				if (xhr.status == 200) {
 				    videohtml= xhr.responseText
 					var getvideourlhtml = JSON.parse(videohtml);
-                    var videourl= getvideourlhtml.playlist.SD.play_url  
+						try{
+		videourl=getvideourlhtml.playlist.SD.play_url
+	}catch(err){				//抓住throw抛出的错误
+	if (getvideourlhtml.playlist.ld.play_url) {
+	videourl= getvideourlhtml.playlist.ld.play_url  
+	} else if (getvideourlhtml.playlist.hd.play_url) {
+	videourl= getvideourlhtml.playlist.hd.play_url  
+	}
+	}
+	
                     document.getElementsByClassName("video-box")[i].outerHTML='<div class="video-box"><video src=' +videourl +  ' style="margin: auto;width: 100%;" controls=""></video></div>'
 					} else {
 					}
@@ -306,22 +338,20 @@ function 数据添加(t,b)
         })(i);
     }
 }
-})()
+}
 waitForKeyElements(' [class="video-box"]', setvideo);
 ]])
-        Http.get("https://www.zhihu.com/question/"..问题id.."/answer/"..tointeger(b.id),head,function(code,content)
-          if code==200 then
-            if content:match("https://video.zhihu.com/video/(.-)?itemId="..tointeger(b.id)) then
-              local 视频参数=content:match("https://video.zhihu.com/video/(.-)?itemId="..tointeger(b.id))
-              local 回答模式="视频回答"
-              if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
-                提示("加载回答视频资源中 请耐心等待")
-              end
-              Http.get("https://lens.zhihu.com/api/v4/videos/"..视频参数,head,function(codee,contentt)
-                if codee==200 then
-                  local 视频链接=require "cjson".decode(contentt).playlist.SD.play_url
-                  加载js(view,[[
-   (function() {
+elseif b.attachment then
+                        xpcall(function()
+          视频链接=b.attachment.video.video_info.playlist.sd.url
+          end,function()
+          视频链接=b.attachment.video.video_info.playlist.ld.url
+          end,function()
+          视频链接=b.attachment.video.video_info.playlist.hd.url
+        end)
+        
+                   加载js(view,[[
+  function setmyvideo() {
 var videotext=document.createElement('div')
 videotext.className="ExtraInfo"
 videotext.innerText="该回答为视频回答"
@@ -330,17 +360,14 @@ var videourl=document.createElement('div')
 videourl.className="video-box"
 videourl.innerHTML='<video style="margin: auto;width: 100%;"]].." src=" ..视频链接.. [[ controls=""></video>'
 document.getElementsByClassName("RichText ztext")[0].insertBefore(videourl,document.getElementsByClassName("RichText ztext")[0].firstChild);
-})();]])
-                end
-              end)
-             else
-              回答模式=nil
-              视频参数=nil
-              视频链接=nil
-            end
-          end
-        end)
-      end
+}
+waitForKeyElements(' [class="RichText ztext"]', setmyvideo);
+]])      
+        
+end
+        
+       
+  --    end
       if 全局主题值=="Night" then
         加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
       end
@@ -694,6 +721,7 @@ function onDestroy()
 end
 
 local click=0
+
 mark.onClick=function()
   --[=[  if click==0 then
     click=1

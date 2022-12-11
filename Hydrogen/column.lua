@@ -182,6 +182,7 @@ function 刷新()
     Http.get("https://www.zhihu.com/api/v4/pins/"..result,function(code,content)
       simpletitle=require "cjson".decode(content).excerpt_title
       autoname=require "cjson".decode(content).author.name
+      comment_count=tointeger(require "cjson".decode(content).comment_count)
       保存历史记录(require "cjson".decode(content).excerpt_title,"想法分割"..result,50)
     end)
     content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
@@ -551,7 +552,7 @@ if 类型=="文章" then
 
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
-          activity.newActivity("comment",{result,"pins"})
+          activity.newActivity("comment",{result,"pins",nil,nil,tostring(comment_count)})
 
         end
       },

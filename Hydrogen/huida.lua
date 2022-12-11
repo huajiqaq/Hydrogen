@@ -19,7 +19,12 @@ if docode~=nil then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
   -- else
  elseif liulanurl:match("zhihu") then
-  liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")--设置UA
+  if liulanurl:match("search") then
+    _title.text="搜索"
+    return true
+   else
+    liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")--设置UA
+  end
 end
 
 liulan.removeView(liulan.getChildAt(0))
@@ -50,10 +55,12 @@ _title.text="加载中"
 liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onReceivedTitle=function(view, title)
     --_title.text=(liulan.getTitle())
-    if liulanurl~="https://www.zhihu.com" and activity.getSharedData("标题简略化")~="true" then
-      _title.text=(title)
-     else
-      _title.text="加载完成"
+    if _title.text~="搜索" then
+      if liulanurl~="https://www.zhihu.com" and activity.getSharedData("标题简略化")~="true" then
+        _title.text=(title)
+       else
+        _title.text="加载完成"
+      end
     end
   end,
   onProgressChanged=function(view,p)

@@ -34,7 +34,7 @@ data={
   --  {__type=1,title=""},
   --  {__type=4,subtitle="内部搜索(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("内部搜索(beta)"))}},
   {__type=4,subtitle="回答预加载(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
-  {__type=4,subtitle="加载回答中存在的视频(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("加载回答中存在的视频(beta)"))}},
+--  {__type=4,subtitle="加载回答中存在的视频(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("加载回答中存在的视频(beta)"))}},
     {__type=4,subtitle="标题简略化",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
   {__type=5,subtitle="字体大小",image=图标(""),status={
       minValue=10,
@@ -55,9 +55,9 @@ tab={ --点击table
   ["回答预加载(beta)"]=function()
     提示("此功能可能还有隐性bug,仅供体验，若影响体验请关闭")
   end,
-  ["加载回答中存在的视频(beta)"]=function()
-    提示("开启后如果没有加载请多次尝试")
-  end,
+--  "加载回答中存在的视频(beta)"]=function()
+--    提示("开启后如果没有加载请多次尝试")
+--  end,
   夜间模式=function()
     提示("返回主页面生效")
     activity.setResult(1200,nil)
@@ -354,10 +354,11 @@ if this.getSharedData("内部浏览器查看回答") == nil then
   this.setSharedData("内部浏览器查看回答","false")
 end
 
+--[[
 if this.getSharedData("加载回答中存在的视频(beta)") == nil then
   this.setSharedData("加载回答中存在的视频(beta)","true")
 end
-
+]]
 
 
 --activity.setTheme(Theme_Material_Light)

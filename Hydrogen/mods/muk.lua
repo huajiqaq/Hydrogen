@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=15.18
+versionCode=15.19
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -353,8 +353,8 @@ function 主题(str)
     viewshaderc="#00000000"
     grayc="#ECEDF1"
     ripplec="#559E9E9E"
---    cardedge="#FFE0E0E0"
-     cardedge="#FFF6F6F6"
+    --    cardedge="#FFE0E0E0"
+    cardedge="#FFF6F6F6"
     状态栏颜色(0x3f000000)
     导航栏颜色(0x3f000000)
     pcall(function()
@@ -715,7 +715,7 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
       {
         CardView;
         layout_gravity="center",
---        background=cardedge,
+        --        background=cardedge,
         CardBackgroundColor=cardedge,
         radius="3dp",
         Elevation="0dp";
@@ -1218,7 +1218,7 @@ end
 end]]
 
 function 检查链接(url,b)
-
+  local open=activity.getSharedData("内部浏览器查看回答")
   local url="https"..url:match("https(.+)")
 
   if url:find("zhihu.com/question") then
@@ -1228,19 +1228,21 @@ function 检查链接(url,b)
       questions,answer=url:match("question/(.-)/"),url:match("answer/(.-)?") or url:match("answer/(.+)")
      else
       questions,answer=url:match("question/(.-)?") or url:match("question/(.+)"),nil
-      if activity.getSharedData("内部浏览器查看回答")=="false" then
-        activity.newActivity("question",{questions})
+      if b then
+        return true
+      end
+      if open=="false" then
+        activity.newActivity("question",{questions,true})
        else
         activity.newActivity("huida",{url})
       end
       return
     end
-    local open=activity.getSharedData("内部浏览器查看回答")
     if b then
       return true
     end
     if open=="false" then
-      activity.newActivity("answer",{questions,answer})
+      activity.newActivity("answer",{questions,answer,nil,true})
      else
       activity.newActivity("huida",{url})--"https://www.zhihu.com/question/"..tostring(v.Tag.链接2.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.链接2.Text):match("分割(.+)")})
     end
@@ -1259,6 +1261,12 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/topic/") then--/p/143744216
     if b then return true end
     activity.newActivity("topic",{url:match("/topic/(.+)")})
+   elseif url:find("zhihu.com/pin/") then
+    if b then return true end
+    activity.newActivity("column",{url:match("/pin/(.+)"),"想法"})
+   elseif url:find("zhuanlan.zhihu.com/p/") then
+    if b then return true end
+    activity.newActivity("column",{url:match("/p/(.+)"),nil})
    else
     if b then return false end
     activity.newActivity("huida",{url})
@@ -2485,8 +2493,8 @@ end
 import "android.graphics.drawable.GradientDrawable"
 
 function CircleButton(view,InsideColor,radiu)
-  local drawable = GradientDrawable() 
-  .setShape(GradientDrawable.RECTANGLE) 
+  local drawable = GradientDrawable()
+  .setShape(GradientDrawable.RECTANGLE)
   .setColor(InsideColor)
   .setCornerRadii({radiu,radiu,radiu,radiu,radiu,radiu,radiu,radiu})
   --可通过 GradientDrawable 的其他方法实现其他效果

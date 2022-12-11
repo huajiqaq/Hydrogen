@@ -6,13 +6,12 @@ import "com.michael.NoScrollGridView"
 import "com.michael.NoScrollListView"
 import "android.text.Html$TagHandler"
 import "android.text.Html$ImageGetter"
-question_id=...
+question_id,是否记录历史记录=...
 
 设置视图("layout/question")
 
 波纹({fh,_more},"圆主题")
 波纹({discussion,view,description},"方自适应")
-
 
 --卡片布局
 question_itemc=
@@ -220,6 +219,12 @@ end)
    else
     title.Text=tab.title
   end
+
+  if 是否记录历史记录 then
+    初始化历史记录数据(true)
+    保存历史记录(title.Text,question_id,50)
+  end
+
   _comment.Text=tostring(tointeger(tab.comment_count))
   _star.Text=tostring(tointeger(tab.follower_count))
   _title.Text="共"..tostring(tointeger(tab.answer_count)).."个回答"

@@ -41,13 +41,27 @@ function base:getAnswer(id,cb)
     end
   end)]]
 
-  Http.get("https://api.zhihu.com/answers/"..id,{
+  --[[  Http.get("https://api.zhihu.com/answers/"..id,{
     ["x-app-za"] = "OS=Android";
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
+  }
+  ]]
+  Http.get("https://api.zhihu.com/v4/answers/"..id,{
+    ["x-api-version"] = "3.0.89";
+    ["x-app-za"] = "OS=Android";
+    ["x-app-version"] = "8.44.0";
     ["cookie"] = 获取Cookie("https://www.zhihu.com/")
   }
   ,function(a,b)
     if a==200 then
       cb(require "cjson".decode(b))
+     elseif a==404 then
+      AlertDialog.Builder(this)
+      .setTitle("提示")
+      .setMessage("发生错误 不存在该回答")
+      .setCancelable(false)
+      .setPositiveButton("我知道了",{onClick=function() activity.finish() end})
+      .show()
     end
   end)
 
