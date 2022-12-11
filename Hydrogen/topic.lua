@@ -222,12 +222,50 @@ function 精华刷新(pager,url)
 
            elseif v.target.type=="zvideo" then
             title=v.target.title
-            id="视频分割"..v.target.video.playlist.sd.url
+            xpcall(function()
+              videourl=v.target.video.playlist.sd.url
+              end,function()
+              videourl=v.target.video.playlist.ld.url
+              end,function()
+              videourl=v.target.video.playlist.hd.url
+            end)
+            id="视频分割"..videourl
           end
 
           local voteup_count=tointeger(v.target.voteup_count)
           local comment_count=tointeger(v.target.comment_count)
           best_list.Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
+         elseif v.target.type=="topic_sticky_module" then
+          if v.target.data then
+
+            for q,w in ipairs(v.target.data) do
+              local voteup_count=tointeger(w.target.voteup_count)
+              local comment_count=tointeger(w.target.comment_count)
+              if w.target.type=="answer" then
+                title=w.target.question.title
+                id=tointeger(w.target.question.id or 1).."分割"..tointeger(w.target.id)
+               elseif w.target.type=="article" then
+                title=w.target.title
+                id="文章分割"..tointeger(w.target.id)
+
+               elseif w.target.type=="zvideo" then
+                xpcall(function()
+                  videourl=w.target.video.playlist.sd.url
+                  end,function()
+                  videourl=w.target.video.playlist.ld.url
+                  end,function()
+                  videourl=w.target.video.playlist.hd.url
+                end)
+                title=w.target.title
+                id="视频分割"..videourl
+               elseif w.target.type=="question" then
+                title=w.target.title
+                voteup_count=tointeger(w.target.answer_count)
+                id="问题分割"..tointeger(w.target.id)
+              end
+              best_list.Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
+            end
+          end
         end
       end
 
@@ -421,9 +459,11 @@ best_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       activity.newActivity("column",{tostring(v.Tag.best_id.Text):match("文章分割(.+)"),tostring(v.Tag.best_id.Text):match("分割(.+)")})
      elseif tostring(v.Tag.best_id.text):find("视频分割") then
       activity.newActivity("huida",{tostring(v.Tag.best_id.Text):match("视频分割(.+)")})
+     elseif tostring(v.Tag.best_id.text):find("问题分割") then
+      activity.newActivity("question",{tostring(v.Tag.best_id.Text):match("问题分割(.+)")})
      else
 
-      保存历史记录(v.Tag.all_title.Text,v.Tag.all_id.Text,50)
+      保存历史记录(v.Tag.best_title.Text,v.Tag.best_id.Text,50)
 
       if open=="false" then
 

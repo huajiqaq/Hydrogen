@@ -14,14 +14,15 @@ activity.setContentView(loadlayout("layout/home"))
 
 初始化历史记录数据(true)
 
---[[local function videoanswer ()
-  activity.setSharedData("加载回答中存在的视频(beta)","true")
-  双按钮对话框("提示","软件默认开启「加载回答中存在的视频(beta)」 你可以在设置中手动设置此开关","我知道了","跳转设置",function()
+local function firsttip ()
+  activity.setSharedData("禁用缓存","true")
+  双按钮对话框("提示","软件默认开启「禁用缓存」你可以在设置中手动设置此开关","我知道了","跳转设置",function()
   关闭对话框(an) end,function()
     关闭对话框(an) 跳转页面("settings")
   end)
 end
-]]
+
+
 local ccc=activity.getSharedData("第一次提示")
 if ccc ==nil then
   双按钮对话框("注意","该软件仅供交流学习，严禁用于商业用途，请于下载后的24小时内卸载","登录","知道了",function()
@@ -31,16 +32,16 @@ if ccc ==nil then
     end,function()
     activity.setSharedData("第一次提示","x")
     关闭对话框(an)
-    videoanswer ()
+    firsttip ()
   end)
 end
 
-local kkk=activity.getSharedData("加载回答中存在的视频(beta)")
---[[if kkk==nil and ccc~=nil then
-  videoanswer ()
-end]]
+local lll=activity.getSharedData("禁用缓存")
+if lll==nil and ccc~=nil then
+  firsttip ()
+end
 
-if ccc and kkk and activity.getSharedData("开源提示")==nil then
+if ccc and lll and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
   双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function()
   关闭对话框(an) end,function()
@@ -527,7 +528,7 @@ end
 
 
 --设置波纹（部分机型不显示，因为不支持setColor）（19 6-6发现及修复因为不支持setColor而导致的报错问题)
-波纹({_menu,_more,_search,page1,page2,page3,page5,page4},"圆主题")
+波纹({_menu,_more,_search,_ask,page1,page2,page3,page5,page4},"圆主题")
 波纹({open_source},"方主题")
 波纹({侧滑头},"方自适应")
 波纹({注销},"圆自适应")
@@ -745,7 +746,6 @@ itemc2=
 
 --创建table
 requrl={}
-
 function 主页刷新(hometype)
 
   if activity.getSharedData("signdata")~=nil then
@@ -805,7 +805,7 @@ function 主页刷新(hometype)
   end
 
   function 随机推荐 ()
-    local posturl = requrl[-1] or "https://api.zhihu.com/feeds"
+    local posturl = requrl[-1] or "https://api.zhihu.com/topstory?action=down"--"https://api.zhihu.com/feeds"
     local head = {
       ["cookie"] = 获取Cookie("https://www.zhihu.com/")
     }
@@ -1934,12 +1934,11 @@ moments_nextUrl=""
 
 moments_isend=false
 
-
 function 关注刷新(ppage,url)
-  local posturl = url or "https://www.zhihu.com/api/v3/moments?limit=20"
-
+  -- origin15.19 更改
+  local posturl = url or "https://www.zhihu.com/api/v3/moments?limit=10"
   local head = {
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/"),
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
   }
 
   if ppage<2 then
@@ -2157,21 +2156,23 @@ function onCreate()
       if intent:find "answers" then
         local id=intent:match("answers/(.-)?")
         get:getAnswer(id,function(s)
-          activity.newActivity("answer",{tointeger(s.question.id),tointeger(id)})
+          activity.newActivity("answer",{tointeger(s.question.id),tointeger(id),nil,true})
         end)
        elseif intent:find "answer" then
         local id=intent:match("answer/(.-)/") or intent:match("answer/(.+)")
         get:getAnswer(id,function(s)
-          activity.newActivity("answer",{tointeger(s.question.id),tointeger(id)})
+          activity.newActivity("answer",{tointeger(s.question.id),tointeger(id),nil,true})
         end)
        elseif intent:find "questions" then
-        activity.newActivity("question",{intent:match("questions/(.-)?")})
+        activity.newActivity("question",{intent:match("questions/(.-)?"),true})
        elseif intent:find "question" then
-        activity.newActivity("question",{intent:match("question/(.-)?")})
+        activity.newActivity("question",{intent:match("question/(.-)?"),true})
        elseif intent:find "articles" then
         activity.newActivity("column",{intent:match("articles/(.-)?")})
        elseif intent:find "article" then
         activity.newActivity("column",{intent:match("article/(.-)?")})
+       elseif intent:find "pin" then
+        activity.newActivity("column",{intent:match("pin/(.-)?"),"想法"})
        else
         提示("暂不支持的知乎意图"..intent)
       end
