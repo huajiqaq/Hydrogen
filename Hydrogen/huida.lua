@@ -19,13 +19,8 @@ if docode~=nil then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
   -- else
  elseif liulanurl:match("zhihu") then
-  if liulanurl:match("search") then
-    _title.text="搜索"
-    return true
-   else
     liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")--设置UA
   end
-end
 
 liulan.removeView(liulan.getChildAt(0))
 
@@ -302,7 +297,7 @@ if activity.getSharedData("禁用缓存")=="true"
   .getSettings()
   .setAppCacheEnabled(false)
   --//开启 DOM 存储功能
-  .setDomStorageEnabled(false)
+  .setDomStorageEnabled(true)
   --        //开启 数据库 存储功能
   .setDatabaseEnabled(false)
   .setCacheMode(WebSettings.LOAD_NO_CACHE);
