@@ -56,7 +56,7 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
       LinearLayout;
       layout_width="-2";
       layout_height="-2";
-      background=backroundc,
+ --     background=backroundc,
       onClick=function(v)
         onClick(v)
       end,
@@ -66,7 +66,7 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
         orientation="vertical";
         padding="9dp";
         layout_height="-1";
-        background=backroundc,
+ --       background=backroundc,
         {
           CardView;
           CardBackgroundColor=转0x(primaryc)-0xdf000000,
@@ -77,7 +77,7 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
             layout_width="-2";
             layout_height="-2";
             padding="6dp",
-            background=backroundc,
+   --         background=backroundc,
             paddingLeft="10dp",
             paddingRight="10dp",
 
@@ -101,8 +101,62 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
       }
     }
     self.ids.add.addView(loadlayout(layout2,self.ids))
-    波纹({self.ids.add.getChildAt(self.ids.add.getChildCount()-1).getChildAt(0).getChildAt(0).getChildAt(0)},"圆主题") end
+    波纹({self.ids.add.getChildAt(self.ids.add.getChildCount()-1).getChildAt(0).getChildAt(0).getChildAt(0)},"圆主题")
+end
+  if self.ids.type==3 then
+    local layout2= {
+      LinearLayout;
+      layout_width="-2";
+      layout_height="-2";
+ --     background=backroundc,
+      onClick=function(v)
+      self:showTab(index)
+        onClick(v)
+      end,
+      {
+        LinearLayout;
+        layout_width="-1";
+        orientation="vertical";
+        padding="9dp";
+        layout_height="-1";
+ --       background=backroundc,
+        {
+          CardView;     
+          elevation="0";
+          radius="4%w";
+          {
+            LinearLayout;
+            layout_width="-2";
+            layout_height="-2";
+            padding="6dp",
+   --         background=backroundc,
+            paddingLeft="10dp",
+            paddingRight="10dp",
 
+            orientation="vertical";
+            {
+              TextView;
+              layout_width="-1";
+              layout_height="-1";
+
+              textSize="13sp",
+              Typeface=字体("product");
+              
+              gravity="center";
+              text=text;
+            };
+          };
+        };
+
+
+
+      }
+    }
+    self.ids.add.addView(loadlayout(layout2,self.ids))
+    self.ids.showindex=#self.indexTab+1--更新指示table位置
+    self.indexTab[#self.indexTab+1]=#self.indexTab+1--更新 ？(cao 我忘了)
+    波纹({self.ids.add.getChildAt(self.ids.add.getChildCount()-1).getChildAt(0).getChildAt(0).getChildAt(0)},"圆主题")
+    end
   if self.ids.type==nil then--如果type是1
     local layout=
 
@@ -230,6 +284,26 @@ end
 function tab:showTab(index)--显示table参数 仅当type==1生效
   if self.ids.type==2 then
     return
+  end
+  if self.ids.type==3 then
+  
+  pcall(function()
+    for i=0, self.ids.add.getChildCount()-1 do--遍历全部控件
+      local view= self.ids.add.getChildAt(i)--取得控件
+      local cardv=view.getChildAt(0).getChildAt(0)
+      local textv=view.getChildAt(0).getChildAt(0).getChildAt(0).getChildAt(0)
+      if i+1==index then--是否位指示table
+        cardv.CardBackgroundColor=转0x(primaryc)-0xdf000000
+        textv.textColor=转0x(primaryc)
+        --指示器动画 和显示 索引更新
+       else
+       
+        cardv.CardBackgroundColor=转0x("#FFFAFAFA")
+        textv.textColor=Color.GRAY
+      end
+    end
+  end)
+    return self
   end
   --TODO 后期可以改良
   pcall(function()

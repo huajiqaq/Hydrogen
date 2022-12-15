@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.0
+versionCode=16.01
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -1264,12 +1264,59 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/pin/") then
     if b then return true end
     activity.newActivity("column",{url:match("/pin/(.+)"),"想法"})
-   elseif url:find("zhuanlan.zhihu.com/p/") then
+   elseif url:find("zhihu.com/zvideo/") then
     if b then return true end
-    activity.newActivity("column",{url:match("/p/(.+)"),nil})
+    local videoid=url:match("/zvideo/(.-)?") or url:match("/zvideo/(.+)")
+    activity.newActivity("column",{videoid,"视频"})
    else
     if b then return false end
     activity.newActivity("huida",{url})
+  end
+end
+
+function 检查意图(url,b)
+  local get=require "model.answer"
+  local open=activity.getSharedData("内部浏览器查看回答")
+
+  local get=require "model.answer"
+  if url and url:find("zhihu://") then
+    if url:find "answers" then
+      if b then return true end
+      local id=url:match("answers/(.-)?")
+      get:getAnswer(id,function(s)
+        activity.newActivity("answer",{tointeger(s.question.id),tointeger(id),nil,true})
+      end)
+     elseif url:find "answer" then
+      if b then return true end
+      local id=url:match("answer/(.-)/") or url:match("answer/(.+)")
+      get:getAnswer(id,function(s)
+        activity.newActivity("answer",{tointeger(s.question.id),tointeger(id),nil,true})
+      end)
+     elseif url:find "questions" then
+      if b then return true end
+      activity.newActivity("question",{url:match("questions/(.-)?"),true})
+     elseif url:find "question" then
+      if b then return true end
+      activity.newActivity("question",{url:match("question/(.-)?"),true})
+     elseif url:find "articles" then
+      if b then return true end
+      activity.newActivity("column",{url:match("articles/(.-)?")})
+     elseif url:find "article" then
+      if b then return true end
+      activity.newActivity("column",{url:match("article/(.-)?")})
+     elseif url:find "pin" then
+      if b then return true end
+      activity.newActivity("column",{url:match("pin/(.-)?"),"想法"})
+     elseif url:find "zvideo" then
+      if b then return true end
+      activity.newActivity("column",{url:match("zvideo/(.-)?"),"视频"})
+     else
+      if b then return false end
+      提示("暂不支持的知乎意图"..intent)
+    end
+   elseif url and (url:find("http://") or url:find("https://")) and url:find("zhihu.com") then
+    local myurl="https"..url:match("https(.+)")
+    检查链接(myurl)
   end
 end
 
@@ -2500,4 +2547,59 @@ function CircleButton(view,InsideColor,radiu)
   --可通过 GradientDrawable 的其他方法实现其他效果
   pcall(function() view.setBackgroundDrawable(drawable) end)
   return drawable
+end
+
+StringHelper = {}
+
+--[[
+utf-8编码规则
+单字节 - 0起头
+   1字节  0xxxxxxx   0 - 127
+多字节 - 第一个字节n个1加1个0起头
+   2 字节 110xxxxx   192 - 223
+   3 字节 1110xxxx   224 - 239
+   4 字节 11110xxx   240 - 247
+可能有1-4个字节
+--]]
+function StringHelper.GetBytes(char)
+  if not char then
+    return 0
+  end
+  local code = string.byte(char)
+  if code < 127 then
+    return 1
+   elseif code <= 223 then
+    return 2
+   elseif code <= 239 then
+    return 3
+   elseif code <= 247 then
+    return 4
+   else
+    -- 讲道理不会走到这里^_^
+    return 0
+  end
+end
+
+function StringHelper.Sub(str, startIndex, endIndex)
+  local tempStr = str
+  local byteStart = 1 -- string.sub截取的开始位置
+  local byteEnd = -1 -- string.sub截取的结束位置
+  local index = 0 -- 字符记数
+  local bytes = 0 -- 字符的字节记数
+
+  startIndex = math.max(startIndex, 1)
+  endIndex = endIndex or -1
+  while string.len(tempStr) > 0 do
+    if index == startIndex - 1 then
+      byteStart = bytes+1;
+     elseif index == endIndex then
+      byteEnd = bytes;
+      break
+    end
+    bytes = bytes + StringHelper.GetBytes(tempStr)
+    tempStr = string.sub(str, bytes+1)
+
+    index = index + 1
+  end
+  return string.sub(str, byteStart, byteEnd)
 end

@@ -18,9 +18,9 @@ liulan.loadUrl(liulanurl)
 if docode~=nil then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
   -- else
- elseif liulanurl:match("zhihu") then
-    liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")--设置UA
-  end
+ elseif liulanurl:match("zhihu") and not liulanurl:match("zvideo") then
+  liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")--设置UA
+end
 
 liulan.removeView(liulan.getChildAt(0))
 
@@ -121,23 +121,28 @@ liulan.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)--回调参数，v控件，url网址
     local res=false
     if url:sub(1,4)~="http" then
-      双按钮对话框("提示","是否用第三方软件打开本链接？","是","否",
-      function()
-        xpcall(function()
-          intent=Intent("android.intent.action.VIEW")
-          intent.setData(Uri.parse(url))
-          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP)
-          this.startActivity(intent)
-          an.dismiss()
+      if 检查意图(url,true) then
+        检查意图(url)
+        activity.finish()
+       else
+        双按钮对话框("提示","是否用第三方软件打开本链接？","是","否",
+        function()
+          xpcall(function()
+            intent=Intent("android.intent.action.VIEW")
+            intent.setData(Uri.parse(url))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            this.startActivity(intent)
+            an.dismiss()
+          end,
+          function(v)
+            提示("尝试打开第三方app出错")
+            an.dismiss()
+          end)
         end,
-        function(v)
-          提示("尝试打开第三方app出错")
+        function()
           an.dismiss()
         end)
-      end,
-      function()
-        an.dismiss()
-      end)
+      end
      else
       检查链接(url)
       --      if ischeck==nil then 检查链接(url) else return false end

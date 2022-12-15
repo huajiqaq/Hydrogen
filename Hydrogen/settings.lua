@@ -48,6 +48,7 @@ data={
       },
       wrapSelectorWheel=false,
     }},
+   {__type=3,subtitle="主页设置",image=图标("")},
 }
 
 
@@ -67,7 +68,37 @@ tab={ --点击table
   end,
   字体大小=function()
     activity.setResult(1200,nil)
-  end
+  end,
+主页设置=function()
+if this.getSharedData("starthome")=="推荐" then
+starnum=0
+elseif this.getSharedData("starthome")=="想法" then
+starnum=1
+elseif this.getSharedData("starthome")=="热榜" then
+starnum=2
+elseif this.getSharedData("starthome")=="关注" then
+starnum=3
+end
+          AlertDialog.Builder(this)
+          .setTitle("请选择默认主页")
+          .setSingleChoiceItems({"推荐","想法","热榜","关注"}, starnum,{onClick=function(v,p)
+              if p==0 then
+                starthome="推荐"
+              end
+              if p==1 then
+                starthome ="想法"
+              end
+                            if p==2 then
+                starthome ="热榜"
+              end
+                            if p==3 then
+                starthome ="关注"
+              end
+          end})
+          .setPositiveButton("确定", {onClick=function() if starthome==nil then starthome="推荐" end this.setSharedData("starthome",starthome) starthome=nil 提示("下次启动App生效") end})
+          .setNegativeButton("取消",nil)
+          .show();
+end
 }
   ]]
     activity.newActivity("settings",{执行代码})

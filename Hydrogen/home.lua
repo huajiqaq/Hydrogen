@@ -6,6 +6,8 @@ import "java.lang.Runnable"
 import "com.michael.NoScrollListView"
 import "com.michael.NoScrollGridView"
 import "android.widget.ImageView$ScaleType"
+import "com.lua.custrecycleradapter.*"
+import "androidx.recyclerview.widget.*"
 
 
 activity.setContentView(loadlayout("layout/home"))
@@ -366,6 +368,13 @@ function closeD(id)--主页底栏项目灰色动画
   ganimatorSet.start();
 end
 
+home_list={["推荐"]=0,["想法"]=1,["热榜"]=2,["关注"]=3}
+local starthome=this.getSharedData("starthome")
+if not starthome then
+  this.setSharedData("starthome","推荐")
+end
+
+page_home_p.setCurrentItem(home_list[starthome],false)
 page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
   onPageScrolled=function(a,b,c)
   end,
@@ -375,6 +384,7 @@ page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
     local c1=c
     local c2=c
     local c3=c
+    local c4=c
     if v==0 then
       Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
         if code==200 then
@@ -400,16 +410,31 @@ page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
       end)
       c1=x
       _title.setText("Hydrogen")
+
       showD(page1)
       closeD(page2)
       closeD(page3)
+      closeD(pagetest)
+
     end
+
     if v==1 then
-      _title.setText("热榜")
+      _title.setText("想法")
       c2=x
-      if q==2 then
+
+      想法刷新()
+
+      showD(pagetest)
+      closeD(page1)
+      closeD(page2)
+      closeD(page3)
+    end
+    if v==2 then
+      _title.setText("热榜")
+      c3=x
+      if q==3 then
        else
-        q=2
+        q=3
         task(5,function()
           opentab={}
           hotdata=hot:new()
@@ -436,16 +461,19 @@ page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
           end)
         end)
       end
+
       showD(page2)
       closeD(page1)
       closeD(page3)
+      closeD(pagetest)
+
     end
-    if v==2 then
-      c3=x
+    if v==3 then
+      c4=x
       _title.setText("关注")
-      if t==3 then
+      if t==4 then
        else
-        t=3
+        t=4
         关注刷新(1)
 
         isadd=true
@@ -509,18 +537,26 @@ page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
 
 
       end
+
       showD(page3)
       closeD(page1)
       closeD(page2)
+      closeD(pagetest)
+
     end
     page1.getChildAt(0).setColorFilter(转0x(c1))
-    page2.getChildAt(0).setColorFilter(转0x(c2))
-    page3.getChildAt(0).setColorFilter(转0x(c3))
+    pagetest.getChildAt(0).setColorFilter(转0x(c2))
+    page2.getChildAt(0).setColorFilter(转0x(c3))
+    page3.getChildAt(0).setColorFilter(转0x(c4))
     page1.getChildAt(1).setTextColor(转0x(c1))
-    page2.getChildAt(1).setTextColor(转0x(c2))
-    page3.getChildAt(1).setTextColor(转0x(c3))
+    pagetest.getChildAt(1).setTextColor(转0x(c2))
+    page2.getChildAt(1).setTextColor(转0x(c3))
+    page3.getChildAt(1).setTextColor(转0x(c4))
   end
 })
+
+
+
 function 切换页面(z)--切换主页Page函数
   page_home_p.showPage(z)
 end
@@ -528,7 +564,7 @@ end
 
 
 --设置波纹（部分机型不显示，因为不支持setColor）（19 6-6发现及修复因为不支持setColor而导致的报错问题)
-波纹({_menu,_more,_search,_ask,page1,page2,page3,page5,page4},"圆主题")
+波纹({_menu,_more,_search,_ask,page1,page2,page3,page5,page4,pagetest},"圆主题")
 波纹({open_source},"方主题")
 波纹({侧滑头},"方自适应")
 波纹({注销},"圆自适应")
@@ -1118,7 +1154,6 @@ import "com.bumptech.glide.Glide"
 热榜adp=MyLuaAdapter(activity,itemc)
 
 list3.adapter=热榜adp
-
 
 function 热榜刷新(t)
   pcall(function()热榜adp.clear()end)
@@ -1722,6 +1757,175 @@ function changepage(z)
   page.showPage(z)
 end
 
+itemcc={
+  LinearLayout,
+  BackgroundColor=backgroundc;
+  layout_width="-2",
+  padding="20",
+  id="it",
+  {
+    CardView;
+    layout_margin="16dp";
+    layout_marginTop="8dp";
+    layout_marginBottom="8dp";
+    layout_gravity='center';
+    Elevation='0';
+    layout_width='-1';
+    radius='8dp';
+    CardBackgroundColor=cardedge,
+    {
+      CardView;
+      CardElevation="0dp";
+      CardBackgroundColor=backgroundc;
+      Radius=dp2px(8)-2;
+      layout_margin="2px";
+      layout_width="-1";
+      {
+        LinearLayout,
+        layout_width="-1",
+        orientation="vertical",
+        Gravity="center",
+        {
+          ImageView;
+          layout_width="-1",
+          id="img",
+        };
+        {
+          TextView,
+          paddingTop="20",
+          Gravity="center",
+          textColor=textc;
+          textSize="14sp";
+          Typeface=字体("product-Bold");
+          id="tv",
+        },
+      },
+    },
+  },
+}
+
+mytab={}
+
+adapter=LuaCustRecyclerAdapter(AdapterCreator({
+
+  getItemCount=function()
+    return #mytab
+  end,
+
+  getItemViewType=function(position)
+    return 0
+  end,
+
+  onCreateViewHolder=function(parent,viewType)
+    local views={}
+    holder=LuaCustRecyclerHolder(loadlayout(itemcc,views))
+    holder.view.setTag(views)
+    return holder
+  end,
+
+  onBindViewHolder=function(holder,position)
+    view=holder.view.getTag()
+
+    url=mytab[position+1].url
+    layoutParams=view.img.getLayoutParams()
+    import "android.util.DisplayMetrics"
+    dm=DisplayMetrics()
+    activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+    hj=loadbitmap(url)
+    wtt=hj.getWidth()
+    kkk=dm.widthPixels-80
+    ooo=kkk/2
+    koo=ooo/wtt
+    layoutParams.width=ooo
+    layoutParams.height=hj.getHeight()*koo
+
+
+    view.img.setImageBitmap(hj)
+    view.img.setLayoutParams(layoutParams)
+
+    --使用glide加载图片(加载贼流畅)
+
+    view.tv.Text=StringHelper.Sub(mytab[position+1].title,1,20).."....."
+
+
+    --子项目点击事件
+    view.it.onClick=function(v)
+      activity.newActivity("column",{mytab[position+1].tzurl,"想法"})
+      return true
+    end
+
+  end,
+}))
+
+thinksr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+thinksr.setColorSchemeColors({转0x(primaryc)});
+thinksr.setOnRefreshListener({
+  onRefresh=function()
+    想法刷新("clear")
+    Handler().postDelayed(Runnable({
+      run=function()
+        thinksr.setRefreshing(false);
+      end,
+    }),1000)
+
+  end,
+});
+
+
+
+recy.addOnScrollListener(RecyclerView.OnScrollListener {
+  function onScrollStateChanged( recyclerView, newState)
+
+  end,
+
+  function onScrolled(recyclerView,dx,dy)
+
+    lastChildView = recyclerView.getLayoutManager().getChildAt(recyclerView.getLayoutManager().getChildCount()-1);
+
+    lastChildBottom = lastChildView.getBottom();
+
+    recyclerBottom = recyclerView.getBottom()-recyclerView.getPaddingBottom();
+
+    lastPosition = recyclerView.getLayoutManager().getPosition(lastChildView);
+
+
+    if lastChildBottom == recyclerBottom and lastPosition == recyclerView.getLayoutManager().getItemCount()-1
+      想法刷新()
+    end
+  end
+
+});
+
+function 想法刷新(isclear)
+  if isclear=="clear" or #mytab<2 then
+    mytab={}
+    recy.setAdapter(adapter)
+    recy.setLayoutManager(StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL))
+    thisurl=nil
+  end
+  local geturl=thisurl or "https://api.zhihu.com/prague/feed?offset=0&limit=10"
+  Http.get(geturl,head,function(code,content)
+    if code==200 then--判断网站状态
+      thisurl=require "cjson".decode(content).paging.next
+      for i,v in ipairs(require "cjson".decode(content).data) do
+        local url=v.target.images[1].url
+        local title=v.target.excerpt
+        local tzurl=v.target.url:match("pin/(.-)?")
+        table.insert(mytab,{url=url,title=title,tzurl=tzurl})
+        adapter.notifyDataSetChanged()
+      end
+
+
+
+     else
+      --        提示("获取回答失败 "..content)
+    end
+  end)
+
+end
+
+
+
 
 csr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
 csr.setColorSchemeColors({转0x(primaryc)});
@@ -2091,7 +2295,7 @@ Http.get(update_api,function(code,content)
       .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
       .setCancelable(false)
       .setPositiveButton("立即更新",nil)
-      .setNeutralButton("暂不更新",function() activity.setSharedData("version",updateversioncode) end)
+      .setNeutralButton("暂不更新",{onClick=function() activity.setSharedData("version",updateversioncode) end})
       .show()
       myupdatedialog.create()
       myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
@@ -2151,33 +2355,6 @@ data=...
 function onCreate()
   if data then
     local intent=tostring(data.getData())
-    local get=require "model.answer"
-    if intent:find("zhihu://") then
-      if intent:find "answers" then
-        local id=intent:match("answers/(.-)?")
-        get:getAnswer(id,function(s)
-          activity.newActivity("answer",{tointeger(s.question.id),tointeger(id),nil,true})
-        end)
-       elseif intent:find "answer" then
-        local id=intent:match("answer/(.-)/") or intent:match("answer/(.+)")
-        get:getAnswer(id,function(s)
-          activity.newActivity("answer",{tointeger(s.question.id),tointeger(id),nil,true})
-        end)
-       elseif intent:find "questions" then
-        activity.newActivity("question",{intent:match("questions/(.-)?"),true})
-       elseif intent:find "question" then
-        activity.newActivity("question",{intent:match("question/(.-)?"),true})
-       elseif intent:find "articles" then
-        activity.newActivity("column",{intent:match("articles/(.-)?")})
-       elseif intent:find "article" then
-        activity.newActivity("column",{intent:match("article/(.-)?")})
-       elseif intent:find "pin" then
-        activity.newActivity("column",{intent:match("pin/(.-)?"),"想法"})
-       else
-        提示("暂不支持的知乎意图"..intent)
-      end
-     elseif (intent:find("http://") or intent:find("https://")) and intent:find("zhihu.com") then
-      检查链接(intent)
-    end
+    检查意图(inent)
   end
 end

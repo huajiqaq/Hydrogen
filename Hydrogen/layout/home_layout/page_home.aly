@@ -47,6 +47,31 @@
           };
         }
       };
+      {
+        LinearLayout,
+        Orientation=1,
+        layout_height="fill",
+        layout_width="fill",
+        {
+          SwipeRefreshLayout;
+          id="thinksr",
+          layout_height="fill",
+          layout_width="fill",
+          {
+            LinearLayout;
+            layout_height="fill",
+            layout_width="fill",
+            orientation="vertical";
+            {
+              RecyclerView,
+              layout_height="fill",
+              layout_width="fill",
+              id="recy",
+            },
+
+          };
+        };
+      };
 
       {
         LinearLayout;
@@ -140,6 +165,31 @@
       };
     };
     {
+      LinearLayout;--底栏-想法
+      orientation="vertical";
+      layout_height="-1";
+      layout_width="-1";
+      id="pagetest";
+      gravity="center";
+      layout_weight="1";
+      onClick=function()切换页面(1)end;
+      {
+        ImageView;
+        layout_height="24dp";
+        layout_width="24dp";
+        src=图标("bubble_chart");
+        ColorFilter=stextc;
+        PivotX="12dp";
+        PivotY="24dp";
+      };
+      {
+        TextView;
+        textSize="14sp";
+        Text="想法";
+        textColor=stextc;
+      };
+    };
+    {
       LinearLayout;--底栏-热榜
       orientation="vertical";
       layout_height="-1";
@@ -147,7 +197,7 @@
       id="page2";
       gravity="center";
       layout_weight="1";
-      onClick=function()切换页面(1)end;
+      onClick=function()切换页面(2)end;
       {
         ImageView;
         layout_height="24dp";
@@ -172,7 +222,7 @@
       id="page3";
       gravity="center";
       layout_weight="1";
-      onClick=function()切换页面(2)end;
+      onClick=function()切换页面(3)end;
       {
         ImageView;
         layout_height="24dp";

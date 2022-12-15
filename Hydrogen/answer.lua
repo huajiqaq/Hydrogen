@@ -19,9 +19,8 @@ import "android.graphics.PathMeasure"
 activity.setContentView(loadlayout("layout/answer"))
 
 
-波纹({fh,_more,mark,comment},"圆主题")
+波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 波纹({all_root},"方自适应")
-
 
 
 import "model.question"
@@ -121,9 +120,10 @@ function 数据添加(t,b)
   end
 
 
-
   if b.author.name=="知乎用户" then
-    Http.get("https://api.zhihu.com/people/"..b.author.id,head,function(code,content)
+    Http.get("https://api.zhihu.com/people/"..b.author.id,{
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
+      },function(code,content)
       if code==200 then
         local data=require "cjson".decode(content)
         t.userheadline.Text=data.headline
@@ -216,15 +216,15 @@ function 数据添加(t,b)
     .setDatabaseEnabled(true)
   end
 
-  if 回答id ==nil then
-    回答id=tointeger(b.id)
-  end
 
-if 是否记录历史记录 and not(已记录) then
-初始化历史记录数据(true)
-保存历史记录(_title.Text,问题id.."分割"..回答id,50)
-已记录=true
-end
+  回答id=tointeger(b.id)
+  点击感谢状态=b.relationship.is_thanked
+
+  if 是否记录历史记录 and not(已记录) then
+    初始化历史记录数据(true)
+    保存历史记录(_title.Text,问题id.."分割"..回答id,50)
+    已记录=true
+  end
 
   t.content.removeView(t.content.getChildAt(0))
   --t.content.setbackground(0x01000000)
@@ -288,22 +288,22 @@ end
 	waitForKeyElements(' [class="AnswerReward"]', yh);
    ]])
 
---      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
+      --      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
       if b.editable_content:find("video%-link") then
-          Http.get("https://www.zhihu.com/api/v4/me",{
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    },function(code,content)
-       if code==401 then
-              AlertDialog.Builder(this)
-        .setTitle("提示")
-        .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
-        .setCancelable(false)
-        .setPositiveButton("我知道了",nil)
-        .show()
-        end
-        return
-     end)
-      加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
+        Http.get("https://www.zhihu.com/api/v4/me",{
+          ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+          },function(code,content)
+          if code==401 then
+            AlertDialog.Builder(this)
+            .setTitle("提示")
+            .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
+            .setCancelable(false)
+            .setPositiveButton("我知道了",nil)
+            .show()
+          end
+          return
+        end)
+        加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
         加载js(view,[[
   function setvideo () {
     if (document.getElementsByClassName("video-box").length>0 && typeof(document.getElementsByClassName("video-box")[0].href)!="undefined") {
@@ -341,16 +341,16 @@ end
 }
 waitForKeyElements(' [class="video-box"]', setvideo);
 ]])
-elseif b.attachment then
-                        xpcall(function()
+       elseif b.attachment then
+        xpcall(function()
           视频链接=b.attachment.video.video_info.playlist.sd.url
           end,function()
           视频链接=b.attachment.video.video_info.playlist.ld.url
           end,function()
           视频链接=b.attachment.video.video_info.playlist.hd.url
         end)
-        
-                   加载js(view,[[
+
+        加载js(view,[[
   function setmyvideo() {
 var videotext=document.createElement('div')
 videotext.className="ExtraInfo"
@@ -362,12 +362,12 @@ videourl.innerHTML='<video style="margin: auto;width: 100%;"]].." src=" ..视频
 document.getElementsByClassName("RichText ztext")[0].insertBefore(videourl,document.getElementsByClassName("RichText ztext")[0].firstChild);
 }
 waitForKeyElements(' [class="RichText ztext"]', setmyvideo);
-]])      
-        
-end
-        
-       
-  --    end
+]])
+
+      end
+
+
+      --    end
       if 全局主题值=="Night" then
         加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
       end
@@ -512,7 +512,6 @@ end
 
 
 --
-
 
 
 
@@ -720,8 +719,65 @@ function onDestroy()
   end
 end
 
-local click=0
 
+local voted={}
+local unvoted={}
+voteup.onClick=function()
+  if not voted[回答id] then
+    voted[回答id]=tostring(tointeger(vote_count.text+1))
+    unvoted[回答id]=tostring(tointeger(vote_count.text))
+  end
+  local head={
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    ["Content-Type"] = "application/json"
+  }
+  Http.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"up"}',head,function(code,content)
+    if code==200 then
+      提示("点赞成功")
+      vote_count.text=voted[回答id]
+     elseif code==400
+      Http.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"neutral"}',head,function(code,content)
+        if code==200 then
+          提示("取消点赞成功")
+          vote_count.text=unvoted[回答id]
+        end
+      end)
+    end
+  end)
+end
+local thanked={}
+local unthanked={}
+thank.onClick=function()
+  if not thanked[回答id] then
+    thanked[回答id]=tostring(tointeger(thanks_count.text+1))
+    unthanked[回答id]=tostring(tointeger(thanks_count.text))
+  end
+  apiurl="https://www.zhihu.com/api/v4/zreaction"
+  head={
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    ["Content-Type"] = "application/json"
+  }
+  if not 点击感谢状态 then
+    Http.post(apiurl,'{"content_type":"answers","content_id":"'..回答id..'","action_type":"emojis","action_value":"red_heart"}',head,function(code,content)
+      if code==200 then
+        点击感谢状态=true
+        提示("表达感谢成功")
+        thanks_count.text=thanked[回答id]
+      end
+    end)
+   else
+    Http.delete(apiurl.."?content_type=answers&content_id="..回答id.."&action_type=emojis&action_value=",head,function(code,content)
+      if code==200 then
+        提示("取消感谢成功")
+        thanks_count.text=unthanked[回答id]
+        点击感谢状态=false
+      end
+    end)
+
+  end
+end
+
+local click=0
 mark.onClick=function()
   --[=[  if click==0 then
     click=1
@@ -863,11 +919,11 @@ a=MUKPopu({
   }
 })
 
-if activity.getSharedData("回答提示0.01")==nil
+if activity.getSharedData("回答提示0.02")==nil
   AlertDialog.Builder(this)
   .setTitle("小提示")
   .setCancelable(false)
-  .setMessage("如若想实现点赞 回复等操作 请点击右上角内置浏览器查看")
-  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.01","true") end})
+  .setMessage("在大于origin16.0版本已支持点赞 点击感谢按钮")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.02","true") end})
   .show()
 end

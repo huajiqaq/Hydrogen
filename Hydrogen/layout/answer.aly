@@ -115,11 +115,11 @@
     RelativeLayout,
     layout_width="-1",
     layout_height="-1",
-    id="llb",    
+    id="llb",
     gravity="bottom";
     {
       CardView;
-      elevation="6dp";     
+      elevation="6dp";
       {
         RelativeLayout,
         layout_width="fill",
@@ -177,6 +177,7 @@
               ImageView;
               layout_height="24dp";
               layout_width="24dp";
+              id="thank_icon";
               src=图标("favorite");
               ColorFilter=primaryc;
               PivotX="12dp";
