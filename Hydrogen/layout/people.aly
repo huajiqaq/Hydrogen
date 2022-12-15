@@ -184,13 +184,63 @@
               };
             };
           };
+
           {
-            NoScrollListView;
-            id="people_list";
-            DividerHeight=0;
-            layout_width="-1";
-            layout_height="-1";
-            layout_marginTop="-8dp",
+            MyTab
+            {
+              id="peotab",
+            },
+            contentDescription="关注标签",
+
+          };
+
+          {
+            LinearLayout;
+            layout_width="fill";
+            orientation="horizontal";
+            layout_height="fill";
+            {
+              TextView;
+              id="_num";
+            };
+            {
+              LinearLayout;
+              layout_gravity="end";
+              gravity="end";
+              layout_width="match_parent";
+              {
+                LinearLayout;
+                layout_gravity="center";
+                gravity="center";
+                id="_sort";
+                layout_width="wrap_content";
+                {
+                  TextView;
+                  id="_sortt";
+                  text="按时间排序";
+                };
+                {
+                  ImageView;
+                  src=图标("keyboard_arrow_down");
+                };
+
+              };
+
+            };
+          };
+          {
+            LinearLayout;
+            layout_width="fill";
+            orientation="horizontal";
+            layout_height="fill";
+            {
+              NoScrollListView;
+              id="people_list";
+              DividerHeight=0;
+              layout_width="-1";
+              layout_height="-1";
+              layout_marginTop="-8dp",
+            };
           };
         };
       };

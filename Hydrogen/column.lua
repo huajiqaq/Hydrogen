@@ -187,7 +187,17 @@ function 刷新()
     end)
     content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
     --对应api是https://www.zhihu.com/api/v4/pins/ID，或者https://api.zhihu.com/pins/ID，均可以取得内容，后续再做
-
+   elseif 类型=="视频" then
+    content.loadUrl("https://www.zhihu.com/zvideo/"..result.."?utm_id=0")
+    _title.Text="视频"
+    if activity.getSharedData("视频提示0.01")==nil
+      AlertDialog.Builder(this)
+      .setTitle("小提示")
+      .setCancelable(false)
+      .setMessage("你可点击右上角查看评论")
+      .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("视频提示0.01","true") end})
+      .show()
+    end
     -- 恢复白色()
   end
   --[[      if #url.title_image>0 then
@@ -311,7 +321,7 @@ if activity.getSharedData("禁用缓存")=="true"
   .setAppCacheEnabled(false)
   .setCacheMode(WebSettings.LOAD_NO_CACHE)
   --//开启 DOM 存储功能
-  .setDomStorageEnabled(false)
+  .setDomStorageEnabled(true)
   --        //开启 数据库 存储功能
   .setDatabaseEnabled(false)
  else
@@ -325,14 +335,6 @@ if activity.getSharedData("禁用缓存")=="true"
   .setDatabaseEnabled(true)
 end
 
-
-if 全局主题值=="Night" then
-
-
-
-  加载js(content,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-end
-
 content.setWebViewClient{
   onReceivedError=function(view,a,b)
 
@@ -340,18 +342,25 @@ content.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)
 
     if url~=("https://www.zhihu.com/appview/p/"..result) then
-
-      检查链接(url)
-      view.stopLoading()
-      view.goBack()
-      if 全局主题值=="Night" then
-        加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+      if url:sub(1,4)~="http" then
+        if 检查意图(url,true) then
+          检查意图(url)
+        end
+       else
+        检查链接(url)
+        view.stopLoading()
+        view.goBack()
       end
+
+      --      if 全局主题值=="Night" then
+      --        加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+      --      end
+
     end
   end,
   onPageStarted=function(view,url,favicon)
     --网页加载
-    if 全局主题值=="Night" then
+    if 全局主题值=="Night" and 类型~="想法" then
       加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
     end
 
@@ -415,13 +424,14 @@ content.setWebViewClient{
   onLoadResource=function(view,url)
     --网页加载完成
     --        print(backgroundc:sub(4,#backgroundc))
-    if 全局主题值=="Night" then
-      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-    end
+
+    --    if 全局主题值=="Night" then
+    --      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+    --    end
     content.evaluateJavascript([[(function(){
     var tags=document.getElementsByTagName("img");         
     for(var i=0;i<tags.length;i++) {
-        tags[i].onclick=function(){
+        tags[i].onclick=function(){       
          var tag=document.getElementsByTagName("img"); 
          var t={};     
          for(var z=0;z<tag.length;z++) {
@@ -445,7 +455,7 @@ content.setWebViewClient{
 --设置网页图片点击事件，
 local z=JsInterface{
   execute=function(b)
-    if b~=nil and #b>3 then
+    if b~=nil and #b>1 then
       activity.newActivity("image",{b})
     end
   end
@@ -575,6 +585,35 @@ if 类型=="文章" then
           提示("保存成功")
         end
       }
+    }
+  })
+ elseif 类型=="视频" then
+  a=MUKPopu({
+    tittle="视频",
+    list={
+      {
+        src=图标("refresh"),text="刷新",onClick=function()
+          if _title.Text=="加载失败" then
+            刷新()
+           else
+            content.reload()
+          end
+          提示("正在刷新中")
+        end
+      },
+
+      {
+        src=图标("chat_bubble"),text="查看评论",onClick=function()
+          activity.newActivity("comment",{result,"zvideos",nil,nil,tostring(comment_count)})
+
+        end
+      },
+      {
+        src=图标("explore"),text="收藏文件夹",onClick=function()
+          加入收藏夹(result,"zvideo")
+
+        end
+      },
     }
   })
 end

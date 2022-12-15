@@ -506,6 +506,13 @@ if collections_url=="local" then
       评论数=tointeger(tab.comment_count)..""
       标题="一个想法"
       id分割="想法分割"..tab.id
+     elseif tab.type=="zvideo" then
+
+      内容=tab.excerpt_title
+      点赞数=tointeger(tab.collection_count)..""
+      评论数=tointeger(tab.comment_count)..""
+      标题=tab.title
+      id分割="视频分割"..tab.id
      else
       id分割="其他分割"..tointeger(v.target.id)
       标题=tab.title
@@ -558,6 +565,8 @@ if collections_url=="local" then
         activity.newActivity("column",{tostring(v.Tag.cid.Text):match("文章分割(.+)")})
        elseif tostring(v.Tag.cid.text):find("想法分割") then
         activity.newActivity("column",{tostring(v.Tag.cid.Text):match("想法分割(.+)"),"想法"})
+       elseif tostring(v.Tag.cid.text):find("视频分割") then
+        activity.newActivity("column",{tostring(v.Tag.cid.Text):match("视频分割(.+)"),"视频"})
        else
         保存历史记录(v.Tag.catitle.Text,v.Tag.cid.Text,50)
         if open=="false" then
@@ -580,6 +589,8 @@ if collections_url=="local" then
           删除类型="article"
          elseif tostring(v.Tag.cid.text):find("想法分割") then
           删除类型="pin"
+         elseif tostring(v.Tag.cid.text):find("视频分割") then
+          删除类型="zvideo"
         end
         local head = {
           ["cookie"] = 获取Cookie("https://www.zhihu.com/")

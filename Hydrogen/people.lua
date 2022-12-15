@@ -233,16 +233,145 @@ end)
 
 end)
 
+local head = {
+  ["x-api-version"] = "3.0.89";
+  ["x-app-za"] = "OS=Android";
+  ["x-app-version"] = "8.44.0";
+  ["cookie"] = 获取Cookie("https://www.zhihu.com/")
+}
 
-function 刷新()
-  提示("加载中")
+chobu="all"
+
+function 全部()
+  _sort.setVisibility(8)
   base_people:next(function(r,a)
     if r==false and base_people.is_end==false then
       提示("获取个人动态列表出错 "..a)
       --  刷新()
+    end
+  end)
+end
+
+local myurl={}
+
+function 其他(isclear)
+  if chobu=="all" then
+    if isclear=="clear" then
+      base_people:clear()
+    end
+    return 全部()
+  end
+  if isclear=="clear" then
+    myurl[chobu]=nil
+  end
+  geturl=myurl[chobu] or "https://api.zhihu.com/people/"..people_id.."/"..chobu.."s?order_by=created&offset=0&limit=20"
+  _sort.setVisibility(8)
+  if chobu=="zvideo" then
+    geturl=myurl[chobu] or "https://api.zhihu.com/members/"..people_id.."/"..chobu.."s?order_by=created&offset=0&limit=20"
+   elseif chobu=="answer"
+    _sort.setVisibility(0)
+    if _sortt.text=="按赞数排序" then
+      geturl=myurl[chobu] or "https://api.zhihu.com/people/"..people_id.."/answers?order_by=votenum&offset=0&limit=20"
+    end
+  end
+
+  Http.get(geturl,head,function(code,content)
+    if code==200 then
+      if require "cjson".decode(content).paging.next then
+        testurl=require "cjson".decode(content).paging.next
+        if testurl:find("http://") then
+          testurl=string.gsub(testurl,"http://","https://",1)
+        end
+        myurl[chobu]=testurl
+      end
+      if require "cjson".decode(content).paging.is_end and isclear~="clear" then
+        提示("已经没有更多内容了")
+       else
+        提示("加载中")
+      end
+      for i,v in ipairs(require "cjson".decode(content).data) do
+        --  local 预览内容=v.excerpt_new
+        local 预览内容=v.excerpt
+        local 点赞数=tointeger(v.voteup_count)
+        local 评论数=tointeger(v.comment_count)
+        if v.type=="answer" then
+          活动="回答了问题"
+          问题id=tointeger(v.question.id or 1).."分割"..tointeger(v.id)
+          标题=v.question.title
+         elseif v.type=="topic" then
+          people_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.id,people_title=v.name,people_image=头像}
+          return
+         elseif v.type=="question" then
+          活动="发布了问题"
+          问题id=tointeger(v.id or 1).."问题分割"
+          标题=v.title
+         elseif v.type=="column" then
+          活动="发表了专栏"
+          问题id="专栏分割"..v.id.."专栏标题"..v.title
+          评论数=tointeger(v.items_count)
+          标题=v.title
+
+         elseif v.type=="collection" then
+          return
+         elseif v.type=="pin" then
+          活动="发布了想法"
+          标题=v.author.name.."发布了想法"
+          问题id="想法分割"..v.id
+          预览内容=v.content[1].content
+         elseif v.type=="zvideo" then
+          活动="发布了视频"
+          xpcall(function()
+            videourl=v.video.playlist.sd.url
+            end,function()
+            videourl=v.video.playlist.ld.url
+            end,function()
+            videourl=v.video.playlist.hd.url
+          end)
+          问题id="视频分割"..videourl
+          标题=v.title
+         else
+          活动="发表了文章"
+          问题id="文章分割"..tointeger(v.id)
+          标题=v.title
+        end
+        people_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+      end
+    end
+  end)
+end
+
+Http.get("https://api.zhihu.com/people/"..people_id.."/profile/tab",head,function(code,content)
+
+  if code==200 then
+    for i,v in ipairs(require "cjson".decode(content).tabs_v3[1].sub_tab) do
+      if v.name~="更多" then
+        if v.number>0 then
+          num=" "..tostring(tointeger(v.number))
+         else
+          num=""
+        end
+        peotab:addTab(v.name..num,function() pcall(function()people_list.adapter.clear()end) chobu=v.key 其他("clear") people_list.adapter.notifyDataSetChanged() end,3)
+      end
+      peotab:showTab(1)
+    end
+  end
+end)
+
+
+function 刷新()
+  --[[
+  base_people:next(function(r,a)
+    if r==false and base_people.is_end==false then
+      提示("获取个人动态列表出错 "..a)
+      
+      --  刷新()
+      
+
 
     end
   end)
+  ]]
+  其他()
 end
 
 刷新()
@@ -262,7 +391,32 @@ function bit.onScrollChange(a,b,j,y,u)
   end
 end
 
-
+function _sort.onClick(view)
+  if chobu=="answer" then
+    pop=PopupMenu(activity,view)
+    menu=pop.Menu
+    menu.add("按时间排序").onMenuItemClick=function(a)
+      if _sortt.text=="按时间排序" then
+        return
+      end
+      _sortt.text="按时间排序"
+      pcall(function()people_list.adapter.clear()end)
+      其他("clear")
+      people_list.adapter.notifyDataSetChanged()
+    end
+    menu.add("按赞数排序").onMenuItemClick=function(a)
+      if _sortt.text=="按赞数排序" then
+        return
+      end
+      _sortt.text="按赞数排序"
+      pcall(function()people_list.adapter.clear()end)
+      其他("clear")
+      people_list.adapter.notifyDataSetChanged()
+    end
+    pop.show()--显示
+   else
+  end
+end
 
 
 people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
@@ -276,6 +430,10 @@ people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       activity.newActivity("question",{tostring(v.Tag.people_question.Text):match("(.+)问题分割")})
      elseif tostring(v.Tag.people_question.text):find("想法分割") then
       activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("想法分割(.+)"),"想法"})
+     elseif tostring(v.Tag.people_question.Text):find("视频分割") then
+      activity.newActivity("huida",{tostring(v.Tag.people_question.Text):match("视频分割(.+)")})
+     elseif tostring(v.Tag.people_question.Text):find("专栏分割") then
+      activity.newActivity("people_column",{tostring(v.Tag.people_question.Text):match("专栏分割(.+)专栏标题"),tostring(v.Tag.people_question.Text):match("专栏标题(.+)")})
      else
       if open=="false" then
         保存历史记录(v.Tag.people_title.Text,v.Tag.people_url.Text,50)
