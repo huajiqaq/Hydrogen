@@ -778,7 +778,9 @@ thank.onClick=function()
 end
 
 local click=0
+
 mark.onClick=function()
+  --[[
   --[=[  if click==0 then
     click=1
    elseif click==1 then
@@ -786,33 +788,35 @@ mark.onClick=function()
   end
   if click==1 then
     --  mark.setColorFilter(PorterDuffColorFilter(转0x(secondaryc),PorterDuff.Mode.SRC_ATOP));
-    创建文件(内置存储文件("Collection/".._title.Text))
-    写入文件(内置存储文件("Collection/".._title.Text),[[question_id="]]..问题id..[["
-]]..[[answer_id="]]..回答id..[["
-]]..[[vote_count="]]..vote_count.Text..[["
-]]..[[comment_count="]]..comment_count.Text..[["
-]]..[[author="]]..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text..[["
-]]
-    )
-    提示("已收藏")
-       elseif click==0 then
-    --  mark.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
-    删除文件(内置存储文件("Collection/".._title.Text))
-    提示("已取消收藏")
+    创建文件(内置存储文件("Collection/".._title.Text))]]
+  --    写入文件(内置存储文件("Collection/".._title.Text),[[question_id="]]..问题id..[["
+  --]]..[[answer_id="]]..回答id..[["
+  --]]..[[vote_count="]]..vote_count.Text..[["
+  --]]..[[comment_count="]]..comment_count.Text..[["
+  --]]..[[author="]]..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text..[["
+  --]]
+  --    )
+  --    提示("已收藏")
+  --       elseif click==0 then
+  --  mark.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
+  --    删除文件(内置存储文件("Collection/".._title.Text))
+  --    提示("已取消收藏")
 
- end]=]
-  xpcall(function()
-    创建文件夹(内置存储文件("Collection/".._title.Text))
-    创建文件夹(内置存储文件("Collection/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text))
-    创建文件(内置存储文件("Collection/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"))
-    写入文件(内置存储文件("Collection/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"),[[question_id="]]..问题id..[["
-]]..[[answer_id="]]..回答id..[["
-]])
-    提示("收藏成功")
-    end,function()
-    提示("收藏失败 可能是未授予本地存储权限")
-  end)
-
+  -- end]=]
+  --
+  --  xpcall(function()
+  --    创建文件夹(内置存储文件("Collection/".._title.Text))
+  --    创建文件夹(内置存储文件("Collection/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text))
+  --    创建文件(内置存储文件("Collection/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"))
+  --   写入文件(内置存储文件("Collection/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"),[[question_id="]]..问题id..[["
+  --]]..[[answer_id="]]..回答id..[["
+  --]])
+  --    提示("收藏成功")
+  --    end,function()
+  --    提示("收藏失败 可能是未授予本地存储权限")
+  --  end)
+  local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
+  加入收藏夹(url:match("answer/(.+)"),"answer")
 
 end
 
@@ -858,6 +862,13 @@ a=MUKPopu({
         url=" https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")
 
         activity.newActivity("huida",{url,nil,true})
+
+      end
+    },
+    {
+      src=图标("chat_bubble"),text="查看评论",onClick=function()
+
+        activity.newActivity("comment",{回答id,"answers"})
 
       end
     },
@@ -909,7 +920,7 @@ a=MUKPopu({
     },
 
     {
-      src=图标("explore"),text="加入收藏夹",onClick=function()
+      src=图标("book"),text="加入收藏夹",onClick=function()
         local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
         加入收藏夹(url:match("answer/(.+)"),"answer")
       end

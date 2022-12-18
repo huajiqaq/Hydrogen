@@ -9,7 +9,6 @@ import "android.widget.ImageView$ScaleType"
 import "com.lua.custrecycleradapter.*"
 import "androidx.recyclerview.widget.*"
 
-
 activity.setContentView(loadlayout("layout/home"))
 --设置视图
 
@@ -18,7 +17,7 @@ activity.setContentView(loadlayout("layout/home"))
 
 local function firsttip ()
   activity.setSharedData("禁用缓存","true")
-  双按钮对话框("提示","软件默认开启「禁用缓存」你可以在设置中手动设置此开关","我知道了","跳转设置",function()
+  双按钮对话框("提示","软件默认开启「禁用缓存」和 想法功能 你可以在设置中手动设置此开关","我知道了","跳转设置",function()
   关闭对话框(an) end,function()
     关闭对话框(an) 跳转页面("settings")
   end)
@@ -41,6 +40,17 @@ end
 local lll=activity.getSharedData("禁用缓存")
 if lll==nil and ccc~=nil then
   firsttip ()
+end
+
+local qqq=activity.getSharedData("开启想法")
+
+if qqq==nil then
+  activity.setSharedData("开启想法","true")
+ elseif qqq=="false" then
+  adpp=page_home_p.getAdapter()
+  adpp.remove(1)
+  adpp.notifyDataSetChanged()
+  pagetest.setVisibility(View.GONE)
 end
 
 if ccc and lll and activity.getSharedData("开源提示")==nil then
@@ -200,6 +210,7 @@ adp.add{__type=4}
 adp.add{__type=3,iv={src=图标("home")},tv="主页"}
 adp.add{__type=2,iv={src=图标("book")},tv="收藏"}
 adp.add{__type=2,iv={src=图标("work")},tv="日报"}
+adp.add{__type=2,iv={src=图标("bubble_chart")},tv="想法"}
 adp.add{__type=4}
 adp.add{__type=2,iv={src=图标("settings")},tv="设置"}
 adp.add{__type=4}
@@ -368,6 +379,268 @@ function closeD(id)--主页底栏项目灰色动画
   ganimatorSet.start();
 end
 
+function homepage1()
+  Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
+    if code==200 then
+      local decoded_content = require "cjson".decode(content)
+      --    提示(require "cjson".decode(content).selected_sections[1].section_name)
+      for i=1, #decoded_content.selected_sections do
+        --提示(tostring(i))
+        if homehome~="ok" then
+          hometab:addTab("全站",function() pcall(function()list2.adapter.clear()end) choosebutton=nil 随机推荐() end)
+          homehome="ok"
+        end
+        if hometab:getCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
+          hometab:addTab(
+          decoded_content.selected_sections[i].section_name,function() pcall(
+            function()list2.adapter.clear()end
+            ) choosebutton=decoded_content.selected_sections[i].section_id 主页推荐刷新(
+            decoded_content.selected_sections[i].section_id
+            ) end
+          )
+        end
+      end
+    end
+  end)
+  c1=x
+  _title.setText("Hydrogen")
+
+  showD(page1)
+  closeD(page2)
+  closeD(page3)
+  if qqq=="true" then
+    closeD(pagetest)
+  end
+end
+
+function homepage2()
+  _title.setText("想法")
+  c2=x
+
+  mytab={}
+
+  adapter=LuaCustRecyclerAdapter(AdapterCreator({
+
+    getItemCount=function()
+      return #mytab
+    end,
+
+    getItemViewType=function(position)
+      return 0
+    end,
+
+    onCreateViewHolder=function(parent,viewType)
+      local views={}
+      holder=LuaCustRecyclerHolder(loadlayout(itemcc,views))
+      holder.view.setTag(views)
+      return holder
+    end,
+
+    onBindViewHolder=function(holder,position)
+      view=holder.view.getTag()
+
+      url=mytab[position+1].url
+      layoutParams=view.img.getLayoutParams()
+      import "android.util.DisplayMetrics"
+      dm=DisplayMetrics()
+      activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+      hj=loadbitmap(url)
+      wtt=hj.getWidth()
+      kkk=dm.widthPixels-80
+      ooo=kkk/2
+      koo=ooo/wtt
+      layoutParams.width=ooo
+      layoutParams.height=hj.getHeight()*koo
+
+
+      view.img.setImageBitmap(hj)
+      view.img.setLayoutParams(layoutParams)
+
+      --使用glide加载图片(加载贼流畅)
+
+      view.tv.Text=StringHelper.Sub(mytab[position+1].title,1,20).."....."
+
+
+      --子项目点击事件
+      view.it.onClick=function(v)
+        activity.newActivity("column",{mytab[position+1].tzurl,"想法"})
+        return true
+      end
+
+    end,
+  }))
+
+  thinksr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+  thinksr.setColorSchemeColors({转0x(primaryc)});
+  thinksr.setOnRefreshListener({
+    onRefresh=function()
+      想法刷新("clear")
+      Handler().postDelayed(Runnable({
+        run=function()
+          thinksr.setRefreshing(false);
+        end,
+      }),1000)
+
+    end,
+  });
+
+
+
+  recy.addOnScrollListener(RecyclerView.OnScrollListener {
+    function onScrollStateChanged( recyclerView, newState)
+
+    end,
+
+    function onScrolled(recyclerView,dx,dy)
+
+      lastChildView = recyclerView.getLayoutManager().getChildAt(recyclerView.getLayoutManager().getChildCount()-1);
+
+      lastChildBottom = lastChildView.getBottom();
+
+      recyclerBottom = recyclerView.getBottom()-recyclerView.getPaddingBottom();
+
+      lastPosition = recyclerView.getLayoutManager().getPosition(lastChildView);
+
+
+      if lastChildBottom == recyclerBottom and lastPosition == recyclerView.getLayoutManager().getItemCount()-1
+        想法刷新()
+      end
+    end
+
+  });
+
+
+  想法刷新()
+
+  showD(pagetest)
+  closeD(page1)
+  closeD(page2)
+  closeD(page3)
+end
+
+function homepage3()
+  _title.setText("热榜")
+  c3=x
+  if q==3 then
+   else
+    q=3
+    task(5,function()
+      opentab={}
+      hotdata=hot:new()
+      --          for k,v in pairs({"全部","科学","数码","体育"}) do
+      for k,v in pairs({"全部"}) do
+        hotTab:addTab(v,function()
+          热榜刷新()
+        end)
+      end
+      hotTab:showTab(1)
+
+      hotdata:getPartition(function()
+        for k,v in pairs(hotdata.partition) do
+
+          --              if k~="全部" and (not(table.find({"全部","科学","数码","体育"},k))) then
+          if k~="全部" and (not(table.find({"全部"},k))) then
+            hotTab:addTab(k,function()
+              热榜刷新()
+            end)
+          end
+
+        end
+        task(1,function()热榜刷新(1) hotTab:showTab(1) end)
+      end)
+    end)
+  end
+
+  showD(page2)
+  closeD(page1)
+  closeD(page3)
+  if qqq=="true" then
+    closeD(pagetest)
+  end
+end
+
+function homepage4 ()
+  c4=x
+  _title.setText("关注")
+  if t==4 then
+   else
+    t=4
+    关注刷新(1)
+
+    isadd=true
+    ppage=2
+
+    gsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+    gsr.setColorSchemeColors({转0x(primaryc)});
+    gsr.setOnRefreshListener({
+      onRefresh=function()
+        关注刷新(1)
+        isadd=true
+        ppage=2
+        Handler().postDelayed(Runnable({
+          run=function()
+            gsr.setRefreshing(false);
+          end,
+        }),1000)
+
+      end,
+    });
+
+
+
+    list9.setOnScrollListener{
+      onScroll=function(view,a,b,c)
+        if a+b==list9.adapter.getCount() and moments_isend==false and isadd and list9.adapter.getCount()>0 then
+          isadd=false
+          gsr.setRefreshing(true)
+          ppage=ppage+1
+          关注刷新(ppage,moments_nextUrl)
+          System.gc()
+          Handler().postDelayed(Runnable({
+            run=function()
+              isadd=true
+              gsr.setRefreshing(false)
+            end,
+          }),1000)
+        end
+      end
+    }
+
+    list9.setOnItemClickListener(AdapterView.OnItemClickListener{
+      onItemClick=function(parent,v,pos,id)
+        local open=activity.getSharedData("内部浏览器查看回答")
+        if tostring(v.Tag.follow_id.text):find("文章分割") then
+          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+         elseif tostring(v.Tag.follow_id.text):find("想法分割") then
+          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("想法分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)"),"想法"})
+         elseif tostring(v.Tag.follow_id.text):find("问题分割") then
+          activity.newActivity("question",{tostring(v.Tag.follow_id.Text):match("问题分割(.+)"),true})
+         else
+          保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
+
+          if open=="false" then
+            activity.newActivity("answer",{tostring(v.Tag.follow_id.Text):match("(.+)分割"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+           else
+            activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+          end
+        end
+      end
+    })
+
+
+
+  end
+
+  showD(page3)
+  closeD(page1)
+  closeD(page2)
+  if qqq=="true" then
+    closeD(pagetest)
+  end
+
+end
+
+
 home_list={["推荐"]=0,["想法"]=1,["热榜"]=2,["关注"]=3}
 local starthome=this.getSharedData("starthome")
 if not starthome then
@@ -379,188 +652,57 @@ page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
   onPageScrolled=function(a,b,c)
   end,
   onPageSelected=function(v)
-    local x=primaryc
-    local c=stextc
-    local c1=c
-    local c2=c
-    local c3=c
-    local c4=c
+    x=primaryc
+    c=stextc
+    c1=c
+    c2=c
+    c3=c
+    c4=c
     if v==0 then
-      Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
-        if code==200 then
-          local decoded_content = require "cjson".decode(content)
-          --    提示(require "cjson".decode(content).selected_sections[1].section_name)
-          for i=1, #decoded_content.selected_sections do
-            --提示(tostring(i))
-            if homehome~="ok" then
-              hometab:addTab("全站",function() pcall(function()list2.adapter.clear()end) choosebutton=nil 随机推荐() end)
-              homehome="ok"
-            end
-            if hometab:getCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
-              hometab:addTab(
-              decoded_content.selected_sections[i].section_name,function() pcall(
-                function()list2.adapter.clear()end
-                ) choosebutton=decoded_content.selected_sections[i].section_id 主页推荐刷新(
-                decoded_content.selected_sections[i].section_id
-                ) end
-              )
-            end
-          end
-        end
-      end)
-      c1=x
-      _title.setText("Hydrogen")
-
-      showD(page1)
-      closeD(page2)
-      closeD(page3)
-      closeD(pagetest)
-
+      homepage1()
     end
 
     if v==1 then
-      _title.setText("想法")
-      c2=x
-
-      想法刷新()
-
-      showD(pagetest)
-      closeD(page1)
-      closeD(page2)
-      closeD(page3)
+      if qqq=="true" then
+        homepage2()
+       else
+        homepage3()
+      end
     end
     if v==2 then
-      _title.setText("热榜")
-      c3=x
-      if q==3 then
+      if qqq=="true" then
+        homepage3()
        else
-        q=3
-        task(5,function()
-          opentab={}
-          hotdata=hot:new()
-          --          for k,v in pairs({"全部","科学","数码","体育"}) do
-          for k,v in pairs({"全部"}) do
-            hotTab:addTab(v,function()
-              热榜刷新()
-            end)
-          end
-          hotTab:showTab(1)
-
-          hotdata:getPartition(function()
-            for k,v in pairs(hotdata.partition) do
-
-              --              if k~="全部" and (not(table.find({"全部","科学","数码","体育"},k))) then
-              if k~="全部" and (not(table.find({"全部"},k))) then
-                hotTab:addTab(k,function()
-                  热榜刷新()
-                end)
-              end
-
-            end
-            task(1,function()热榜刷新(1) hotTab:showTab(1) end)
-          end)
-        end)
+        homepage4()
       end
-
-      showD(page2)
-      closeD(page1)
-      closeD(page3)
-      closeD(pagetest)
-
     end
     if v==3 then
-      c4=x
-      _title.setText("关注")
-      if t==4 then
-       else
-        t=4
-        关注刷新(1)
-
-        isadd=true
-        ppage=2
-
-        gsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-        gsr.setColorSchemeColors({转0x(primaryc)});
-        gsr.setOnRefreshListener({
-          onRefresh=function()
-            关注刷新(1)
-            isadd=true
-            ppage=2
-            Handler().postDelayed(Runnable({
-              run=function()
-                gsr.setRefreshing(false);
-              end,
-            }),1000)
-
-          end,
-        });
-
-
-
-        list9.setOnScrollListener{
-          onScroll=function(view,a,b,c)
-            if a+b==list9.adapter.getCount() and moments_isend==false and isadd and list9.adapter.getCount()>0 then
-              isadd=false
-              gsr.setRefreshing(true)
-              ppage=ppage+1
-              关注刷新(ppage,moments_nextUrl)
-              System.gc()
-              Handler().postDelayed(Runnable({
-                run=function()
-                  isadd=true
-                  gsr.setRefreshing(false)
-                end,
-              }),1000)
-            end
-          end
-        }
-
-        list9.setOnItemClickListener(AdapterView.OnItemClickListener{
-          onItemClick=function(parent,v,pos,id)
-
-            local open=activity.getSharedData("内部浏览器查看回答")
-            if tostring(v.Tag.follow_id.text):find("文章分割") then
-              activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-             else
-
-              保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
-
-              if open=="false" then
-                activity.newActivity("answer",{tostring(v.Tag.follow_id.Text):match("(.+)分割"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-               else
-                activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-              end
-            end
-          end
-        })
-
-
-
+      if qqq=="true" then
+        homepage4()
       end
-
-      showD(page3)
-      closeD(page1)
-      closeD(page2)
-      closeD(pagetest)
-
     end
     page1.getChildAt(0).setColorFilter(转0x(c1))
-    pagetest.getChildAt(0).setColorFilter(转0x(c2))
     page2.getChildAt(0).setColorFilter(转0x(c3))
     page3.getChildAt(0).setColorFilter(转0x(c4))
     page1.getChildAt(1).setTextColor(转0x(c1))
-    pagetest.getChildAt(1).setTextColor(转0x(c2))
     page2.getChildAt(1).setTextColor(转0x(c3))
     page3.getChildAt(1).setTextColor(转0x(c4))
+    if qqq=="true" then
+      pagetest.getChildAt(0).setColorFilter(转0x(c2))
+      pagetest.getChildAt(1).setTextColor(转0x(c2))
+    end
   end
 })
 
 
 
 function 切换页面(z)--切换主页Page函数
-  page_home_p.showPage(z)
+  if qqq=="false" and z>0 then
+    page_home_p.showPage(z-1)
+   else
+    page_home_p.showPage(z)
+  end
 end
-
 
 
 --设置波纹（部分机型不显示，因为不支持setColor）（19 6-6发现及修复因为不支持setColor而导致的报错问题)
@@ -1804,128 +1946,6 @@ itemcc={
   },
 }
 
-mytab={}
-
-adapter=LuaCustRecyclerAdapter(AdapterCreator({
-
-  getItemCount=function()
-    return #mytab
-  end,
-
-  getItemViewType=function(position)
-    return 0
-  end,
-
-  onCreateViewHolder=function(parent,viewType)
-    local views={}
-    holder=LuaCustRecyclerHolder(loadlayout(itemcc,views))
-    holder.view.setTag(views)
-    return holder
-  end,
-
-  onBindViewHolder=function(holder,position)
-    view=holder.view.getTag()
-
-    url=mytab[position+1].url
-    layoutParams=view.img.getLayoutParams()
-    import "android.util.DisplayMetrics"
-    dm=DisplayMetrics()
-    activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-    hj=loadbitmap(url)
-    wtt=hj.getWidth()
-    kkk=dm.widthPixels-80
-    ooo=kkk/2
-    koo=ooo/wtt
-    layoutParams.width=ooo
-    layoutParams.height=hj.getHeight()*koo
-
-
-    view.img.setImageBitmap(hj)
-    view.img.setLayoutParams(layoutParams)
-
-    --使用glide加载图片(加载贼流畅)
-
-    view.tv.Text=StringHelper.Sub(mytab[position+1].title,1,20).."....."
-
-
-    --子项目点击事件
-    view.it.onClick=function(v)
-      activity.newActivity("column",{mytab[position+1].tzurl,"想法"})
-      return true
-    end
-
-  end,
-}))
-
-thinksr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-thinksr.setColorSchemeColors({转0x(primaryc)});
-thinksr.setOnRefreshListener({
-  onRefresh=function()
-    想法刷新("clear")
-    Handler().postDelayed(Runnable({
-      run=function()
-        thinksr.setRefreshing(false);
-      end,
-    }),1000)
-
-  end,
-});
-
-
-
-recy.addOnScrollListener(RecyclerView.OnScrollListener {
-  function onScrollStateChanged( recyclerView, newState)
-
-  end,
-
-  function onScrolled(recyclerView,dx,dy)
-
-    lastChildView = recyclerView.getLayoutManager().getChildAt(recyclerView.getLayoutManager().getChildCount()-1);
-
-    lastChildBottom = lastChildView.getBottom();
-
-    recyclerBottom = recyclerView.getBottom()-recyclerView.getPaddingBottom();
-
-    lastPosition = recyclerView.getLayoutManager().getPosition(lastChildView);
-
-
-    if lastChildBottom == recyclerBottom and lastPosition == recyclerView.getLayoutManager().getItemCount()-1
-      想法刷新()
-    end
-  end
-
-});
-
-function 想法刷新(isclear)
-  if isclear=="clear" or #mytab<2 then
-    mytab={}
-    recy.setAdapter(adapter)
-    recy.setLayoutManager(StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL))
-    thisurl=nil
-  end
-  local geturl=thisurl or "https://api.zhihu.com/prague/feed?offset=0&limit=10"
-  Http.get(geturl,head,function(code,content)
-    if code==200 then--判断网站状态
-      thisurl=require "cjson".decode(content).paging.next
-      for i,v in ipairs(require "cjson".decode(content).data) do
-        local url=v.target.images[1].url
-        local title=v.target.excerpt
-        local tzurl=v.target.url:match("pin/(.-)?")
-        table.insert(mytab,{url=url,title=title,tzurl=tzurl})
-        adapter.notifyDataSetChanged()
-      end
-
-
-
-     else
-      --        提示("获取回答失败 "..content)
-    end
-  end)
-
-end
-
-
-
 
 csr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
 csr.setColorSchemeColors({转0x(primaryc)});
@@ -2153,7 +2173,7 @@ function 关注刷新(ppage,url)
   if 状态=="未登录" then
     提示("请登录后使用关注功能")
    else
-    提示("加载中 大约需要5秒 请耐心等待")
+    提示("加载中")
     local json=require "cjson"
     Http.get(posturl,head,function(code,content)
       if code==200 then
@@ -2175,14 +2195,21 @@ function 关注刷新(ppage,url)
               local 时间=时间戳(e.created_time)
               --            local 预览内容=e.target.excerpt_new
               local 预览内容=e.target.excerpt
-              xpcall(function()
+              if e.target.type=="answer" then
                 问题id等=tointeger(e.target.question.id or 1).."分割"..tointeger(e.target.id)
                 标题=e.target.question.title
-                end,function()
+               elseif e.target.type=="question" then
+                问题id等="问题分割"..tointeger(e.target.id)
+                标题=e.target.title
+               elseif e.target.type=="article"
                 问题id等="文章分割"..tointeger(e.target.id)
                 标题=e.target.title
-              end)
+               elseif e.target.type=="pin"
+                问题id等="想法分割"..tointeger(e.target.id)
+                标题=e.target.title
+              end
               list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
+
             end
            elseif v.type=="feed" then
             local 关注作者头像=v.actors[1].avatar_url
@@ -2194,13 +2221,19 @@ function 关注刷新(ppage,url)
             local 时间=时间戳(v.created_time)
             --          local 预览内容=v.target.excerpt_new
             local 预览内容=v.target.excerpt
-            xpcall(function()
+            if v.target.type=="answer" then
               问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
               标题=v.target.question.title
-              end,function()
+             elseif v.target.type=="question" then
+              问题id等="问题分割"..tointeger(v.target.id)
+              标题=v.target.title
+             elseif v.target.type=="article"
               问题id等="文章分割"..tointeger(v.target.id)
               标题=v.target.title
-            end)
+             elseif v.target.type=="pin"
+              问题id等="想法分割"..tointeger(v.target.id)
+              标题=v.target.title
+            end
             list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
           end
         end
@@ -2231,6 +2264,8 @@ function onActivityResult(a,b,c)
     activity.finish()
    elseif b==200 then
     activity.finish()
+   elseif b==1500 then
+    初始化历史记录数据(true)
   end
 
 end
@@ -2348,6 +2383,34 @@ if activity.getSharedData("自动清理缓存")=="true" then
 
     提示("清理成功,共清理 "..tokb(m))
   end)
+end
+
+function 想法刷新(isclear)
+  if isclear=="clear" or #mytab<2 then
+    mytab={}
+    recy.setAdapter(adapter)
+    recy.setLayoutManager(StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL))
+    thisurl=nil
+  end
+  local geturl=thisurl or "https://api.zhihu.com/prague/feed?offset=0&limit=10"
+  Http.get(geturl,head,function(code,content)
+    if code==200 then--判断网站状态
+      thisurl=require "cjson".decode(content).paging.next
+      for i,v in ipairs(require "cjson".decode(content).data) do
+        local url=v.target.images[1].url
+        local title=v.target.excerpt
+        local tzurl=v.target.url:match("pin/(.-)?")
+        table.insert(mytab,{url=url,title=title,tzurl=tzurl})
+        adapter.notifyDataSetChanged()
+      end
+
+
+
+     else
+      --        提示("获取回答失败 "..content)
+    end
+  end)
+
 end
 
 

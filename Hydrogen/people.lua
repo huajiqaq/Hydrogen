@@ -419,6 +419,26 @@ function _sort.onClick(view)
 end
 
 
+function checktitle(str)
+  local oridata=people_list.adapter.getData()
+
+  for b=1,2 do
+    if b==2 then
+      提示("搜索完毕 共搜索到"..#people_list.adapter.getData().."条数据")
+      if #people_list.adapter.getData()==0 then
+        其他("clear")
+      end
+    end
+    for i=#oridata,1,-1 do
+      if not oridata[i].people_title:find(str) then
+        table.remove(oridata, i)
+        people_list.adapter.notifyDataSetChanged()
+      end
+    end
+  end
+end
+
+
 people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
     local open=activity.getSharedData("内部浏览器查看回答")
@@ -451,6 +471,33 @@ people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
 a=MUKPopu({
   tittle="用户",
   list={
+    {
+      src=图标("search"),text="在当前内容中搜索",onClick=function()
+        InputLayout={
+          LinearLayout;
+          orientation="vertical";
+          Focusable=true,
+          FocusableInTouchMode=true,
+          {
+            EditText;
+            hint="输入";
+            layout_marginTop="5dp";
+            layout_marginLeft="10dp",
+            layout_marginRight="10dp",
+            layout_width="match_parent";
+            layout_gravity="center",
+            id="edit";
+          };
+        };
+
+        AlertDialog.Builder(this)
+        .setTitle("请输入")
+        .setView(loadlayout(InputLayout))
+        .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
+        .setNegativeButton("取消", nil)
+        .show();
+
+    end},
     {src=图标("share"),text="分享",onClick=function()
         分享文本("https://www.zhihu.com/people/"..用户id)
     end},

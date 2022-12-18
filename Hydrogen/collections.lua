@@ -475,21 +475,49 @@ if collections_url=="local" then
   local yuxunnn_ay=LuaAdapter(activity,datas5,itemc5)
   list5.Adapter=yuxunnn_ay
 
-  collections_base=require "model.collections":new(collections_url)
-  :setresultfunc(function(tab)
+  function 初始化()
+    collections_base=require "model.collections":new(collections_url)
+    :setresultfunc(function(tab)
 
-    if tab.type=="answer" then
-      点赞数=tointeger(tab.voteup_count)..""
-      评论数=tointeger(tab.comment_count)..""
-      内容=tab.excerpt
-      标题=tab.question.title
-      id分割=tointeger(tab.question.id).."回答分割"..tointeger(tab.id)
-     elseif tab.type=="article" then
-      点赞数=tointeger(tab.voteup_count)..""
-      评论数=tointeger(tab.comment_count)..""
-      内容=tab.excerpt
-      标题=tab.title
-      id分割="文章分割"..tointeger(tab.id)
+      if tab.type=="answer" then
+        点赞数=tointeger(tab.voteup_count)..""
+        评论数=tointeger(tab.comment_count)..""
+        内容=tab.excerpt
+        标题=tab.question.title
+        id分割=tointeger(tab.question.id).."回答分割"..tointeger(tab.id)
+       elseif tab.type=="article" then
+        点赞数=tointeger(tab.voteup_count)..""
+        评论数=tointeger(tab.comment_count)..""
+        内容=tab.excerpt
+        标题=tab.title
+        id分割="文章分割"..tointeger(tab.id)
+        yuxunnn_ay.add{
+          cavoteup=点赞数,
+          cacomment=评论数,
+          cid=id分割,
+          caart=内容,
+          catitle=标题,
+          background={foreground=Ripple(nil,转0x(ripplec),"方")},
+        }
+        return
+       elseif tab.type=="pin" then
+
+        内容=tab.excerpt_title
+        点赞数=tointeger(tab.collection_count)..""
+        评论数=tointeger(tab.comment_count)..""
+        标题="一个想法"
+        id分割="想法分割"..tab.id
+       elseif tab.type=="zvideo" then
+
+        内容=tab.excerpt_title
+        点赞数=tointeger(tab.collection_count)..""
+        评论数=tointeger(tab.comment_count)..""
+        标题=tab.title
+        id分割="视频分割"..tab.id
+       else
+        id分割="其他分割"..tointeger(v.target.id)
+        标题=tab.title
+      end
       yuxunnn_ay.add{
         cavoteup=点赞数,
         cacomment=评论数,
@@ -498,35 +526,10 @@ if collections_url=="local" then
         catitle=标题,
         background={foreground=Ripple(nil,转0x(ripplec),"方")},
       }
-      return
-     elseif tab.type=="pin" then
+    end)
+  end
 
-      内容=tab.excerpt_title
-      点赞数=tointeger(tab.collection_count)..""
-      评论数=tointeger(tab.comment_count)..""
-      标题="一个想法"
-      id分割="想法分割"..tab.id
-     elseif tab.type=="zvideo" then
-
-      内容=tab.excerpt_title
-      点赞数=tointeger(tab.collection_count)..""
-      评论数=tointeger(tab.comment_count)..""
-      标题=tab.title
-      id分割="视频分割"..tab.id
-     else
-      id分割="其他分割"..tointeger(v.target.id)
-      标题=tab.title
-    end
-    yuxunnn_ay.add{
-      cavoteup=点赞数,
-      cacomment=评论数,
-      cid=id分割,
-      caart=内容,
-      catitle=标题,
-      background={foreground=Ripple(nil,转0x(ripplec),"方")},
-    }
-  end)
-
+  初始化()
 
   function 刷新()
     collections_base:next(function(r,a)
@@ -609,12 +612,64 @@ end
 刷新()
 
 
+--有时间再补充 api接口请求头需要一些参数被加密 k实现同种功能可无限Http.get获取内容 后直到is_end 再执行搜索
+function checktitle(str)
+  local oridata=list5.adapter.getData()
 
+  for b=1,2 do
+    if b==2 then
+      提示("搜索完毕 共搜索到"..#list5.adapter.getData().."条数据")
+      if #list5.adapter.getData()==0 then
+        if collections_url~="local" then
+          collections_base:clear()
+          初始化()
+          刷新()
+         else
+          加载笔记()
+        end
+        list5.adapter.notifyDataSetChanged()
+      end
+    end
+    for i=#oridata,1,-1 do
+      if not oridata[i].catitle:find(str) then
+        table.remove(oridata, i)
+      end
+      list5.adapter.notifyDataSetChanged()
+    end
+  end
+end
 
 
 a=MUKPopu({
   tittle="收藏",
   list={
+    {
+      src=图标("search"),text="在当前内容中搜索",onClick=function()
+        InputLayout={
+          LinearLayout;
+          orientation="vertical";
+          Focusable=true,
+          FocusableInTouchMode=true,
+          {
+            EditText;
+            hint="输入";
+            layout_marginTop="5dp";
+            layout_marginLeft="10dp",
+            layout_marginRight="10dp",
+            layout_width="match_parent";
+            layout_gravity="center",
+            id="edit";
+          };
+        };
+
+        AlertDialog.Builder(this)
+        .setTitle("请输入")
+        .setView(loadlayout(InputLayout))
+        .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
+        .setNegativeButton("取消", nil)
+        .show();
+
+    end},
 
     {src=图标("email"),text="反馈",onClick=function()
         activity.newActivity("feedback")

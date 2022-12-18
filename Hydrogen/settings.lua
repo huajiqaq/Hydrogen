@@ -48,7 +48,6 @@ data={
       },
       wrapSelectorWheel=false,
     }},
-   {__type=3,subtitle="主页设置",image=图标("")},
 }
 
 
@@ -69,6 +68,35 @@ tab={ --点击table
   字体大小=function()
     activity.setResult(1200,nil)
   end,
+}
+  ]]
+    activity.newActivity("settings",{执行代码})
+  end,
+  主页设置=function()
+    local 执行代码=[[
+_title.text="主页设置"
+data = {
+  --{__type=1,title=""},
+  {__type=4,subtitle="开启想法",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("开启想法"))}},
+   {__type=3,subtitle="主页设置",image=图标("")},
+  {__type=3,subtitle="修改主页排序",image=图标("")},
+}
+
+tab={ --点击table
+开启想法=function()
+activity.setResult(1200,nil)
+end,
+  修改主页排序=function()
+    Http.get("https://www.zhihu.com/api/v4/me",{
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    },function(code,content)
+      if code==200 then
+        activity.newActivity("xgtj")
+       elseif code==401 then
+        提示("请登录后使用本功能")
+      end
+    end)
+  end,
 主页设置=function()
 if this.getSharedData("starthome")=="推荐" then
 starnum=0
@@ -79,7 +107,7 @@ starnum=2
 elseif this.getSharedData("starthome")=="关注" then
 starnum=3
 end
-          AlertDialog.Builder(this)
+          tipalert=AlertDialog.Builder(this)
           .setTitle("请选择默认主页")
           .setSingleChoiceItems({"推荐","想法","热榜","关注"}, starnum,{onClick=function(v,p)
               if p==0 then
@@ -95,34 +123,19 @@ end
                 starthome ="关注"
               end
           end})
-          .setPositiveButton("确定", {onClick=function() if starthome==nil then starthome="推荐" end this.setSharedData("starthome",starthome) starthome=nil 提示("下次启动App生效") end})
+          .setPositiveButton("确定", nil)
           .setNegativeButton("取消",nil)
           .show();
-end
-}
-  ]]
-    activity.newActivity("settings",{执行代码})
-  end,
-  主页设置=function()
-    local 执行代码=[[
-_title.text="主页设置"
-data = {
-  --{__type=1,title=""},
-  {__type=3,subtitle="修改主页排序",image=图标("")},
-}
+           tipalert.getButton(tipalert.BUTTON_POSITIVE).onClick=function()
+        if starthome==nil then starthome="推荐" end
+        if starthome=="想法" and this.getSharedData("开启想法")=="false" then
+       提示("由于已关闭想法功能 所以无法选择想法")
+       else
+       this.setSharedData("starthome",starthome) starthome=nil 提示("下次启动App生效") end
+       tipalert.dismiss()
+       end
 
-tab={ --点击table
-  修改主页排序=function()
-    Http.get("https://www.zhihu.com/api/v4/me",{
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    },function(code,content)
-      if code==200 then
-        activity.newActivity("xgtj")
-       elseif code==401 then
-        提示("请登录后使用本功能")
-      end
-    end)
-  end,
+end
 }
   ]]
     activity.newActivity("settings",{执行代码})

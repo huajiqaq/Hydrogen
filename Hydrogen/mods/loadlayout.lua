@@ -9,6 +9,7 @@ local bindClass = luajava.bindClass
 --local ids={}
 local ltrs={}
 
+
 local context=activity or service
 
 local ViewGroup=bindClass("android.view.ViewGroup")
