@@ -89,6 +89,14 @@
         layout_height="fill",
         background=backgroundc,
         {
+          MyTab
+          {
+            id="histab",
+          },
+          contentDescription="历史标签",
+
+        };
+        {
           ListView;
           fastScrollEnabled=false,
           layout_width="fill";

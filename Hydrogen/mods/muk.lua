@@ -1,7 +1,8 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.01
+
+versionCode=16.02
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -14,6 +15,7 @@ ROM类型 = string.upper(Build.MANUFACTURER)
 应用版本=activity.getPackageManager().getPackageInfo(activity.getPackageName(), PackageManager.GET_ACTIVITIES).versionCode;
 
 APP_CACHEDIR="/data/data/"..activity.getPackageName().."/cache/webviewCache";
+
 
 
 if activity.getSharedData("font_size")==nil then
@@ -1401,6 +1403,7 @@ function 全屏()
   end)
 end
 
+全屏()
 
 function 图标(n)
   return "res/twotone_"..n.."_black_24dp.png"

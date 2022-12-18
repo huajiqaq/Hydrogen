@@ -374,7 +374,7 @@ a=MUKPopu({
         刷新()
     end},
     {
-      src=图标("explore"),text="回答",onClick=function()
+      src=图标("colorize"),text="回答",onClick=function()
 
         url=" https://www.zhihu.com/question/"..question_id.."/answers/editor"
 

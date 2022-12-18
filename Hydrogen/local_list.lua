@@ -141,13 +141,13 @@ local_item=
 if not 文件是否存在(内置存储文件()) then
   xpcall(function()
     创建文件夹(内置存储文件())
-    end,function()
+  end,function()
   end)
 end
 if not 文件是否存在(内置存储文件("Download")) then
   xpcall(function()
     创建文件夹(内置存储文件("Download"))
-    end,function()
+  end,function()
   end)
 end
 
@@ -155,24 +155,68 @@ notedata={}
 noteadp=LuaAdapter(activity,notedata,local_item)
 local_listview.setAdapter(noteadp)
 
-function 加载笔记()
+mytab={"全部","回答","想法","文章"}
+for i,v in ipairs(mytab) do
+  localtab:addTab(v,function() pcall(function()noteadp.clear()end) 加载笔记(v) mystr=v noteadp.notifyDataSetChanged() end,3)
+end
+localtab:showTab(1)
+
+function 加载笔记(str)
+  if str =="全部" then
+    str=nil
+   elseif str =="回答" then
+    str="answer_id"
+   elseif str=="想法" then
+    str="pin_id"
+   elseif str=="文章" then
+    str="article_id"
+  end
   -- xpcall(function()
   notedata={}
-  for i,v in ipairs(luajava.astable(File(内置存储文件("Download")).listFiles())) do
-    local vv=v
-    local v=tostring(v)
-    local _,name=v:match("(.+)/(.+)")
-    notedata[#notedata+1]={
-      timestamp=vv.lastModified(),
-      catitle=name,
-      --    cid=name,
-      file=(v),
-      --   caart="「"..读取文件(v):match([[author="(.-)"]]).."」的回答",
-      --[=[ cavoteup=读取文件(v):match([[vote_count="(.-)"]]),
+  if not str then
+    for i,v in ipairs(luajava.astable(File(内置存储文件("Download")).listFiles())) do
+      local vv=v
+      local v=tostring(v)
+      local _,name=v:match("(.+)/(.+)")
+      notedata[#notedata+1]={
+        timestamp=vv.lastModified(),
+        catitle=name,
+        --    cid=name,
+        file=(v),
+        --   caart="「"..读取文件(v):match([[author="(.-)"]]).."」的回答",
+        --[=[ cavoteup=读取文件(v):match([[vote_count="(.-)"]]),
         cacomment=读取文件(v):match([[comment_count="(.-)"]]),
         cid=读取文件(v):match([[question_id="(.-)"]]).."分割"..读取文件(v):match([[answer_id="(.-)"]]),
 ]=]
-    }
+      }
+    end
+
+    table.sort(notedata,function(a, b)
+      return a.timestamp > b.timestamp
+    end)
+   else
+
+    for i,v in ipairs(luajava.astable(File(内置存储文件("Download")).listFiles())) do
+      local vv=v
+      local v=tostring(v)
+      local a=luajava.astable(File(v).listFiles())
+      local bbb=tostring(a[1]).."/detail.txt"
+      local filestr=读取文件(bbb)
+      local _,name=v:match("(.+)/(.+)")
+      if filestr:find(str) then
+        notedata[#notedata+1]={
+          timestamp=vv.lastModified(),
+          catitle=name,
+          --    cid=name,
+          file=(v),
+          --   caart="「"..读取文件(v):match([[author="(.-)"]]).."」的回答",
+          --[=[ cavoteup=读取文件(v):match([[vote_count="(.-)"]]),
+        cacomment=读取文件(v):match([[comment_count="(.-)"]]),
+        cid=读取文件(v):match([[question_id="(.-)"]]).."分割"..读取文件(v):match([[answer_id="(.-)"]]),
+]=]
+        }
+      end
+    end
   end
 
   table.sort(notedata,function(a, b)
@@ -188,6 +232,24 @@ end
 
 加载笔记()
 
+function checktitle(str)
+  local oridata=noteadp.getData()
+
+  for b=1,2 do
+    if b==2 then
+      提示("搜索完毕 共搜索到"..#noteadp.getData().."条数据")
+      if #noteadp.getData()==0 then
+        加载笔记(mystr)
+      end
+    end
+    for i=#oridata,1,-1 do
+      if not oridata[i].catitle:find(str) then
+        table.remove(oridata, i)
+        noteadp.notifyDataSetChanged()
+      end
+    end
+  end
+end
 
 local_listview.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(id,v,zero,one)
@@ -356,6 +418,33 @@ end
 a=MUKPopu({
   tittle="已保存的回答",
   list={
+    {
+      src=图标("search"),text="搜索已保存的回答",onClick=function()
+        InputLayout={
+          LinearLayout;
+          orientation="vertical";
+          Focusable=true,
+          FocusableInTouchMode=true,
+          {
+            EditText;
+            hint="输入";
+            layout_marginTop="5dp";
+            layout_marginLeft="10dp",
+            layout_marginRight="10dp",
+            layout_width="match_parent";
+            layout_gravity="center",
+            id="edit";
+          };
+        };
+
+        AlertDialog.Builder(this)
+        .setTitle("请输入")
+        .setView(loadlayout(InputLayout))
+        .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
+        .setNegativeButton("取消", nil)
+        .show();
+
+    end},
     {src=图标("email"),text="反馈",onClick=function()
         activity.newActivity("feedback")
     end},
