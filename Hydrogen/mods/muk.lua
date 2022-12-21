@@ -2,7 +2,7 @@ require "import"
 import "mods.imports"
 
 
-versionCode=16.02
+versionCode=16.03
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -1403,7 +1403,9 @@ function 全屏()
   end)
 end
 
+if this.getSharedData("全屏模式")=="true" then
 全屏()
+end
 
 function 图标(n)
   return "res/twotone_"..n.."_black_24dp.png"
@@ -2605,4 +2607,16 @@ function StringHelper.Sub(str, startIndex, endIndex)
     index = index + 1
   end
   return string.sub(str, byteStart, byteEnd)
+end
+
+function 替换文件字符串(路径,要替换的字符串,替换成的字符串)
+  if 路径 then
+    路径=tostring(路径)
+    内容=io.open(路径):read("*a")
+    io.open(路径,"w+"):write(tostring(内容:gsub(要替换的字符串,替换成的字符串))):close()
+        import "androidx.core.content.ContextCompat"
+    filedir=tostring(ContextCompat.getDataDir(activity)).."/files/init.lua"
+   else
+    return false
+  end
 end

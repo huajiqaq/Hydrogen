@@ -23,6 +23,7 @@ local function firsttip ()
   end)
 end
 
+debugmode=true
 
 local ccc=activity.getSharedData("第一次提示")
 if ccc ==nil then
@@ -67,6 +68,10 @@ end
 
 if this.getSharedData("标题简略化") == nil then
   this.setSharedData("标题简略化","false")
+end
+
+if this.getSharedData("全屏模式") then
+  this.setSharedData("全屏模式","false")
 end
 
 --侧滑滑动事件
@@ -645,9 +650,16 @@ home_list={["推荐"]=0,["想法"]=1,["热榜"]=2,["关注"]=3}
 local starthome=this.getSharedData("starthome")
 if not starthome then
   this.setSharedData("starthome","推荐")
+  starthome=this.getSharedData("starthome")
 end
 
-page_home_p.setCurrentItem(home_list[starthome],false)
+if qqq=="true" then
+  tznum=home_list[starthome]
+ else
+  tznum=home_list[starthome]-1
+end
+
+page_home_p.setCurrentItem(tznum,false)
 page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
   onPageScrolled=function(a,b,c)
   end,
@@ -697,7 +709,7 @@ page_home_p.setOnPageChangeListener(PageView.OnPageChangeListener{
 
 
 function 切换页面(z)--切换主页Page函数
-  if qqq=="false" and z>0 then
+  if qqq~="true" and z>0 then
     page_home_p.showPage(z-1)
    else
     page_home_p.showPage(z)

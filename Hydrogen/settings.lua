@@ -18,7 +18,8 @@ data = {
   {__type=3,subtitle="浏览设置",image=图标("")},
   {__type=3,subtitle="主页设置",image=图标("")},
   {__type=3,subtitle="缓存设置",image=图标("")},
-  {__type=3,subtitle="关于",image=图标("")}
+  {__type=3,subtitle="关于",image=图标("")},
+  {__type=4,subtitle="调式模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
 }
 tab={ --点击table
   浏览设置=function()
@@ -36,6 +37,7 @@ data={
   {__type=4,subtitle="回答预加载(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
 --  {__type=4,subtitle="加载回答中存在的视频(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("加载回答中存在的视频(beta)"))}},
     {__type=4,subtitle="标题简略化",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
+  {__type=4,subtitle="全屏模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=5,subtitle="字体大小",image=图标(""),status={
       minValue=10,
       value=tonumber(activity.getSharedData("font_size")),
@@ -67,6 +69,9 @@ tab={ --点击table
   end,
   字体大小=function()
     activity.setResult(1200,nil)
+  end,
+  全屏模式=function()
+    提示("为了更好的浏览体验 推荐重启App")
   end,
 }
   ]]
@@ -213,6 +218,34 @@ tab={ --点击table
   end,
   关于=function()
     activity.newActivity("about")
+  end,
+    调式模式=function()
+    local function dg()
+              import "androidx.core.content.ContextCompat"
+    filedir=tostring(ContextCompat.getDataDir(activity)).."/files/init.lua"
+    bbbb=this.getSharedData("调式模式")
+    debugstr="debugmode="
+    if bbbb=="true" then
+    aaaa="false"
+    else
+    aaaa="true"
+    end
+    替换文件字符串(filedir,debugstr..aaaa,debugstr..bbbb)
+    提示("成功！重启App生效")
+    end
+    if this.getSharedData("调式模式")=="true"
+     debugtip=AlertDialog.Builder(this)
+      .setTitle("是否要开启调式模式?")
+      .setMessage("开启后会提示一些错误信息 在一定程度上会影响阅读")
+      .setCancelable(false)
+      .setPositiveButton("开启",{onClick=function() 
+dg()
+      end})
+      .setNeutralButton("取消",{onClick=function() this.setSharedData("调式模式","false") data[5].status["Checked"]=false  adp.notifyDataSetChanged() end})
+      .show()
+      else
+      dg()
+      end
   end
 }
 ]==]
