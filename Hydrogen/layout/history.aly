@@ -89,12 +89,17 @@
         layout_height="fill",
         background=backgroundc,
         {
-          MyTab
+          LinearLayout,
+          orientation="vertical",
+          id="tabv",
           {
-            id="histab",
-          },
-          contentDescription="历史标签",
+            MyTab
+            {
+              id="histab",
+            },
+            contentDescription="历史标签",
 
+          };
         };
         {
           ListView;

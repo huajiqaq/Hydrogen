@@ -266,7 +266,7 @@ console.log("提问加载完成")
     function setq() {
     emulateMouseClick(document.getElementsByClassName("Button SearchBar-askButton")[0])
     }
-    waitForKeyElements(' [class="Button SearchBar-askButton css-3q84jd Button--primary Button--blue"]', setq)    
+    waitForKeyElements(' [class="Button SearchBar-askButton css-rf6mh0 Button--primary Button--blue"]', setq)    
     ]]
       )
     end
@@ -304,7 +304,7 @@ if activity.getSharedData("禁用缓存")=="true"
   --//开启 DOM 存储功能
   .setDomStorageEnabled(true)
   --        //开启 数据库 存储功能
-  .setDatabaseEnabled(false)
+  .setDatabaseEnabled(true)
   .setCacheMode(WebSettings.LOAD_NO_CACHE);
  else
   liulan
