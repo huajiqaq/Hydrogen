@@ -263,10 +263,24 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(id,v,zero,one)
     --项目点击事件
     local s=v.Tag.tv.Text
+
     if s=="退出" then--判断项目并执行代码
       关闭页面()
      elseif s=="主页" then
       ch_light("主页")
+      if okstart=="true" then
+        a=MUKPopu({
+          tittle="菜单",
+          list={
+            {src=图标("email"),text="反馈",onClick=function()
+                跳转页面("feedback")
+            end},
+            {src=图标("info"),text="关于",onClick=function()
+                跳转页面("about")
+            end},
+          }
+        })
+      end
       控件隐藏(page_daily)
       控件隐藏(page_collections)
       控件可见(page_home)
@@ -274,6 +288,19 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       _title.Text="Hydrogen"
      elseif s=="日报" then
       ch_light("日报")
+      if okstart=="true" then
+        a=MUKPopu({
+          tittle="菜单",
+          list={
+            {src=图标("email"),text="反馈",onClick=function()
+                跳转页面("feedback")
+            end},
+            {src=图标("info"),text="关于",onClick=function()
+                跳转页面("about")
+            end},
+          }
+        })
+      end
       日报刷新()
       控件隐藏(page_home)
       控件隐藏(page_collections)
@@ -281,6 +308,45 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       _title.Text="日报"
      elseif s=="收藏" then
       ch_light("收藏")
+      if okstart=="true" then
+        a=MUKPopu({
+          tittle="菜单",
+          list={
+            {src=图标("search"),text="在收藏中搜索",onClick=function()
+                InputLayout={
+                  LinearLayout;
+                  orientation="vertical";
+                  Focusable=true,
+                  FocusableInTouchMode=true,
+                  {
+                    EditText;
+                    hint="输入";
+                    layout_marginTop="5dp";
+                    layout_marginLeft="10dp",
+                    layout_marginRight="10dp",
+                    layout_width="match_parent";
+                    layout_gravity="center",
+                    id="edit";
+                  };
+                };
+
+                AlertDialog.Builder(this)
+                .setTitle("请输入")
+                .setView(loadlayout(InputLayout))
+                .setPositiveButton("确定", {onClick=function() activity.newActivity("search_result",{edit.text}) end})
+                .setNegativeButton("取消", nil)
+                .show();
+
+            end},
+            {src=图标("email"),text="反馈",onClick=function()
+                跳转页面("feedback")
+            end},
+            {src=图标("info"),text="关于",onClick=function()
+                跳转页面("about")
+            end},
+          }
+        })
+      end
       控件隐藏(page_home)
       控件隐藏(page_daily)
       控件可见(page_collections)
