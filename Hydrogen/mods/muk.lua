@@ -2,7 +2,7 @@ require "import"
 import "mods.imports"
 
 
-versionCode=16.03
+versionCode=16.04
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -1404,7 +1404,7 @@ function 全屏()
 end
 
 if this.getSharedData("全屏模式")=="true" then
-全屏()
+  全屏()
 end
 
 function 图标(n)
@@ -2614,9 +2614,54 @@ function 替换文件字符串(路径,要替换的字符串,替换成的字符�
     路径=tostring(路径)
     内容=io.open(路径):read("*a")
     io.open(路径,"w+"):write(tostring(内容:gsub(要替换的字符串,替换成的字符串))):close()
-        import "androidx.core.content.ContextCompat"
+    import "androidx.core.content.ContextCompat"
     filedir=tostring(ContextCompat.getDataDir(activity)).."/files/init.lua"
    else
     return false
   end
 end
+
+function 获取参数(url,callback)
+  local 请求url="https://x-zes-96.huajicloud.ml/api"
+  local 判断url="https://www.zhihu.com"
+  if url:find(判断url) then
+    请求参数= url:match("zhihu.com(.+)")
+   elseif url:find("https://api.zhihu.com") then
+    请求参数="/api/v4"..url:match("zhihu.com(.+)")
+    url=判断url..请求参数
+  end
+  加密前数据="101_3_3.0+"..请求参数.."+"..获取Cookie("https://www.zhihu.com/"):match("d_c0=(.-);")
+  md5化数据=string.lower(MD5(加密前数据))
+
+
+  Http.post(请求url,md5化数据,head,function(code,content)
+    if code==200 then
+      Http.get(url,{
+        ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+        ["x-api-version"] = "3.0.91";
+        ["x-zse-93"] = "101_3_3.0";
+        ["x-zse-96"] = "2.0_"..content;
+        ["x-app-za"] = "OS=Web";
+        },function(codee,contentt)
+        if codee==200 then
+          callback(contentt)
+        end
+      end)
+     elseif code==500
+      return print("出错")
+    end
+  end)
+end
+
+function urlEncode(s)
+  s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
+  return string.gsub(s, " ", " ")
+end
+
+local get_api= "https://huajicloud.gitee.io/hydrogen.html"
+
+Http.get(get_api,function(code,content)
+  if code==200 then
+    okstart=content:match("start%=(.+),start")
+  end
+end)

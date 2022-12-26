@@ -16,10 +16,6 @@ title,author=...
 波纹({fh,_more,mark},"圆主题")
 波纹({all_root},"方自适应")
 
-local function urlEncode(s)
-  s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
-  return string.gsub(s, " ", " ")
-end
 
 webview.loadUrl("file://"..内置存储文件("Download/"..urlEncode(title).."/"..urlEncode(author).."/mht.mht"))
 
