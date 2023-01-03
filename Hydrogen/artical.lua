@@ -5,7 +5,7 @@ import "android.support.v4.widget.*"
 
 activity.setContentView(loadlayout("layout/artical"))
 
-波纹({fh,_star,_folder},"圆主题")
+波纹({fh,_star,_refre,_folder},"圆主题")
 波纹({title_root,back},"方主题")
 
 控件隐藏(back_root)
@@ -60,6 +60,7 @@ function 获取每日一文()
   local api="https://interface.meiriyiwen.com/article/today?dev=1"
   Http.get(api,head,function(code,content)
     if code==200 then
+      一文模式="每日"
       data=require "cjson".decode(content)
       atitle.text=data.data.title
       atext.text=Html.fromHtml(data.data.content)
@@ -76,6 +77,7 @@ function 获取随机一文()
   local api="https://interface.meiriyiwen.com/article/random?dev=1"
   Http.get(api,head,function(code,content)
     if code==200 then
+      一文模式="随机"
       data=require "cjson".decode(content)
       atitle.text=data.data.title
       atext.text=Html.fromHtml(data.data.content)
@@ -111,6 +113,13 @@ _star.onClick=function()
   end
 end
 
+_refre.onClick=function()
+  if 一文模式=="每日" then
+    获取每日一文()
+   else
+    获取随机一文()
+  end
+end
 
 
 noteitem={
@@ -263,3 +272,12 @@ a=MUKPopu({
     end},
   }
 })
+
+if activity.getSharedData("一文提示0.01")==nil
+  AlertDialog.Builder(this)
+  .setTitle("小提示")
+  .setCancelable(false)
+  .setMessage("你可点击标题来切换刷新一文类型")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("一文提示0.01","true") end})
+  .show()
+end

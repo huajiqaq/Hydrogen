@@ -79,6 +79,17 @@
         };
         {
           ImageView;
+          src=图标("refresh");
+          ColorFilter=textc;
+          layout_width="32dp",
+          layout_height="32dp",
+          padding="4dp";
+          id="_refre";
+          tooltip="刷新",
+          layout_margin="8dp";
+        };
+        {
+          ImageView;
           src=图标("star");
           ColorFilter=textc;
           layout_width="32dp",
