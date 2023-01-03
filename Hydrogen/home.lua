@@ -313,30 +313,33 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
           tittle="菜单",
           list={
             {src=图标("search"),text="在收藏中搜索",onClick=function()
-                InputLayout={
-                  LinearLayout;
-                  orientation="vertical";
-                  Focusable=true,
-                  FocusableInTouchMode=true,
-                  {
-                    EditText;
-                    hint="输入";
-                    layout_marginTop="5dp";
-                    layout_marginLeft="10dp",
-                    layout_marginRight="10dp",
-                    layout_width="match_parent";
-                    layout_gravity="center",
-                    id="edit";
+                if 状态=="未登录" then
+                  提示("你可能需要登录哦")
+                 else
+                  InputLayout={
+                    LinearLayout;
+                    orientation="vertical";
+                    Focusable=true,
+                    FocusableInTouchMode=true,
+                    {
+                      EditText;
+                      hint="输入";
+                      layout_marginTop="5dp";
+                      layout_marginLeft="10dp",
+                      layout_marginRight="10dp",
+                      layout_width="match_parent";
+                      layout_gravity="center",
+                      id="edit";
+                    };
                   };
-                };
 
-                AlertDialog.Builder(this)
-                .setTitle("请输入")
-                .setView(loadlayout(InputLayout))
-                .setPositiveButton("确定", {onClick=function() activity.newActivity("search_result",{edit.text}) end})
-                .setNegativeButton("取消", nil)
-                .show();
-
+                  AlertDialog.Builder(this)
+                  .setTitle("请输入")
+                  .setView(loadlayout(InputLayout))
+                  .setPositiveButton("确定", {onClick=function() activity.newActivity("search_result",{edit.text}) end})
+                  .setNegativeButton("取消", nil)
+                  .show();
+                end
             end},
             {src=图标("email"),text="反馈",onClick=function()
                 跳转页面("feedback")
@@ -353,9 +356,11 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       task(400,收藏刷新)
       _title.Text="收藏"
      elseif s=="本地" then
-      activity.newActivity("local_list")
+      --activity.newActivity("local_list")
+      task(300,function()activity.newActivity("local_list")end)
      elseif s=="debug" then
-      activity.newActivity("feedback")
+      --activity.newActivity("feedback")
+      task(300,function()activity.newActivity("feedback")end)
      elseif s=="设置" then
       task(300,function()activity.newActivity("settings")end)
      elseif s=="一文" then
@@ -1118,6 +1123,10 @@ function 主页刷新(hometype)
 end
 主页刷新()
 
+if 状态=="未登录" then
+  sign_out.setVisibility(View.INVISIBLE)
+end
+
 
 sr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
 sr.setColorSchemeColors({转0x(primaryc)});
@@ -1393,7 +1402,7 @@ function 热榜刷新(t)
                 导向链接="文章分割"..tointeger(tab[i].target.id)
               end
 
-              table.insert(热榜adp.getData(),{标题=标题,热度=热度,排行=排行,导向链接=导向链接,热图片={src=String(热榜图片),Visibility=#热榜图片>0 and 0 or 8}})
+              table.insert(热榜adp.getData(),{标题=标题,热度=热度,排行=排行,导向链接=导向链接,热图片={src=热榜图片,Visibility=#热榜图片>0 and 0 or 8}})
               Glide.get(this).clearMemory();
             end
             Glide.get(this).clearMemory();
@@ -2496,6 +2505,6 @@ data=...
 function onCreate()
   if data then
     local intent=tostring(data.getData())
-    检查意图(inent)
+    检查意图(intent)
   end
 end

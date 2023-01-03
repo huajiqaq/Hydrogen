@@ -179,6 +179,8 @@ local base_people=require "model.people":new(people_id)
         if a==200 then
           followtext.Text="取消关注";
           提示("关注成功")
+         elseif a==500 then
+          提示("请登录后使用本功能")
         end
       end)
      elseif followtext.Text=="取消关注"
@@ -293,8 +295,6 @@ function 其他(isclear)
       end
       if require "cjson".decode(content).paging.is_end and isclear~="clear" then
         提示("已经没有更多内容了")
-       else
-        提示("加载中")
       end
       for i,v in ipairs(require "cjson".decode(content).data) do
         --  local 预览内容=v.excerpt_new
@@ -387,7 +387,7 @@ end
 add=true
 
 function bit.onScrollChange(a,b,j,y,u)
-  if (add and bit.getChildAt(0).getMeasuredHeight()==bit.getScrollY()+bit.getHeight() and base_people.is_end==false) then
+  if (add and bit.getChildAt(0).getMeasuredHeight()==bit.getScrollY()+bit.getHeight() and base_people.is_end==false and chobu~="no搜索") then
     add=false
     task(2000,function()add=true
     end)
@@ -426,6 +426,7 @@ function _sort.onClick(view)
 end
 
 function nochecktitle(str)
+  chobu="no搜索"
   local oridata=people_list.adapter.getData()
 
   for b=1,2 do
