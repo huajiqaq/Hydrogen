@@ -742,6 +742,8 @@ voteup.onClick=function()
           vote_count.text=unvoted[回答id]
         end
       end)
+     elseif code==401 then
+      提示("请登录后使用本功能")
     end
   end)
 end
@@ -763,6 +765,8 @@ thank.onClick=function()
         点击感谢状态=true
         提示("表达感谢成功")
         thanks_count.text=thanked[回答id]
+       elseif code==401 then
+        提示("请登录后使用本功能")
       end
     end)
    else
@@ -771,6 +775,8 @@ thank.onClick=function()
         提示("取消感谢成功")
         thanks_count.text=unthanked[回答id]
         点击感谢状态=false
+       elseif code==401 then
+        提示("请登录后使用本功能")
       end
     end)
 
