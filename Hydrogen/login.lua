@@ -14,21 +14,25 @@ activity.setContentView(loadlayout("layout/login"))
 
 login_web.removeView(login_web.getChildAt(0))
 
-login_web.loadUrl("https://www.zhihu.com/signin")
+if url then
+  login_web.loadUrl(url)
+ else
+  login_web.loadUrl("https://www.zhihu.com/signin")
+end
 
 
 --开启 DOM storage API 功能
 login_web.getSettings().setDomStorageEnabled(true);
 
 
-  login_web
-  .getSettings()
-  .setAppCacheEnabled(true)
-    --//开启 DOM 存储功能
-  .setDomStorageEnabled(true)
-  --        //开启 数据库 存储功能
-  .setDatabaseEnabled(true)
-  .setCacheMode(2)
+login_web
+.getSettings()
+.setAppCacheEnabled(true)
+--//开启 DOM 存储功能
+.setDomStorageEnabled(true)
+--        //开启 数据库 存储功能
+.setDatabaseEnabled(true)
+.setCacheMode(2)
 
 --import "android.webkit.WebChromeClient"
 --login_web.setWebChromeClient(luajava.override(WebChromeClient,{
@@ -44,6 +48,7 @@ login_web.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     end
 end}))
 
+
 login_web.setWebViewClient{
   onLoadResource=function(view,url)
     if 全局主题值=="Night" then
@@ -57,6 +62,29 @@ login_web.setWebViewClient{
       progress.setVisibility(0)
     end
 
+    local res=false
+    if url:find("wtloginmqq") then
+      view.stopLoading()
+      双按钮对话框("提示","是否使用QQ登录知乎？","是","否",
+      function()
+        activity.finish()
+        xpcall(function()
+          intent=Intent("android.intent.action.VIEW")
+          intent.setData(Uri.parse(url))
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+          this.startActivity(intent)
+          an.dismiss()
+        end,
+        function(v)
+          提示("尝试打开出错")
+          an.dismiss()
+        end)
+      end,
+      function()
+        view.loadUrl("https://www.zhihu.com/signin")
+        an.dismiss()
+      end)
+    end
   end,
   onPageStarted=function(view,url)
     view.evaluateJavascript([[(function(){

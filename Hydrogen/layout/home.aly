@@ -206,6 +206,7 @@
                   orientation="horizontal";
                   gravity="right",
                   id="sign_out";
+                  Visibility=4;
                   layout_width="-1";
                   {
                     ImageView;
