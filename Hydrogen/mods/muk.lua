@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.061
+versionCode=16.062
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -2668,3 +2668,7 @@ Http.get(get_api,function(code,content)
     okstart=content:match("start%=(.+),start")
   end
 end)
+import "com.baidu.mobstat.StatService"
+StatService
+.setAppKey("c5aac7351d")
+.start(this)

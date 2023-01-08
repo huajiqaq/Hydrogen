@@ -62,7 +62,7 @@ import "android.content.pm.PackageManager"
 import "android.content.Intent"
 import "android.net.Uri"
 import "android.util.Base64"
-import "http"
+--import "http"
 
 import "androidx.*"
 import "androidx.appcompat.*"

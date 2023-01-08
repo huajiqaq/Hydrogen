@@ -54,31 +54,24 @@
     };
     {
       ScrollView;
-      layout_height="-1";
-      layout_width="-1";
+      layout_height="match_parent";
+      layout_width="match_parent";
+      fillViewport="true";
       {
         LinearLayout;
         layout_height="-1";
         layout_width="-1";
         orientation="vertical";
         {
-          NoScrollListView;
-          layout_height="-1";
+          RelativeLayout;
+          id="letgo";
           layout_width="-1";
-          DividerHeight=0;
-          id="settings_list";
-        };
-        {
-          EditText;
-          id="Editt";
           layout_height="wrap_content";
-          layout_width="match_parent";
-        };
-        {
-          EditText;
-          id="Edittt";
-          layout_height="wrap_content";
-          layout_width="match_parent";
+          {
+            RecyclerView,
+            id="recycler_view",
+            padding="10dp"
+          };
         };
         {
           CardView;
@@ -88,7 +81,14 @@
           layout_gravity="center",
           --background=primaryc;
           CardBackgroundColor=primaryc;
-          onClick=function()Editt.Text=kk 提示("恢复成功 请重新编辑") end;
+          onClick=function()
+            双按钮对话框("提示","是否要恢复默认？","好的","取消",function()
+              关闭对话框(an)
+              activity.recreate()
+              end,function()
+              关闭对话框(an)
+            end)
+          end;
           {
             TextView;
             id="moren",
@@ -114,7 +114,7 @@
           layout_gravity="center",
           --background=primaryc;
           CardBackgroundColor=primaryc;
-          onClick=function()修改页面() end;
+          onClick=function()提示("加载中 请耐心等待") end;
           {
             TextView;
             id="xiugai",
@@ -135,3 +135,4 @@
     };
   };
 };
+

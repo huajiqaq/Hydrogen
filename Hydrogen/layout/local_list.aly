@@ -89,12 +89,16 @@
         layout_height="fill",
         background=backgroundc,
         {
+          LinearLayout,
+ id="tabv";
+        {
           MyTab
           {
             id="localtab",
           },
           contentDescription="本地标签",
 
+        };
         };
         {
           ListView;
@@ -105,6 +109,17 @@
           layout_height="fill";
           id="local_listview";
 
+        };
+        
+        {
+          TextView;
+          textColor=textc,
+          id="empty";
+          layout_width="fill";
+          layout_height="fill";
+          text="快点保存在本地吧！";
+          visibility="gone";
+          gravity="center";
         };
       };
     };

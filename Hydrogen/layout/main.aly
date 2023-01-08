@@ -10,6 +10,6 @@
     layout_height="-2";
     layout_gravity="center";
     layout_width="-2";
-    src="icon";
+    src="logo";
   };
 };

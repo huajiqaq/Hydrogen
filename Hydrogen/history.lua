@@ -14,7 +14,7 @@ end
 
 local recordtt={}
 local recordii={}
-function 初始化(func)
+function 初始化()
   if (退出时保存历史记录==true)then
     for d in each(this.getSharedPreferences("Historyrecordtitle",0).getAll().entrySet()) do
       recordtt[tonumber(d.getKey())]=d.getValue()
@@ -37,6 +37,7 @@ end
 history_list.setDividerHeight(0)
 if (#recordtt==0)then
   history_list.setVisibility(8)
+  tabv.setVisibility(8)
   empty.setVisibility(0)
 end
 
