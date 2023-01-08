@@ -12,9 +12,9 @@ if isxg then
   activity.setResult(1500,nil)
 end
 
-local recordtt={}
-local recordii={}
 function 初始化()
+  recordtt={}
+  recordii={}
   if (退出时保存历史记录==true)then
     for d in each(this.getSharedPreferences("Historyrecordtitle",0).getAll().entrySet()) do
       recordtt[tonumber(d.getKey())]=d.getValue()
@@ -37,7 +37,7 @@ end
 history_list.setDividerHeight(0)
 if (#recordtt==0)then
   history_list.setVisibility(8)
-  tabv.setVisibility(8)
+  histab.ids.load.parent.setVisibility(8)
   empty.setVisibility(0)
 end
 
@@ -177,22 +177,35 @@ end
 history_list.onItemLongClick=function(l,v,c,b)
   双按钮对话框("删除","删除该历史记录？该操作不可撤消！ 确认后将会重启页面","是的","点错了",function()
 
-    recordtt[tointeger(v.Tag.history_num.text)]=nil
-    recordii[tointeger(v.Tag.history_num.text)]=nil
     adp.clear()
     清除历史记录()
-    for i,v in pairs(recordtt) do
-      if recordtt[i] then
-        保存历史记录(recordtt[i],recordii[i],50)
-        activity.setResult(1500,nil)
+    allnum=#recordtt
+    recordtt[tointeger(v.Tag.history_num.text)]=nil
+    recordii[tointeger(v.Tag.history_num.text)]=nil
+
+    kkk=0
+    for n=1,allnum do
+      if recordtt[n] then
+        kkk=kkk+1
+        this.getSharedPreferences("Historyrecordtitle",0).edit().putString(tostring(kkk),recordtt[n]).commit()
+        this.getSharedPreferences("Historyrecordid",0).edit().putString(tostring(kkk),recordii[n]).commit()
       end
     end
+
+
+    --     初始化历史记录数据(true)
+    --           print(recordtitle[#recordtitle])
+    初始化()
+    for n=1,#recordtt do
+      adp.add{history_title=recordtt[n],history_num=tostring(n)}
+    end
+
+
+    adp.notifyDataSetChanged()
     an.dismiss()
+    activity.setResult(1500,nil)
     提示("已删除")
-    task(200,function()
-      activity.newActivity("history",{true}).overridePendingTransition(0, 0)
-      activity.finish()
-    end)
+
   end
   ,function()an.dismiss()end)
   return true
@@ -200,6 +213,8 @@ end
 history_list.onItemClick=function(l,v,c,b)
   local clicknum=tointeger(v.Tag.history_num.text)
   local open=activity.getSharedData("内部浏览器查看回答")
+  初始化历史记录数据(true)
+  保存历史记录(recordtt[clicknum],recordii[clicknum],50)
   if (recordii[clicknum]):find("文章分割") then
     activity.newActivity("column",{(recordii[clicknum]):match("文章分割(.+)"),(recordii[clicknum]):match("分割(.+)")})
    elseif (recordii[clicknum]):find("想法分割") then
@@ -218,7 +233,20 @@ history_list.onItemClick=function(l,v,c,b)
       activity.newActivity("huida",{"https://www.zhihu.com/question/"..(recordii[clicknum])})
     end
   end
+  --     初始化历史记录数据(true)
+  activity.setResult(1500,nil)
+  task(300,function()
+    初始化()
+    adp.clear()
+    for n=1,#recordtt do
+      adp.add{history_title=recordtt[n],history_num=tostring(n)}
+    end
+    adp.notifyDataSetChanged()
+  end)
 end
+
+
+
 a=MUKPopu({
   tittle="历史记录",
   list={

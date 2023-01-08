@@ -9,8 +9,10 @@ import "android.widget.ImageView$ScaleType"
 import "com.lua.custrecycleradapter.*"
 import "androidx.recyclerview.widget.*"
 
+
 activity.setContentView(loadlayout("layout/home"))
 --设置视图
+
 
 
 初始化历史记录数据(true)
@@ -199,7 +201,8 @@ drawer_item={
       TextView;
       layout_width="-1";
       layout_height="3px";
-      background=cardbackc,
+      --     background=cardedge,
+      background=cardback,
       layout_marginTop="8dp";
       layout_marginBottom="8dp";
     };
@@ -477,7 +480,7 @@ function homepage1()
         end
       end
      elseif code==401 then
-      myhtb.setVisibility(View.GONE)
+      hometab.ids.load.parent.setVisibility(8)
     end
   end)
   c1=x
@@ -802,7 +805,7 @@ itemc2=
   LinearLayout;
   layout_width="-1";
   orientation="horizontal";
-  BackgroundColor=cardedge;
+  BackgroundColor=cardback;
 
   {
     CardView;
@@ -856,7 +859,8 @@ itemc2=
             ellipsize="end",
             id="文章2";
             letterSpacing="0.02";
-            textColor=stextc;
+            --            textColor=stextc;
+            textColor=textc;
             layout_marginTop="10dp";
             Typeface=字体("product");
           };
@@ -1044,8 +1048,11 @@ function 主页刷新(hometype)
      elseif v.target.type=="article" then--????????没有测到这个推荐流
       问题id等="文章分割"..tointeger(v.target.id)
       标题=v.target.title
+     elseif v.target.type=="zvideo" then
+      问题id等="视频分割"..v.target.id
+      标题=v.target.title
      else
-      提示("未知类型"..v.target.type.." id"+v.target.id)
+      --      提示("未知类型"..v.target.type or "无法获取type".." id"..v.target.id or "无法获取id")
     end
     return {点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等}
   end
@@ -1167,7 +1174,8 @@ itemc=
   layout_width="-1",
   -- layout_height='56dp';
   --id="fpll",
-  background=cardedge,
+  -- background=cardedge,
+  background=cardback,
   {
     CardView;
     layout_margin="0dp";
@@ -1388,12 +1396,15 @@ function 热榜刷新(t)
   Handler().postDelayed(Runnable({
     run=function()
       xpcall(function()
-
+        --[[
+        dl=ProgressDialog.show(activity,nil,'加载中 请耐心等待')
+        dl.show()
+        ]]
         Http.get(hotdata:getValue(tostring(hotTab:getShowItem(t).getChildAt(0).text),true),function(code,content)
           if code==200 then--判断网站状态
             local tab=require "cjson".decode(content).data
-            for i=1,#tab do
 
+            for i=1,#tab do
               local 标题,热度,排行,导向链接=tab[i].target.title,tab[i].detail_text,i,tointeger(tab[i].target.id)..""
               local 热榜图片=tab[i].children[1].thumbnail
               --  print(热榜图片)
@@ -1401,11 +1412,13 @@ function 热榜刷新(t)
                 导向链接="文章分割"..tointeger(tab[i].target.id)
               end
 
+
               table.insert(热榜adp.getData(),{标题=标题,热度=热度,排行=排行,导向链接=导向链接,热图片={src=热榜图片,Visibility=#热榜图片>0 and 0 or 8}})
               Glide.get(this).clearMemory();
             end
             Glide.get(this).clearMemory();
-            task(1,function() 热榜adp.notifyDataSetChanged() end)
+            热榜adp.notifyDataSetChanged()
+            --            task(1000,function()dl.dismiss()end)
            else
             --        提示("获取回答失败 "..content)
           end
@@ -2057,6 +2070,9 @@ list2.setOnItemClickListener(AdapterView.OnItemClickListener{
      elseif tostring(v.Tag.链接2.text):find("想法分割") then
       activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
 
+     elseif tostring(v.Tag.链接2.text):find("视频分割") then
+      activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("视频分割(.+)"),"视频"})
+
      else
 
       保存历史记录(v.Tag.标题2.Text,v.Tag.链接2.Text,50)
@@ -2096,14 +2112,13 @@ list3.setOnItemClickListener(AdapterView.OnItemClickListener{
 
 
 
-
 --关注布局
 follow_itemc=
 {
   LinearLayout;
   layout_width="-1";
   orientation="horizontal";
-  BackgroundColor=backgroundc;
+
   {
     CardView;
     layout_gravity="center";
@@ -2120,7 +2135,7 @@ follow_itemc=
       CardElevation="0dp";
       CardBackgroundColor=backgroundc;
       Radius="0dp";
-      layout_margin="4px";
+      layout_margin=cardmargin;
       layout_width="-1";
       layout_height="-1";
       {
@@ -2355,6 +2370,8 @@ function onActivityResult(a,b,c)
     activity.finish()
    elseif b==1500 then
     初始化历史记录数据(true)
+   elseif b==1600 then
+    收藏刷新()
   end
 
 end

@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.062
+versionCode=16.064
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -371,8 +371,10 @@ function 主题(str)
    elseif 全局主题值=="Night" then
     primaryc="#FF88B0F8"
     secondaryc="#ffbfa328"
-    textc="#808080"
-    stextc="#666666"
+    --    textc="#808080"
+    textc="#FFCBCBCB"
+    --    stextc="#666666"
+    stextc="#808080"
     backgroundc="#ff191919"
     barbackgroundc="#ef191919"
     cardbackc="#ff212121"
@@ -418,9 +420,11 @@ lsmactivity={
   CUSTOM_THINGS="Custom things",
 }
 
+
 if lsmactivity.getData("Setting_Auto_Night_Mode")==nil then
   activity.setSharedData("Setting_Auto_Night_Mode","true")
 end
+
 
 function 设置主题()
   if Boolean.valueOf(lsmactivity.getData("Setting_Auto_Night_Mode"))==true then
@@ -442,6 +446,7 @@ function 设置主题()
   end
 
 end
+
 
 设置主题()
 
@@ -1303,6 +1308,9 @@ function 检查意图(url,b)
      elseif url:find "question" then
       if b then return true end
       activity.newActivity("question",{url:match("question/(.-)?"),true})
+    elseif url:find "topic" then
+      if b then return true end
+      activity.newActivity("topic",{url:match("topic/(.-)/")})
      elseif url:find "articles" then
       if b then return true end
       activity.newActivity("column",{url:match("articles/(.-)?")})
@@ -1491,6 +1499,7 @@ function xdc(url,path)
   import "java.io.File"
   file=File(path);
   local con = ur.openConnection();
+  con.setRequestProperty("Accept-Encoding", "identity");
   local co = con.getContentLength();
   local is = con.getInputStream();
   local bs = byte[1024]
@@ -1599,12 +1608,12 @@ function 下载文件对话框(title,url,path,ex)
       --      提示("下载完成，大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
       if path:find(".apk$")~=nil then
         提示("安装包下载成功,大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
-        安装apk(path)
+        双按钮对话框("安装APP",[===[您下载了安装包文件，要现在安装吗？ 取消后可前往]===]..path.."手动安装","立即安装","取消",function()关闭对话框(an)安装apk(path)end,function()关闭对话框(an)end)
         myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).Text="立即安装"
         myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
           安装apk(path)
         end
-        --        双按钮对话框("安装APP",[===[您下载了安装包文件，要现在安装吗？]===],"立即安装","取消",function()关闭对话框(an)安装apk(path)end,function()关闭对话框(an)end)
+
        else
         提示("下载完成，大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
       end
@@ -2247,8 +2256,9 @@ function table2string(tablevalue)
   return stringtable
 end
 
-coll=""
+
 function 加入收藏夹(回答id,收藏类型)
+  coll=""
   Http.get("https://www.zhihu.com/api/v4/me",{
     ["cookie"] = 获取Cookie("https://www.zhihu.com/");
     },function(code,content)
@@ -2467,6 +2477,7 @@ emulateMouseClick(
       .setGravity(Gravity.RIGHT|Gravity.CENTER)
       --创建路径标签
 
+
       lp=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
       lp.gravity = Gravity.RIGHT|Gravity.CENTER
       lq=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
@@ -2474,17 +2485,22 @@ emulateMouseClick(
 
       ac=TextView(activity).setText("待选中收藏夹")
       .setLayoutParams(lq);
+
       ab=ImageView(activity).setImageBitmap(loadbitmap(图标("add")))
+      .setColorFilter(转0x(textc))
       .setLayoutParams(lp);
+
       ap=TextView(activity).setText("新建收藏夹")
-      .setTextColor(0xFF000300)
+      --      .setTextColor(0xFF000300)
+      --      .setLayoutParams(lp);
       .setLayoutParams(lp);
 
       addd.addView(ap).addView(ab)
-      ab.onClick=function()
+      --      addd.addView(ap)
+      --[[      ab.onClick=function()
         新建收藏夹()
       end
-
+]]
       ap.onClick=function()
         新建收藏夹()
       end
@@ -2672,3 +2688,372 @@ import "com.baidu.mobstat.StatService"
 StatService
 .setAppKey("c5aac7351d")
 .start(this)
+cardback=全局主题值=="Day" and cardedge or backgroundc
+cardmargin=全局主题值=="Day" and "4px" or false
+
+function 黑暗模式主题(view)
+  加载js(view,[[;(function () {
+    'use strict';
+
+    let util = {
+
+        addStyle(id, tag, css) {
+            tag = tag || 'style';
+            let doc = document, styleDom = doc.getElementById(id);
+            if (styleDom) return;
+            let style = doc.createElement(tag);
+            style.rel = 'stylesheet';
+            style.id = id;
+            tag === 'style' ? style.innerHTML = css : style.href = css;
+            doc.head.appendChild(style);
+        },
+
+        hover(ele, fn1, fn2) {
+            ele.onmouseenter = function () {  //移入事件
+                fn1.call(ele);
+            };
+            ele.onmouseleave = function () { //移出事件
+                fn2.call(ele);
+            };
+        },
+
+        addThemeColor(color) {
+            let doc = document, meta = doc.getElementsByName('theme-color')[0];
+            if (meta) return meta.setAttribute('content', color);
+            let metaEle = doc.createElement('meta');
+            metaEle.name = 'theme-color';
+            metaEle.content = color;
+            doc.head.appendChild(metaEle);
+        },
+
+        getThemeColor() {
+            let meta = document.getElementsByName('theme-color')[0];
+            if (meta) {
+                return meta.content;
+            }
+            return '#ffffff';
+        },
+
+        removeElementById(eleId) {
+            let ele = document.getElementById(eleId);
+            ele && ele.parentNode.removeChild(ele);
+        },
+
+        hasElementById(eleId) {
+            return document.getElementById(eleId);
+        },
+
+        filter: '-webkit-filter: url(#dark-mode-filter) !important; filter: url(#dark-mode-filter) !important;',
+        reverseFilter: '-webkit-filter: url(#dark-mode-reverse-filter) !important; filter: url(#dark-mode-reverse-filter) !important;',
+        firefoxFilter: `filter: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="dark-mode-filter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.283 -0.567 -0.567 0 0.925 -0.567 0.283 -0.567 0 0.925 -0.567 -0.567 0.283 0 0.925 0 0 0 1 0"/></filter></svg>#dark-mode-filter') !important;`,
+        firefoxReverseFilter: `filter: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="dark-mode-reverse-filter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.333 -0.667 -0.667 0 1 -0.667 0.333 -0.667 0 1 -0.667 -0.667 0.333 0 1 0 0 0 1 0"/></filter></svg>#dark-mode-reverse-filter') !important;`,
+        noneFilter: '-webkit-filter: none !important; filter: none !important;',
+    };
+
+    let main = {
+
+        addExtraStyle() {
+            try {
+                return darkModeRule;
+            } catch (e) {
+                return '';
+            }
+        },
+
+        createDarkFilter() {
+            if (util.hasElementById('dark-mode-svg')) return;
+            let svgDom = '<svg id="dark-mode-svg" style="height: 0; width: 0;"><filter id="dark-mode-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.283 -0.567 -0.567 0 0.925 -0.567 0.283 -0.567 0 0.925 -0.567 -0.567 0.283 0 0.925 0 0 0 1 0"></feColorMatrix></filter><filter id="dark-mode-reverse-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.333 -0.667 -0.667 0 1 -0.667 0.333 -0.667 0 1 -0.667 -0.667 0.333 0 1 0 0 0 1 0"></feColorMatrix></filter></svg>';
+            let div = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+            div.innerHTML = svgDom;
+            let frag = document.createDocumentFragment();
+            while (div.firstChild)
+                frag.appendChild(div.firstChild);
+            document.head.appendChild(frag);
+        },
+
+        createDarkStyle() {
+            util.addStyle('dark-mode-style', 'style', `
+                @media screen {
+                    html {
+                        ${this.isFirefox() ? util.firefoxFilter : util.filter}
+                        scrollbar-color: #454a4d #202324;
+                    }
+            
+                    /* Default Reverse rule */
+                    img, 
+                    .sr-backdrop {
+                        ${this.isFirefox() ? util.firefoxReverseFilter : util.reverseFilter}
+                    }
+            
+                    [style*="background:url"] *,
+                    [style*="background-image:url"] *,
+                    [style*="background: url"] *,
+                    [style*="background-image: url"] *,
+                    input,
+                    [background] *,
+                    img[src^="https://s0.wp.com/latex.php"],
+                    twitterwidget .NaturalImage-image {
+                        ${util.noneFilter}
+                    }
+            
+                    /* Text contrast */
+                    html {
+                        text-shadow: 0 0 0 !important;
+                    }
+            
+                    /* Full screen */
+                    .no-filter,
+                    :-webkit-full-screen,
+                    :-webkit-full-screen *,
+                    :-moz-full-screen,
+                    :-moz-full-screen *,
+                    :fullscreen,
+                    :fullscreen * {
+                        ${util.noneFilter}
+                    }
+                    
+                    ::-webkit-scrollbar {
+                        background-color: #202324;
+                        color: #aba499;
+                    }
+                    ::-webkit-scrollbar-thumb {
+                        background-color: #454a4d;
+                    }
+                    ::-webkit-scrollbar-thumb:hover {
+                        background-color: #575e62;
+                    }
+                    ::-webkit-scrollbar-thumb:active {
+                        background-color: #484e51;
+                    }
+                    ::-webkit-scrollbar-corner {
+                        background-color: #181a1b;
+                    }
+            
+                    /* Page background */
+                    html {
+                        background: #fff !important;
+                    }
+                    
+                    ${this.addExtraStyle()}
+                }
+            
+                @media print {
+                    .no-print {
+                        display: none !important;
+                    }
+                }`);
+        },
+
+
+
+        enableDarkMode() {
+            if (this.isFullScreen()) return;
+            !this.isFirefox() && this.createDarkFilter();
+            this.createDarkStyle();
+            util.addThemeColor('#131313');
+        },
+
+        disableDarkMode() {
+            util.removeElementById('dark-mode-svg');
+            util.removeElementById('dark-mode-style');
+            util.addThemeColor('#ffffff');
+        },
+
+        addDarkTheme() {
+
+                        lightDOM.style.transform = 'scale(1)';
+                        lightDOM.style.opacity = '1';
+                        darkDOM.style.transform = 'scale(0)';
+                        darkDOM.style.opacity = '0';
+                        this.enableDarkMode();
+        },
+
+        isTopWindow() {
+            return window.self === window.top;
+        },
+
+        addListener() {
+            document.addEventListener("fullscreenchange", (e) => {
+                if (this.isFullScreen()) {
+                    //进入全屏
+                    this.disableDarkMode();
+                } else {
+                    //退出全屏
+                    this.enableDarkMode();
+                }
+            });
+        },
+
+        isFullScreen() {
+            return document.fullscreenElement;
+        },
+
+        isFirefox() {
+            return /Firefox/i.test(navigator.userAgent);
+        },
+
+        firstEnableDarkMode() {
+            if (document.head) {
+                this.enableDarkMode();
+            }
+            const headObserver = new MutationObserver(() => {
+                his.enableDarkMode();
+            });
+            headObserver.observe(document.head, {childList: true, subtree: true});
+
+            if (document.body) {
+                this.addDarkTheme();
+            } else {
+                const bodyObserver = new MutationObserver(() => {
+                    if (document.body) {
+                        bodyObserver.disconnect();
+                        this.addDarkTheme();
+                    }
+                });
+                bodyObserver.observe(document, {childList: true, subtree: true});
+            }
+        },
+
+        init() {
+            this.addListener();
+            this.firstEnableDarkMode();
+        }
+    };
+    main.init();
+})();
+]])
+end
+
+function 白天主题(view)
+  加载js(view,[[;(function () {
+    'use strict';
+
+    let util = {
+
+        addStyle(id, tag, css) {
+            tag = tag || 'style';
+            let doc = document, styleDom = doc.getElementById(id);
+            if (styleDom) return;
+            let style = doc.createElement(tag);
+            style.rel = 'stylesheet';
+            style.id = id;
+            tag === 'style' ? style.innerHTML = css : style.href = css;
+            doc.head.appendChild(style);
+        },
+
+        hover(ele, fn1, fn2) {
+            ele.onmouseenter = function () {  //移入事件
+                fn1.call(ele);
+            };
+            ele.onmouseleave = function () { //移出事件
+                fn2.call(ele);
+            };
+        },
+
+        addThemeColor(color) {
+            let doc = document, meta = doc.getElementsByName('theme-color')[0];
+            if (meta) return meta.setAttribute('content', color);
+            let metaEle = doc.createElement('meta');
+            metaEle.name = 'theme-color';
+            metaEle.content = color;
+            doc.head.appendChild(metaEle);
+        },
+
+        getThemeColor() {
+            let meta = document.getElementsByName('theme-color')[0];
+            if (meta) {
+                return meta.content;
+            }
+            return '#ffffff';
+        },
+
+        removeElementById(eleId) {
+            let ele = document.getElementById(eleId);
+            ele && ele.parentNode.removeChild(ele);
+        },
+
+        hasElementById(eleId) {
+            return document.getElementById(eleId);
+        },
+
+        filter: '-webkit-filter: url(#dark-mode-filter) !important; filter: url(#dark-mode-filter) !important;',
+        reverseFilter: '-webkit-filter: url(#dark-mode-reverse-filter) !important; filter: url(#dark-mode-reverse-filter) !important;',
+        firefoxReverseFilter: `filter: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="dark-mode-reverse-filter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.333 -0.667 -0.667 0 1 -0.667 0.333 -0.667 0 1 -0.667 -0.667 0.333 0 1 0 0 0 1 0"/></filter></svg>#dark-mode-reverse-filter') !important;`,
+    };
+
+    let main = {
+    
+        addExtraStyle() {
+            try {
+                return darkModeRule;
+            } catch (e) {
+                return '';
+            }
+        },
+
+
+
+        createDayStyle() {
+            util.addStyle('day-style', 'style', `
+                @media screen {
+                    img, 
+                    .sr-backdrop {
+                        ${this.isFirefox() ? util.firefoxReverseFilter : util.reverseFilter}
+                    }                                                   
+                }
+            `);
+        },
+
+
+        isFirefox() {
+            return /Firefox/i.test(navigator.userAgent);
+        },
+
+
+        init() {
+            this.createDayStyle();
+        }
+    };
+    main.init();
+})();
+]])
+end
+
+function 等待doc(view)
+  加载js(view,[[function waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals) {
+		if (typeof waitOnce === "undefined") {
+			waitOnce = true;
+		}
+		if (typeof interval === "undefined") {
+			interval = 300;
+		}
+		if (typeof maxIntervals === "undefined") {
+			maxIntervals = -1;
+		}
+		var targetNodes =
+			typeof selectorOrFunction === "function" ? selectorOrFunction() : document.querySelectorAll(selectorOrFunction);
+
+		var targetsFound = targetNodes && targetNodes.length > 0;
+		if (targetsFound) {
+			targetNodes.forEach(function(targetNode) {
+				var attrAlreadyFound = "data-userscript-alreadyFound";
+				var alreadyFound = targetNode.getAttribute(attrAlreadyFound) || false;
+				if (!alreadyFound) {
+					var cancelFound = callback(targetNode);
+					if (cancelFound) {
+						targetsFound = false;
+					} else {
+						targetNode.setAttribute(attrAlreadyFound, true);
+					}
+				}
+			});
+		}
+
+		if (maxIntervals !== 0 && !(targetsFound && waitOnce)) {
+			maxIntervals -= 1;
+			setTimeout(function() {
+				waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals);
+			}, interval);
+		}
+	}]])
+end

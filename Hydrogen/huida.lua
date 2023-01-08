@@ -2,9 +2,9 @@ require "import"
 import "mods.muk"
 import "com.ua.*"
 
-chrome = import "com.lua.LuaWebChrome"
-client = import "com.lua.LuaWebViewclient"
-callback = import "com.androlua.LuaWebView$LuaWebViewClient"
+chrome = import "com.lua.LuaWebChrome";
+client = import "com.lua.LuaWebViewclient";
+callback = import "com.androlua.LuaWebView$LuaWebViewClient";
 
 
 liulanurl,docode,ischeck,fxurl=...
@@ -151,46 +151,14 @@ liulan.setWebViewClient{
   end,
   onPageStarted=function(view,url,favicon)
 
+    等待doc(view)
+    if 全局主题值=="Night" then
+      黑暗模式主题(view)
+    end
+
     --[[    if tostring(docode):match("默认") ~=true then load(docode)(tostring(url)) end--登录判断]]
 
     加载js(view,[[var setooo
-
-function waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals) {
-	if (typeof waitOnce === "undefined") {
-		waitOnce = true;
-	}
-	if (typeof interval === "undefined") {
-		interval = 300;
-	}
-	if (typeof maxIntervals === "undefined") {
-		maxIntervals = -1;
-	}
-	var targetNodes =
-		typeof selectorOrFunction === "function" ? selectorOrFunction() : document.querySelectorAll(selectorOrFunction);
-
-	var targetsFound = targetNodes && targetNodes.length > 0;
-	if (targetsFound) {
-		targetNodes.forEach(function(targetNode) {
-			var attrAlreadyFound = "data-userscript-alreadyFound";
-			var alreadyFound = targetNode.getAttribute(attrAlreadyFound) || false;
-			if (!alreadyFound) {
-				var cancelFound = callback(targetNode);
-				if (cancelFound) {
-					targetsFound = false;
-				} else {
-					targetNode.setAttribute(attrAlreadyFound, true);
-				}
-			}
-		});
-	}
-
-	if (maxIntervals !== 0 && !(targetsFound && waitOnce)) {
-		maxIntervals -= 1;
-		setTimeout(function() {
-			waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals);
-		}, interval);
-	}
-}
 
 window.open=function() { return false }
 
@@ -238,8 +206,11 @@ waitForKeyElements(' [class="Body--Android Body--Tablet Body--BaiduApp"]', setq)
   end,
   onPageFinished=function(view,url)
     if 全局主题值=="Night" then
-      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+      黑暗模式主题(view)
     end
+    --    if 全局主题值=="Night" then
+    --      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+    --    end
     if docode~="默认" then 屏蔽元素(view,{"SignFlowHomepage-footer"})
     end
     if liulanurl=="https://www.zhihu.com" then

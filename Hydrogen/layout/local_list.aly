@@ -89,16 +89,12 @@
         layout_height="fill",
         background=backgroundc,
         {
-          LinearLayout,
- id="tabv";
-        {
           MyTab
           {
             id="localtab",
           },
           contentDescription="本地标签",
 
-        };
         };
         {
           ListView;
@@ -110,7 +106,7 @@
           id="local_listview";
 
         };
-        
+
         {
           TextView;
           textColor=textc,

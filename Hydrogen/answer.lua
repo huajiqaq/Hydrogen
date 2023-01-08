@@ -238,50 +238,15 @@ function 数据添加(t,b)
       end
     end,
     onPageStarted=function(view,url,favicon)
+      等待doc(view)
       if 全局主题值=="Night" then
-        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+        --       加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=80,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+        --   黑暗模式主题(view)
       end
     end,
     onPageFinished=function(view,url,favicon)
-      加载js(t.content,[[function waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals) {
-		if (typeof waitOnce === "undefined") {
-			waitOnce = true;
-		}
-		if (typeof interval === "undefined") {
-			interval = 300;
-		}
-		if (typeof maxIntervals === "undefined") {
-			maxIntervals = -1;
-		}
-		var targetNodes =
-			typeof selectorOrFunction === "function" ? selectorOrFunction() : document.querySelectorAll(selectorOrFunction);
-
-		var targetsFound = targetNodes && targetNodes.length > 0;
-		if (targetsFound) {
-			targetNodes.forEach(function(targetNode) {
-				var attrAlreadyFound = "data-userscript-alreadyFound";
-				var alreadyFound = targetNode.getAttribute(attrAlreadyFound) || false;
-				if (!alreadyFound) {
-					var cancelFound = callback(targetNode);
-					if (cancelFound) {
-						targetsFound = false;
-					} else {
-						targetNode.setAttribute(attrAlreadyFound, true);
-					}
-				}
-			});
-		}
-
-		if (maxIntervals !== 0 && !(targetsFound && waitOnce)) {
-			maxIntervals -= 1;
-			setTimeout(function() {
-				waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals);
-			}, interval);
-		}
-	}
-	
-
-	
+      加载js(view,[[
 	function yh() {
 		document.getElementsByClassName("AnswerReward")[0].style.display = "none"
 	}
@@ -289,7 +254,8 @@ function 数据添加(t,b)
    ]])
 
       --      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
-      if b.editable_content:find("video%-link") then
+      --      if b.editable_content:find("video%-link") then
+      if not b.attachment then
         Http.get("https://www.zhihu.com/api/v4/me",{
           ["cookie"] = 获取Cookie("https://www.zhihu.com/");
           },function(code,content)
@@ -322,10 +288,10 @@ function 数据添加(t,b)
 						try{
 		videourl=getvideourlhtml.playlist.SD.play_url
 	}catch(err){				//抓住throw抛出的错误
-	if (getvideourlhtml.playlist.ld.play_url) {
-	videourl= getvideourlhtml.playlist.ld.play_url  
-	} else if (getvideourlhtml.playlist.hd.play_url) {
-	videourl= getvideourlhtml.playlist.hd.play_url  
+	if (getvideourlhtml.playlist.LD.play_url) {
+	videourl= getvideourlhtml.playlist.LD.play_url  
+	} else if (getvideourlhtml.playlist.HD.play_url) {
+	videourl= getvideourlhtml.playlist.HD.play_url  
 	}
 	}
 	
@@ -341,7 +307,8 @@ function 数据添加(t,b)
 }
 waitForKeyElements(' [class="video-box"]', setvideo);
 ]])
-       elseif b.attachment then
+        --       elseif b.attachment then
+       else
         xpcall(function()
           视频链接=b.attachment.video.video_info.playlist.sd.url
           end,function()
@@ -349,7 +316,6 @@ waitForKeyElements(' [class="video-box"]', setvideo);
           end,function()
           视频链接=b.attachment.video.video_info.playlist.hd.url
         end)
-
         加载js(view,[[
   function setmyvideo() {
 var videotext=document.createElement('div')
@@ -361,7 +327,7 @@ videourl.className="video-box"
 videourl.innerHTML='<video style="margin: auto;width: 100%;"]].." src=" ..视频链接.. [[ controls=""></video>'
 document.getElementsByClassName("RichText ztext")[0].insertBefore(videourl,document.getElementsByClassName("RichText ztext")[0].firstChild);
 }
-waitForKeyElements(' [class="RichText ztext"]', setmyvideo);
+waitForKeyElements('.RichText.ztext', setmyvideo);
 ]])
 
       end
@@ -369,13 +335,13 @@ waitForKeyElements(' [class="RichText ztext"]', setmyvideo);
 
       --    end
       if 全局主题值=="Night" then
-        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=80,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
       end
     end,
     onLoadResource=function(view,url)
-      if 全局主题值=="Night" then
-        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-      end
+      --      if 全局主题值=="Night" then
+      --        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+      --      end
       view.evaluateJavascript([[(function(){
     var tags=document.getElementsByTagName("img");         
     for(var i=0;i<tags.length;i++) {
@@ -411,9 +377,9 @@ waitForKeyElements(' [class="RichText ztext"]', setmyvideo);
 
   t.content.setWebChromeClient(luajava.override(WebChromeClient,{
     onProgressChanged=function(super,view,url,favicon)
-      if 全局主题值=="Night" then
-        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-      end
+      --      if 全局主题值=="Night" then
+      --        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+      --      end
     end,
     onShowCustomView=function(z,a,b)
       v=a

@@ -221,6 +221,7 @@
                 };
                 {
                   ImageView;
+                  ColorFilter=textc;
                   src=图标("keyboard_arrow_down");
                 };
 
