@@ -936,11 +936,11 @@ a=MUKPopu({
   }
 })
 
-if activity.getSharedData("回答提示0.02")==nil
+if activity.getSharedData("回答提示0.03")==nil
   AlertDialog.Builder(this)
   .setTitle("小提示")
   .setCancelable(false)
-  .setMessage("在大于origin16.0版本已支持点赞 点击感谢按钮")
-  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.02","true") end})
+  .setMessage("支持点赞 点击感谢按钮 双击标题回到顶部")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.03","true") end})
   .show()
 end

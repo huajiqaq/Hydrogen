@@ -127,7 +127,7 @@
           layout_width="60dp",--布局宽度
           layout_height="40dp",--布局高度
           layout_gravity="left|center",--顶：top｜中：center｜左：left｜右：right｜底：bottom
-          src="icon.png",--视图路径
+          src="logo.png",--视图路径
           id="usericon",
         },
         {
