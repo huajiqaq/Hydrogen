@@ -37,7 +37,7 @@ end
 history_list.setDividerHeight(0)
 if (#recordtt==0)then
   history_list.setVisibility(8)
-  tabv.setVisibility(8)
+  histab.ids.load.parent.setVisibility(8)
   empty.setVisibility(0)
 end
 

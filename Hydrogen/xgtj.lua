@@ -256,47 +256,43 @@ end
 Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
   if code==200 then
     --    提示(require "cjson".decode(content).selected_sections[1].section_name)
-    for i=1, 2 do
+    for i=1, 3 do
+      if i==1 then
+        alldata=#require "cjson".decode(content).selected_sections+#require "cjson".decode(content).guess_like_sections+#require "cjson".decode(content).more_sections-1
+        --提示(tostring(i))
+
+        for i=1, #require "cjson".decode(content).selected_sections do
+          adapter.notifyDataSetChanged()
+          if i<#require "cjson".decode(content).selected_sections+1 and require "cjson".decode(content).selected_sections[i].section_name~="圈子" then
+            table.insert(data,{title=require "cjson".decode(content).selected_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).selected_sections[i].section_id))})
+
+          end
+        end
+      end
       if i==2 then
+        table.insert(data,{myt="其他"})
+        for i=1, #require "cjson".decode(content).guess_like_sections do
+          --提示(tostring(i))
+          if require "cjson".decode(content).guess_like_sections[i].section_name~="圈子" then
+            table.insert(data,{title=require "cjson".decode(content).guess_like_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).guess_like_sections[i].section_id))})
+
+          end
+        end
+        for i=1, #require "cjson".decode(content).more_sections do
+          if require "cjson".decode(content).more_sections[i].section_name~="圈子" then
+
+            table.insert(data,{title=require "cjson".decode(content).more_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).more_sections[i].section_id))})
+
+          end
+        end
+      end
+      if i==3 then
         xiugai.onClick=function()
           页面设置()
         end
         adapter.notifyDataSetChanged()
         return
         --        dl.dismiss()
-      end
-      alldata=#require "cjson".decode(content).selected_sections+#require "cjson".decode(content).guess_like_sections+#require "cjson".decode(content).more_sections-1
-      --提示(tostring(i))
-
-      for i=1, #require "cjson".decode(content).selected_sections do
-        adapter.notifyDataSetChanged()
-        if i<#require "cjson".decode(content).selected_sections+1 and require "cjson".decode(content).selected_sections[i].section_name~="圈子" then
-          table.insert(data,{title=require "cjson".decode(content).selected_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).selected_sections[i].section_id))})
-
-        end
-      end
-
-      for i=1, #require "cjson".decode(content).guess_like_sections do
-        if not jiazai then
-          table.insert(data,{myt="其他"})
-          jiazai=true
-        end
-        --提示(tostring(i))
-        if require "cjson".decode(content).guess_like_sections[i].section_name~="圈子" then
-          table.insert(data,{title=require "cjson".decode(content).guess_like_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).guess_like_sections[i].section_id))})
-
-        end
-      end
-      for i=1, #require "cjson".decode(content).more_sections do
-        if not jiazai then
-          table.insert(data,{myt="其他"})
-          jiazai=true
-        end
-        if require "cjson".decode(content).more_sections[i].section_name~="圈子" then
-
-          table.insert(data,{title=require "cjson".decode(content).more_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).more_sections[i].section_id))})
-
-        end
       end
     end
   end

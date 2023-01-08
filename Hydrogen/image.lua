@@ -8,7 +8,7 @@ import "com.dingyi.adapter.BaseViewPage2Adapter"
 import "android.view.*"
 import "uk.co.senab.photoview.PhotoView"
 import "androidx.viewpager2.widget.ViewPager2$OnPageChangeCallback"
-compile "libs/glide_4.8" --使用 glide 4.8 dex
+--compile "libs/glide_4.8" --使用 glide 4.8 dex
 import "com.bumptech.glide.Glide"
 import "com.bumptech.glide.request.RequestOptions"
 import "com.bumptech.glide.request.RequestListener"
@@ -24,7 +24,7 @@ activity.setContentView(loadlayout("layout/image"))
 local ls=...
 local views={}
 
-mls=require "json".decode(ls)
+mls=require "cjson".decode(ls)
 
 
 local now=mls[tostring(table.size(mls)-1)]

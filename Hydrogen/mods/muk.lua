@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.062
+versionCode=16.063
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL

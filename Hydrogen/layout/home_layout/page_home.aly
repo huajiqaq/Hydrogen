@@ -28,15 +28,11 @@
           gravity="center";
         };
         {
-          LinearLayout;
-          id="myhtb";
+          MyTab
           {
-            MyTab
-            {
-              id="hometab",
-            },
-            contentDescription="主页推荐标签",
-          };
+            id="hometab",
+          },
+          contentDescription="主页推荐标签",
         };
         {
           SwipeRefreshLayout,
