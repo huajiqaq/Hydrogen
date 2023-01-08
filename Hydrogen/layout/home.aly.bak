@@ -193,7 +193,7 @@
                   CircleImageView;
                   layout_height="48dp";
                   layout_gravity="left";
-                  src="logo",
+                  src="icon",
                   id="头像id",
                   layout_width="48dp";
                   layout_weight="-1",
@@ -205,8 +205,6 @@
                   layout_marginTop="16dp";
                   orientation="horizontal";
                   gravity="right",
-                  id="sign_out";
-                  Visibility=4;
                   layout_width="-1";
                   {
                     ImageView;

@@ -266,7 +266,7 @@ console.log("提问加载完成")
     function setq() {
     emulateMouseClick(document.getElementsByClassName("Button SearchBar-askButton")[0])
     }
-    waitForKeyElements(' [class="Button SearchBar-askButton css-rf6mh0 Button--primary Button--blue"]', setq)    
+    waitForKeyElements('.SearchBar-askButton', setq)    
     ]]
       )
     end

@@ -131,7 +131,7 @@
                     layout_height="64dp";
                     layout_width="64dp";
                     layout_gravity="center";
-                    src="icon",
+                    src="logo",
                     id="people_image",
                   };
                   {

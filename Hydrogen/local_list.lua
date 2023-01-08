@@ -162,6 +162,11 @@ end
 localtab:showTab(1)
 
 function 加载笔记(str)
+  if #luajava.astable(File(内置存储文件("Download")).listFiles())==0 then
+    tabv.setVisibility(8)
+    empty.setVisibility(0)
+    return false
+  end
   if str =="全部" then
     str=nil
    elseif str =="回答" then

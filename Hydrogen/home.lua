@@ -23,8 +23,6 @@ local function firsttip ()
   end)
 end
 
-debugmode=true
-
 local ccc=activity.getSharedData("第一次提示")
 if ccc ==nil then
   双按钮对话框("注意","该软件仅供交流学习，严禁用于商业用途，请于下载后的24小时内卸载","登录","知道了",function()
@@ -47,6 +45,7 @@ local qqq=activity.getSharedData("开启想法")
 
 if qqq==nil then
   activity.setSharedData("开启想法","true")
+  qqq=activity.getSharedData("开启想法")
  elseif qqq=="false" then
   adpp=page_home_p.getAdapter()
   adpp.remove(1)
@@ -1108,6 +1107,23 @@ function 主页刷新(hometype)
     local yxuan_adpqy=LuaAdapter(activity,itemc2)
     list2.adapter=yxuan_adpqy
 
+    list2.setOnScrollListener{
+      onScroll=function(view,a,b,c)
+        if a+b==list2.adapter.getCount() and isadd and list2.adapter.getCount()>0 then
+          isadd=false
+          sr.setRefreshing(true)
+          主页刷新()
+          System.gc()
+          Handler().postDelayed(Runnable({
+            run=function()
+              sr.setRefreshing(false);
+              isadd=true
+            end,
+          }),1000)
+        end
+      end
+    }
+
 
 
 
@@ -1142,22 +1158,7 @@ sr.setOnRefreshListener({
 
 
 isadd=true
-list2.setOnScrollListener{
-  onScroll=function(view,a,b,c)
-    if a+b==list2.adapter.getCount() and isadd and list2.adapter.getCount()>0 then
-      isadd=false
-      sr.setRefreshing(true)
-      主页刷新()
-      System.gc()
-      Handler().postDelayed(Runnable({
-        run=function()
-          sr.setRefreshing(false);
-          isadd=true
-        end,
-      }),1000)
-    end
-  end
-}
+
 --热榜布局
 itemc=
 {
