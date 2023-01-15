@@ -600,9 +600,13 @@ if collections_url=="local" then
         }
         Http.delete(collections_url:match("(.+)/answer").."/contents/"..v.Tag.cid.Text:match("分割(.+)").."?content_type="..删除类型,head,function(code,json)
           if code==200 then
+            提示("已删除")
+            activity.setResult(1600,nil)
+            list5.adapter.remove(zero)
+            list5.adapter.notifyDataSetChanged()
           end
         end)
-        提示("已删除")end,function()an.dismiss()end)
+      end,function()an.dismiss()end)
       return true
   end})
 

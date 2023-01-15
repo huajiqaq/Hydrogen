@@ -344,6 +344,7 @@ content.setWebViewClient{
     if url~=("https://www.zhihu.com/appview/p/"..result) then
       if url:sub(1,4)~="http" then
         if 检查意图(url,true) then
+          view.stopLoading()
           检查意图(url)
         end
        else
@@ -360,49 +361,20 @@ content.setWebViewClient{
   end,
   onPageStarted=function(view,url,favicon)
     --网页加载
-    if 全局主题值=="Night" and 类型~="想法" then
-      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+    等待doc(view)
+    if 全局主题值=="Night" then
+      黑暗模式主题(view)
+     else
+      白天主题(view)
+      --      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
     end
 
   end,
   onPageFinished=function(v,l)
-    加载js(v,[[function waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals) {
-		if (typeof waitOnce === "undefined") {
-			waitOnce = true;
-		}
-		if (typeof interval === "undefined") {
-			interval = 300;
-		}
-		if (typeof maxIntervals === "undefined") {
-			maxIntervals = -1;
-		}
-		var targetNodes =
-			typeof selectorOrFunction === "function" ? selectorOrFunction() : document.querySelectorAll(selectorOrFunction);
-
-		var targetsFound = targetNodes && targetNodes.length > 0;
-		if (targetsFound) {
-			targetNodes.forEach(function(targetNode) {
-				var attrAlreadyFound = "data-userscript-alreadyFound";
-				var alreadyFound = targetNode.getAttribute(attrAlreadyFound) || false;
-				if (!alreadyFound) {
-					var cancelFound = callback(targetNode);
-					if (cancelFound) {
-						targetsFound = false;
-					} else {
-						targetNode.setAttribute(attrAlreadyFound, true);
-					}
-				}
-			});
-		}
-
-		if (maxIntervals !== 0 && !(targetsFound && waitOnce)) {
-			maxIntervals -= 1;
-			setTimeout(function() {
-				waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals);
-			}, interval);
-		}
-	}
-
+    if 全局主题值=="Night" then
+      黑暗模式主题(v)
+    end
+    加载js(v,[[
 	function yh() {
 	if 		(document.getElementsByClassName("css-p13kqn")[0]) {
 				document.getElementsByClassName("css-p13kqn")[0].style.display = "none"
@@ -428,10 +400,11 @@ content.setWebViewClient{
     --    if 全局主题值=="Night" then
     --      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
     --    end
-    content.evaluateJavascript([[(function(){
+    view.evaluateJavascript([[(function(){
     var tags=document.getElementsByTagName("img");         
     for(var i=0;i<tags.length;i++) {
-        tags[i].onclick=function(){       
+    
+        tags[i].onclick=function(){  
          var tag=document.getElementsByTagName("img"); 
          var t={};     
          for(var z=0;z<tag.length;z++) {

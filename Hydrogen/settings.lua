@@ -220,20 +220,27 @@ tab={ --点击table
     activity.newActivity("about")
   end,
     调式模式=function()
+    if this.getSharedData("调式模式")~="false" then
+    this.setSharedData("调式模式","false")
+    sta=1
+    end
     local function dg()
-              import "androidx.core.content.ContextCompat"
+    import "androidx.core.content.ContextCompat"
     filedir=tostring(ContextCompat.getDataDir(activity)).."/files/init.lua"
-    bbbb=this.getSharedData("调式模式")
+    文件内容=io.open(filedir):read("*a")
     debugstr="debugmode="
-    if bbbb=="true" then
+    if 文件内容:find(debugstr.."false") then
     aaaa="false"
+    bbbb="true"
     else
     aaaa="true"
+    bbbb="false"
     end
     替换文件字符串(filedir,debugstr..aaaa,debugstr..bbbb)
     提示("成功！重启App生效")
     end
-    if this.getSharedData("调式模式")=="true"
+    if sta==1 then
+    sta=0
      debugtip=AlertDialog.Builder(this)
       .setTitle("是否要开启调式模式?")
       .setMessage("开启后会提示一些错误信息 在一定程度上会影响阅读")

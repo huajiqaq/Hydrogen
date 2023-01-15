@@ -140,7 +140,8 @@ function 刷新()
         CardElevation="0dp";
         CardBackgroundColor=backgroundc;
         Radius="0dp";
-        layout_margin="4px";
+ --       layout_margin="4px";
+        layout_margin=cardmargin;
         layout_width="-1";
         layout_height="-1";
 

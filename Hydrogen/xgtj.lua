@@ -89,9 +89,6 @@ local list_item={
 
 
 data={}
-table.insert(data,{myt=[[提示：你可点击标签来添加/删除 可长按拖动排序 可拖动其他来快速添加  
- ]]})
-table.insert(data,{myt="我的"})
 --myview = LayoutInflater.from(this).inflate(R.layout.recycler_view, null);
 
 --设置布局管理器
@@ -253,47 +250,53 @@ local function 页面设置()
   end
 end
 
-Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
-  if code==200 then
-    --    提示(require "cjson".decode(content).selected_sections[1].section_name)
-    for i=1, 3 do
-      if i==1 then
-        alldata=#require "cjson".decode(content).selected_sections+#require "cjson".decode(content).guess_like_sections+#require "cjson".decode(content).more_sections-1
-        --提示(tostring(i))
+function 开始加载推荐()
+  Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
+    if code==200 then
+      --    提示(require "cjson".decode(content).selected_sections[1].section_name)
+      for i=1, 3 do
+        if i==1 then
+          alldata=#require "cjson".decode(content).selected_sections+#require "cjson".decode(content).guess_like_sections+#require "cjson".decode(content).more_sections-1
 
-        for i=1, #require "cjson".decode(content).selected_sections do
-          adapter.notifyDataSetChanged()
-          if i<#require "cjson".decode(content).selected_sections+1 and require "cjson".decode(content).selected_sections[i].section_name~="圈子" then
-            table.insert(data,{title=require "cjson".decode(content).selected_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).selected_sections[i].section_id))})
-
-          end
-        end
-      end
-      if i==2 then
-        table.insert(data,{myt="其他"})
-        for i=1, #require "cjson".decode(content).guess_like_sections do
+          table.insert(data,{myt=[[提示：你可点击标签来添加/删除 可长按拖动排序 可拖动其他来快速添加  
+ ]]})
+          table.insert(data,{myt="我的"})
           --提示(tostring(i))
-          if require "cjson".decode(content).guess_like_sections[i].section_name~="圈子" then
-            table.insert(data,{title=require "cjson".decode(content).guess_like_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).guess_like_sections[i].section_id))})
 
+          for i=1, #require "cjson".decode(content).selected_sections do
+            adapter.notifyDataSetChanged()
+            if i<#require "cjson".decode(content).selected_sections+1 and require "cjson".decode(content).selected_sections[i].section_name~="圈子" then
+              table.insert(data,{title=require "cjson".decode(content).selected_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).selected_sections[i].section_id))})
+
+            end
           end
         end
-        for i=1, #require "cjson".decode(content).more_sections do
-          if require "cjson".decode(content).more_sections[i].section_name~="圈子" then
+        if i==2 then
+          table.insert(data,{myt="其他"})
+          for i=1, #require "cjson".decode(content).guess_like_sections do
+            --提示(tostring(i))
+            if require "cjson".decode(content).guess_like_sections[i].section_name~="圈子" then
+              table.insert(data,{title=require "cjson".decode(content).guess_like_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).guess_like_sections[i].section_id))})
 
-            table.insert(data,{title=require "cjson".decode(content).more_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).more_sections[i].section_id))})
+            end
+          end
+          for i=1, #require "cjson".decode(content).more_sections do
+            if require "cjson".decode(content).more_sections[i].section_name~="圈子" then
 
+              table.insert(data,{title=require "cjson".decode(content).more_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).more_sections[i].section_id))})
+
+            end
           end
         end
-      end
-      if i==3 then
-        xiugai.onClick=function()
-          页面设置()
+        if i==3 then
+          xiugai.onClick=function()
+            页面设置()
+          end
+          adapter.notifyDataSetChanged()
+          --        dl.dismiss()
         end
-        adapter.notifyDataSetChanged()
-        return
-        --        dl.dismiss()
       end
     end
-  end
-end)
+  end)
+end
+开始加载推荐()

@@ -73,6 +73,7 @@
             padding="10dp"
           };
         };
+        --[[
         {
           CardView;
           layout_width="-2";
@@ -84,7 +85,8 @@
           onClick=function()
             双按钮对话框("提示","是否要恢复默认？","好的","取消",function()
               关闭对话框(an)
-              activity.recreate()
+              data={}
+              开始加载推荐()
               end,function()
               关闭对话框(an)
             end)
@@ -105,6 +107,7 @@
             Typeface=字体("product-Bold");
           };
         };
+        ]]
         {
           CardView;
           layout_width="-2";
