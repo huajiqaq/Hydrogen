@@ -9,7 +9,7 @@ app_key=""
 app_channel=""
 developer=""
 description=""
-debugmode=true
+debugmode=false
 user_permission={
   "INTERNET",
   "READ_EXTERNAL_STORAGE",

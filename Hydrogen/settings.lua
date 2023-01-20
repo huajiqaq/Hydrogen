@@ -236,7 +236,8 @@ this.setSharedData("调式模式","true") 提示("成功！重启App生效")
       .setNeutralButton("取消",{onClick=function() this.setSharedData("调式模式","false") data[5].status["Checked"]=false  adp.notifyDataSetChanged() end})
       .show()
       else
-      dg()
+      this.setSharedData("调式模式","false")
+      提示("成功！重启App生效")
       end
   end
 }
