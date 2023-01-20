@@ -276,13 +276,22 @@ end)
     .setDatabaseEnabled(true)
     .setCacheMode(2)
   end
-
+  
   show.setWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
       view.stopLoading()
       检查链接(url)
     end,
     onPageFinished=function(view,url)
+  w = View.MeasureSpec.makeMeasureSpec(0,
+
+View.MeasureSpec.UNSPECIFIED);
+
+h = View.MeasureSpec.makeMeasureSpec(0,
+
+View.MeasureSpec.UNSPECIFIED);
+show.measure(w, h);
+
       if 全局主题值=="Night" then
         --      黑暗模式主题(view)
         加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=80,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
@@ -316,13 +325,13 @@ end)
           end
         end
       }
-
+     
       view.addJSInterface(z,"androlua")
 
       if isLoaded == 1 then
        else
         isLoaded = 1
-        show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);
+         show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);       
       end
 
     end,

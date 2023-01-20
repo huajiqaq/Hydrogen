@@ -12,6 +12,7 @@ import "androidx.viewpager2.widget.ViewPager2$OnPageChangeCallback"
 import "android.webkit.WebChromeClient"
 import "android.content.pm.ActivityInfo"
 import "android.graphics.PathMeasure"
+import "android.webkit.ValueCallback"
 
 
 问题id,回答id,问题对象,是否记录历史记录=...
@@ -256,21 +257,24 @@ function 数据添加(t,b)
       --      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
       --      if b.editable_content:find("video%-link") then
       if not b.attachment then
-        Http.get("https://www.zhihu.com/api/v4/me",{
-          ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-          },function(code,content)
-          if code==401 then
-            AlertDialog.Builder(this)
-            .setTitle("提示")
-            .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
-            .setCancelable(false)
-            .setPositiveButton("我知道了",nil)
-            .show()
-          end
-          return
-        end)
-        加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
-        加载js(view,[[
+        view.evaluateJavascript([[document.getElementsByClassName("video-box").length>0?"true":"false"]],ValueCallback({
+          onReceiveValue=function(value)
+            if value==[["true"]] then
+              Http.get("https://www.zhihu.com/api/v4/me",{
+                ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+                },function(code,content)
+                if code==401 then
+                  AlertDialog.Builder(this)
+                  .setTitle("提示")
+                  .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
+                  .setCancelable(false)
+                  .setPositiveButton("我知道了",nil)
+                  .show()
+                end
+                return
+              end)
+              加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
+              加载js(view,[[
   function setvideo () {
     if (document.getElementsByClassName("video-box").length>0 && typeof(document.getElementsByClassName("video-box")[0].href)!="undefined") {
     for (i = 0; i<document.getElementsByClassName("video-box").length; i++) {
@@ -307,6 +311,10 @@ function 数据添加(t,b)
 }
 waitForKeyElements(' [class="video-box"]', setvideo);
 ]])
+            end
+          end
+        }))
+
         --       elseif b.attachment then
        else
         xpcall(function()
@@ -444,14 +452,18 @@ function 加载页(mviews,a,b)
       mviews.load=nil
 
       if cb==false then
-        提示("获取回答出错 "..r or "")
+        if r then
+          提示("获取回答出错 "..r or "")
+        end
+        pg.adapter.remove(a)
+        pg.setCurrentItem(a-1,false)
        else
 
         pcall(function()
 
           if table.find(查重表,cb.id) then
             pg.adapter.remove(a)
-            pg.setCurrentItem(a-1)
+            pg.setCurrentItem(a-1,false)
           end
 
           查重表[cb.id]=cb.id
@@ -473,6 +485,24 @@ function 加载页(mviews,a,b)
       end
 
     end,b or (a==0 and 回答容器.one==nil and a<=上次page and 回答容器.is_add==true and 回答容器.isleft==false and pg.adapter.getItemCount()>1))
+   else
+    if mviews.data and mviews.data.id then
+      if mviews.data.voteup_count then
+        vote_count.Text=tointeger(mviews.data.voteup_count)..""
+        thanks_count.Text=tointeger(mviews.data.thanks_count)..""
+        comment_count.Text=tointeger(mviews.data.comment_count)..""
+       else
+        local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
+        Http.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
+          if a==200 then
+            mviews.data=require "cjson".decode(b).data[1]
+            vote_count.Text=tointeger(mviews.data.voteup_count)..""
+            thanks_count.Text=tointeger(mviews.data.thanks_count)..""
+            comment_count.Text=tointeger(mviews.data.comment_count)..""
+          end
+        end)
+      end
+    end
   end
 end
 
@@ -489,7 +519,7 @@ function 首次设置()
   end)
 
   for i=1,3 do
-    pg.setCurrentItem(0)--设置正确的列
+    pg.setCurrentItem(0,false)--设置正确的列
   end
 end
 
@@ -565,17 +595,17 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
       end
 
       local mviews=数据表[pg.adapter.getItem(a).id]
-
       加载页(mviews,a)
 
 
+      --[[
       if mviews.data and mviews.data.id then
         if mviews.data.voteup_count then
           vote_count.Text=tointeger(mviews.data.voteup_count)..""
           thanks_count.Text=tointeger(mviews.data.thanks_count)..""
           comment_count.Text=tointeger(mviews.data.comment_count)..""
          else
-          local include=[[?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics]]
+          local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
           Http.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
             if a==200 then
               mviews.data=require "cjson".decode(b).data[1]
@@ -585,7 +615,7 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
             end
           end)
         end
-      end
+      end]]
 
       上次page=a
 

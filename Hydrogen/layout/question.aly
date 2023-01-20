@@ -98,7 +98,7 @@
           orientation="vertical";
           layout_height="-1";
           background=backgroundc,
---          layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING),
+          --          layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING),
           {
             MyTab
             {
@@ -125,7 +125,7 @@
               CardElevation="0dp";
               CardBackgroundColor=backgroundc;
               Radius="0dp";
---              layout_margin="4px";
+              --              layout_margin="4px";
               layout_margin=cardmargin;
               layout_width="-1";
               layout_height="-1";
@@ -160,7 +160,7 @@
                     layout_width="-1";
                     BackgroundColor="0x01000000",
                     Visibility=8,
-                    layout_height="-2",
+                    layout_height="wrap_content",
                   };
                   {
                     TextView;
