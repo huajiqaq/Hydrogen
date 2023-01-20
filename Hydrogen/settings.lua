@@ -224,21 +224,6 @@ tab={ --点击table
     this.setSharedData("调式模式","false")
     sta=1
     end
-    local function dg()
-    import "androidx.core.content.ContextCompat"
-    filedir=tostring(ContextCompat.getDataDir(activity)).."/files/init.lua"
-    文件内容=io.open(filedir):read("*a")
-    debugstr="debugmode="
-    if 文件内容:find(debugstr.."false") then
-    aaaa="false"
-    bbbb="true"
-    else
-    aaaa="true"
-    bbbb="false"
-    end
-    替换文件字符串(filedir,debugstr..aaaa,debugstr..bbbb)
-    提示("成功！重启App生效")
-    end
     if sta==1 then
     sta=0
      debugtip=AlertDialog.Builder(this)
@@ -246,7 +231,7 @@ tab={ --点击table
       .setMessage("开启后会提示一些错误信息 在一定程度上会影响阅读")
       .setCancelable(false)
       .setPositiveButton("开启",{onClick=function() 
-dg()
+this.setSharedData("调式模式","true") 提示("成功！重启App生效")
       end})
       .setNeutralButton("取消",{onClick=function() this.setSharedData("调式模式","false") data[5].status["Checked"]=false  adp.notifyDataSetChanged() end})
       .show()

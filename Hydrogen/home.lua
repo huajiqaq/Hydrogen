@@ -14,7 +14,6 @@ activity.setContentView(loadlayout("layout/home"))
 --设置视图
 
 
-
 初始化历史记录数据(true)
 
 local function firsttip ()
@@ -479,7 +478,7 @@ function homepage1()
           )
         end
       end
-     elseif code==401 then
+     else
       hometab.ids.load.parent.setVisibility(8)
     end
   end)
@@ -1095,6 +1094,16 @@ function 主页刷新(hometype)
         -- empty2.setVisibility(0)
         -- list9.setVisibility(8)
         -- empty9.setVisibility(0)
+       elseif code==403 then
+        decoded_content = require "cjson".decode(content)
+        if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
+          AlertDialog.Builder(this)
+          .setTitle("提示")
+          .setMessage(decoded_content.error.message)
+          .setCancelable(false)
+          .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
+          .show()
+        end
        else
         提示("获取数据失败，请检查网络是否正常，http错误码"..code)
         --[[      list2.text="获取数据失败"
@@ -2427,8 +2436,8 @@ Http.get(update_api,function(code,content)
     --  content=table2string(require "cjson".decode(ctt))
     -- updateversioncode=tointeger(content:match[[updateversioncode=(.+),]])
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
-    updateapkcode=tonumber(content:match("updateapkcode%=(.+),updateapkcode"))     
-    
+    updateapkcode=tonumber(content:match("updateapkcode%=(.+),updateapkcode"))
+
     if updateversioncode > versionCode and activity.getSharedData("version")~=updateversioncode then
       updateversionname=content:match("updateversionname%=(.+),updateversionname")
       updateinfo=content:match("updateinfo%=(.+),updateinfo")

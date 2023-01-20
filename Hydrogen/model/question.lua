@@ -29,6 +29,7 @@ function base_question:clear()
   self.nextUrl=nil
   self.is_end=false
   self.data={}
+  self.mdata={}
   return self
 end
 
