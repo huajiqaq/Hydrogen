@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.065
+versionCode=16.07
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -15,7 +15,9 @@ ROM类型 = string.upper(Build.MANUFACTURER)
 
 APP_CACHEDIR="/data/data/"..activity.getPackageName().."/cache/webviewCache";
 
-
+if this.getSharedData("调式模式")=="true" then
+  this.setDebug(true)
+end
 
 if activity.getSharedData("font_size")==nil then
   activity.setSharedData("font_size","20")
@@ -1273,19 +1275,19 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/video/") then
     if b then return true end
     local videoid= url:match("video/(.+)")
-        Http.get("https://lens.zhihu.com/api/v4/videos/"..videoid,{
+    Http.get("https://lens.zhihu.com/api/v4/videos/"..videoid,{
       ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    },function(code,content)
+      },function(code,content)
       if code==200 then
-      local v=require "cjson".decode(content)
-              xpcall(function()
+        local v=require "cjson".decode(content)
+        xpcall(function()
           视频链接=v.playlist.SD.play_url
           end,function()
           视频链接=v.playlist.LD.play_url
           end,function()
           视频链接=v.playlist.HD.play_url
         end)
---        activity.finish()
+        --        activity.finish()
         activity.newActivity("huida",{视频链接})
        elseif code==401 then
         提示("请登录后查看视频")
@@ -1295,6 +1297,9 @@ function 检查链接(url,b)
     if b then return true end
     local videoid=url:match("/zvideo/(.-)?") or url:match("/zvideo/(.+)")
     activity.newActivity("column",{videoid,"视频"})
+   elseif url:find("zhihu.com/signin") then
+    if b then return false end
+    activity.newActivity("login")
    elseif url:find("https://ssl.ptlogin2.qq.com/jump") then
     if b then return false end
     activity.finish()
@@ -1329,7 +1334,7 @@ function 检查意图(url,b)
      elseif url:find "question" then
       if b then return true end
       activity.newActivity("question",{url:match("question/(.-)?"),true})
-    elseif url:find "topic" then
+     elseif url:find "topic" then
       if b then return true end
       activity.newActivity("topic",{url:match("topic/(.-)/")})
      elseif url:find "articles" then
@@ -1629,7 +1634,9 @@ function 下载文件对话框(title,url,path,ex)
       --      提示("下载完成，大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
       if path:find(".apk$")~=nil then
         提示("安装包下载成功,大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
-        双按钮对话框("安装APP",[===[您下载了安装包文件，要现在安装吗？ 取消后可前往]===]..path.."手动安装","立即安装","取消",function()关闭对话框(an)安装apk(path)end,function()关闭对话框(an)end)
+        双按钮对话框("安装APP",[===[您下载了安装包文件，要现在安装吗？ 取消后可前往]===]..path.."手动安装","立即安装","取消",function()
+          --    关闭对话框(an)
+          安装apk(path)end,function()关闭对话框(an)end)
         myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).Text="立即安装"
         myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
           安装apk(path)

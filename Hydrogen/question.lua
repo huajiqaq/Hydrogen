@@ -7,12 +7,10 @@ import "com.michael.NoScrollListView"
 import "android.text.Html$TagHandler"
 import "android.text.Html$ImageGetter"
 question_id,是否记录历史记录=...
-
 设置视图("layout/question")
 
 波纹({fh,_more},"圆主题")
 波纹({discussion,view,description},"方自适应")
-
 --卡片布局
 question_itemc=
 {
@@ -388,9 +386,17 @@ a=MUKPopu({
     {
       src=图标("colorize"),text="回答",onClick=function()
 
-        url=" https://www.zhihu.com/question/"..question_id.."/answers/editor"
+    Http.get("https://www.zhihu.com/api/v4/me",{
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    },function(code,content)
+      if code==200 then
+                url=" https://www.zhihu.com/question/"..question_id.."/answers/editor"
 
         activity.newActivity("huida",{url,nil,true})
+       elseif code==401 then
+        提示("请登录后使用本功能")
+      end
+    end)
       end
     },
   }

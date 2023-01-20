@@ -517,7 +517,8 @@ function 首次设置()
     all_answer.Text="点击查看全部"..tointeger(tab.answer_count).."个回答 >"
 
   end)
-
+  
+  
   for i=1,3 do
     pg.setCurrentItem(0,false)--设置正确的列
   end
