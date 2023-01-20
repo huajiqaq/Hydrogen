@@ -58,6 +58,7 @@ function base_question:getChild(id) --获取传输类
     child.data=table.clone(self.data)
     child.now=index
   end
+  --  print(dump(require "cjson".encode(child)))
   return require "cjson".encode(child)
 end
 

@@ -2427,6 +2427,8 @@ Http.get(update_api,function(code,content)
     --  content=table2string(require "cjson".decode(ctt))
     -- updateversioncode=tointeger(content:match[[updateversioncode=(.+),]])
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
+    updateapkcode=tonumber(content:match("updateapkcode%=(.+),updateapkcode"))     
+    
     if updateversioncode > versionCode and activity.getSharedData("version")~=updateversioncode then
       updateversionname=content:match("updateversionname%=(.+),updateversionname")
       updateinfo=content:match("updateinfo%=(.+),updateinfo")

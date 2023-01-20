@@ -71,7 +71,7 @@ end
 
 function base:getOneData(cb,z) --获取一条数据
   local index=z==false and self.now+1 or self.now-1
-
+  --print(dump(self))
   if self.now==1 and self.is_add==true then --判断是否添加数据时是否到左顶
     self.isleft=true
   end

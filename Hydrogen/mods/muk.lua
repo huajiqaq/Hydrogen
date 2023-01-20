@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.064
+versionCode=16.065
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -1270,6 +1270,27 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/pin/") then
     if b then return true end
     activity.newActivity("column",{url:match("/pin/(.+)"),"想法"})
+   elseif url:find("zhihu.com/video/") then
+    if b then return true end
+    local videoid= url:match("video/(.+)")
+        Http.get("https://lens.zhihu.com/api/v4/videos/"..videoid,{
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    },function(code,content)
+      if code==200 then
+      local v=require "cjson".decode(content)
+              xpcall(function()
+          视频链接=v.playlist.SD.play_url
+          end,function()
+          视频链接=v.playlist.LD.play_url
+          end,function()
+          视频链接=v.playlist.HD.play_url
+        end)
+--        activity.finish()
+        activity.newActivity("huida",{视频链接})
+       elseif code==401 then
+        提示("请登录后查看视频")
+      end
+    end)
    elseif url:find("zhihu.com/zvideo/") then
     if b then return true end
     local videoid=url:match("/zvideo/(.-)?") or url:match("/zvideo/(.+)")
@@ -3057,3 +3078,11 @@ function 等待doc(view)
 		}
 	}]])
 end
+
+function matchtext(str,regex)
+  local t={}
+  for i,v in string.gfind(str,regex) do
+    table.insert(t,string.sub(str,i,v))
+  end
+  return t
+end --返回table

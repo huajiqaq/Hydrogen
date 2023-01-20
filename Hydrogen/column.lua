@@ -446,6 +446,19 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     end
 
   end,
+    onShowCustomView=function(view,url)
+    content.setVisibility(content.GONE);
+    this.addContentView(view, WindowManager.LayoutParams(-1, -1))
+    kkoo=view
+    activity.getWindow().getDecorView().setSystemUiVisibility(5639)
+  end,
+  onHideCustomView=function(view,url)
+    kkoo.getParent().removeView(kkoo.setForeground(nil).setVisibility(8))
+    content.setVisibility(0)
+    kkoo=nil
+    activity.getWindow().getDecorView().setSystemUiVisibility(8208)
+  end,
+  
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
     if consoleMessage.message()=="显示评论" then
