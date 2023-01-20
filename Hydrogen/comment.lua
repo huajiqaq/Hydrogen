@@ -140,7 +140,7 @@ function 刷新()
         CardElevation="0dp";
         CardBackgroundColor=backgroundc;
         Radius="0dp";
- --       layout_margin="4px";
+        --       layout_margin="4px";
         layout_margin=cardmargin;
         layout_width="-1";
         layout_height="-1";
@@ -288,7 +288,19 @@ function 刷新()
   function 评论刷新()
     comment_base:next(function(r,a)
       if r==false and comment_base.is_end==false then
-        提示("获取评论列表出错 "..a)
+        if a then
+          decoded_content = require "cjson".decode(a)
+          if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
+            AlertDialog.Builder(this)
+            .setTitle("提示")
+            .setMessage(decoded_content.error.message)
+            .setCancelable(false)
+            .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
+            .show()
+           else
+            提示("获取评论列表出错 "..a)
+          end
+        end
         --      评论刷新()
        else
         if _title.text=="评论" then

@@ -13,12 +13,9 @@ import "android.webkit.WebChromeClient"
 import "android.content.pm.ActivityInfo"
 import "android.graphics.PathMeasure"
 import "android.webkit.ValueCallback"
-
-
 问题id,回答id,问题对象,是否记录历史记录=...
 
 activity.setContentView(loadlayout("layout/answer"))
-
 
 波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 波纹({all_root},"方自适应")
@@ -67,7 +64,6 @@ end
 回答容器=answer:new(问题id)
 
 
-
 if 问题对象 then
   回答容器:addAII(require "cjson".decode(tostring(问题对象)))
 end
@@ -95,6 +91,25 @@ function 数据添加(t,b)
           activity.newActivity("question",{问题id})
         end
       end)
+    end
+  end
+
+  all_root.onLongClick=function(v)
+    --  print(回答容器.now)
+    if 回答容器.isleft==false then
+      if not 问题对象 then
+        双按钮对话框("提示","无法获取上一个回答 如若想获取请在问题页点击回答","跳转","取消",function()
+          关闭对话框(an) activity.newActivity("question",{问题id}) end,function()
+          关闭对话框(an)
+        end)
+        return
+      end
+      双按钮对话框("提示","是否要切换上一个回答","是的","取消",function()
+        关闭对话框(an) 提示("切换中") activity.finish() activity.newActivity("answer",{问题id,nil,nil,false,回答容器.now-2}) end,function()
+        关闭对话框(an)
+      end)
+     else
+      提示("不能左滑了")
     end
   end
 
@@ -444,19 +459,27 @@ end
 function 加载页(mviews,a,b)
   if mviews==nil then return end
   if #mviews.ids.username.Text==0 and mviews.load==nil then --判断是否加载过没有
-
-    mviews.load=true
-
     回答容器:getOneData(function(cb,r)--获取1条数据
 
-      mviews.load=nil
-
       if cb==false then
+        mviews.load=nil
         if r then
-          提示("获取回答出错 "..r or "")
+          decoded_content = require "cjson".decode(r)
+          if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
+            AlertDialog.Builder(this)
+            .setTitle("提示")
+            .setMessage(decoded_content.error.message)
+            .setCancelable(false)
+            .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
+            .show()
+           else
+            提示("获取回答出错 "..r or "")
+          end
         end
+        提示("已经没有更多数据了")
         pg.adapter.remove(a)
         pg.setCurrentItem(a-1,false)
+        重表状态=true
        else
 
         pcall(function()
@@ -464,16 +487,21 @@ function 加载页(mviews,a,b)
           if table.find(查重表,cb.id) then
             pg.adapter.remove(a)
             pg.setCurrentItem(a-1,false)
+            mviews.load=nil
+            重表状态=true
+           else
+            重表状态=false
           end
 
           查重表[cb.id]=cb.id
 
         end)
 
-        mviews.data=cb
+        if mviews.data==nil or mviews.data.voteup_count==nil then
+          mviews.data=cb
+        end
 
-
-        if mviews.data and mviews.data.voteup_count then
+        if mviews.data and mviews.data.voteup_count and 重表状态==false then
 
           vote_count.Text=tointeger(mviews.data.voteup_count)..""
           thanks_count.Text=tointeger(mviews.data.thanks_count)..""
@@ -482,15 +510,18 @@ function 加载页(mviews,a,b)
 
         数据添加(mviews.ids,cb) --添加数据
 
+        --        print(数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl())
+        mviews.load=true
       end
-
     end,b or (a==0 and 回答容器.one==nil and a<=上次page and 回答容器.is_add==true and 回答容器.isleft==false and pg.adapter.getItemCount()>1))
    else
+
     if mviews.data and mviews.data.id then
       if mviews.data.voteup_count then
         vote_count.Text=tointeger(mviews.data.voteup_count)..""
         thanks_count.Text=tointeger(mviews.data.thanks_count)..""
         comment_count.Text=tointeger(mviews.data.comment_count)..""
+        --[[
        else
         local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
         Http.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
@@ -501,6 +532,7 @@ function 加载页(mviews,a,b)
             comment_count.Text=tointeger(mviews.data.comment_count)..""
           end
         end)
+        ]]
       end
     end
   end
@@ -515,10 +547,12 @@ function 首次设置()
   defer local question_base=require "model.question":new(问题id)
   :getData(function(tab)
     all_answer.Text="点击查看全部"..tointeger(tab.answer_count).."个回答 >"
-
+    if tab.answer_count==1 then
+      回答容器.isleft=true
+    end
   end)
-  
-  
+
+
   for i=1,3 do
     pg.setCurrentItem(0,false)--设置正确的列
   end
@@ -551,6 +585,7 @@ pg.adapter.add(加入view)
 
 pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
   onPageScrolled=function(a,b,c)
+    --  print(回答容器.now)
     if c==0 then
 
 
@@ -570,6 +605,7 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           ids=id表[pg.adapter.getItemCount()],
         }
 
+
         local mviews=数据表[pg.adapter.getItem(a+1).id]
 
         if this.getSharedData("回答预加载(beta)")=="true" then
@@ -577,10 +613,27 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           加载页(mviews,a+1,false)
         end
 
-
        elseif a==0 and 回答容器.isleft==false and pg.adapter.getItemCount()>=1
-
         id表[pg.adapter.getItemCount()+1]={}
+        if 回答容器.isleft==false or 回答容器.now==1 then
+          if activity.getSharedData("左滑提示0.01")==nil then
+            AlertDialog.Builder(this)
+            .setTitle("小提示")
+            .setCancelable(false)
+            .setMessage("由于左滑有一些bug 已取消左滑刷新内容 如若想要使用请长按问题标题来实现该操作")
+            .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("左滑提示0.01","true") end})
+            .show()
+          end
+          local mviews=数据表[pg.adapter.getItem(a).id]
+          if mviews.data and mviews.data.id then
+            if mviews.data.voteup_count then
+              vote_count.Text=tointeger(mviews.data.voteup_count)..""
+              thanks_count.Text=tointeger(mviews.data.thanks_count)..""
+              comment_count.Text=tointeger(mviews.data.comment_count)..""
+            end
+          end
+          return false
+        end
 
         local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
 
@@ -590,14 +643,18 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           data={},
           ids=id表[pg.adapter.getItemCount()],
         }
-
-        --     加载页(mviews,0,true)
+        --      local mviews=数据表[pg.adapter.getItem(a+1).id]
+        --      加载页(mviews,a+1)
+        --      return
 
       end
 
       local mviews=数据表[pg.adapter.getItem(a).id]
       加载页(mviews,a)
-
+      --[[
+      local mviews=数据表[pg.adapter.getItem(a).id]
+      加载页(mviews,a)
+]]
 
       --[[
       if mviews.data and mviews.data.id then
