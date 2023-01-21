@@ -534,7 +534,19 @@ if collections_url=="local" then
   function 刷新()
     collections_base:next(function(r,a)
       if not(r) and collections_base.is_end==false then
-        提示("获取收藏列表出错 "..a)
+        if a then
+          decoded_content = require "cjson".decode(a)
+          if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
+            AlertDialog.Builder(this)
+            .setTitle("提示")
+            .setMessage(decoded_content.error.message)
+            .setCancelable(false)
+            .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
+            .show()
+           else
+            提示("获取收藏列表出错 "..a)
+          end
+        end
         --  刷新()
       end
     end)

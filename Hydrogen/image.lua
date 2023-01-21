@@ -48,7 +48,7 @@ local base=
     PhotoView,
     id="ph",
     visibility=8,
-    --   src="icon.png",  
+    --   src="icon.png", 
     layout_height="-1",
     layout_width="-1",
   },
@@ -132,7 +132,7 @@ picpage.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，�
       Glide
       .with(activity)
       .asDrawable()--强制gif支持
-      -- .setDefaultRequestOptions(RequestOptions().override(activity.height/1.2, activity.width/1.2))     
+      -- .setDefaultRequestOptions(RequestOptions().override(activity.height/1.2, activity.width/1.2))    
       .load(url)
       .addListener(RequestListener{
         onResourceReady=function(a,b,c,d)

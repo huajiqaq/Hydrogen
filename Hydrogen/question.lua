@@ -7,10 +7,12 @@ import "com.michael.NoScrollListView"
 import "android.text.Html$TagHandler"
 import "android.text.Html$ImageGetter"
 question_id,是否记录历史记录=...
+
 设置视图("layout/question")
 
 波纹({fh,_more},"圆主题")
 波纹({discussion,view,description},"方自适应")
+
 --卡片布局
 question_itemc=
 {
@@ -174,7 +176,19 @@ function 刷新()
 
   question_base:next(function(r,a)
     if r==false and question_base.is_end==false then
-      提示("获取回答列表出错 "..a)
+      if a then
+        decoded_content = require "cjson".decode(content)
+        if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
+          AlertDialog.Builder(this)
+          .setTitle("提示")
+          .setMessage(decoded_content.error.message)
+          .setCancelable(false)
+          .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
+          .show()
+         else
+          提示("获取回答列表出错 "..a)
+        end
+      end
       --  刷新()
      else
       resultbar.Visibility=8
@@ -274,21 +288,21 @@ end)
     .setDatabaseEnabled(true)
     .setCacheMode(2)
   end
-  
+
   show.setWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
       view.stopLoading()
       检查链接(url)
     end,
     onPageFinished=function(view,url)
-  w = View.MeasureSpec.makeMeasureSpec(0,
+      w = View.MeasureSpec.makeMeasureSpec(0,
 
-View.MeasureSpec.UNSPECIFIED);
+      View.MeasureSpec.UNSPECIFIED);
 
-h = View.MeasureSpec.makeMeasureSpec(0,
+      h = View.MeasureSpec.makeMeasureSpec(0,
 
-View.MeasureSpec.UNSPECIFIED);
-show.measure(w, h);
+      View.MeasureSpec.UNSPECIFIED);
+      show.measure(w, h);
 
       if 全局主题值=="Night" then
         --      黑暗模式主题(view)
@@ -323,13 +337,13 @@ show.measure(w, h);
           end
         end
       }
-     
+
       view.addJSInterface(z,"androlua")
 
       if isLoaded == 1 then
        else
         isLoaded = 1
-         show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);       
+        show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);
       end
 
     end,
@@ -386,17 +400,17 @@ a=MUKPopu({
     {
       src=图标("colorize"),text="回答",onClick=function()
 
-    Http.get("https://www.zhihu.com/api/v4/me",{
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    },function(code,content)
-      if code==200 then
-                url=" https://www.zhihu.com/question/"..question_id.."/answers/editor"
+        Http.get("https://www.zhihu.com/api/v4/me",{
+          ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+          },function(code,content)
+          if code==200 then
+            url=" https://www.zhihu.com/question/"..question_id.."/answers/editor"
 
-        activity.newActivity("huida",{url,nil,true})
-       elseif code==401 then
-        提示("请登录后使用本功能")
-      end
-    end)
+            activity.newActivity("huida",{url,nil,true})
+           elseif code==401 then
+            提示("请登录后使用本功能")
+          end
+        end)
       end
     },
   }
