@@ -76,7 +76,8 @@ itemc=
                 TextView;
                 id="people_action";
                 layout_marginLeft="6dp",
-                textColor=stextc;
+--                textColor=stextc;
+                textColor=textc;
                 layout_gravity="center_vertical",
                 Typeface=字体("product");
                 textSize="12sp";
@@ -102,7 +103,8 @@ itemc=
               TextView;
               textSize="12sp";
               id="people_art";
-              textColor=stextc;
+--              textColor=stextc;
+              textColor=textc;
               MaxLines=3;--设置最大输入行数
               letterSpacing="0.02";
               ellipsize="end",

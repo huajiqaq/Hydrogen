@@ -292,9 +292,6 @@ if collections_url=="local" then
 
   加载笔记()
 
-  function 刷新()
-  end
-
   function 本地列表(path)
     if 全局主题值=="Day" then
       bwz=0x3f000000
@@ -692,3 +689,13 @@ a=MUKPopu({
     end},
   }
 })
+
+function onActivityResult(a,b,c)
+  if b==100 then
+    if collections_url~="local" then
+      collections_base:clear()
+      初始化()
+      刷新()
+    end
+  end
+end

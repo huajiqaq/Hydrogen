@@ -121,6 +121,7 @@ liulan.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)--回调参数，v控件，url网址
     local res=false
     if liulanurl:find("zhihu.com") and liulanurl:find("need_login=true") then
+    activity.setResult(100)
     activity.finish()
     提示("成功")
     return

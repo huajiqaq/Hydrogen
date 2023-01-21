@@ -87,7 +87,8 @@ question_itemc=
               MaxLines=3;--设置最大输入行数
               letterSpacing="0.02";
               ellipsize="end",
-              textColor=stextc;
+--              textColor=stextc;
+              textColor=textc;
               layout_marginTop="9dp";
               Typeface=字体("product");
             };
@@ -423,4 +424,11 @@ if activity.getSharedData("问题提示0.01")==nil
   .setMessage("你可点击问题的标题下面的区域来展开问题")
   .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("问题提示0.01","true") end})
   .show()
+end
+
+function onActivityResult(a,b,c)
+  if b==100 then
+    activity.recreate()
+  end
+
 end

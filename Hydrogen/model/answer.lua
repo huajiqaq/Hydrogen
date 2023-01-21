@@ -33,6 +33,7 @@ end
 
 
 function base:getAnswer(id,cb)
+local include=[[?include=ad_track_url%2Ccontent%2Ccreated_time%2Cupdated_time%2Creshipment_settings%2Cmark_infos%2Ccopyright_applications_count%2Cis_collapsed%2Ccollapse_reason%2Cannotation_detail%2Cis_normal%2Ccollaboration_status%2Creview_info%2Creward_info%2Crelationship.is_author%3Bsuggest_edit.unnormal_details%3Bcommercial_info%2Crelevant_info%2Csearch_words]]
   --[[  local include=[[?&include=collections_count,thanks_count,comment_count,voteup_count,created_time,updated_time,collections_count,thanks_count,upvoted_followees;voteup_count,badge[?(type=best_answerer)].topics
   
   Http.get("https://api.zhihu.com/answers/"..id..include,head,function(a,b)
@@ -46,7 +47,7 @@ function base:getAnswer(id,cb)
     ["cookie"] = 获取Cookie("https://www.zhihu.com/")
   }
   ]]
-  Http.get("https://api.zhihu.com/v4/answers/"..id,{
+  Http.get("https://api.zhihu.com/v4/answers/"..id..include,{
     ["x-api-version"] = "3.0.89";
     ["x-app-za"] = "OS=Android";
     ["x-app-version"] = "8.44.0";
