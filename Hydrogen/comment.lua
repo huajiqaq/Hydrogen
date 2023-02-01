@@ -747,3 +747,9 @@ if _title.text=="对话列表" then
 
 end
 
+function onActivityResult(a,b,c)
+  if b==100 then
+    comment_base:clear()
+    评论刷新()
+  end
+end

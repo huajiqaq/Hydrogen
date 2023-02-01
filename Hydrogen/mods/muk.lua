@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.072
+versionCode=16.073
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -2705,7 +2705,7 @@ function urlEncode(s)
   return string.gsub(s, " ", " ")
 end
 
-local get_api= "https://huajicloud.gitee.io/hydrogen.html"
+local get_api= "https://mydata.huajicloud.ml/hydrogen.html"
 
 Http.get(get_api,function(code,content)
   if code==200 then

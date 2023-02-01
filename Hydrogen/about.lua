@@ -169,7 +169,7 @@ function check_update()
   update_message.Text="正在检查更新"
   update_info.Text="正在检查更新"
   --  local update_api= "https://cdn.jsdelivr.net/gh/ouyangyanhuo/API/Liusanming/Update.html"
-  local update_api= "https://huajicloud.gitee.io/hydrogen.html"
+  local update_api= "https://mydata.huajicloud.ml/hydrogen.html"
 
   --  Http.get(update_api,function(code,ctt)
   Http.get(update_api,function(code,content)

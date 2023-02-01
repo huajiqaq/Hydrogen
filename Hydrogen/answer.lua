@@ -270,11 +270,7 @@ function 数据添加(t,b)
    ]])
 
       --      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
-      --      if b.editable_content:find("video%-link") then
-      if not b.attachment then
-        view.evaluateJavascript([[document.getElementsByClassName("video-box").length>0?"true":"false"]],ValueCallback({
-          onReceiveValue=function(value)
-            if value==[["true"]] then
+     if b.content:find("video%-box") then
               Http.get("https://www.zhihu.com/api/v4/me",{
                 ["cookie"] = 获取Cookie("https://www.zhihu.com/");
                 },function(code,content)
@@ -288,6 +284,65 @@ function 数据添加(t,b)
                 end
                 return
               end)
+              
+              加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
+              加载js(view,[[
+  function setvideo () {
+    if (document.getElementsByClassName("video-box").length>0 && typeof(document.getElementsByClassName("video-box")[0].href)!="undefined") {
+    for (i = 0; i<document.getElementsByClassName("video-box").length; i++) {
+        (function(i){
+       
+            var k =decodeURIComponent(document.getElementsByClassName("video-box")[i].href).match(/\/video\/(\S*)/)[1]
+            var xhr = new XMLHttpRequest();
+            var url = "https://lens.zhihu.com/api/v4/videos/"+k;
+            xhr.open("get", url);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+				if (xhr.status == 200) {
+				    videohtml= xhr.responseText
+					var getvideourlhtml = JSON.parse(videohtml);
+						try{
+		videourl=getvideourlhtml.playlist.SD.play_url
+	}catch(err){				//抓住throw抛出的错误
+	if (getvideourlhtml.playlist.LD.play_url) {
+	videourl= getvideourlhtml.playlist.LD.play_url  
+	} else if (getvideourlhtml.playlist.HD.play_url) {
+	videourl= getvideourlhtml.playlist.HD.play_url  
+	}
+	}
+	
+                    document.getElementsByClassName("video-box")[i].outerHTML='<div class="video-box"><video src=' +videourl +  ' style="margin: auto;width: 100%;" controls=""></video></div>'
+					} else {
+					}
+                }
+            };
+            xhr.send(null);
+        })(i);
+    }
+}
+}
+waitForKeyElements(' [class="video-box"]', setvideo);
+]])
+--[==[
+      if not b.attachment then
+        view.evaluateJavascript('document.getElementsByClassName("video-box").length>0?"true":"false"',ValueCallback({
+          onReceiveValue=function(value)
+          提示(value)
+            if value=='"true"' then
+              Http.get("https://www.zhihu.com/api/v4/me",{
+                ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+                },function(code,content)
+                if code==401 then
+                  AlertDialog.Builder(this)
+                  .setTitle("提示")
+                  .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
+                  .setCancelable(false)
+                  .setPositiveButton("我知道了",nil)
+                  .show()
+                end
+                return
+              end)
+              
               加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
               加载js(view,[[
   function setvideo () {
@@ -329,9 +384,10 @@ waitForKeyElements(' [class="video-box"]', setvideo);
             end
           end
         }))
+        ]==]
 
-        --       elseif b.attachment then
-       else
+       elseif b.attachment then
+--       else
         xpcall(function()
           视频链接=b.attachment.video.video_info.playlist.sd.url
           end,function()
@@ -998,3 +1054,25 @@ if activity.getSharedData("回答提示0.03")==nil
   .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.03","true") end})
   .show()
 end
+
+function onActivityResult(a,b,c)
+  if b==100 then
+    activity.recreate()
+  end
+end
+
+--[[
+if this.getSharedData("使用音量键滑动")=="true" then
+function onKeyDown(keycode,event)
+  if keycode==24 then
+    pg.setCurrentItem(pg.getCurrentItem()+1,false)
+    return true
+  elseif keycode==25 then
+    pg.setCurrentItem(pg.getCurrentItem()-1,false)
+    return true
+    else
+    return false
+  end
+end
+end
+]]
