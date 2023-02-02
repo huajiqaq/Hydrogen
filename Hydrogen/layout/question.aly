@@ -154,13 +154,22 @@
                     layout_marginTop="8dp";
                   };
                   {
-                    LuaWebView;
-                    layout_marginTop="8dp";
-                    id="show",
+                    RelativeLayout;
+                    id="letgo";
                     layout_width="-1";
-                    BackgroundColor="0x01000000",
-                    Visibility=8,
-                    layout_height="wrap_content",
+                    layout_height="wrap_content";
+                    {
+                      ScrollView,
+                      {
+                        LuaWebView;
+                        layout_marginTop="8dp";
+                        id="show",
+                        layout_width="-1";
+                        BackgroundColor="0x01000000",
+                        Visibility=8,
+                        layout_height="wrap_content",
+                      };
+                    };
                   };
                   {
                     TextView;

@@ -74,7 +74,7 @@ people_itemc=
                 TextView;
                 id="people_action";
                 layout_marginLeft="6dp",
---                textColor=stextc;
+                --                textColor=stextc;
                 textColor=textc;
                 layout_gravity="center_vertical",
                 Typeface=字体("product");
@@ -101,7 +101,7 @@ people_itemc=
               TextView;
               textSize="12sp";
               id="people_art";
---              textColor=stextc;
+              --              textColor=stextc;
               textColor=textc;
               MaxLines=3;--设置最大输入行数
               letterSpacing="0.02";
@@ -465,7 +465,7 @@ function checktitle(str)
     ["cookie"] = 获取Cookie("https://www.zhihu.com/");
     },function(code,content)
     if code==200 then
-      if okstart=="true" then--开启
+      if isstart=="true" then--开启
         local 请求链接="https://www.zhihu.com/api/v4/search_v3?correction=1&t=general&q="..urlEncode(str).."&restricted_scene=member&restricted_field=member_hash_id&restricted_value="..people_id
         chobu="搜索"
         提示("搜索中 请耐心等待")

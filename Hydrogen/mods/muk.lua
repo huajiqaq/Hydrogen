@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.073
+versionCode=16.074
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -1227,7 +1227,7 @@ end]]
 
 function 检查链接(url,b)
   local open=activity.getSharedData("内部浏览器查看回答")
-  local url="https"..url:match("https(.+)")
+  --  local url="https"..url:match("https(.+)")
 
   if url:find("zhihu.com/question") then
 
@@ -2704,18 +2704,19 @@ function urlEncode(s)
   s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
   return string.gsub(s, " ", " ")
 end
-
+if not isstart and this.getSharedData("解析zes开关") then
+  isstart=this.getSharedData("解析zes开关")
+end
+--[[
 local get_api= "https://mydata.huajicloud.ml/hydrogen.html"
 
 Http.get(get_api,function(code,content)
   if code==200 then
-    okstart=content:match("start%=(.+),start")
+    isstart=content:match("start%=(.+),start")
   end
 end)
-import "com.baidu.mobstat.StatService"
-StatService
-.setAppKey("c5aac7351d")
-.start(this)
+]]
+
 cardback=全局主题值=="Day" and cardedge or backgroundc
 cardmargin=全局主题值=="Day" and "4px" or false
 
