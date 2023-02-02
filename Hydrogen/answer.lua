@@ -13,7 +13,7 @@ import "android.webkit.WebChromeClient"
 import "android.content.pm.ActivityInfo"
 import "android.graphics.PathMeasure"
 import "android.webkit.ValueCallback"
-问题id,回答id,问题对象,是否记录历史记录=...
+问题id,回答id,问题对象,是否记录历史记录,在线页数=...
 
 activity.setContentView(loadlayout("layout/answer"))
 
@@ -66,6 +66,9 @@ end
 
 if 问题对象 then
   回答容器:addAII(require "cjson".decode(tostring(问题对象)))
+  if 在线页数 then
+    回答容器.now=在线页数
+  end
 end
 
 --
@@ -105,7 +108,7 @@ function 数据添加(t,b)
         return
       end
       双按钮对话框("提示","是否要切换上一个回答","是的","取消",function()
-        关闭对话框(an) 提示("切换中") activity.finish() activity.newActivity("answer",{问题id,nil,nil,false,回答容器.now-2}) end,function()
+        关闭对话框(an) 提示("切换中") activity.finish() activity.newActivity("answer",{问题id,回答id,问题对象,false,回答容器.now-1}) end,function()
         关闭对话框(an)
       end)
      else
@@ -270,23 +273,23 @@ function 数据添加(t,b)
    ]])
 
       --      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
-     if b.content:find("video%-box") then
-              Http.get("https://www.zhihu.com/api/v4/me",{
-                ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-                },function(code,content)
-                if code==401 then
-                  AlertDialog.Builder(this)
-                  .setTitle("提示")
-                  .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
-                  .setCancelable(false)
-                  .setPositiveButton("我知道了",nil)
-                  .show()
-                end
-                return
-              end)
-              
-              加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
-              加载js(view,[[
+      if b.content:find("video%-box") then
+        Http.get("https://www.zhihu.com/api/v4/me",{
+          ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+          },function(code,content)
+          if code==401 then
+            AlertDialog.Builder(this)
+            .setTitle("提示")
+            .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
+            .setCancelable(false)
+            .setPositiveButton("我知道了",nil)
+            .show()
+          end
+          return
+        end)
+
+        加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
+        加载js(view,[[
   function setvideo () {
     if (document.getElementsByClassName("video-box").length>0 && typeof(document.getElementsByClassName("video-box")[0].href)!="undefined") {
     for (i = 0; i<document.getElementsByClassName("video-box").length; i++) {
@@ -323,7 +326,7 @@ function 数据添加(t,b)
 }
 waitForKeyElements(' [class="video-box"]', setvideo);
 ]])
---[==[
+        --[==[
       if not b.attachment then
         view.evaluateJavascript('document.getElementsByClassName("video-box").length>0?"true":"false"',ValueCallback({
           onReceiveValue=function(value)
@@ -387,7 +390,7 @@ waitForKeyElements(' [class="video-box"]', setvideo);
         ]==]
 
        elseif b.attachment then
---       else
+        --       else
         xpcall(function()
           视频链接=b.attachment.video.video_info.playlist.sd.url
           end,function()

@@ -87,7 +87,7 @@ question_itemc=
               MaxLines=3;--设置最大输入行数
               letterSpacing="0.02";
               ellipsize="end",
---              textColor=stextc;
+              --              textColor=stextc;
               textColor=textc;
               layout_marginTop="9dp";
               Typeface=字体("product");
@@ -296,6 +296,8 @@ end)
       检查链接(url)
     end,
     onPageFinished=function(view,url)
+      show.setFocusable(false)
+      --[[
       w = View.MeasureSpec.makeMeasureSpec(0,
 
       View.MeasureSpec.UNSPECIFIED);
@@ -303,7 +305,8 @@ end)
       h = View.MeasureSpec.makeMeasureSpec(0,
 
       View.MeasureSpec.UNSPECIFIED);
-      show.measure(w, h);
+      show.measure(w, h);]
+      ]]
 
       if 全局主题值=="Night" then
         --      黑暗模式主题(view)

@@ -269,7 +269,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       关闭页面()
      elseif s=="主页" then
       ch_light("主页")
-      if okstart=="true" then
+      if isstart=="true" then
         a=MUKPopu({
           tittle="菜单",
           list={
@@ -289,7 +289,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       _title.Text="Hydrogen"
      elseif s=="日报" then
       ch_light("日报")
-      if okstart=="true" then
+      if isstart=="true" then
         a=MUKPopu({
           tittle="菜单",
           list={
@@ -309,7 +309,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       _title.Text="日报"
      elseif s=="收藏" then
       ch_light("收藏")
-      if okstart=="true" then
+      if isstart=="true" then
         a=MUKPopu({
           tittle="菜单",
           list={
@@ -2436,6 +2436,8 @@ Http.get(update_api,function(code,content)
     --  content=table2string(require "cjson".decode(ctt))
     -- updateversioncode=tointeger(content:match[[updateversioncode=(.+),]])
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
+    isstart=content:match("start%=(.+),start")
+    this.setSharedData("解析zes开关",isstart)
     if updateversioncode > versionCode and activity.getSharedData("version")~=updateversioncode then
       updateversionname=content:match("updateversionname%=(.+),updateversionname")
       updateinfo=content:match("updateinfo%=(.+),updateinfo")
@@ -2536,3 +2538,8 @@ function onCreate()
     检查意图(intent)
   end
 end
+
+import "com.baidu.mobstat.StatService"
+StatService
+.setAppKey("c5aac7351d")
+.start(this)
