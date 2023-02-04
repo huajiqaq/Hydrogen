@@ -124,6 +124,7 @@ function 数据添加(t,b)
   t.content.setVerticalScrollBarEnabled(false);
 
   t.content.setVisibility(0)
+
   if not(b) then return end
 
   defer local question_base=require "model.question":new(tointeger(b.question.id))
@@ -235,6 +236,10 @@ function 数据添加(t,b)
     .setDatabaseEnabled(true)
   end
 
+  t.content.setDownloadListener({
+    onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
+      webview下载文件(链接, UA, 相关信息, 类型, 大小)
+  end})
 
   回答id=tointeger(b.id)
   点击感谢状态=b.relationship.is_thanked
@@ -466,7 +471,7 @@ waitForKeyElements('.RichText.ztext', setmyvideo);
     onShowCustomView=function(z,a,b)
       v=a
       s=t.msrcroll.getScrollY()
-      activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+      --      activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
       activity.getWindow().getDecorView().setSystemUiVisibility(
       View.SYSTEM_UI_FLAG_LAYOUT_STABLE
       | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -600,8 +605,6 @@ end
 
 --
 
-
-
 function 首次设置()
   defer local question_base=require "model.question":new(问题id)
   :getData(function(tab)
@@ -682,6 +685,8 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
             .setMessage("由于左滑有一些bug 已取消左滑刷新内容 如若想要使用请长按问题标题来实现该操作")
             .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("左滑提示0.01","true") end})
             .show()
+           else
+            提示("如若想要左滑请长按问题标题来实现该操作")
           end
           local mviews=数据表[pg.adapter.getItem(a).id]
           if mviews.data and mviews.data.id then
@@ -830,6 +835,8 @@ function onDestroy()
     数据表[i].ids.content.destroy()
     System.gc()
   end
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
 end
 
 
@@ -1045,7 +1052,21 @@ a=MUKPopu({
       end
     },
 
-
+    {
+      src=图标("build"),text="关闭硬件加速",onClick=function()
+        AlertDialog.Builder(this)
+        .setTitle("提示")
+        .setMessage("你确认要关闭当前页的硬件加速吗 关闭后滑动可能会造成卡顿 如果当前页显示正常请不要关闭")
+        .setPositiveButton("关闭",{onClick=function(v)
+            数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.msrcroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
+            数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.reload()
+            提示("关闭成功")
+        end})
+        .setNeutralButton("取消",{onClick=function(v)
+        end})
+        .show()
+      end
+    },
   }
 })
 
@@ -1057,6 +1078,16 @@ if activity.getSharedData("回答提示0.03")==nil
   .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.03","true") end})
   .show()
 end
+
+if activity.getSharedData("异常提示0.01")==nil
+  AlertDialog.Builder(this)
+  .setTitle("小提示")
+  .setCancelable(false)
+  .setMessage("在最近的测试中 发现部分回答显示不完整 现确认为是开启硬件加速后出现的问题 如若出现了异常情况 请点击右上角「关闭硬件加速」 关闭动画会卡顿 如果流量没问题请不要点击")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("异常提示0.01","true") end})
+  .show()
+end
+
 
 function onActivityResult(a,b,c)
   if b==100 then

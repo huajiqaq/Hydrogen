@@ -13,6 +13,7 @@ if activity.getSharedData("标题简略化")~="true" then
  else
   _title.text="专栏"
 end
+
 _more.setVisibility(8)
 tabv.setVisibility(8)
 itemc=
@@ -38,7 +39,7 @@ itemc=
       CardElevation="0dp";
       CardBackgroundColor=backgroundc;
       Radius="0dp";
---      layout_margin="4px";
+      --      layout_margin="4px";
       layout_margin=cardmargin;
       layout_width="-1";
       layout_height="-1";
@@ -76,7 +77,7 @@ itemc=
                 TextView;
                 id="people_action";
                 layout_marginLeft="6dp",
---                textColor=stextc;
+                --                textColor=stextc;
                 textColor=textc;
                 layout_gravity="center_vertical",
                 Typeface=字体("product");
@@ -103,7 +104,7 @@ itemc=
               TextView;
               textSize="12sp";
               id="people_art";
---              textColor=stextc;
+              --              textColor=stextc;
               textColor=textc;
               MaxLines=3;--设置最大输入行数
               letterSpacing="0.02";
@@ -263,4 +264,12 @@ history_list.onItemClick=function(l,v,c,b)
       activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
     end
   end
+end
+
+保存历史记录(title,"专栏分割"..id,50)
+
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
 end

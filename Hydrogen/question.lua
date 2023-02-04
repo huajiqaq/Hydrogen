@@ -290,6 +290,11 @@ end)
     .setCacheMode(2)
   end
 
+  show.setDownloadListener({
+    onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
+      webview下载文件(链接, UA, 相关信息, 类型, 大小)
+  end})
+
   show.setWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
       view.stopLoading()
@@ -434,4 +439,11 @@ function onActivityResult(a,b,c)
     activity.recreate()
   end
 
+end
+
+function onDestroy()
+  show.destroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
 end

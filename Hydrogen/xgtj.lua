@@ -300,3 +300,9 @@ function 开始加载推荐()
   end)
 end
 开始加载推荐()
+
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
+end

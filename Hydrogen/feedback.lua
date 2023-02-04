@@ -60,7 +60,7 @@ help_item={
       id="content";
       Typeface=字体("product");
       textSize="14sp";
---      textColor=stextc;
+      --      textColor=stextc;
       textColor=textc;
       layout_marginRight="16dp",
       layout_marginLeft="16dp",
@@ -103,14 +103,14 @@ send.onClick=function()
   send.setVisibility(8)
   progress.setVisibility(0)
   task(300,function()send.setVisibility(0) progress.setVisibility(8)
-  local uri=Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=1906327347")
+    local uri=Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=1906327347")
     if not(pcall(activity.startActivity,Intent(Intent.ACTION_VIEW,uri))) then
       提示("你没安装QQ")
-      else
+     else
       提示("跳转成功 请使用QQ反馈Bug")
     end
-    
---[[import "android.content.*"
+
+    --[[import "android.content.*"
 activity.getSystemService(Context.CLIPBOARD_SERVICE).setText("myhydrogen@outlook.com")
 提示("已将邮箱复制 请用邮箱反馈Bug")]]
 
@@ -145,4 +145,8 @@ end
 
 
 
-
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
+end

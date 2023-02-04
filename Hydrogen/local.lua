@@ -113,6 +113,12 @@ if activity.getSharedData("禁用缓存")=="true"
   .setCacheMode(2)
 end
 
+webview.setDownloadListener({
+  onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
+    提示("本地暂不支持下载")
+    --webview下载文件(链接, UA, 相关信息, 类型, 大小)
+end})
+
 webview.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)
     --    if url~=("https://www.zhihu.com/appview/answer/"..tointeger(b.id).."") then
@@ -216,3 +222,10 @@ a=MUKPopu({
 
   }
 })
+
+function onDestroy()
+  webview.destroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
+end

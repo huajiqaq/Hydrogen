@@ -35,7 +35,7 @@ itemc=
       CardElevation="0dp";
       CardBackgroundColor=backgroundc;
       Radius="0dp";
---      layout_margin="4px";
+      --      layout_margin="4px";
       layout_margin=cardmargin;
       layout_width="-1";
       layout_height="-1";
@@ -256,4 +256,10 @@ history_list.onItemClick=function(l,v,c,b)
       activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
     end
   end
+end
+
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
 end

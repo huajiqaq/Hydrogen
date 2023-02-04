@@ -183,13 +183,17 @@ function 刷新()
       simpletitle=require "cjson".decode(content).excerpt_title
       autoname=require "cjson".decode(content).author.name
       comment_count=tointeger(require "cjson".decode(content).comment_count)
-      保存历史记录(require "cjson".decode(content).excerpt_title,"想法分割"..result,50)
+      保存历史记录(simpletitle,"想法分割"..result,50)
     end)
     content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
     --对应api是https://www.zhihu.com/api/v4/pins/ID，或者https://api.zhihu.com/pins/ID，均可以取得内容，后续再做
    elseif 类型=="视频" then
     content.loadUrl("https://www.zhihu.com/zvideo/"..result.."?utm_id=0")
     _title.Text="视频"
+    Http.get("https://www.zhihu.com/api/v4/zvideos/"..result,function(code,content)
+      simpletitle=require "cjson".decode(content).title
+      保存历史记录(simpletitle,"视频分割"..result,50)
+    end)
     if activity.getSharedData("视频提示0.01")==nil
       AlertDialog.Builder(this)
       .setTitle("小提示")
@@ -446,8 +450,8 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     end
 
   end,
-    onShowCustomView=function(view,url)
-    content.setVisibility(content.GONE);
+  onShowCustomView=function(view,url)
+    --    content.setVisibility(8);
     this.addContentView(view, WindowManager.LayoutParams(-1, -1))
     kkoo=view
     activity.getWindow().getDecorView().setSystemUiVisibility(5639)
@@ -458,19 +462,29 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     kkoo=nil
     activity.getWindow().getDecorView().setSystemUiVisibility(8208)
   end,
-  
+
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
     if consoleMessage.message()=="显示评论" then
       activity.newActivity("comment",{result,"articles"})
     end
 end}))
+
+content.setDownloadListener({
+  onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
+    webview下载文件(链接, UA, 相关信息, 类型, 大小)
+end})
+
 --
 
 
 --退出时去除bitmap的内存
 
 function onDestroy()
+  content.destroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
   pcall(
   function()
     local a=mn.getDrawable()

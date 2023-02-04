@@ -753,3 +753,9 @@ function onActivityResult(a,b,c)
     评论刷新()
   end
 end
+
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
+end

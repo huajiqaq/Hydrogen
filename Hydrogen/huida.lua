@@ -90,7 +90,7 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   end,
 
   onShowCustomView=function(view,url)
-    liulan.setVisibility(liulan.GONE);
+    liulan.setVisibility(8);
     this.addContentView(view, WindowManager.LayoutParams(-1, -1))
     kkoo=view
     activity.getWindow().getDecorView().setSystemUiVisibility(5639)
@@ -152,6 +152,7 @@ liulan.setWebViewClient{
       end
      else
       if 检查链接(url,true) then
+        view.stopLoading()
         检查链接(url)
       end
       --      if ischeck==nil then 检查链接(url) else return false end
@@ -297,6 +298,11 @@ if activity.getSharedData("禁用缓存")=="true"
   .setCacheMode(2)
 end
 
+liulan.setDownloadListener({
+  onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
+    webview下载文件(链接, UA, 相关信息, 类型, 大小)
+end})
+
 a=MUKPopu({
   tittle="网页",
   list={
@@ -359,4 +365,11 @@ onActivityResult=function(req,res,intent)
     uploadMessageAboveL.onReceiveValue(results);
     uploadMessageAboveL = nil;
   end
+end
+
+function onDestroy()
+  liulan.destroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
 end
