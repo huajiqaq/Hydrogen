@@ -619,10 +619,9 @@ if collections_url=="local" then
       return true
   end})
 
+  刷新()
 
 end
-
-刷新()
 
 
 --有时间再补充 api接口请求头需要一些参数被加密 k实现同种功能可无限Http.get获取内容 后直到is_end 再执行搜索
@@ -698,4 +697,10 @@ function onActivityResult(a,b,c)
       刷新()
     end
   end
+end
+
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
 end

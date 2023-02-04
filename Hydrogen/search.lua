@@ -16,11 +16,11 @@ button.onClick=function()
   if #(tostring(search_editor.EditText.text):gsub("\n",""):gsub(" ",""))<1 then
     提示("请输入您要搜索的内容")
    else
---[[    if activity.getSharedData("内部搜索(beta)")=="true" then
+    --[[    if activity.getSharedData("内部搜索(beta)")=="true" then
       activity.newActivity("search_result",{search_editor.EditText.text})
      else]]
-      activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..search_editor.EditText.text})
---    end
+    activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..search_editor.EditText.text})
+    --    end
   end
 end
 
@@ -130,3 +130,8 @@ search_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   end
 })
 
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
+end

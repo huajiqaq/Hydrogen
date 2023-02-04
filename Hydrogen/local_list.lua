@@ -458,3 +458,9 @@ a=MUKPopu({
     end},
   }
 })
+
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
+end

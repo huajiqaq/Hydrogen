@@ -147,7 +147,6 @@ end
   end,
   缓存设置=function()
     local 执行代码=[[
-import "androidx.core.content.ContextCompat"
 function clear()
   task(function(dar)
     --   dar=File(activity.getLuaDir()).parent.."/cache/webviewCache"
@@ -552,4 +551,10 @@ function onActivityResult(a,b,c)
     activity.setResult(1200,nil)
   end
 
+end
+
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
 end

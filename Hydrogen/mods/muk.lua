@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.074
+versionCode=16.075
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -1297,6 +1297,20 @@ function 检查链接(url,b)
     if b then return true end
     local videoid=url:match("/zvideo/(.-)?") or url:match("/zvideo/(.+)")
     activity.newActivity("column",{videoid,"视频"})
+   elseif url:find("zhihu.com/people") then
+    if b then return true end
+    local people_name=url:match("/people/(.-)?") or url:match("/people/(.+)")
+    Http.get(url,{
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+      },function(code,content)
+      if code==200 then
+        local peopleid=content:match('":{"id":"(.-)","urlToken')
+        --        activity.finish()
+        activity.newActivity("people",{peopleid,true})
+       elseif code==401 then
+        提示("请登录后查看用户")
+      end
+    end)
    elseif url:find("zhihu.com/signin") then
     if b then return false end
     activity.newActivity("login")
@@ -1304,6 +1318,9 @@ function 检查链接(url,b)
     if b then return false end
     activity.finish()
     activity.newActivity("login",{url})
+   elseif url:find("zhihu://") then
+    if b then return true end
+    检查意图(url)
    else
     if b then return false end
     activity.newActivity("huida",{url})
@@ -1337,6 +1354,9 @@ function 检查意图(url,b)
      elseif url:find "topic" then
       if b then return true end
       activity.newActivity("topic",{url:match("topic/(.-)/")})
+     elseif url:find "people" then
+      if b then return true end
+      activity.newActivity("people",{url:match("people/(.-)?"),true})
      elseif url:find "articles" then
       if b then return true end
       activity.newActivity("column",{url:match("articles/(.-)?")})
@@ -1354,8 +1374,8 @@ function 检查意图(url,b)
       提示("暂不支持的知乎意图"..intent)
     end
    elseif url and (url:find("http://") or url:find("https://")) and url:find("zhihu.com") then
-    local myurl="https"..url:match("https(.+)")
-    检查链接(myurl)
+    --    local myurl="https"..url:match("https(.+)")
+    检查链接(url)
   end
 end
 
@@ -1506,7 +1526,7 @@ function 下载文件(链接,文件名)
   url=Uri.parse(链接);
   request=DownloadManager.Request(url);
   request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
-  request.setDestinationInExternalPublicDir(内置存储("Download",文件名));
+  request.setDestinationInExternalPublicDir("Download",文件名);
   request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
   downloadManager.enqueue(request);
   提示("正在下载，下载到："..内置存储("Download/"..文件名).."\n请查看通知栏以查看下载进度。")
@@ -3094,3 +3114,59 @@ function matchtext(str,regex)
   end
   return t
 end --返回table
+
+function webview下载文件(链接, UA, 相关信息, 类型, 大小)
+  大小=string.format("%0.2f",大小/1024/1024).."MB"
+  if 相关信息:match('filename="(.-)"') then
+    文件名=urlDecode(相关信息:match('filename="(.-)"'))
+   else
+    import "android.webkit.URLUtil"
+    --[[
+      import "java.util.regex.Matcher";
+      import "java.util.regex.Pattern";
+      filename=Pattern.compile("(\\w+)(\\.\\w+)+(?!.*(\\w+)(\\.\\w+)+)").matcher(链接)
+      filename.find()
+      文件名=filename.group(0)
+      ]]
+    文件名=URLUtil.guessFileName(链接,nil,nil)
+  end
+  local Download_layout={
+    LinearLayout;
+    orientation="vertical";
+    id="Download_father_layout",
+    {
+      TextView;
+      id="namehint",
+      layout_marginTop="10dp";
+      text="下载文件名",
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
+      layout_width="match_parent";
+      textColor=WidgetColors,
+      layout_gravity="center";
+    };
+    {
+      EditText;
+      id="nameedit",
+      Text=文件名;
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
+      layout_width="match_parent";
+      layout_gravity="center";
+    };
+  };
+
+  AlertDialog.Builder(this)
+  .setTitle("下载文件")
+  .setMessage("文件类型："..类型.."\n".."文件大小："..大小)
+  .setView(loadlayout(Download_layout))
+  .setNeutralButton("复制",{onClick=function(v)
+      复制文本(url)
+      提示("复制下载链接成功")
+  end})
+  .setPositiveButton("下载",{onClick=function(v)
+      下载文件(链接,nameedit.Text)
+  end})
+  .setNegativeButton("取消",nil)
+  .show()
+end

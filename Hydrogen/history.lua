@@ -117,7 +117,7 @@ for n=1,#recordtt do
 end
 
 --mytab={"全部","回答","视频","想法","文章","提问","专栏"}
-mytab={"全部","回答","想法","文章","提问"}
+mytab={"全部","回答","想法","文章","提问","用户","视频","专栏"}
 
 
 function check(str)
@@ -128,7 +128,7 @@ function check(str)
     end
    elseif str=="回答" then
     for n=1,#recordii do
-      if not recordii[n]:find("视频") and not recordii[n]:find("想法") and not recordii[n]:find("文章") and recordii[n]:find("分割") then
+      if not recordii[n]:find("想法") and not recordii[n]:find("文章") and not recordii[n]:find("视频") and not recordii[n]:find("用户") and not recordii[n]:find("专栏") and recordii[n]:find("分割") then
         adp.add{history_title=recordtt[n],history_num=tostring(n)}
       end
     end
@@ -219,6 +219,12 @@ history_list.onItemClick=function(l,v,c,b)
     activity.newActivity("column",{(recordii[clicknum]):match("文章分割(.+)"),(recordii[clicknum]):match("分割(.+)")})
    elseif (recordii[clicknum]):find("想法分割") then
     activity.newActivity("column",{(recordii[clicknum]):match("想法分割(.+)"),"想法"})
+   elseif (recordii[clicknum]):find("视频分割") then
+    activity.newActivity("column",{(recordii[clicknum]):match("视频分割(.+)"),"视频"})
+   elseif (recordii[clicknum]):find("用户分割") then
+    activity.newActivity("people",{(recordii[clicknum]):match("用户分割(.+)")})
+   elseif (recordii[clicknum]):find("专栏分割") then
+    activity.newActivity("people_column",{(recordii[clicknum]):match("专栏分割(.+)"),recordtt[clicknum]})
     --TOOD 对于回答记录的点击
    elseif (recordii[clicknum]):find("分割") then
     if open=="false" then
@@ -302,4 +308,10 @@ function onPause()
   if ishava then
     activity.overridePendingTransition(0,0);
   end
+end
+
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
 end

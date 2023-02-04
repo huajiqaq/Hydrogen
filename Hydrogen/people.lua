@@ -5,7 +5,7 @@ import "mods.muk"
 import "com.michael.NoScrollListView"
 import "com.michael.NoScrollGridView"
 
-people_id=...
+people_id,是否记录=...
 
 activity.setContentView(loadlayout("layout/people"))
 
@@ -166,6 +166,11 @@ local base_people=require "model.people":new(people_id)
   local 大头像=data.avatar_url_template
   local 签名=data.headline
   用户id=data.id
+
+  if 是否记录 then
+    保存历史记录(名字,"用户分割"..用户id,50)
+    是否记录=false
+  end
 
   if 用户id~=nil and 用户id~="" and 用户id~=activity.getSharedData("idx") then
     following.setVisibility(View.VISIBLE)
@@ -620,4 +625,10 @@ function onActivityResult(a,b,c)
   if b==100 then
     其他("clear")
   end
+end
+
+function onDestroy()
+  System.gc()
+  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+  collectgarbage("collect")
 end
