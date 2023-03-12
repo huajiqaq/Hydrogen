@@ -1,2 +1,0 @@
-include ':app',':androlua'
-rootProject.name = "Hydrogen"
