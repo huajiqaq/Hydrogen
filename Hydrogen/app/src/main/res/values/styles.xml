@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">?android:colorPrimary</item>
+        <item name="colorAccent">?android:colorPrimary</item>
+        <item name="android:windowBackground">@mipmap/welcome</item>
+        <item name="android:colorButtonNormal">@color/colorPrimary</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:actionModeBackground">@null</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
