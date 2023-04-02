@@ -474,10 +474,3 @@ best_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     end
   end
 })
-
-
-function onDestroy()
-  System.gc()
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
-end

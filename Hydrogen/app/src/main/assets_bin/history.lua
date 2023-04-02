@@ -309,9 +309,3 @@ function onPause()
     activity.overridePendingTransition(0,0);
   end
 end
-
-function onDestroy()
-  System.gc()
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
-end

@@ -443,7 +443,4 @@ end
 
 function onDestroy()
   show.destroy()
-  System.gc()
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
 end

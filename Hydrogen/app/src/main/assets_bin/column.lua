@@ -482,9 +482,6 @@ end})
 
 function onDestroy()
   content.destroy()
-  System.gc()
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
   pcall(
   function()
     local a=mn.getDrawable()

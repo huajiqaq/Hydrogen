@@ -239,9 +239,3 @@ about_list.setOnItemClickListener(AdapterView.OnItemClickListener{
 
     adp.notifyDataSetChanged()--更新列表
 end})
-
-function onDestroy()
-  System.gc()
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
-end

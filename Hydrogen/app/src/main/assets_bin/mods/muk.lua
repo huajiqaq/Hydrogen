@@ -1,7 +1,7 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.077
+versionCode=16.078
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -3175,4 +3175,15 @@ function webview下载文件(链接, UA, 相关信息, 类型, 大小)
   end})
   .setNegativeButton("取消",nil)
   .show()
+end
+
+local old_onDestroy=onDestroy
+function onDestroy()
+  if old_onDestroy~=nil then
+    old_onDestroy()
+  end
+  old_onDestroy=nil
+  LuaUtil.rmDir(File("/sdcard/Android/data/"..activity.getPackageName().."/cache/images"))
+  collectgarbage("collect")
+  System.gc()
 end

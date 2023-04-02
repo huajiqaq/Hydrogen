@@ -267,9 +267,3 @@ history_list.onItemClick=function(l,v,c,b)
 end
 
 保存历史记录(title,"专栏分割"..id,50)
-
-function onDestroy()
-  System.gc()
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
-end

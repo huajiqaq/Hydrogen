@@ -281,9 +281,3 @@ if activity.getSharedData("一文提示0.01")==nil
   .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("一文提示0.01","true") end})
   .show()
 end
-
-function onDestroy()
-  System.gc()
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
-end

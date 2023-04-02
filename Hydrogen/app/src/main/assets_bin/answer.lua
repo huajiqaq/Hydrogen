@@ -835,8 +835,6 @@ function onDestroy()
     数据表[i].ids.content.destroy()
     System.gc()
   end
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
 end
 
 

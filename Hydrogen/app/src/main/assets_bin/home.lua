@@ -2543,9 +2543,3 @@ import "com.baidu.mobstat.StatService"
 StatService
 .setAppKey("c5aac7351d")
 .start(this)
-
-function onDestroy()
-  System.gc()
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
-end

@@ -219,13 +219,31 @@ a=MUKPopu({
         提示("如果有问题 可以点击主页右上角 在弹出菜单点击反馈进行反馈")
       end
     },
+    
+    {
+      src=图标("build"),text="关闭硬件加速",onClick=function()
+        AlertDialog.Builder(this)
+        .setTitle("提示")
+        .setMessage("你确认要关闭当前页的硬件加速吗 关闭后滑动可能会造成卡顿 如果当前页显示正常请不要关闭")
+        .setPositiveButton("关闭",{onClick=function(v)
+            msrcroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
+            webview.reload()
+            提示("关闭成功")
+        end})
+        .setNeutralButton("取消",{onClick=function(v)
+        end})
+        .show()
+      end
+    },
 
   }
 })
 
-function onDestroy()
-  webview.destroy()
-  System.gc()
-  LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-  collectgarbage("collect")
+if activity.getSharedData("异常提示0.01")==nil
+  AlertDialog.Builder(this)
+  .setTitle("小提示")
+  .setCancelable(false)
+  .setMessage("在最近的测试中 发现部分回答显示不完整 现确认为是开启硬件加速后出现的问题 如若出现了异常情况 请点击右上角「关闭硬件加速」 关闭动画会卡顿 如果流量没问题请不要点击")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("异常提示0.01","true") end})
+  .show()
 end
