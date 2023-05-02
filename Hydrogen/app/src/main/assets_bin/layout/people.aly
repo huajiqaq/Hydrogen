@@ -151,7 +151,7 @@
                     id="people_sign",
                     Typeface=字体("product");
                     layout_gravity="center";
-                    singleLine=true;
+                    --                    singleLine=true;
                   };
                   {
                     CardView;

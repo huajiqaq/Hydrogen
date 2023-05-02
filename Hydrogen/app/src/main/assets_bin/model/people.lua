@@ -32,10 +32,12 @@ function base:getData(callback)
   local head = {
     ["cookie"] = 获取Cookie("https://www.zhihu.com/")
   }
-  Http.get("https://api.zhihu.com/people/"..self.id,head,function(code,content)
+  Http.get("https://api.zhihu.com/people/"..self.id.."/profile?profile_new_version=1",head,function(code,content)
     if code==200 then
       local data=require "cjson".decode(content)
       callback(data)
+     elseif require "cjson".decode(content).error then
+      提示(require "cjson".decode(content).error.message)
     end
   end)
   return self
