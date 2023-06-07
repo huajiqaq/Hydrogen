@@ -1,6 +1,5 @@
 require "import"
 import "mods.muk"
-import "android.support.v4.widget.*"
 import "android.os.Handler"
 import "java.lang.Runnable"
 import "com.michael.NoScrollListView"
@@ -8,6 +7,8 @@ import "com.michael.NoScrollGridView"
 import "android.widget.ImageView$ScaleType"
 import "com.lua.custrecycleradapter.*"
 import "androidx.recyclerview.widget.*"
+
+import "androidx.swiperefreshlayout.widget.*"
 
 
 activity.setContentView(loadlayout("layout/home"))
@@ -2408,6 +2409,8 @@ end
 function onResume()
   activity.getDecorView().post{run=function()check()end}
 end
+
+
 
 if not(this.getSharedData("内部浏览器查看回答")) then
   activity.setSharedData("内部浏览器查看回答","false")

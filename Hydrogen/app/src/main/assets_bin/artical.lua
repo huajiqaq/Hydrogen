@@ -1,7 +1,6 @@
 require "import"
 import "mods.muk"
 import "android.view.animation.ScaleAnimation"
-import "android.support.v4.widget.*"
 
 activity.setContentView(loadlayout("layout/artical"))
 
