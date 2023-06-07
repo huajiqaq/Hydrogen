@@ -3183,7 +3183,7 @@ function onDestroy()
     old_onDestroy()
   end
   old_onDestroy=nil
-  LuaUtil.rmDir(File("/sdcard/Android/data/"..activity.getPackageName().."/cache/images"))
+  LuaUtil.rmDir(File(activity.getExternalCacheDir().toString()))
   collectgarbage("collect")
   System.gc()
 end

@@ -6,7 +6,7 @@ import "mods.muk"
 import "androidx.viewpager2.widget.ViewPager2"
 import "com.dingyi.adapter.BaseViewPage2Adapter"
 import "android.view.*"
-import "uk.co.senab.photoview.PhotoView"
+import "com.nwdxlgzs.view.photoview.PhotoView"
 import "androidx.viewpager2.widget.ViewPager2$OnPageChangeCallback"
 --compile "libs/glide_4.8" --使用 glide 4.8 dex
 import "com.bumptech.glide.Glide"

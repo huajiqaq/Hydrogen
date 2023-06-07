@@ -243,11 +243,12 @@ history_list.onItemClick=function(l,v,c,b)
   activity.setResult(1500,nil)
   task(300,function()
     初始化()
-    adp.clear()
+--[[    adp.clear()
     for n=1,#recordtt do
       adp.add{history_title=recordtt[n],history_num=tostring(n)}
     end
     adp.notifyDataSetChanged()
+    ]]
   end)
 end
 
