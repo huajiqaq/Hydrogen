@@ -1706,3 +1706,7 @@ end
     关闭对话框(an) 跳转页面("settings")
   end)
   
+import "com.baidu.mobstat.StatService"
+StatService
+.setAppKey("c5aac7351d")
+.start(this)
