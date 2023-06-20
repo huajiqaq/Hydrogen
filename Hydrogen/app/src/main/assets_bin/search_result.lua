@@ -9,20 +9,15 @@ activity.setContentView(loadlayout("layout/history"))
 
 str=...
 
+
 _title.text="收藏搜索结果"
 _more.setVisibility(8)
 tabv.setVisibility(8)
-itemc=获取适配器项目布局("history/history")
+itemc=获取适配器项目布局("search_result/search_result")
 
-
-
-
-
-
+history_list.setDividerHeight(0)
 adp=LuaAdapter(activity,itemc)
-
 history_list.Adapter=adp
-
 isaddd=true
 
 history_list.setOnScrollListener{

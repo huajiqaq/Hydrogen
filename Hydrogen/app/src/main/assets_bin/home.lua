@@ -1571,141 +1571,136 @@ function onCreate()
 end
 
 
-  if 全局主题值=="Day" then
-    bwz=0x3f000000
-   else
-    bwz=0x3fffffff
-  end
+if 全局主题值=="Day" then
+  bwz=0x3f000000
+ else
+  bwz=0x3fffffff
+end
 
-  local gd2 = GradientDrawable()
-  gd2.setColor(转0x(backgroundc))--填充
-  local radius=dp2px(16)
-  gd2.setCornerRadii({radius,radius,radius,radius,0,0,0,0})--圆角
-  gd2.setShape(0)--形状，0矩形，1圆形，2线，3环形
-  local dann={
+local gd2 = GradientDrawable()
+gd2.setColor(转0x(backgroundc))--填充
+local radius=dp2px(16)
+gd2.setCornerRadii({radius,radius,radius,radius,0,0,0,0})--圆角
+gd2.setShape(0)--形状，0矩形，1圆形，2线，3环形
+local dann={
+  LinearLayout;
+  layout_width="-1";
+  layout_height="-1";
+  {
     LinearLayout;
+    orientation="vertical";
     layout_width="-1";
-    layout_height="-1";
+    layout_height="-2";
+    Elevation="4dp";
+    BackgroundDrawable=gd2;
+    id="ztbj";
     {
-      LinearLayout;
-      orientation="vertical";
+      CardView;
+      layout_gravity="center",
+      --background=cardedge,
+      CardBackgroundColor=cardedge;
+      radius="3dp",
+      Elevation="0dp";
+      layout_height="6dp",
+      layout_width="56dp",
+      layout_marginTop="12dp";
+    };
+    {
+      TextView;
       layout_width="-1";
       layout_height="-2";
-      Elevation="4dp";
-      BackgroundDrawable=gd2;
-      id="ztbj";
-      {
-        CardView;
-        layout_gravity="center",
-        --background=cardedge,
-        CardBackgroundColor=cardedge;
-        radius="3dp",
-        Elevation="0dp";
-        layout_height="6dp",
-        layout_width="56dp",
-        layout_marginTop="12dp";
-      };
+      textSize="20sp";
+      layout_marginTop="24dp";
+      layout_marginLeft="24dp";
+      layout_marginRight="24dp";
+      Text=bt;
+      Typeface=字体("product-Bold");
+      textColor=primaryc;
+    };
+    {
+      ScrollView;
+      layout_width="-1";
+      layout_height="-1";
       {
         TextView;
         layout_width="-1";
         layout_height="-2";
-        textSize="20sp";
-        layout_marginTop="24dp";
+        textSize="14sp";
+        layout_marginTop="8dp";
         layout_marginLeft="24dp";
         layout_marginRight="24dp";
-        Text=bt;
-        Typeface=字体("product-Bold");
-        textColor=primaryc;
+        layout_marginBottom="8dp";
+        Typeface=字体("product");
+        Text=nr;
+        textColor=textc;
+        id="sandhk_wb";
       };
+    };
+    {
+      LinearLayout;
+      orientation="horizontal";
+      layout_width="-1";
+      layout_height="-2";
+      gravity="right|center";
       {
-        ScrollView;
-        layout_width="-1";
-        layout_height="-1";
+        CardView;
+        layout_width="-2";
+        layout_height="-2";
+        radius="2dp";
+        --background="#00000000";
+        CardBackgroundColor="#00000000";
+        layout_marginTop="8dp";
+        layout_marginLeft="8dp";
+        layout_marginBottom="24dp";
+        Elevation="0";
+        onClick=qxnr;
         {
           TextView;
           layout_width="-1";
           layout_height="-2";
-          textSize="14sp";
-          layout_marginTop="8dp";
-          layout_marginLeft="24dp";
-          layout_marginRight="24dp";
-          layout_marginBottom="8dp";
-          Typeface=字体("product");
-          Text=nr;
-          textColor=textc;
-          id="sandhk_wb";
+          textSize="16sp";
+          Typeface=字体("product-Bold");
+          paddingRight="16dp";
+          paddingLeft="16dp";
+          paddingTop="8dp";
+          paddingBottom="8dp";
+          Text=qx;
+          textColor=stextc;
+          BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
         };
       };
       {
-        LinearLayout;
-        orientation="horizontal";
-        layout_width="-1";
+        CardView;
+        layout_width="-2";
         layout_height="-2";
-        gravity="right|center";
+        radius="4dp";
+        --background=primaryc;
+        CardBackgroundColor=primaryc;
+        layout_marginTop="8dp";
+        layout_marginLeft="8dp";
+        layout_marginRight="24dp";
+        layout_marginBottom="24dp";
+        Elevation="1dp";
+        onClick=qdnr;
         {
-          CardView;
-          layout_width="-2";
+          TextView;
+          layout_width="-1";
           layout_height="-2";
-          radius="2dp";
-          --background="#00000000";
-          CardBackgroundColor="#00000000";
-          layout_marginTop="8dp";
-          layout_marginLeft="8dp";
-          layout_marginBottom="24dp";
-          Elevation="0";
-          onClick=qxnr;
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-2";
-            textSize="16sp";
-            Typeface=字体("product-Bold");
-            paddingRight="16dp";
-            paddingLeft="16dp";
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text=qx;
-            textColor=stextc;
-            BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-          };
-        };
-        {
-          CardView;
-          layout_width="-2";
-          layout_height="-2";
-          radius="4dp";
-          --background=primaryc;
-          CardBackgroundColor=primaryc;
-          layout_marginTop="8dp";
-          layout_marginLeft="8dp";
-          layout_marginRight="24dp";
-          layout_marginBottom="24dp";
-          Elevation="1dp";
-          onClick=qdnr;
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-2";
-            textSize="16sp";
-            paddingRight="16dp";
-            paddingLeft="16dp";
-            Typeface=字体("product-Bold");
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text=qd;
-            textColor=backgroundc;
-            BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-          };
+          textSize="16sp";
+          paddingRight="16dp";
+          paddingLeft="16dp";
+          Typeface=字体("product-Bold");
+          paddingTop="8dp";
+          paddingBottom="8dp";
+          Text=qd;
+          textColor=backgroundc;
+          BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
         };
       };
     };
   };
+};
 
-  双按钮对话框("提示","软件默认开启「禁用缓存」和 想法功能 你可以在设置中手动设置此开关","我知道了","跳转设置",function()
-    关闭对话框(an) end,function()
-    关闭对话框(an) 跳转页面("settings")
-  end)
-  
 import "com.baidu.mobstat.StatService"
 StatService
 .setAppKey("c5aac7351d")

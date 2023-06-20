@@ -3274,3 +3274,16 @@ function onResume()
     return
   end
 end
+
+function table.swap(数据, 查找位置, 替换位置, ismode)
+  if ismode then
+    替换位置 = 替换位置 + 1
+    查找位置 = 查找位置 + 1
+  end
+  xpcall(function()
+    删除数据=table.remove(数据, 查找位置)
+    end,function()
+    return false
+  end)
+  table.insert(数据, 替换位置, 删除数据)
+end

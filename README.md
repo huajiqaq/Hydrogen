@@ -8,5 +8,4 @@
 
 # 下载注意事项
 在本开源地址内 还有原版Hydrogen的源码供下载 **hydrogen-master.zip** 为Hydrogen最后一个版本final 7 的源码  **hydrogen目录内**为Hydrogen的后续维护版本的源码
-**hydrogen-m2-mixed.zip** 为使用m2和其他风格的源码
 预览或打包可能会报错 如若想解决 请下载本项目中的**要插入的dex**添加进打包的apk 安装

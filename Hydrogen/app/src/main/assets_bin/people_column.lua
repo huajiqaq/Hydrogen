@@ -19,13 +19,11 @@ tabv.setVisibility(8)
 itemc=获取适配器项目布局("people_column/people_column")
 
 
-
-
+history_list.setDividerHeight(0)
 adp=LuaAdapter(activity,itemc)
-
 history_list.Adapter=adp
-
 isaddd=true
+
 history_list.setOnScrollListener{
   onScroll=function(view,a,b,c)
     if a+b==adp.getCount() and isaddd and adp.getCount()>0 then
