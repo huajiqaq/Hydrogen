@@ -3,13 +3,11 @@
   layout_width="-1";
   background=backgroundc;
   layout_height="-1";
-
   {
     LinearLayout;
     layout_width="-1";
     layout_height="-1";
     orientation="vertical";
-
     {
       LinearLayout;
       layout_width="-1";
@@ -161,50 +159,50 @@
             LinearLayout;
             layout_height="-1",
             layout_width="-1",
-  {
-    CardView;   
-    layout_height="-2";
-    CardBackgroundColor=cardedge,
-    Elevation="0";
-    layout_width="-1";
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    radius="8dp";
-    {
-      CardView;
-      CardElevation="0dp";
-      CardBackgroundColor=backgroundc;
-      Radius=dp2px(8)-2;
-      layout_margin="2px";
-      layout_width="-1";
-      layout_height="-1";
-
+            {
+              CardView;
+              layout_height="-2";
+              CardBackgroundColor=cardedge,
+              Elevation="0";
+              layout_width="-1";
+              layout_margin="16dp";
+              layout_marginTop="8dp";
+              layout_marginBottom="8dp";
+              radius="8dp";
               {
-                LinearLayout;
-                layout_width="-1",
-                orientation="vertical";
+                CardView;
+                CardElevation="0dp";
+                CardBackgroundColor=backgroundc;
+                Radius=dp2px(8)-2;
+                layout_margin="2px";
+                layout_width="-1";
+                layout_height="-1";
+
                 {
-                  CircleImageView;
-                  layout_gravity="center";
-                  layout_marginTop="16dp",
-                  layout_height="72dp",
-                  layout_width="72dp",
-                  id="_bigimage"
+                  LinearLayout;
+                  layout_width="-1",
+                  orientation="vertical";
+                  {
+                    CircleImageView;
+                    layout_gravity="center";
+                    layout_marginTop="16dp",
+                    layout_height="72dp",
+                    layout_width="72dp",
+                    id="_bigimage"
+                  };
+                  {
+                    TextView;
+                    id="_excerpt",
+                    textColor=textc,
+                    textSize="14sp",
+                    Typeface=字体("product");
+                    textIsSelectable=true;
+                    layout_margin="16dp",
+                    layout_marginBottom="8dp",
+                  };
                 };
-                {
-                  TextView;
-                  id="_excerpt",
-                  textColor=textc,
-                  textSize="14sp",
-                  Typeface=字体("product");
-                  textIsSelectable=true;
-                  layout_margin="16dp",
-                  layout_marginBottom="8dp",
-                };                  
               };
             };
-          };
           };
           {
             GridView;
@@ -224,6 +222,3 @@
     };
   };
 };
-
-
-

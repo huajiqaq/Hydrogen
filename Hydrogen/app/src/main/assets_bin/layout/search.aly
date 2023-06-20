@@ -6,7 +6,7 @@
     ScrollView;
     layout_height="-1";
     layout_width="-1";
-background=backgroundc,
+    background=backgroundc,
     VerticalScrollBarEnabled=false;
     {
       LinearLayout;
@@ -14,7 +14,6 @@ background=backgroundc,
       layout_width="-1";
       id="_root";
       orientation="vertical";
-
       {
         LinearLayout,
         layout_width="fill",
@@ -48,27 +47,30 @@ background=backgroundc,
         Typeface=字体("product-Bold");
       };
       {
-        MyEditText
+        TextInputLayout,
+        id="t1",
+        hint="请在这里输入内容",
+        layout_height="50dp",
+        layout_marginLeft="56dp";
+        layout_marginRight="56dp";
+        layout_marginBottom="16dp";
+        boxBackgroundMode=TextInputLayout.BOX_BACKGROUND_OUTLINE,
+        layout_width="fill",
         {
-          Hint="在这里输入..";
-          HintTextColor=转0x(primaryc);
-          textColor=转0x(textc);
-          focusable=true;
-          backgroundColor=转0x(backgroundc);
-          id="search_editor",
-        };
-        layout_width="-1";
-        layout_margin="56dp";
-        layout_marginTop="8dp";
-        layout_marginBottom="8dp";
-      };
+          TextInputEditText,
+          id="t2",
+          style=MDC_R.style.Widget_Material3_TextInputEditText_OutlinedBox_Dense,
+          textSize=16,
+          layout_width="fill",
+        },
+      },
       {
         CardView;
         layout_width="56dp";
         layout_height="56dp";
         radius=(56/2).."dp";
-        --background=backgroundc; 
-        CardBackgroundColor=backgroundc; 
+        --background=backgroundc;
+        CardBackgroundColor=backgroundc;
         elevation="2dp";
         layout_gravity="center",
         {
@@ -83,7 +85,6 @@ background=backgroundc,
           layout_gravity="center";
         };
       };
-
       {
         TextView;
         text="热门搜索";

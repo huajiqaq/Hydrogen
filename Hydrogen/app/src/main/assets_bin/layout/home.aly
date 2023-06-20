@@ -7,141 +7,203 @@
   --新增内容结束
   id="_drawer";
   {
-    LinearLayout;
-    layout_width="-1";
-    layout_height="-1";
-    orientation="vertical";
-    --[[   {
-      TextView;
-      layout_height=状态栏高度;
-      layout_width="-1";
-    };]]
-    {
-      LinearLayout,
-      layout_width="fill",
-      layout_height="56dp",
-      gravity="center|left";
-      {
-        LinearLayout;
-        layout_width="32dp";
-        layout_height="32dp";
-        layout_margin="12dp";
-        gravity="center";
-        contentDescription="侧滑栏按钮",
-        orientation="vertical";
-        onClick=function()
-          if _drawer.isDrawerOpen(Gravity.LEFT) then
-            --如果左侧侧滑显示，关闭左侧侧滑并阻止返回键
-            _drawer.closeDrawer(Gravity.LEFT)
-            return
-          end
-          _drawer.openDrawer(Gravity.LEFT)
-        end;
-        id="_menu";
-        {
-          TextView;
-          layout_width="18.8dp";
-          layout_height="2.2dp";
-          BackgroundColor=primaryc;
-          id="_menu_1";
-        };
-        {
-          TextView;
-          layout_width="18.8dp";
-          layout_height="2.2dp";
-          BackgroundColor=primaryc;
-          layout_marginTop="6";
-          id="_menu_2";
-        };
-        {
-          TextView;
-          layout_width="18.8dp";
-          layout_height="2.2dp";
-          BackgroundColor=primaryc;
-          layout_marginTop="6";
-          id="_menu_3";
-        };
-      };
-      {
-        TextView;
-        text="Hydrogen";
-        textColor=primaryc;
-        textSize="20sp";
-        id="_title";
-        SingleLine=true;
-        layout_width="-1",
-        gravity="center|left";
-        paddingLeft="16dp";
-        layout_weight="1",
-        Typeface=字体("product-Bold");
-      };
-      {
-        ImageView;
-        src=图标("add");
-        ColorFilter=primaryc;
-        layout_width="32dp",
-        layout_height="32dp",
-        padding="4dp";
-        id="_ask";
-        tooltip="提问",
-        layout_margin="8dp";
-        onClick=function()
-          if 状态=="未登录" then
-            提示("你可能需要登录")
-           else
-            task(20,function()
-              activity.newActivity("huida",{"https://www.zhihu.com",true,true})
-            end)
-          end
-        end;
-      };
-      {
-        ImageView;
-        src=图标("search");
-        ColorFilter=primaryc;
-        layout_width="32dp",
-        layout_height="32dp",
-        padding="4dp";
-        id="_search";
-        tooltip="搜索",
-        layout_margin="8dp";
-        onClick=function()
-          task(20,function()
-            activity.newActivity("search")
-          end)
-        end;
-      };
-      {
-        ImageView;
-        src=图标("more_vert");
-        ColorFilter=primaryc;
-        layout_width="32dp",
-        layout_height="32dp",
-        padding="4dp";
-        id="_more";
-        tooltip="更多",
-        layout_margin="8dp";
-        onClick=function()
-          --pop.showAsDropDown(_more_lay,dp2px(-8-192),dp2px(8))
-          a.pop.showAsDropDown(_more_lay)
-          --   print(a.pop.isShowing())
+    CoordinatorLayout;
+    id="mainLay";
+    layout_height="fill";
+    layout_width="fill";
 
-        end;
-      };
+    {
+      AppBarLayout;
+      layout_height="100dp";
+      layout_width="fill";
+      TargetElevation=0;
       {
-        TextView;
-        id="_more_lay";
-        layout_width="0",
-        layout_height="0",
-        layout_gravity="top";
+        CollapsingToolbarLayout;
+        id="ctl";
+        title="Material 3";
+        layout_width="fill";
+        layout_height="fill";
+        layout_scrollFlags="scroll|exitUtilCollapsed|snap";
+        {
+          MaterialToolbar;
+          id="toolbar";
+          layout_width="fill";
+          layout_collapseMode="pin";
+          layout_height="56dp";
+
+
+
+          {
+            LinearLayout;
+            layout_width="32dp";
+            layout_height="32dp";
+            layout_margin="12dp";
+            gravity="center";
+            contentDescription="侧滑栏按钮",
+            orientation="vertical";
+            onClick=function()
+              if _drawer.isDrawerOpen(Gravity.LEFT) then
+                --如果左侧侧滑显示，关闭左侧侧滑并阻止返回键
+                _drawer.closeDrawer(Gravity.LEFT)
+                return
+              end
+              _drawer.openDrawer(Gravity.LEFT)
+            end;
+            id="_menu";
+            {
+              TextView;
+              layout_width="18.8dp";
+              layout_height="2.2dp";
+              BackgroundColor=primaryc;
+              id="_menu_1";
+            };
+            {
+              TextView;
+              layout_width="18.8dp";
+              layout_height="2.2dp";
+              BackgroundColor=primaryc;
+              layout_marginTop="6";
+              id="_menu_2";
+            };
+            {
+              TextView;
+              layout_width="18.8dp";
+              layout_height="2.2dp";
+              BackgroundColor=primaryc;
+              layout_marginTop="6";
+              id="_menu_3";
+            };
+          };
+
+          {
+            LinearLayout;
+            orientation="horizontal";
+            layout_gravity="center";
+            --顶栏图标
+            {
+              ImageView;
+              src=图标("add");
+              ColorFilter=primaryc;
+              layout_width="32dp",
+              layout_height="32dp",
+              padding="4dp";
+              id="_ask";
+              tooltip="提问",
+              layout_margin="8dp";
+              onClick=function()
+                if 状态=="未登录" then
+                  提示("你可能需要登录")
+                 else
+                  task(20,function()
+                    activity.newActivity("huida",{"https://www.zhihu.com",true,true})
+                  end)
+                end
+              end;
+            };
+            {
+              ImageView;
+              src=图标("search");
+              ColorFilter=primaryc;
+              layout_width="32dp",
+              layout_height="32dp",
+              padding="4dp";
+              id="_search";
+              tooltip="搜索",
+              layout_margin="8dp";
+              onClick=function()
+                task(20,function()
+                  activity.newActivity("search")
+                end)
+              end;
+            };
+            {
+              ImageView;
+              src=图标("more_vert");
+              ColorFilter=primaryc;
+              layout_width="32dp",
+              layout_height="32dp",
+              padding="4dp";
+              id="_more";
+              tooltip="更多",
+              layout_margin="8dp";
+              onClick=function()
+                --pop.showAsDropDown(_more_lay,dp2px(-8-192),dp2px(8))
+                a.pop.showAsDropDown(_more_lay)
+                --   print(a.pop.isShowing())
+              end;
+            };
+            {
+              TextView;
+              id="_more_lay";
+              layout_width="0",
+              layout_height="0",
+              --            layout_gravity="top";
+              layout_gravity="end";
+            };
+          };
+        };
+      };
+
+    };
+
+
+
+    {
+      NestedScrollView;
+      fillViewport="true";
+      layout_width="fill";
+      layout_height="fill";
+      layout_behavior="@string/appbar_scrolling_view_behavior";
+      {
+        LinearLayoutCompat;
+        id="content";
+        layout_width="fill";
+        layout_height="fill";
+        orientation="vertical";
+
+        {
+          ViewPager;
+          id="page_home";
+          layout_width="fill";
+          layout_height="fill";
+
+        };
+        "layout.home_layout.page_daily";
+        "layout.home_layout.page_collections";
+
       };
     };
 
-    "layout.home_layout.page_home";
-    "layout.home_layout.page_daily";
-    "layout.home_layout.page_collections";
+    {
+      CoordinatorLayout;
+      id="bottombar";
+      layout_height="fill";
+      layout_width="fill";
+      {
+        BottomNavigationView;
+        id="bnv";
+        layout_width="fill";
+        layout_height="wrap";
+        layout_gravity="bottom";
+      };
+      {
+        FloatingActionButton;
+        id="fab";
+        layout_margin="32dp";
+        layout_marginBottom="128dp";
+        layout_gravity="bottom|end";
 
+      };
+      {
+        CoordinatorLayout;
+        id="vcl";
+        layout_width="fill";
+        layout_height="fill";
+        paddingBottom="72dp";
+      };
+    };
   };
+
   {
     LinearLayout;
     backgroundColor=0,
@@ -197,7 +259,6 @@
                   id="头像id",
                   layout_width="48dp";
                   layout_weight="-1",
-
                 };
                 {
                   LinearLayout;
@@ -264,7 +325,6 @@
               {
                 TextView;
                 layout_height="3dp";
-
               };
             };
           };
@@ -280,4 +340,5 @@
       };
     }
   };
+
 };

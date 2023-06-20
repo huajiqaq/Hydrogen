@@ -3,13 +3,11 @@
   layout_width="-1";
   background=backgroundc;
   layout_height="-1";
-
   {
     LinearLayout;
     layout_width="-1";
     layout_height="-1";
     orientation="vertical";
-
     {
       LinearLayout;
       layout_width="-1";
@@ -110,7 +108,7 @@
           tooltip="收藏文章",
           layout_margin="8dp";
           onClick=function()
-            artical_page.showPage(1)
+            artical_page.setCurrentItem(1,false)
           end,
         };
       };
@@ -121,7 +119,7 @@
       layout_height="-1";
       layout_width="-1";
       {
-        PageView;
+        ViewPager;
         layout_height="-1",
         id="artical_page",
         layout_width="-1";
@@ -131,11 +129,9 @@
             RelativeLayout;
             layout_height="-1";
             layout_width="-1";
-
             {
               LinearLayout;
               orientation="vertical";
-
               {
                 ScrollView;
                 layout_height="fill";
@@ -146,7 +142,6 @@
                   layout_width="fill";
                   layout_height="fill";
                   padding="2%h";
-
                   {
                     TextView;
                     layout_marginTop="8dp";

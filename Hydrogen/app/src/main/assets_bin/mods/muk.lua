@@ -1,7 +1,18 @@
 require "import"
 import "mods.imports"
 
-versionCode=16.08
+initApp=true
+useCustomAppToolbar=true
+import "jesse205"
+
+oldTheme=ThemeUtil.getAppTheme()
+oldDarkActionBar=getSharedData("theme_darkactionbar")
+
+--重写SwipeRefreshLayout到自定义view 原SwipeRefreshLayout和滑动组件有bug
+SwipeRefreshLayout = luajava.bindClass "com.crow.laser.view.component.CustomSwipeRefresh"
+
+versionCode=16.081
+layout_dir="layout/item_layout/"
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
 型号 = Build.MODEL
@@ -342,11 +353,44 @@ function 获取系统夜间模式()
   return Re
 end
 
+function 获取主题夜间模式()
+  _,Re=xpcall(function()
+    NightMode = AppCompatDelegate.getDefaultNightMode();
+    return NightMode == AppCompatDelegate.MODE_NIGHT_YES--夜间模式启用
+    end,function()
+    return false
+  end)
+  return Re
+end
+
+
+function dec2hex(n)
+  local hexMap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"}
+  if n < 0 then
+    n = n + 256 * 256 * 256 -- 8位8字节,溢出后为255
+  end
+  local hex = ""
+  while n > 0 do
+    local remainder = n % 16 -- 取余
+    hex = string.format("%s%s", hexMap[remainder + 1], hex)
+    n = math.floor(n / 16) -- 除16取整
+  end
+  return hex
+end
 
 function 主题(str)
   全局主题值=str
   if 全局主题值=="Day" then
-    primaryc="#448aff"
+    if 获取主题夜间模式() == true then
+      if Boolean.valueOf(lsmactivity.getData("Setting_Auto_Night_Mode"))==true then
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+       else
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+      end
+      activity.recreate()
+    end
+    --    primaryc="#448aff"
+    primaryc="#"..dec2hex(res.color.attr.colorPrimary)
     secondaryc="#fdd835"
     textc="#212121"
     stextc="#424242"
@@ -357,7 +401,8 @@ function 主题(str)
     grayc="#ECEDF1"
     ripplec="#559E9E9E"
     --    cardedge="#FFE0E0E0"
-    cardedge="#FFF6F6F6"
+    cardedge="#"..dec2hex(res.color.attr.colorSurface)
+    --    cardedge="#FFF6F6F6"
     状态栏颜色(0x3f000000)
     导航栏颜色(0x3f000000)
     pcall(function()
@@ -368,10 +413,15 @@ function 主题(str)
       _wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
       _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;--WRAP_CONTENT
       _window.setAttributes(_wlp);
-      activity.setTheme(android.R.style.Theme_Material_Light_NoActionBar)
+      --      activity.setTheme(android.R.style.Theme_Material_Light_NoActionBar)
     end)
    elseif 全局主题值=="Night" then
-    primaryc="#FF88B0F8"
+    if 获取主题夜间模式() == false then
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+      activity.recreate()
+    end
+    --    primaryc="#FF88B0F8"
+    primaryc="#"..dec2hex(res.color.attr.colorPrimary)
     secondaryc="#ffbfa328"
     --    textc="#808080"
     textc="#FFCBCBCB"
@@ -383,7 +433,8 @@ function 主题(str)
     viewshaderc="#80000000"
     grayc="#212121"
     ripplec="#559E9E9E"
-    cardedge="#555555"
+    cardedge="#"..dec2hex(res.color.attr.colorSurface)
+    --    cardedge="#555555"
     状态栏颜色(0xff191919)
     导航栏颜色(0xff191919)
     pcall(function()
@@ -394,7 +445,7 @@ function 主题(str)
       _wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
       _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;--WRAP_CONTENT
       _window.setAttributes(_wlp);
-      activity.setTheme(android.R.style.Theme_Material_NoActionBar)
+      --      activity.setTheme(android.R.style.Theme_Material_NoActionBar)
     end)
   end
 end
@@ -430,7 +481,7 @@ end
 
 function 设置主题()
   if Boolean.valueOf(lsmactivity.getData("Setting_Auto_Night_Mode"))==true then
-    if 获取系统夜间模式() then
+    if 获取系统夜间模式() and 获取主题夜间模式()~=true then
       主题("Night")
      else --暂时这样写，后期修复
       if Boolean.valueOf(lsmactivity.getData("Setting_Night_Mode"))==true then
@@ -446,7 +497,6 @@ function 设置主题()
       主题("Day")
     end
   end
-
 end
 
 
@@ -597,10 +647,12 @@ function 波纹(id,lx)
         content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
       end
       if lx=="圆主题" then
-        content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
+        --        content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
+        content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
       end
       if lx=="方主题" then
-        content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
+        content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
+        --        content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
       end
       if lx=="圆自适应" then
         if 全局主题值=="Day" then
@@ -635,10 +687,12 @@ function 返回波纹(lx)
     return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
   end
   if lx=="圆主题" then
-    return (activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
+    return (activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
+    --    return (activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
   end
   if lx=="方主题" then
-    return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
+    return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
+    --    return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
   end
   if lx=="圆自适应" then
     if 全局主题值=="Day" then
@@ -861,7 +915,7 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
       };
     };
   };
-
+--[[
   dialog=BottomDialog(activity)
   dialog.setView(loadlayout(dann))
   --设置弹窗位置
@@ -875,6 +929,10 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
   an=dialog.show()
   an.getWindow().setDimAmount(0.5)
   an.window.decorView.setPadding(0,0,0,0)
+  ]]
+  local bottomSheetDialog = BottomSheetDialog(this)
+  bottomSheetDialog.setContentView(loadlayout(dann))
+  an=bottomSheetDialog.show()   
 end
 
 
@@ -884,6 +942,8 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
    else
     bwz=0x3fffffff
   end
+  
+  import "com.google.android.material.bottomsheet.*"
 
   local gd2 = GradientDrawable()
   gd2.setColor(转0x(backgroundc))--填充
@@ -1016,6 +1076,7 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
   end
   an=dl.show()
   ]]
+  --[[
   dialog=BottomDialog(activity)
   dialog.setView(loadlayout(dann))
   --设置弹窗位置
@@ -1029,6 +1090,10 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
   an=dialog.show()
   an.getWindow().setDimAmount(0.5)
   an.window.decorView.setPadding(0,0,0,0)
+  ]]
+  local bottomSheetDialog = BottomSheetDialog(this)
+  bottomSheetDialog.setContentView(loadlayout(dann))
+  an=bottomSheetDialog.show() 
 end
 
 
@@ -1088,7 +1153,7 @@ function 问题详情(nr,code)
       };
     };
   };
-
+--[[
   dialog=BottomDialog(activity)
   dialog.setView(loadlayout(dann))
   --设置弹窗位置
@@ -1103,6 +1168,10 @@ function 问题详情(nr,code)
 
   an.getWindow().setDimAmount(0.5)
   an.window.decorView.setPadding(0,0,0,0)
+  ]]
+  local bottomSheetDialog = BottomSheetDialog(this)
+  bottomSheetDialog.setContentView(loadlayout(dann))
+  an=bottomSheetDialog.show() 
 end
 
 
@@ -3186,4 +3255,22 @@ function onDestroy()
   LuaUtil.rmDir(File(activity.getExternalCacheDir().toString()))
   collectgarbage("collect")
   System.gc()
+end
+
+function 获取适配器项目布局(name)
+  local dir="layout/item_layout/"
+  return require(dir..name)
+end
+
+local old_onResume=onResume
+function onResume()
+
+  if old_onResume~=nil then
+    old_onResume()
+  end
+
+  if (oldTheme~=ThemeUtil.getAppTheme()) or (oldDarkActionBar~=getSharedData("theme_darkactionbar")) then
+    activity.recreate()
+    return
+  end
 end

@@ -9,7 +9,6 @@
     layout_width="-1";
     layout_height="-1";
     orientation="vertical";
-
     {
       LinearLayout;
       layout_width="-1";
@@ -99,18 +98,13 @@
         };
       };
     };
-
     {
       ViewPager2,
       id="pg",
       layout_width="fill";
       layout_height="fill";
-
     }
-
   },
-
-
   {
     RelativeLayout,
     layout_width="-1",
@@ -161,8 +155,6 @@
               Typeface=字体("product-Bold");
               textColor=stextc;
             };
-
-
           };
           {
             LinearLayout;
@@ -191,9 +183,7 @@
               id="thanks_count";
               textColor=stextc;
               Typeface=字体("product-Bold");
-
             };
-
           };
           {
             LinearLayout;
@@ -223,7 +213,6 @@
               id="comment_count";
               textColor=stextc;
               Typeface=字体("product-Bold");
-
             };
           };
           {
@@ -244,7 +233,6 @@
               PivotY="24dp";
             };
           };
-
           {
             LinearLayout;
             layout_height="-1";

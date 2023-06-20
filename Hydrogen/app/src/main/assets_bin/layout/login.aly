@@ -2,14 +2,12 @@
   LinearLayout;
   layout_height="-1";
   layout_width="-1";
-
   {
     LinearLayout;
     layout_height="-1";
     layout_width="-1";
     id="_root";
     orientation="vertical";
-
     {
       LinearLayout,
       layout_width="fill",
@@ -53,7 +51,6 @@
         layout_gravity="top";
       };
     };
-
     {
       TextView;
       text="登录至 Hydrogen";

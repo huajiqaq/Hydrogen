@@ -295,12 +295,13 @@ function tab:showTab(index)--显示table参数 仅当type==1生效
         local textv=view.getChildAt(0).getChildAt(0).getChildAt(0).getChildAt(0)
         if i+1==index then--是否位指示table
           cardv.CardBackgroundColor=转0x(primaryc)-0xdf000000
-          textv.textColor=转0x(primaryc)
+--          textv.textColor=Color.GRAY
+--          textv.textColor=转0x(primaryc)
           --指示器动画 和显示 索引更新
          else
 
           cardv.CardBackgroundColor=转0x(cardbackc)
-          textv.textColor=Color.GRAY
+--          textv.textColor=Color.GRAY
         end
       end
     end)

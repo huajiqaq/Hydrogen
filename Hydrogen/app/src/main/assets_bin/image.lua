@@ -134,7 +134,8 @@ picpage.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，�
       .asDrawable()--强制gif支持
       -- .setDefaultRequestOptions(RequestOptions().override(activity.height/1.2, activity.width/1.2))   
       .load(url)
-      .addListener(RequestListener{
+      --.addListener
+      .listener(RequestListener{
         onResourceReady=function(a,b,c,d)
           parent.pg.visibility=8
           parent.ph.visibility=0

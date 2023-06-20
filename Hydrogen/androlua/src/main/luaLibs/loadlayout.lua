@@ -1,3 +1,5 @@
+--MyLoadlayout 2021.05.03
+--TuMengOpenSource
 local require=require
 local luajava = luajava
 local table=require "table"
@@ -7,37 +9,44 @@ local _G=_G
 local insert = table.insert
 local new = luajava.new
 local bindClass = luajava.bindClass
---local ids={}
 local ltrs={}
 local type=type
 local context=activity or service
 
-local ViewGroup=bindClass("android.view.ViewGroup")
-local String=bindClass("java.lang.String")
-local Gravity=bindClass("android.view.Gravity")
-local OnClickListener=bindClass("android.view.View$OnClickListener")
-local TypedValue=luajava.bindClass("android.util.TypedValue")
-local BitmapDrawable=luajava.bindClass("android.graphics.drawable.BitmapDrawable")
-local LuaDrawable=luajava.bindClass "com.androlua.LuaDrawable"
-local LuaBitmapDrawable=luajava.bindClass "com.androlua.LuaBitmapDrawable"
-local LuaAdapter=luajava.bindClass "com.androlua.LuaAdapter"
-local ArrayListAdapter=bindClass("android.widget.ArrayListAdapter")
-local ArrayPageAdapter=bindClass("android.widget.ArrayPageAdapter")
-local AdapterView=bindClass("android.widget.AdapterView")
-local ScaleType=bindClass("android.widget.ImageView$ScaleType")
-local TruncateAt=bindClass("android.text.TextUtils$TruncateAt")
-local scaleTypes=ScaleType.values()
-local android_R=bindClass("android.R")
+--补全AndroidX控件 2022 08 14
+DrawerLayout = bindClass "androidx.drawerlayout.widget.DrawerLayout"
+ToolBar = bindClass "androidx.appcompat.widget.Toolbar"
+CoordinatorLayout = bindClass "androidx.coordinatorlayout.widget.CoordinatorLayout"
+ViewPager = bindClass "androidx.viewpager.widget.ViewPager"
+CardView = bindClass "androidx.cardview.widget.CardView"
+SearchView = bindClass "androidx.appcompat.widget.SearchView"
+
+local ViewGroup = bindClass("android.view.ViewGroup")
+local String = bindClass("java.lang.String")
+local Gravity = bindClass("android.view.Gravity")
+local OnClickListener = bindClass("android.view.View$OnClickListener")
+local OnLongClickListener = bindClass("android.view.View$OnLongClickListener")
+local TypedValue = bindClass("android.util.TypedValue")
+local BitmapDrawable = bindClass("android.graphics.drawable.BitmapDrawable")
+local LuaDrawable = bindClass ("com.androlua.LuaDrawable")
+local LuaBitmapDrawable = bindClass ("com.androlua.LuaBitmapDrawable")
+--local Glide = bindClass("com.bumptech.glide.Glide")
+local LuaAdapter = bindClass ("com.androlua.LuaAdapter")
+local ArrayListAdapter = bindClass("android.widget.ArrayListAdapter")
+local BasePagerAdapter = luajava.bindClass("com.androlua.SWKLuaPagerAdapter")
+local AdapterView = bindClass("android.widget.AdapterView")
+local ScaleType = bindClass("android.widget.ImageView$ScaleType")
+local TruncateAt = bindClass("android.text.TextUtils$TruncateAt")
+local Typeface = bindClass("android.graphics.Typeface")
+local scaleTypes = ScaleType.values()
+local android_R = bindClass("android.R")
 android={R=android_R}
 
-local Context=bindClass "android.content.Context"
-local DisplayMetrics=bindClass "android.util.DisplayMetrics"
+local Context = bindClass("android.content.Context")
+local DisplayMetrics = bindClass("android.util.DisplayMetrics")
 
-local wm =context.getSystemService(Context.WINDOW_SERVICE);
-local outMetrics = DisplayMetrics();
-wm.getDefaultDisplay().getMetrics(outMetrics);
-local W = outMetrics.widthPixels;
-local H = outMetrics.heightPixels;
+local W = activity.getWidth()
+local H = activity.getHeight()
 
 local function alyloader(path)
   local alypath=package.path:gsub("%.lua;",".aly;")
@@ -50,7 +59,7 @@ local function alyloader(path)
   f:close()
   if string.sub(s,1,4)=="\27Lua" then
     return assert(loadfile(path)),path
-  else
+   else
     --return assert(loadstring("return "..s, path:match("[^/]+/[^/]+$"),"bt")),path
     local f,st=loadstring("return "..s, path:match("[^/]+/[^/]+$"),"bt")
     if st then
@@ -60,7 +69,6 @@ local function alyloader(path)
   end
 end
 table.insert(package.searchers,alyloader)
-
 
 local dm=context.getResources().getDisplayMetrics()
 local id=0x7f000000
@@ -206,6 +214,16 @@ local toint={
   flagNoEnterAction=0x40000000,
   flagForceAscii=0x80000000,
 
+  --layout_scrollFlags
+  scroll=1,
+  exitUtilCollapsed=2,
+  enterAlways=4,
+  enterAlwaysCollapsed=8,
+  snap=16,
+
+  --layout_collapseMode
+  pin=1,
+  parallax=2,
 }
 
 local scaleType={
@@ -219,7 +237,6 @@ local scaleType={
   centerCrop=6,
   centerInside=7,
 }
-
 
 local rules={
   layout_above=2,
@@ -247,7 +264,6 @@ local rules={
   layout_toStartOf=16
 }
 
-
 local types={
   px=0,
   dp=1,
@@ -266,13 +282,12 @@ local function checkPercent(v)
   local n,ty=string.match(v,"^(%-?[%.%d]+)%%([wh])$")
   if ty==nil then
     return nil
-  elseif ty=="w" then
+   elseif ty=="w" then
     return tonumber(n)*W/100
-  elseif ty=="h" then
+   elseif ty=="h" then
     return tonumber(n)*H/100
   end
 end
-
 
 local function split(s,t)
   local idx=1
@@ -295,20 +310,18 @@ local function checkint(s)
   for n in split(s,"|") do
     if toint[n] then
       ret=ret | toint[n]
-    else
+     else
       return nil
     end
   end
   return ret
 end
 
-
-
 local function checkNumber(var)
   if type(var) == "string" then
     if var=="true" then
       return true
-    elseif var=="false" then
+     elseif var=="false" then
       return false
     end
 
@@ -332,10 +345,10 @@ local function checkNumber(var)
       if c then
         if #h<=6 then
           return c-0x1000000
-        elseif #h<=8 then
+         elseif #h<=8 then
           if c>0x7fffffff then
             return c-0x100000000
-          else
+           else
             return c
           end
         end
@@ -385,7 +398,7 @@ local function dump2 (t)
   for k,v in pairs(t) do
     if type(v)=="table" then
       table.insert(_t,"\t\t"..tostring(k).."={"..tostring(v[1]).." ...}")
-    else
+     else
       table.insert(_t,"\t\t"..tostring(k).."="..tostring(v))
     end
   end
@@ -398,7 +411,7 @@ local ver = luajava.bindClass("android.os.Build").VERSION.SDK_INT;
 local function setBackground(view,bg)
   if ver<16 then
     view.setBackgroundDrawable(bg)
-  else
+   else
     view.setBackground(bg)
   end
 end
@@ -406,168 +419,356 @@ end
 local function setattribute(root,view,params,k,v,ids)
   if k=="layout_x" then
     params.x=checkValue(v)
-  elseif k=="layout_y" then
+   elseif k=="layout_y" then
     params.y=checkValue(v)
-  elseif k=="layout_weight" then
+   elseif k=="w" then
+    params.width=checkValue(v)
+   elseif k=="h" then
+    params.height=checkValue(v)
+   elseif k=="layout_weight" then
     params.weight=checkValue(v)
-  elseif k=="layout_gravity" then
+   elseif k=="layout_gravity" then
     params.gravity=checkValue(v)
-  elseif k=="layout_marginStart" then
+   elseif k=="layout_marginStart" then
     params.setMarginStart(checkValue(v))
-  elseif k=="layout_marginEnd" then
+   elseif k=="layout_marginEnd" then
     params.setMarginEnd(checkValue(v))
-  elseif rules[k] and (v==true or v=="true") then
+   elseif k=="minHeight" then
+    view.setMinimumHeight(checkValue(v))
+   elseif k=="minWidth" then
+    view.setMinimumWidth(checkValue(v))
+   elseif k=="ripple" then
+    波纹({view},v)
+    --elseif k=="rippleColor" then
+    --view.setClickable(true)
+    --setRipple(view,checkNumber(v))
+    --elseif k=="unRippleColor" then
+    --view.setClickable(true)
+    --setUnRipple(view,checkNumber(v))
+
+    -----------------------------------------------------------------------------
+    --检查自定义第三方属性
+    -----------------------------------------------------------------------------
+   elseif k=="layout_behavior" then
+
+    if tostring(v) == "@string/appbar_scrolling_view_behavior" then
+
+      local ScrollingViewBehavior = import "com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+
+      params.setBehavior(ScrollingViewBehavior())
+
+     elseif tostring(v) == "@string/bottom_sheet_behavior" then
+
+      local BottomSheetBehavior = import "com.google.android.material.bottomsheet.BottomSheetBehavior"
+
+      local mBottomSheetBehavior=BottomSheetBehavior()
+
+      params.setBehavior(mBottomSheetBehavior)
+
+     else
+
+      params.setBehavior(checkValue(v))
+
+    end
+
+   elseif k=="behavior_peekHeight" then
+
+    if params.getBehavior() then
+
+      params.getBehavior().setPeekHeight(checkValue(v))
+
+     else
+
+      task(1,function()
+
+        params.getBehavior().setPeekHeight(checkValue(v))
+
+      end)
+
+    end
+
+   elseif k=="behavior_hideable" then
+
+    if params.getBehavior() then
+
+      params.getBehavior().setHideable(checkValue(v))
+
+     else
+
+      task(1,function()
+
+        params.getBehavior().setHideable(checkValue(v))
+
+      end)
+
+    end
+
+   elseif k=="behavior_skipCollapsed" then
+
+    if params.getBehavior() then
+
+      params.getBehavior().setSkipCollapsed(checkValue(v))
+
+     else
+
+      task(1,function()
+
+        params.getBehavior().setSkipCollapsed(checkValue(v))
+
+      end)
+
+    end
+
+   elseif k=="layout_scrollFlags" then
+
+    params.setScrollFlags(checkValue(v))
+
+   elseif k=="layout_collapseMode" then
+
+    params.setCollapseMode(checkValue(v))
+
+   elseif k=="layout_collapseParallaxMultiplier" then
+
+    params.setParallaxMultiplier(checkValue(v))
+
+   elseif k=="layout_anchor" then
+
+    params.setAnchorId(ids[v])
+
+   elseif k=="CheckBoxBackground" then
+    local num
+    if type(v)=="string" then
+      num=checkNumber(v)
+     elseif type(v)=="number" then
+      num=v
+     else
+      error(string.format("loadlayout error: The value Must be a number or string, checked import layout.",0))
+    end
+    view.ButtonDrawable.setColorFilter(PorterDuffColorFilter(num,PorterDuff.Mode.SRC_ATOP));
+   elseif k=="ProgressBarBackground" then
+    local num
+    if type(v)=="string" then
+      num=checkNumber(v)
+     elseif type(v)=="number" then
+      num=v
+     else
+      error(string.format("loadlayout error: The value Must be a number or string, checked import layout.",0))
+    end
+    view.IndeterminateDrawable.setColorFilter(PorterDuffColorFilter(num,PorterDuff.Mode.SRC_ATOP));
+
+    -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+
+    --针对小于api26报错问题的解决
+   elseif string.lower(k)=="tooltip" then
+    if Build.VERSION.SDK_INT>=26 then
+      view.setTooltipText(v)
+    end
+   elseif rules[k] and (v==true or v=="true") then
     params.addRule(rules[k])
-  elseif rules[k] then
+   elseif rules[k] then
     params.addRule(rules[k],ids[v])
-  elseif k=="items" then --创建列表项目
+   elseif k=="items" then --创建列表项目
     if type(v)=="table" then
       if view.adapter then
         view.adapter.addAll(v)
-      else
+       else
         local adapter=ArrayListAdapter(context,android_R.layout.simple_list_item_1, String(v))
         view.setAdapter(adapter)
       end
-    elseif type(v)=="function" then
+     elseif type(v)=="function" then
       if view.adapter then
         view.adapter.addAll(v())
-      else
+       else
         local adapter=ArrayListAdapter(context,android_R.layout.simple_list_item_1, String(v()))
         view.setAdapter(adapter)
       end
-    elseif type(v)=="string" then
+     elseif type(v)=="string" then
       local v=rawget(root,v) or rawget(_G,v)
       if view.adapter then
         view.adapter.addAll(v())
-      else
+       else
         local adapter=ArrayListAdapter(context,android_R.layout.simple_list_item_1, String(v()))
         view.setAdapter(adapter)
       end
     end
-  elseif k=="pages" and type(v)=="table" then --创建页项目
-    local ps={}
+   elseif k=="pages" and type(v)=="table" then --创建页项目
+    --PageView已被废弃，请使用ViewPager
+    local vpg=BasePagerAdapter()
     for n,o in ipairs(v) do
       local tp=type(o)
       if tp=="string" or tp=="table" then
-        table.insert(ps,loadlayout(o,root))
-      else
-        table.insert(ps,o)
+        vpg.add(loadlayout(o,root))
+       else
+        vpg.add(o)
       end
     end
-    local adapter=ArrayPageAdapter(View(ps))
-    view.setAdapter(adapter)
-  elseif k=="textSize" then
+
+    view.setAdapter(vpg)
+   elseif k=="pagesWithTitle" and type(v)=="table" then --创建带标题的页项目
+    local vpg=ArrayList()
+    for n,o in ipairs(v[1]) do
+      local tp=type(o)
+      if tp=="string" or tp=="table" then
+        vpg.add(loadlayout(o,root))
+       else
+        vpg.add(o)
+      end
+    end
+    local titles=ArrayList()
+    for n,o in ipairs(v[2]) do
+      titles.add(o)
+    end
+    view.setAdapter(BasePagerAdapter(vpg,titles))
+   elseif k=="textSize" then
     if tonumber(v) then
       view.setTextSize(tonumber(v))
-    elseif type(v)=="string" then
+     elseif type(v)=="string" then
       local n,ty=checkType(v)
       if ty then
         view.setTextSize(ty,n)
-      else
+       else
         view.setTextSize(v)
       end
-    else
+     else
       view.setTextSize(v)
     end
-  elseif k=="textAppearance" then
+   elseif k=="textStyle" then
+    if v=="bold" then
+      local bold = Typeface.defaultFromStyle(Typeface.BOLD)
+      view.setTypeface(bold)
+     elseif v=="normal" then
+      local normal = Typeface.defaultFromStyle(Typeface.NORMAL)
+      view.setTypeface(normal)
+     elseif v=="italic" then
+      local italic = Typeface.defaultFromStyle(Typeface.ITALIC)
+      view.setTypeface(italic)
+     elseif v=="italic|bold" or v=="bold|italic" then
+      local bold_italic = Typeface.defaultFromStyle(Typeface.BOLD_ITALIC)
+      view.setTypeface(bold_italic)
+    end
+   elseif k=="textAppearance" then
     view.setTextAppearance(context,checkattr(v))
-  elseif k=="ellipsize" then
+   elseif k=="ellipsize" then
     view.setEllipsize(TruncateAt[string.upper(v)])
-  elseif k=="url" then
+   elseif k=="url" then
     view.loadUrl(url)
-  elseif k=="src" then
+   elseif k=="src" then
     if v:find("^%?") then
       view.setImageResource(getIdentifier(v:sub(2,-1)))
-    elseif v:find("^https?://") then
+     elseif v:find("^https?://") then
       task([[require "import" url=... return loadbitmap(url)]],v,function(bmp)view.setImageBitmap(bmp)end)
-    else
+     else
       view.setImageBitmap(loadbitmap(v))
     end
-  elseif k=="scaleType" then
+   elseif k=="scaleType" then
     view.setScaleType(scaleTypes[scaleType[v]])
-  elseif k=="background" then
+   elseif k=="background" then
     if type(v)=="string" then
       if v:find("^%?") then
         view.setBackgroundResource(getIdentifier(v:sub(2,-1)))
-      elseif v:find("^#") then
+       elseif v:find("^#") then
         view.setBackgroundColor(checkNumber(v))
-      elseif rawget(root,v) or rawget(_G,v) then
+       elseif rawget(root,v) or rawget(_G,v) then
         v=rawget(root,v) or rawget(_G,v)
         if type(v)=="function" then
           setBackground(view,LuaDrawable(v))
-        elseif type(v)=="userdata" then
+         elseif type(v)=="userdata" then
           setBackground(view,v)
         end
-      else
+       else
         if (not v:find("^/")) and luadir then
           v=luadir..v
         end
         if v:find("%.9%.png") then
           setBackground(view,NineBitmapDrawable(loadbitmap(v)))
-        else
+         else
           setBackground(view,LuaBitmapDrawable(context,v))
         end
       end
-    elseif type(v)=="userdata" then
+     elseif type(v)=="userdata" then
       setBackground(view,v)
-    elseif type(v)=="number" then
+     elseif type(v)=="number" then
       setBackground(view,v)
     end
-  elseif k=="onClick" then --设置onClick事件接口
+   elseif k=="onClick" then --设置onClick事件接口
     local listener
     if type(v)=="function" then
       listener=OnClickListener{onClick=v}
-    elseif type(v)=="userdata" then
+     elseif type(v)=="userdata" then
       listener=v
-    elseif type(v)=="string" then
+     elseif type(v)=="string" then
       if ltrs[v] then
         listener=ltrs[v]
-      else
+       else
         local l=rawget(root,v) or rawget(_G,v)
         if type(l)=="function" then
           listener=OnClickListener{onClick=l}
-        elseif type(l)=="userdata" then
+         elseif type(l)=="userdata" then
           listener=l
-        else
+         else
           listener=OnClickListener{onClick=function(a)(root[v] or _G[v])(a)end}
         end
         ltrs[v]=listener
       end
     end
     view.setOnClickListener(listener)
-  elseif k=="password" and (v=="true" or v==true) then
+   elseif k=="onLongClick" then --设置onLongClick事件接口
+    local listener
+    if type(v)=="function" then
+      listener=OnLongClickListener{onLongClick=v}
+     elseif type(v)=="userdata" then
+      listener=v
+     elseif type(v)=="string" then
+      if ltrs[v] then
+        listener=ltrs[v]
+       else
+        local l=rawget(root,v) or rawget(_G,v)
+        if type(l)=="function" then
+          listener=OnLongClickListener{onLongClick=l}
+         elseif type(l)=="userdata" then
+          listener=l
+         else
+          listener=OnLongClickListener{onLongClick=function(a)(root[v] or _G[v])(a)end}
+        end
+        ltrs[v]=listener
+      end
+    end
+    view.setOnLongClickListener(listener)
+   elseif k=="password" and (v=="true" or v==true) then
     view.setInputType(0x81)
-  elseif type(k)=="string" and not(k:find("layout_")) and not(k:find("padding")) and k~="style" then --设置属性
+   elseif type(k)=="string" and not(k:find("layout_")) and not(k:find("padding")) and k~="style" then --设置属性
     k=string.gsub(k,"^(%w)",function(s)return string.upper(s)end)
     if k=="Text" or k=="Title" or k=="Subtitle" then
       view["set"..k](v)
-    elseif not k:find("^On") and not k:find("^Tag") and type(v)=="table" then
+     elseif not k:find("^On") and not k:find("^Tag") and type(v)=="table" then
       view["set"..k](checkValues(unpack(v)))
-    else
+     else
       view["set"..k](checkValue(v))
     end
   end
+  return params
 end
 
 local function copytable(f,t,b)
   for k,v in pairs(f) do
     if k==1 then
-    elseif b or t[k]==nil then
+     elseif b or t[k]==nil then
       t[k]=v
     end
   end
 end
 
-
 local function setstyle(c,t,root,view,params,ids)
   local mt=getmetatable(t)
   if not mt or not mt.__index then
     return
-    end
+  end
   local m=mt.__index
   if c[m] then
     return
-    end
+  end
   c[m]=true
   for k,v in pairs(m) do
     if not rawget(c,k) then
@@ -578,26 +779,26 @@ local function setstyle(c,t,root,view,params,ids)
   setstyle(c,m,root,view,params,ids)
 end
 
-
 local function loadlayout(t,root,group)
   if type(t)=="string" then
     t=require(t)
-  elseif type(t)~="table" then
+   elseif type(t)~="table" then
     error(string.format("loadlayout error: Fist value Must be a table, checked import layout.",0))
-    end
+  end
   root=root or _G
   local view,style
-
   if t.style then
-    if t.style:find("^%?") then
-      style=getIdentifier(t.style:sub(2,-1))
-    else
-      local st,sty=pcall(require,t.style)
+    if type(t.style)=="number" then
+      style=t.style
+     elseif t.style:find("^%?") then
+      style = getIdentifier(t.style:sub(2, -1))
+     else
+      local st, sty = pcall(require, t.style)
       if st then
         --copytable(sty,t)
-        setmetatable(t,{__index=sty})
-      else
-        style=checkattr(t.style)
+        setmetatable(t, { __index = sty })
+       else
+        style = checkattr(t.style)
       end
     end
   end
@@ -605,26 +806,43 @@ local function loadlayout(t,root,group)
     error(string.format("loadlayout error: Fist value Must be a Class, checked import package.\n\tat %s",dump2(t)),0)
   end
 
+  if luajava.instanceof(t[1],View) then
+    --如果是对象
+    view = t[1]
+   elseif type(t[1])=="number" then
+    view=activity.getLayoutInflater().inflate(t[1],nil);
+   else
+    --如果是类就创建对象
+    if style then
+      view = t[1](context,nil,style)
+     else
+      view = t[1](context) --创建view
+    end
+  end
+
+  local ContextThemeWrapper=luajava.bindClass ("androidx.appcompat.view.ContextThemeWrapper")
+
   if style then
-    view = t[1](context,nil,style)
-  else
+    view = t[1](ContextThemeWrapper(context,style),nil,style)
+   else
     view = t[1](context) --创建view
   end
 
-  local params=ViewGroup.LayoutParams(checkValue(t.layout_width) or -2,checkValue(t.layout_height) or -2) --设置layout属性
+
+  local params=ViewGroup.LayoutParams( checkValue(t.layout_width) or checkValue(t.w) or -2 , checkValue(t.layout_height) or checkValue(t.h) or -2) --设置layout属性
   if group then
     params=group.LayoutParams(params)
   end
 
   --设置layout_margin属性
   if t.layout_margin or t.layout_marginStart or t.layout_marginEnd or t.layout_marginLeft or t.layout_marginTop or t.layout_marginRight or t.layout_marginBottom then
-    params.setMargins(checkValues( t.layout_marginLeft or t.layout_margin or 0,t.layout_marginTop or t.layout_margin or 0,t.layout_marginRight or t.layout_margin or 0,t.layout_marginBottom or t.layout_margin or 0))
+    params.setMargins(checkValues(t.layout_marginLeft or t.layout_margin or 0,t.layout_marginTop or t.layout_margin or 0,t.layout_marginRight or t.layout_margin or 0,t.layout_marginBottom or t.layout_margin or 0))
   end
 
   --设置padding属性
   if t.padding and type(t.padding)=="table" then
     view.setPadding(checkValues(unpack(t.padding)))
-  elseif t.padding or t.paddingLeft or t.paddingTop or t.paddingRight or t.paddingBottom then
+   elseif t.padding or t.paddingLeft or t.paddingTop or t.paddingRight or t.paddingBottom then
     view.setPadding(checkValues(t.paddingLeft or t.padding or 0, t.paddingTop or t.padding or 0, t.paddingRight or t.padding or 0, t.paddingBottom or t.padding or 0))
   end
   if t.paddingStart or t.paddingEnd then
@@ -642,17 +860,18 @@ local function loadlayout(t,root,group)
           v=require(v)
         end
         view.adapter=LuaAdapter(context,v)
-      else
-        view.addView(loadlayout(v,root,t[1]))
+       else
+        view.addView(loadlayout(v,root,view.getClass()))
       end
-    elseif k=="id" then --创建view的全局变量
+     elseif k=="id" then
       rawset(root,v,view)
       local id=ids.id
       ids.id=ids.id+1
       view.setId(id)
       ids[v]=id
 
-    else
+     else
+
       local e,s=pcall(setattribute,root,view,params,k,v,ids)
       if not e then
         local _,i=s:find(":%d+:")
@@ -660,17 +879,21 @@ local function loadlayout(t,root,group)
         local t,du=pcall(dump2,t)
         print(string.format("loadlayout error %s \n\tat %s\n\tat  key=%s value=%s\n\tat %s",s,view.toString(),k,v,du or ""),0)
       end
+
     end
   end
 
-  --if group then
-  --group.addView(view,params)
-  --else
   view.setLayoutParams(params)
   return view
-  --end
 end
 
+--LuaAdapter和LuaRecyclerViewAdapter优化,javaSetMethod
+function javaSetMethod(view,k,v)
+  local p = view.getLayoutParams();
+  local c = setattribute(nil,view,p,k,v,nil)
+  view.setLayoutParams(c)
+end
 
+--返回函数,用于loadlayout调用
 return loadlayout
 

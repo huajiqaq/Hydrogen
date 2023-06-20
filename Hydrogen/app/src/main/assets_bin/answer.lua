@@ -141,7 +141,7 @@ function 数据添加(t,b)
 
 
   if b.author.name=="知乎用户" then
-    Http.get("https://api.zhihu.com/people/"..b.author.id,{
+    Http.get("https://api.zhihu.com/people/"..b.author.id.."/profile?profile_new_version=1",{
       ["cookie"] = 获取Cookie("https://www.zhihu.com/")
       },function(code,content)
       if code==200 then

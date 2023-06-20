@@ -5,103 +5,38 @@ import "android.widget.*"
 import "android.view.*"
 import "mods.muk"
 import "com.michael.NoScrollGridView"
-import "mods.MyEditText"
+import "com.google.android.material.textfield.TextInputLayout"
+import "com.google.android.material.textfield.TextInputEditText"
 
+MDC_R=luajava.bindClass"com.google.android.material.R"
 
 设置视图("layout/search")
 
 
 
 button.onClick=function()
-  if #(tostring(search_editor.EditText.text):gsub("\n",""):gsub(" ",""))<1 then
+  if #(tostring(t2.text):gsub("\n",""):gsub(" ",""))<1 then
     提示("请输入您要搜索的内容")
    else
     --[[    if activity.getSharedData("内部搜索(beta)")=="true" then
       activity.newActivity("search_result",{search_editor.EditText.text})
      else]]
-    activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..search_editor.EditText.text})
+    activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..t2.text})
     --    end
   end
 end
 
---EditText文本被改变事件
-search_editor.EditText.addTextChangedListener{
-  onTextChanged=function(s)
-    if search_editor.EditText.text:find"\n"then
-      if #(tostring(search_editor.EditText.text):gsub("\n",""):gsub(" ",""))<1 then
-        提示("请输入您要搜索的内容")
-       else
-        button.performClick()
-      end
-      search_editor.EditText.text=search_editor.EditText.text:gsub("\n","")
-    end
-  end
-}
+local corii={dp2px(24),dp2px(24),dp2px(24),dp2px(24)}
+t1.setBoxCornerRadii(table.unpack(corii))
 
 
+import "com.google.android.material.card.MaterialCardView"
 
 
 波纹({_back},"圆主题")
 波纹({button},"方主题")
 
-itemc=
-{
-  LinearLayout;
-  layout_width="-1";
-  layout_height="-2";
-  BackgroundColor=backgroundc;
-  {
-    CardView;
-    CardElevation="0dp";
-    CardBackgroundColor=cardedge;
-    radius="8dp";
-    layout_width="-1";
-    layout_height="48dp";
-    layout_margin="8dp";
-    {
-      CardView;
-      CardElevation="0dp";
-      CardBackgroundColor=backgroundc;
-      radius=dp2px(8)-2;
-      layout_margin="2px";
-      layout_width="-1";
-      layout_height="-1";
-      {
-        LinearLayout;
-        layout_height="fill";
-        id="background";
-        layout_width="fill";
-
-        ripple="圆自适应",
-
-        {
-          LinearLayout;
-          layout_width="-1";
-          layout_height="-1";
-          gravity="center";
-          {
-            TextView;
-            id="hotsearch_title";
-            singleLine=true;
-            textColor=textc;
-            textSize="14sp";
-            gravity="center";
-            SingleLine=true;
-            ellipsize='marquee',
-            Selected=true,
-            Typeface=字体("product-Bold");
-          };
-          {
-            TextView;
-            id="hotsearch_key";
-            layout_width="0";
-            layout_height="0";
-          };
-        };
-      };
-    };
-  };
-};
+itemc=获取适配器项目布局("search/search")
 
 yuxuan_adpqy=LuaAdapter(activity,itemc)
 

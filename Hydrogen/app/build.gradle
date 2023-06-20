@@ -37,9 +37,15 @@ android {
 
 
 dependencies {
-    implementation project(':androlua')
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.viewpager2:viewpager2:1.0.0'
-	implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation fileTree(dir: "libs", include: ["*.jar"])
+    api fileTree(dir: "libs", include: ["*.jar"])
+    api project(':androlua')
+    api project(':Jesse205Library')
+    api 'androidx.appcompat:appcompat:1.6.1'
+    api 'androidx.appcompat:appcompat-resources:1.6.1'
+    api 'com.google.android.material:material:1.8.0'
+    api 'androidx.viewpager2:viewpager2:1.0.0'        
+	api "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+	api 'com.daimajia.androidanimations:library:2.4@aar'
+	api 'com.getkeepsafe.taptargetview:taptargetview:1.13.3'
+
 }

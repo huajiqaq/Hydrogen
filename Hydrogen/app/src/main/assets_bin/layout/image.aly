@@ -12,7 +12,6 @@
       id="picpage",
       layout_width="-1";
       layout_height="-1";
-
     }
   };
   {
@@ -70,4 +69,3 @@
     };
   };
 };
-    

@@ -3,13 +3,11 @@
   layout_width="-1";
   background=backgroundc;
   layout_height="-1";
-
   {
     LinearLayout;
     layout_width="-1";
     layout_height="-1";
     orientation="vertical";
-
     {
       LinearLayout;
       layout_width="-1";
@@ -52,7 +50,6 @@
           layout_weight="1",
           Typeface=字体("product-Bold");
         };
-
         {
           ImageView;
           src=图标("more_vert");
@@ -95,9 +92,9 @@
           background=backgroundc,
           layout_height="fill";
           id="search_list";
-     --     layout_wieght="1",
+          --     layout_wieght="1",
         };
       }
-          };
+    };
   };
 };

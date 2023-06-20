@@ -1,2 +1,2 @@
-include ':app',':androlua'
+include ':app',':androlua',':Jesse205Library'
 rootProject.name = "Hydrogen"

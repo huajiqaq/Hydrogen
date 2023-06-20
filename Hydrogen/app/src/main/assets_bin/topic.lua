@@ -4,7 +4,7 @@ import "mods.muk"
 activity.setContentView(loadlayout("layout/topic"))
 topic_id=...
 波纹({fh,page1,page2,page3},"圆主题")
-topic_page.showPage(1)
+topic_page.setCurrentItem(1,false)
 初始化历史记录数据(true)
 
 topic_page.setOnPageChangeListener(PageView.OnPageChangeListener{
@@ -41,7 +41,7 @@ topic_page.setOnPageChangeListener(PageView.OnPageChangeListener{
 
 
 function changepage(z)
-  topic_page.showPage(z)
+  topic_page.setCurrentItem(z,false)
 end
 
 
@@ -62,112 +62,7 @@ Http.get(api,head,function(code,content)
 end)
 
 
-best_itemc=
-{
-  LinearLayout;
-  layout_width="-1";
-  BackgroundColor=backgroundc;
-  orientation="horizontal";
-  {
-    CardView;
-    layout_gravity="center";
-    layout_height="-2";
-    CardBackgroundColor=cardedge,
-    Elevation="0";
-    layout_width="-1";
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    radius="8dp";
-    {
-      CardView;
-      CardElevation="0dp";
-      CardBackgroundColor=backgroundc;
-      Radius=dp2px(8)-2;
-      layout_margin="2px";
-      layout_width="-1";
-      layout_height="-1";
-      {
-        LinearLayout;
-        layout_height="fill";
-        id="background";
-        layout_width="fill";
-        ripple="圆自适应",
-
-        {
-          LinearLayout;
-          orientation="horizontal";
-          padding="16dp";
-          {
-            TextView;
-            id="best_id";
-            textSize="0sp";
-          };
-          {
-            LinearLayout;
-            orientation="vertical";
-            {
-              TextView;
-              textSize="14sp";
-              id="best_title";
-              textColor=textc;
-              Typeface=字体("product-Bold");
-            };
-            {
-              TextView;
-              textSize="12sp";
-              MaxLines=3;
-              ellipsize="end",
-              id="best_excerpt";
-              textColor=stextc;
-              layout_marginTop="2dp";
-              Typeface=字体("product-Medium");
-            };
-            {
-              LinearLayout;
-              layout_marginTop="2dp";
-              orientation="horizontal";
-              {
-                ImageView;
-                layout_gravity="center",
-                layout_height="16dp",
-                layout_width="16dp",
-                src=图标("vote_up"),
-                ColorFilter=textc;
-              };
-              {
-                TextView;
-                id="best_voteup_count";
-                textSize="12sp",
-
-                layout_marginLeft="6dp",
-                textColor=textc;
-                Typeface=字体("product");
-              };
-              {
-                ImageView;
-                layout_marginLeft="24dp",
-                src=图标("message"),
-                ColorFilter=textc;
-                layout_height="16dp",
-                layout_width="16dp",
-                layout_gravity="center",
-              };
-              {
-                TextView;
-                layout_marginLeft="6dp",
-                id="best_comment_count";
-                textColor=textc;
-                textSize="12sp",
-                Typeface=字体("product");
-              };
-            };
-          };
-        };
-      };
-    };
-  };
-};
+best_itemc=获取适配器项目布局("topic/tooic_best")
 
 
 nexturl=""
@@ -296,80 +191,7 @@ best_list.setOnScrollListener{
 
 
 
-all_itemc=
-{
-  LinearLayout;
-  layout_width="-1";
-  BackgroundColor=backgroundc;
-  orientation="horizontal";
-  {
-    CardView;
-    layout_gravity="center";
-    layout_height="-2";
-    CardBackgroundColor=cardedge,
-    Elevation="0";
-    layout_width="-1";
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    radius="8dp";
-    {
-      CardView;
-      CardElevation="0dp";
-      CardBackgroundColor=backgroundc;
-      Radius=dp2px(8)-2;
-      layout_margin="2px";
-      layout_width="-1";
-      layout_height="-1";
-      {
-        LinearLayout;
-        layout_height="fill";
-        id="background";
-        layout_width="fill";
-        ripple="圆自适应",
-
-        {
-          LinearLayout;
-          orientation="vertical";
-          padding="16dp";
-          {
-            TextView;
-            id="all_id";
-            textSize="0sp";
-          };
-          {
-            TextView;
-            textSize="14sp";
-            id="all_title";
-            textColor=textc;
-            Typeface=字体("product-Bold");
-          };
-          {
-            LinearLayout;
-            layout_marginTop="2dp";
-            orientation="horizontal";
-            {
-              TextView;
-              id="all_answer_count";
-              textSize="12sp",
-
-              textColor=textc;
-              Typeface=字体("product");
-            };
-            {
-              TextView;
-              layout_marginLeft="6dp",
-              id="all_follower_count";
-              textColor=textc;
-              textSize="12sp",
-              Typeface=字体("product");
-            };
-          };
-        };
-      };
-    };
-  };
-};
+all_itemc=获取适配器项目布局("topic/topic_all")
 
 
 all_nexturl=""

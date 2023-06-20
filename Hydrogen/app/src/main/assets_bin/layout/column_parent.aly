@@ -3,13 +3,11 @@
   layout_width="-1";
   background=backgroundc;
   layout_height="-1";
-
   {
     LinearLayout;
     layout_width="-1";
     layout_height="-1";
     orientation="vertical";
-
     {
       LinearLayout;
       layout_width="-1";
@@ -76,7 +74,6 @@
           layout_gravity="top";
         };
       };
-
     };
     {
       LinearLayout;
@@ -85,7 +82,7 @@
       orientation="vertical";
       layoutTransition=LayoutTransition(),
       {
-        View,        
+        View,
         id="pbar",
         layout_width="0";
         layout_height="2dp";
@@ -98,9 +95,6 @@
         BackgroundColor="0x01000000",
         id="mty";
       };
-
     };
-
   };
-
 };

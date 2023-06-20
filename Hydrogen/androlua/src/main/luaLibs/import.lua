@@ -499,7 +499,7 @@ luajava_mt.__index = function(t, k)
     return ret
 end
 setmetatable(luajava, luajava_mt)
+import "com.jesse205.R"
 
 return env_import
-
 

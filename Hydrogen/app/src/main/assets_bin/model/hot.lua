@@ -22,6 +22,11 @@ function hotdata.getValue(self,key,isreturnurl)
 
 
   local result=self.partition[key]
+  if #self.partition==0 then  
+  for key, value in pairs(self.partition) do
+    result=value
+  end
+  end
 
   if result==nil then error("hotdata:Not find key") end
   if isreturnurl then
@@ -38,10 +43,15 @@ function hotdata:getPartitionFromApi(func)
   Http.get("https://www.zhihu.com/api/v3/feed/topstory/hot-lists",head,function(code,body)
     if code==200 then
       local tab=self.cjson.decode(body)
-      for k,v in pairs(tab.data) do
-        local z=v.name
-        if z=="全站" then z="全部" end
-        self:putPartition(z,v.identifier)
+      if #tab.data>0 then
+        for k,v in pairs(tab.data) do
+          local z=v.name
+          if z=="全站" then z="全部" end
+          self:putPartition(z,v.identifier)
+        end
+       elseif tab.data.name=="全站" then
+        z="全部"
+        self:putPartition(z,tab.data.identifier)
       end
       self.partition.视频=nil
 

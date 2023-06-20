@@ -3,13 +3,11 @@
   layout_width="-1";
   background=backgroundc;
   layout_height="-1";
-
   {
     LinearLayout;
     layout_width="-1";
     layout_height="-1";
     orientation="vertical";
-
     {
       LinearLayout;
       layout_width="-1";
@@ -67,7 +65,6 @@
           tooltip="更多",
           onClick=function()
             a.pop.showAsDropDown(_more_lay)
-
           end;
         };
         {
@@ -79,7 +76,6 @@
         };
       };
     };
-
     {
       LinearLayout;
       orientation="vertical";
@@ -105,7 +101,6 @@
               id="tags",
               type=2
             },
-
             visibility=8,
             background=backgroundc,
             layout_marginLeft="10dp",
@@ -129,7 +124,6 @@
               layout_margin=cardmargin;
               layout_width="-1";
               layout_height="-1";
-
               {
                 LinearLayout;
                 layout_width="-1";
@@ -185,7 +179,6 @@
                     layout_marginTop="8dp";
                     Visibility=0,
                   };
-
                 };
                 {
                   LinearLayout;

@@ -14,134 +14,12 @@ question_id,是否记录历史记录=...
 波纹({discussion,view,description},"方自适应")
 
 --卡片布局
-question_itemc=
-{
-  LinearLayout;
-  layout_width="fill";
-  BackgroundColor=backgroundc;
-  orientation="horizontal";
-  {
-    CardView;
-    layout_gravity="center";
-    layout_height="-2";
-    CardBackgroundColor=cardedge,
-    Elevation="0";
-    layout_width="fill";
-    layout_margin="0dp";
-    layout_marginTop="0dp";
-    layout_marginBottom="0dp";
-    radius="0dp";
-    {
-      CardView;
-      CardElevation="0dp";
-      CardBackgroundColor=backgroundc;
-      Radius="0dp";
-      --      layout_margin="4px";
-      layout_margin=cardmargin;
-      layout_width="-1";
-      layout_height="-1";
-      {
-        LinearLayout;
-        layout_height="fill";
-        id="background";
-        layout_width="fill";
-        ripple="圆自适应",
-
-        {
-          LinearLayout;
-          orientation="horizontal";
-          padding="24dp";
-          paddingTop="18dp";
-          paddingBottom="18dp";
-          {
-            TextView;
-            id="question_id";
-            textSize="0sp";
-          };
-          {
-            LinearLayout;
-            orientation="vertical";
-            {
-              LinearLayout;
-              orientation="horizontal";
-              {
-                CircleImageView;
-                id="question_image";
-                layout_height="20dp",
-                layout_width="20dp",
-              };
-              {
-                TextView;
-                id="question_author";
-                layout_marginLeft="6dp",
-                textColor=textc;
-                gravity="center_vertical",
-                Typeface=字体("product");
-                textSize="14sp";
-              };
-            };
-            {
-              TextView;
-              textSize="12sp";
-              id="question_art";
-              MaxLines=3;--设置最大输入行数
-              letterSpacing="0.02";
-              ellipsize="end",
-              --              textColor=stextc;
-              textColor=textc;
-              layout_marginTop="9dp";
-              Typeface=字体("product");
-            };
-            {
-              LinearLayout;
-              layout_marginTop="9dp";
-              orientation="horizontal";
-              {
-                ImageView;
-                layout_gravity="center",
-                layout_height="16dp",
-                layout_width="16dp",
-                src=图标("vote_up"),
-                ColorFilter=textc;
-              };
-              {
-                TextView;
-                id="question_voteup";
-                textSize="12sp";
-                layout_marginLeft="6dp",
-                textColor=textc;
-                Typeface=字体("product");
-              };
-              {
-                ImageView;
-                layout_marginLeft="24dp",
-                src=图标("message"),
-                ColorFilter=textc;
-                layout_height="16dp",
-                layout_width="16dp",
-                layout_gravity="center",
-              };
-              {
-                TextView;
-                layout_marginLeft="6dp",
-                id="question_comment";
-                textColor=textc;
-                textSize="12sp";
-                Typeface=字体("product");
-              };
-            };
-          };
-        };
-      };
-    };
-  };
-};
-
+question_itemc=获取适配器项目布局("question/question")
 
 
 question_adp=LuaAdapter(activity,question_datas,question_itemc)
 
-
+--import "com.google.android.material.progressindicator.CircularProgressIndicator"
 
 question_list.addFooterView(loadlayout({
   LinearLayout,
@@ -156,7 +34,16 @@ question_list.addFooterView(loadlayout({
     layout_width="19dp",
     ProgressBarBackground=转0x(primaryc),
     style="?android:attr/progressBarStyleLarge"
+  }, 
+  --[[
+  {
+    CircularProgressIndicator,
+    layout_height="19dp",
+    layout_width="19dp",
+    indeterminate="true",
+--    style="?android:attr/progressBarStyleLarge"
   },
+  ]]
   {
     TextView,
     text="加载中",
@@ -166,7 +53,7 @@ question_list.addFooterView(loadlayout({
     gravity= "center",
     textColor=primaryc;
   },
-},nil,question_list),nil,false)
+},nil),nil,false)
 
 resultbar.Visibility=8
 

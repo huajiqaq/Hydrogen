@@ -99,8 +99,9 @@ function MyEditText(info)
     android.R.attr.windowBackground,
     android.R.attr.colorAccent,
   });
-  local windowBackground = array.getColor(0, 0xFF00FF)
-  local colorAccent = array.getColor(1, 0xFF00FF)
+  
+  if not(pcall(function()local windowBackground = array.getColor(0, 0xFF00FF)end)) then windowBackground=nil end
+  if not(pcall(function()local colorAccent = array.getColor(1, 0xFF00FF)end)) then colorAccent=nil end
 
   info=info or {}
 

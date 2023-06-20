@@ -42,70 +42,7 @@ if (#recordtt==0)then
 end
 
 
-itemc=
-{
-  LinearLayout,
-  orientation="horizontal",
-  layout_width="-1",
-  BackgroundColor=backgroundc;
-  {
-    CardView;
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    layout_gravity='center';
-    Elevation='0';
-    layout_width='-1';
-    layout_height='-2';
-    radius='8dp';
-    CardBackgroundColor=cardedge,
-    {
-      CardView;
-      CardElevation="0dp";
-      CardBackgroundColor=backgroundc;
-      Radius=dp2px(8)-2;
-      layout_margin="2px";
-      layout_width="-1";
-      layout_height="-1";
-      {
-        LinearLayout;
-        layout_height="fill";
-        id="background";
-        layout_width="fill";
-        ripple="圆自适应",
-
-        {
-          LinearLayout;
-          orientation="horizontal";
-          padding="16dp";
-          {
-            TextView;
-            textSize="0sp";
-            id="history_id",
-            Typeface=字体("product");
-          };
-          {
-            LinearLayout;
-            orientation="vertical";
-            {
-              TextView;
-              textColor=textc;
-              textSize="14sp";
-              Typeface=字体("product-Bold");
-              id="history_title",
-            };
-            {
-              TextView;
-              layout_width='0dp';
-              layout_height='0dp';
-              id="history_num",
-            };
-          };
-        };
-      };
-    };
-  };
-};
+itemc=获取适配器项目布局("history/history")
 
 
 adp=LuaAdapter(activity,itemc)

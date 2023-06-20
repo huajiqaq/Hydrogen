@@ -1,6 +1,7 @@
 require "import"
 import "mods.muk"
 import "android.view.animation.ScaleAnimation"
+import "androidx.swiperefreshlayout.widget.*"
 
 activity.setContentView(loadlayout("layout/artical"))
 
@@ -121,75 +122,7 @@ _refre.onClick=function()
 end
 
 
-noteitem={
-  LinearLayout;
-  layout_width="-1";
-  layout_height="-2";
-  orientation="vertical";
-  BackgroundColor=backgroundc;
-  {
-    CardView;
-    layout_gravity="center";
-    layout_height="-2";
-    CardBackgroundColor=cardedge,
-    Elevation="0";
-    layout_width="fill";
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    radius="8dp";
-    {
-      CardView;
-      CardElevation="0dp";
-      CardBackgroundColor=backgroundc;
-      Radius=dp2px(8)-2;
-      layout_margin="2px";
-      layout_width="-1";
-      layout_height="-1";
-      {
-        LinearLayout;
-        layout_height="fill";
-        id="background";
-        ripple="圆自适应",
-
-        layout_width="fill";
-        {
-          LinearLayout;
-          layout_width="-1";
-          layout_height="-1";
-          orientation="vertical";
-          padding="16dp";
-          {
-            TextView;
-            textColor=textc;
-            textSize="14sp";
-            gravity="center|left";
-            Typeface=字体("product-Bold");
-            id="title";
-          };
-          {
-            TextView;
-            textColor=stextc;
-            textSize="12sp";
-            gravity="center|left";
-            Typeface=字体("product");
-            layout_marginTop="12dp";
-            MaxLines=2;
-            ellipsize="end";
-            id="preview";
-          };
-          {
-            TextView;
-            id="text";
-            --maxLines=3;
-            layout_width="0";
-            layout_height="0";
-          };
-        };
-      };
-    };
-  };
-};
+noteitem=获取适配器项目布局("note/note")
 
 
 notedata={}
@@ -217,7 +150,7 @@ notelist.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(id,v,zero,one)
     atitle.Text=v.Tag.title.Text
     atext.Text=v.Tag.preview.Text
-    artical_page.showPage(0)
+    artical_page.setCurrentItem(0,false)
     动画出现(back_root)
     _star.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
 end})

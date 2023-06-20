@@ -1,17 +1,19 @@
 {
-  LinearLayout,
-  orientation="vertical",
-  layout_width="fill",
-background=backgroundc,
-
-  layout_height="fill",
-    id="page_daily";
+  LinearLayoutCompat;
+  id="content";
+  layout_width="fill";
+  layout_height="fill";
+  orientation="vertical";
+  id="page_daily";
 
   {
     GridView;
+    nestedScrollingEnabled=true,
     layout_height="-1";
     layout_width="-1";
     NumColumns=1;
     id="list1";
+
   };
+
 }

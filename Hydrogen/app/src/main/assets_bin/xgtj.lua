@@ -4,7 +4,7 @@ import "android.view.*"
 import "android.graphics.PorterDuffColorFilter"
 import "android.graphics.PorterDuff"
 import "mods.muk"
-import "mods.loadlayout"
+--import "mods.loadlayout"
 import "com.michael.NoScrollListView"
 import "android.widget.NumberPicker$OnValueChangeListener"
 import "mods.muk"
@@ -20,73 +20,7 @@ import "androidx.recyclerview.widget.*"
 --dl=ProgressDialog.show(activity,nil,'加载中 请耐心等待')
 --dl.show()
 
-local list_item={
-  LinearLayout;
-  Orientation="vertical";
-  id="root";
-  {
-    TextView,
-    id="myt",
-    Typeface=字体("product-Bold");
-    Visibility=8;
-  };
-  {
-    LinearLayout;
-    layout_width="-2";
-    layout_height="-2";
-    --     background=backroundc,
-    onClick=function(v)
-      onClick(v)
-    end,
-    {
-      LinearLayout;
-      layout_width="-1";
-      orientation="vertical";
-      padding="9dp";
-      id="cardv";
-      layout_height="-1";
-      {
-        TextView;
-        layout_width="0";
-        layout_height="0";
-        id="text";
-      };
-      --       background=backroundc,
-      {
-        CardView;
-        CardBackgroundColor=转0x(primaryc)-0xdf000000,
-        elevation="0";
-        id="cardt";
-        radius="4%w";
-        {
-          LinearLayout;
-          layout_width="-2";
-          layout_height="-2";
-          padding="6dp",
-          --         background=backroundc,
-          paddingLeft="10dp",
-          paddingRight="10dp",
-
-          orientation="vertical";
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-1";
-            id="title";
-            textSize="13sp",
-            --            Typeface=字体("product");
-            textColor=primaryc,
-            gravity="center";
-          };
-        };
-      };
-
-
-
-    }
-  }
-};
-
+local list_item=获取适配器项目布局("xgtj/xgtj")
 
 data={}
 --myview = LayoutInflater.from(this).inflate(R.layout.recycler_view, null);
