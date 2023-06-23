@@ -16,7 +16,7 @@ local phoneLanguage
 local fastImport = {
   Bitmap = "android.graphics.Bitmap",
   LayoutTransition = "android.animation.LayoutTransition",
-  StatService = "com.baidu.mobstat.StatService",
+--  StatService = "com.baidu.mobstat.StatService",
   AppPath = "com.jesse205.app.AppPath",
   PermissionUtil = "com.jesse205.app.PermissionUtil",
   MyStyleUtil = "com.jesse205.util.MyStyleUtil",

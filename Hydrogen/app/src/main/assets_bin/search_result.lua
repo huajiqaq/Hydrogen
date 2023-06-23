@@ -18,15 +18,15 @@ itemc=获取适配器项目布局("search_result/search_result")
 history_list.setDividerHeight(0)
 adp=LuaAdapter(activity,itemc)
 history_list.Adapter=adp
-isaddd=true
 
 history_list.setOnScrollListener{
-  onScroll=function(view,a,b,c)
-    if a+b==adp.getCount() and isaddd and adp.getCount()>0 then
-      isaddd=false
-      提示("搜索中 请耐心等待")
-      刷新()
-      System.gc()
+  onScrollStateChanged=function(view,scrollState)
+    if scrollState == 0 then
+      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
+        提示("搜索中 请耐心等待")
+        刷新()
+        System.gc()
+      end
     end
   end
 }

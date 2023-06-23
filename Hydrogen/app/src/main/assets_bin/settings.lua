@@ -59,7 +59,7 @@ data = {
 
   {__type=4,subtitle="内部浏览器查看回答",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("内部浏览器查看回答"))}},
   {__type=4,subtitle="自动打开剪贴板上的知乎链接",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("自动打开剪贴板上的知乎链接"))}},
-  
+
   {__type=4,subtitle="夜间模式追随系统",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))}},
   {__type=4,subtitle="夜间模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
 
@@ -93,14 +93,14 @@ data = {
   {__type=4,subtitle="禁用大部分缓存",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("禁用缓存"))}},
   {__type=3,subtitle="清理软件缓存",image=图标("")},
 
-  {__type=1,title="页面设置"}, 
+  {__type=1,title="页面设置"},
   {__type=3,subtitle="主题设置",image=图标("")},
-  -- {__type=4,subtitle="暗色工具栏主题",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("theme_darkactionbar"))}}, 
-   
-  {__type=1,title="其他"},   
+  -- {__type=4,subtitle="暗色工具栏主题",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("theme_darkactionbar"))}},
+
+  {__type=1,title="其他"},
   {__type=3,subtitle="关于",image=图标("")},
   {__type=4,subtitle="调式模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
-  
+
 }
 
 
@@ -125,7 +125,7 @@ tab={ --点击table
   全屏模式=function()
     提示("为了更好的浏览体验 推荐重启App")
   end,
-暗色工具栏主题=function()
+  暗色工具栏主题=function()
     提示("设置成功 重启软件生效")
   end,
   开启想法=function()
@@ -198,12 +198,12 @@ tab={ --点击table
   关于=function()
     activity.newActivity("about")
   end,
-  
- 主题设置=function()
-  newSubActivity("ThemePicker")
+
+  主题设置=function()
+    newSubActivity("ThemePicker")
   end,
 
-  
+
   调式模式=function()
     if this.getSharedData("调式模式")~="false" then
       this.setSharedData("调式模式","false")

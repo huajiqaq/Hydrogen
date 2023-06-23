@@ -1,5 +1,5 @@
 {
-  --[[
+ 
   {--用户协议
     icon=R.drawable.ic_shield_account_outline;
     title=R.string.jesse205_userAgreement,
@@ -11,11 +11,12 @@
     title=R.string.jesse205_privacyPolicy,
     name="PrivacyPolicy",
     date="xxxx-xx-xx",
-  },]]
+  },
+  --[[
   {--第三方信息共享清单
     icon=R.drawable.ic_shield_sync_outline;
     title=R.string.jesse205_tisl,
     name="TISL",
     date="2022-08-24",
-  },
+  },]]
 }

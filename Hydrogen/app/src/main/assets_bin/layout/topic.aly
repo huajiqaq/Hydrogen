@@ -64,65 +64,16 @@
       layout_width="-1";
       layout_height="48dp";
       background="#00000000";
-      {
-        LinearLayout;
-        layout_height="-1";
-        layout_width="-1";
-        {
-          LinearLayout;
-          layout_width="-1";
-          layout_height="-1";
-          layout_weight="1";
-          gravity="center";
-          id="page1";
-          onClick=function()changepage(0)end;
-          {
-            TextView;
-            layout_width="-2";
-            layout_height="-2";
-            Text="话题资料";
-            Typeface=字体("product-Bold");
-            textSize="16sp";
-            textColor=primaryc;
-          };
-        };
-        {
-          LinearLayout;
-          layout_width="-1";
-          layout_height="-1";
-          layout_weight="1";
-          gravity="center";
-          id="page2";
-          onClick=function()changepage(1)end;
-          {
-            TextView;
-            layout_width="-2";
-            layout_height="-2";
-            Text="精华";
-            Typeface=字体("product-Bold");
-            textSize="16sp";
-            textColor=stextc;
-          };
-        };
-        {
-          LinearLayout;
-          layout_width="-1";
-          layout_height="-1";
-          layout_weight="1";
-          gravity="center";
-          id="page3";
-          onClick=function()changepage(2)end;
-          {
-            TextView;
-            layout_width="-2";
-            layout_height="-2";
-            Text="全部问题";
-            Typeface=字体("product-Bold");
-            textSize="16sp";
-            textColor=stextc;
-          };
-        };
-      };
+  {
+    TabLayout,
+    layout_width="fill",
+    id="TopictabLayout",
+    elevation ="2dp",
+    tabMode=TabLayout.MODE_FIXED;
+    tabGravity=TabLayout.GRAVITY_FILL,
+    layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)
+  };
+
       {
         LinearLayout;
         layout_height="8dp";
@@ -149,7 +100,7 @@
       layout_height="-1";
       layout_width="-1";
       {
-        PageView;
+        ViewPager;
         layout_height="-1",
         id="topic_page",
         layout_width="-1";

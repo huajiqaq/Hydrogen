@@ -284,20 +284,16 @@ content="]]..v.Tag.comment_art.text..[["=}"]])
       return true
   end})
 
-  isadd=true
   comment_list.setOnScrollListener{
-    onScroll=function(view,a,b,c)
-      if a+b==comment_list.adapter.getCount() and isadd and comment_list.adapter.getCount()>0 then
-        isadd=false
+ onScrollStateChanged=function(view,scrollState)
+    if scrollState == 0 then
+      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
         评论刷新()
         System.gc()
-        Handler().postDelayed(Runnable({
-          run=function()
-            isadd=true
-          end,
-        }),1000)
       end
-  end }
+    end
+  end
+}
 end
 
 

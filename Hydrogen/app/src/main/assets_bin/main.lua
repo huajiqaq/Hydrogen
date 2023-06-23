@@ -22,7 +22,7 @@ if welcomeAgain then
   activity.finish()
   return
 end
-
+--[[
 StatService.start(activity)
 
 import "AppFunctions"
@@ -93,3 +93,4 @@ screenConfigDecoder=ScreenFixUtil.ScreenConfigDecoder({
 })
 
 onConfigurationChanged(activity.getResources().getConfiguration())
+]]

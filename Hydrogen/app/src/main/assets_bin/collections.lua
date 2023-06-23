@@ -329,24 +329,18 @@ if collections_url=="local" then
     end)
   end
 
-  isadd=true
+
   list5.setOnScrollListener{
-    onScroll=function(view,a,b,c)
-      if a+b==list5.adapter.getCount() and collections_base.is_end==false and isadd and list5.adapter.getCount()>0 then
-        isadd=false
+  onScrollStateChanged=function(view,scrollState)
+    if scrollState == 0 then
+      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
         刷新()
         System.gc()
-        Handler().postDelayed(Runnable({
-          run=function()
-
-            isadd=true
-          end,
-        }),1000)
-
       end
-
     end
+  end
   }
+  
   list5.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(parent,v,pos,id)
 

@@ -28,12 +28,10 @@ import "com.daimajia.androidanimations.library.Techniques"
 import "com.daimajia.androidanimations.library.YoYo"
 import "com.getkeepsafe.taptargetview.*"
 
-
 activity.setSupportActionBar(toolbar)
 activity.setContentView(loadlayout("layout/home"))
 
 初始化历史记录数据(true)
-
 
 if activity.getSharedData("signdata")~=nil then
   local login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
@@ -178,7 +176,7 @@ function 切换页面(z)--切换主页Page函数
     page_home.setCurrentItem(z)
   end
 end
-isadd=true
+
 function 主页刷新(isclear)
 
   function resolve_feed(v)
@@ -342,7 +340,7 @@ Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,f
     --    提示(require "cjson".decode(content).selected_sections[1].section_name)
     for i=1, #decoded_content.selected_sections do
       --提示(tostring(i))
-      if homehome~="ok" then
+      if HometabLayout.getTabCount()~="ok" then
         local tab=HometabLayout.newTab()
         tab.setText("全站")
         tab.view.onClick=function() pcall(function()list2.adapter.clear()end) choosebutton=nil 随机推荐() end
@@ -464,7 +462,7 @@ function 日报刷新(isclear)
     list1.setOnScrollListener{
       onScrollStateChanged=function(view,scrollState)
         if scrollState == 0 then
-          if list1.getLastVisiblePosition() == list1.getCount() - 1
+          if list1.getCount() >1 and list1.getLastVisiblePosition() == list1.getCount() - 1 then
             日报刷新()
             System.gc()
           end
@@ -1443,12 +1441,6 @@ end
 
 function onResume()
   activity.getDecorView().post{run=function()check()end}
-  if (oldTheme~=ThemeUtil.getAppTheme())
-    or (oldDarkActionBar~=getSharedData("theme_darkactionbar"))
-    then
-    activity.recreate()
-    return
-  end
 end
 
 
@@ -1466,7 +1458,7 @@ Http.get(update_api,function(code,content)
   if code==200 then
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
     isstart=content:match("start%=(.+),start")
-    this.setSharedData("解析zes开关",isstart)
+    this.setSharedData("解析zse开关",isstart)
     if updateversioncode > versionCode and activity.getSharedData("version")~=updateversioncode then
       updateversionname=content:match("updateversionname%=(.+),updateversionname")
       updateinfo=content:match("updateinfo%=(.+),updateinfo")
@@ -1489,7 +1481,6 @@ Http.get(update_api,function(code,content)
 end)
 
 if activity.getSharedData("自动清理缓存")=="true" then
-  import "androidx.core.content.ContextCompat"
   task(function(dar)
     require "import"
     import "java.io.File"
@@ -1521,7 +1512,7 @@ if activity.getSharedData("自动清理缓存")=="true" then
 
     return tmp[1]
     end,APP_CACHEDIR,function(m)
-
+    if m==nil then m=0 end
     提示("清理成功,共清理 "..tokb(m))
   end)
 end
@@ -1700,8 +1691,3 @@ local dann={
     };
   };
 };
-
-import "com.baidu.mobstat.StatService"
-StatService
-.setAppKey("c5aac7351d")
-.start(this)

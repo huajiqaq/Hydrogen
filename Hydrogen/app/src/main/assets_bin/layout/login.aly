@@ -84,7 +84,7 @@
       };
       {
         ProgressBar;
-        ProgressBarBackground=转0x(primaryc),
+        ProgressBarBackground2=转0x(primaryc),
         id="progress";
         Visibility=0,
         layout_height="56dp",

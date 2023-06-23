@@ -315,6 +315,7 @@ function nochecktitle(str)
     if b==2 then
       提示("搜索完毕 共搜索到"..#people_list.adapter.getData().."条数据")
       if #people_list.adapter.getData()==0 then
+        chobu="all"
         其他("clear")
       end
     end

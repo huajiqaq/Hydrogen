@@ -11,7 +11,7 @@ oldDarkActionBar=getSharedData("theme_darkactionbar")
 --重写SwipeRefreshLayout到自定义view 原SwipeRefreshLayout和滑动组件有bug
 SwipeRefreshLayout = luajava.bindClass "com.crow.laser.view.component.CustomSwipeRefresh"
 
-versionCode=16.081
+versionCode=16.082
 layout_dir="layout/item_layout/"
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
@@ -416,7 +416,7 @@ function 主题(str)
       --      activity.setTheme(android.R.style.Theme_Material_Light_NoActionBar)
     end)
    elseif 全局主题值=="Night" then
-    if 获取主题夜间模式() == false then
+    if 获取主题夜间模式() == false and 获取系统夜间模式() == false then
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
       activity.recreate()
     end
@@ -915,7 +915,7 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
       };
     };
   };
---[[
+  --[[
   dialog=BottomDialog(activity)
   dialog.setView(loadlayout(dann))
   --设置弹窗位置
@@ -932,7 +932,7 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
   ]]
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
-  an=bottomSheetDialog.show()   
+  an=bottomSheetDialog.show()
 end
 
 
@@ -942,7 +942,7 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
    else
     bwz=0x3fffffff
   end
-  
+
   import "com.google.android.material.bottomsheet.*"
 
   local gd2 = GradientDrawable()
@@ -1093,7 +1093,7 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
   ]]
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
-  an=bottomSheetDialog.show() 
+  an=bottomSheetDialog.show()
 end
 
 
@@ -1153,7 +1153,7 @@ function 问题详情(nr,code)
       };
     };
   };
---[[
+  --[[
   dialog=BottomDialog(activity)
   dialog.setView(loadlayout(dann))
   --设置弹窗位置
@@ -1171,7 +1171,7 @@ function 问题详情(nr,code)
   ]]
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
-  an=bottomSheetDialog.show() 
+  an=bottomSheetDialog.show()
 end
 
 
@@ -2758,7 +2758,7 @@ function 替换文件字符串(路径,要替换的字符串,替换成的字符�
 end
 
 function 获取参数(url,callback)
-  local 请求url="https://x-zes-96.huajicloud.ml/api"
+  local 请求url="https://x-zse-96.huajicloud.ml/api"
   local 判断url="https://www.zhihu.com"
   if url:find(判断url) then
     请求参数= url:match("zhihu.com(.+)")
@@ -2799,8 +2799,8 @@ function urlDecode(s)
   return s
 end
 
-if not isstart and this.getSharedData("解析zes开关") then
-  isstart=this.getSharedData("解析zes开关")
+if not isstart and this.getSharedData("解析zse开关") then
+  isstart=this.getSharedData("解析zse开关")
 end
 --[[
 local get_api= "https://mydata.huajicloud.ml/hydrogen.html"
@@ -3246,34 +3246,41 @@ function webview下载文件(链接, UA, 相关信息, 类型, 大小)
   .show()
 end
 
-local old_onDestroy=onDestroy
-function onDestroy()
-  if old_onDestroy~=nil then
-    old_onDestroy()
+--1毫秒后添加 防止加载失败
+task(1,function()
+
+  --停留30秒时才添加 防止不必要的清理
+  task(30000,function()
+    local old_onDestroy=onDestroy
+    function onDestroy()
+      if old_onDestroy~=nil then
+        old_onDestroy()
+      end
+      old_onDestroy=nil
+      LuaUtil.rmDir(File(activity.getExternalCacheDir().toString()))
+      collectgarbage("collect")
+      System.gc()
+    end
+  end)
+
+  local old_onResume=onResume
+  function onResume()
+    if old_onResume~=nil then
+      old_onResume()
+    end
+    if (oldTheme~=ThemeUtil.getAppTheme()) or (oldDarkActionBar~=getSharedData("theme_darkactionbar")) then
+      activity.recreate()
+      return
+    end
   end
-  old_onDestroy=nil
-  LuaUtil.rmDir(File(activity.getExternalCacheDir().toString()))
-  collectgarbage("collect")
-  System.gc()
-end
+
+end)
 
 function 获取适配器项目布局(name)
   local dir="layout/item_layout/"
   return require(dir..name)
 end
 
-local old_onResume=onResume
-function onResume()
-
-  if old_onResume~=nil then
-    old_onResume()
-  end
-
-  if (oldTheme~=ThemeUtil.getAppTheme()) or (oldDarkActionBar~=getSharedData("theme_darkactionbar")) then
-    activity.recreate()
-    return
-  end
-end
 
 function table.swap(数据, 查找位置, 替换位置, ismode)
   if ismode then

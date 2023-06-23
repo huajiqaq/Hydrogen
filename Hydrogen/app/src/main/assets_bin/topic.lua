@@ -1,5 +1,6 @@
 require "import"
 import "mods.muk"
+import "com.google.android.material.tabs.TabLayout"
 
 activity.setContentView(loadlayout("layout/topic"))
 topic_id=...
@@ -7,37 +8,24 @@ topic_id=...
 topic_page.setCurrentItem(1,false)
 初始化历史记录数据(true)
 
-topic_page.setOnPageChangeListener(PageView.OnPageChangeListener{
-  onPageScrolled=function(a,b,c)
-    local w=activity.getWidth()/3
-    local wd=c/3
-    if a==0 then
-      page_scroll.setX(wd)
-    end
-    if a==1 then
-      page_scroll.setX(wd+w)
-    end
-  end,
-  onPageSelected=function(v)
-    local x=primaryc
-    local c=stextc
-    local c1=c
-    local c2=c
-    local c3=c
-    if v==0 then
-      c1=x
-    end
-    if v==1 then
-      c2=x
-    end
-    if v==2 then
-      c3=x
-    end
-    page1.getChildAt(0).setTextColor(转0x(c1))
-    page2.getChildAt(0).setTextColor(转0x(c2))
-    page3.getChildAt(0).setTextColor(转0x(c3))
+TopictabLayout.setupWithViewPager(topic_page)
+
+local TopicTable={"话题资料","精华","全部问题"}
+
+if TopictabLayout.getTabCount()==0 then
+  for i=1, #TopicTable do
+    local tab=TopictabLayout.newTab()
+    local pagenum=i-1
+    tab.view.onClick=function() changepage(pagenum) end
+    TopictabLayout.addTab(tab)
   end
-})
+end
+
+--setupWithViewPager设置的必须手动设置text
+for i=1, #TopicTable do
+  local itemnum=i-1
+  TopictabLayout.getTabAt(itemnum).setText(TopicTable[i]);
+end
 
 
 function changepage(z)
@@ -62,7 +50,7 @@ Http.get(api,head,function(code,content)
 end)
 
 
-best_itemc=获取适配器项目布局("topic/tooic_best")
+best_itemc=获取适配器项目布局("topic/topic_best")
 
 
 nexturl=""
@@ -176,13 +164,13 @@ end
 isadd=true
 
 best_list.setOnScrollListener{
-  onScroll=function(view,a,b,c)
-    if a+b==best_list.adapter.getCount() and isend==false and isadd and best_list.adapter.getCount()>0 then
-      isadd=false
-      pager=pager+1
-      精华刷新(pager,nextUrl)
-      System.gc()
-      isadd=true
+  onScrollStateChanged=function(view,scrollState)
+    if scrollState == 0 then
+      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
+        pager=pager+1
+        精华刷新(pager,nextUrl)
+        System.gc()
+      end
     end
   end
 }
@@ -228,23 +216,16 @@ function 所有刷新(all_pager,url)
 end
 
 所有刷新(1)
-
-all_isadd=true
 all_pager=2
 
 all_list.setOnScrollListener{
-  onScroll=function(view,a,b,c)
-    if a+b==all_list.adapter.getCount() and all_isend==false and all_isadd and all_list.adapter.getCount()>0 then
-      all_isadd=false
-      all_pager=2
-      所有刷新(all_pager,all_nexturl)
-      System.gc()
-      Handler().postDelayed(Runnable({
-        run=function()
-          all_isadd=true
-        end,
-      }),1000)
-
+  onScrollStateChanged=function(view,scrollState)
+    if scrollState == 0 then
+      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
+        all_pager=2
+        所有刷新(all_pager,all_nexturl)
+        System.gc()
+      end
     end
   end
 }

@@ -227,7 +227,7 @@ end
 
 function base:getData(callback)
   --[[
-  Http.post("https://x-zes-96.huajicloud.ml/api",self.md5str,head,function(code,content)
+  Http.post("https://x-zse-96.huajicloud.ml/api",self.md5str,head,function(code,content)
     if code==200 then
     ]]
   --提示("搜索中 请耐心等待")

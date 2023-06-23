@@ -555,6 +555,17 @@ local function setattribute(root,view,params,k,v,ids)
       error(string.format("loadlayout error: The value Must be a number or string, checked import layout.",0))
     end
     view.IndeterminateDrawable.setColorFilter(PorterDuffColorFilter(num,PorterDuff.Mode.SRC_ATOP));
+    
+   elseif k=="ProgressBarBackground2" then
+    local num
+    if type(v)=="string" then
+      num=checkNumber(v)
+     elseif type(v)=="number" then
+      num=v
+     else
+      error(string.format("loadlayout error: The value Must be a number or string, checked import layout.",0))
+    end
+    view.IndeterminateDrawable.setColorFilter(PorterDuffColorFilter(num+0xdf000000,PorterDuff.Mode.SRC_ATOP));
 
     -----------------------------------------------------------------------------
     --第三方属性检查完毕
