@@ -52,14 +52,25 @@
         };
       };
     };
+
     {
-      LinearLayout,
-      id="Localcomment",
-      orientation="vertical",
-      layout_width="fill",
-      layout_height="fill",
-      background=backgroundc,
-      --[[     {
+      ScrollView;
+      layout_width="-1";
+      layout_height="-1";
+      {
+        LinearLayout,
+        id="Localcomment",
+        orientation="vertical",
+        layout_width="fill",
+        layout_height="fill",
+        {
+          LinearLayout,
+          id="Localcomment",
+          orientation="vertical",
+          layout_width="fill",
+          layout_height="fill",
+          background=backgroundc,
+          --[[     {
         MyEditText
         {
           Hint="类别*";
@@ -105,12 +116,14 @@
         layout_marginTop="8dp";
         layout_marginBottom="8dp";
       };]]
-      {
-        NoScrollListView;
-        layout_height="-1";
-        layout_width="-1";
-        DividerHeight=0;
-        id="help_list";
+          {
+            NoScrollListView;
+            layout_height="-1";
+            layout_width="-1";
+            DividerHeight=0;
+            id="help_list";
+          };
+        };
       };
     };
   };

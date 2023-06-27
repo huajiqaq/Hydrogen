@@ -311,36 +311,24 @@ if collections_url=="local" then
   function 刷新()
     collections_base:next(function(r,a)
       if not(r) and collections_base.is_end==false then
-        if a then
-          decoded_content = require "cjson".decode(a)
-          if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
-            AlertDialog.Builder(this)
-            .setTitle("提示")
-            .setMessage(decoded_content.error.message)
-            .setCancelable(false)
-            .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
-            .show()
-           else
-            提示("获取收藏列表出错 "..a)
-          end
-        end
-        --  刷新()
+        提示("获取收藏列表出错 "..a or "")
+        --刷新
       end
     end)
   end
 
 
   list5.setOnScrollListener{
-  onScrollStateChanged=function(view,scrollState)
-    if scrollState == 0 then
-      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
-        刷新()
-        System.gc()
+    onScrollStateChanged=function(view,scrollState)
+      if scrollState == 0 then
+        if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
+          刷新()
+          System.gc()
+        end
       end
     end
-  end
   }
-  
+
   list5.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(parent,v,pos,id)
 
@@ -378,10 +366,7 @@ if collections_url=="local" then
          elseif tostring(v.Tag.cid.text):find("视频分割") then
           删除类型="zvideo"
         end
-        local head = {
-          ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-        }
-        Http.delete(collections_url:match("(.+)/answer").."/contents/"..v.Tag.cid.Text:match("分割(.+)").."?content_type="..删除类型,head,function(code,json)
+        zHttp.delete(collections_url:match("(.+)/answer").."/contents/"..v.Tag.cid.Text:match("分割(.+)").."?content_type="..删除类型,head,function(code,json)
           if code==200 then
             提示("已删除")
             activity.setResult(1600,nil)
@@ -398,7 +383,7 @@ if collections_url=="local" then
 end
 
 
---有时间再补充 api接口请求头需要一些参数被加密 k实现同种功能可无限Http.get获取内容 后直到is_end 再执行搜索
+--有时间再补充 api接口请求头需要一些参数被加密 k实现同种功能可无限zHttp.get获取内容 后直到is_end 再执行搜索
 function checktitle(str)
   local oridata=list5.adapter.getData()
 

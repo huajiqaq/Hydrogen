@@ -39,7 +39,7 @@ function 刷新()
   geturl=myurl or "https://api.zhihu.com/columns/"..id.."/items"
 
 
-  Http.get(geturl,head,function(code,content)
+  zHttp.get(geturl,head,function(code,content)
     if code==200 then
       if require "cjson".decode(content).paging.next then
         testurl=require "cjson".decode(content).paging.next

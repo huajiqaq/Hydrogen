@@ -141,9 +141,7 @@ function 数据添加(t,b)
 
 
   if b.author.name=="知乎用户" then
-    Http.get("https://api.zhihu.com/people/"..b.author.id.."/profile?profile_new_version=1",{
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-      },function(code,content)
+    zHttp.get("https://api.zhihu.com/people/"..b.author.id.."/profile?profile_new_version=1",head,function(code,content)
       if code==200 then
         local data=require "cjson".decode(content)
         t.userheadline.Text=data.headline
@@ -279,9 +277,7 @@ function 数据添加(t,b)
 
       --      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
       if b.content:find("video%-box") then
-        Http.get("https://www.zhihu.com/api/v4/me",{
-          ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-          },function(code,content)
+        zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
           if code==401 then
             AlertDialog.Builder(this)
             .setTitle("提示")
@@ -337,9 +333,7 @@ waitForKeyElements(' [class="video-box"]', setvideo);
           onReceiveValue=function(value)
           提示(value)
             if value=='"true"' then
-              Http.get("https://www.zhihu.com/api/v4/me",{
-                ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-                },function(code,content)
+              zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
                 if code==401 then
                   AlertDialog.Builder(this)
                   .setTitle("提示")
@@ -527,19 +521,6 @@ function 加载页(mviews,a,b)
 
       if cb==false then
         mviews.load=nil
-        if r then
-          decoded_content = require "cjson".decode(r)
-          if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
-            AlertDialog.Builder(this)
-            .setTitle("提示")
-            .setMessage(decoded_content.error.message)
-            .setCancelable(false)
-            .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
-            .show()
-           else
-            提示("获取回答出错 "..r or "")
-          end
-        end
         提示("已经没有更多数据了")
         pg.adapter.remove(a)
         pg.setCurrentItem(a-1,false)
@@ -588,7 +569,7 @@ function 加载页(mviews,a,b)
         --[[
        else
         local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
-        Http.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
+        zHttp.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
           if a==200 then
             mviews.data=require "cjson".decode(b).data[1]
             vote_count.Text=tointeger(mviews.data.voteup_count)..""
@@ -728,7 +709,7 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           comment_count.Text=tointeger(mviews.data.comment_count)..""
          else
           local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
-          Http.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
+          zHttp.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
             if a==200 then
               mviews.data=require "cjson".decode(b).data[1]
               vote_count.Text=tointeger(mviews.data.voteup_count)..""
@@ -849,12 +830,12 @@ voteup.onClick=function()
     ["cookie"] = 获取Cookie("https://www.zhihu.com/");
     ["Content-Type"] = "application/json"
   }
-  Http.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"up"}',head,function(code,content)
+  zHttp.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"up"}',head,function(code,content)
     if code==200 then
       提示("点赞成功")
       vote_count.text=voted[回答id]
      elseif code==400
-      Http.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"neutral"}',head,function(code,content)
+      zHttp.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"neutral"}',head,function(code,content)
         if code==200 then
           提示("取消点赞成功")
           vote_count.text=unvoted[回答id]
@@ -878,7 +859,7 @@ thank.onClick=function()
     ["Content-Type"] = "application/json"
   }
   if not 点击感谢状态 then
-    Http.post(apiurl,'{"content_type":"answers","content_id":"'..回答id..'","action_type":"emojis","action_value":"red_heart"}',head,function(code,content)
+    zHttp.post(apiurl,'{"content_type":"answers","content_id":"'..回答id..'","action_type":"emojis","action_value":"red_heart"}',posthead,function(code,content)
       if code==200 then
         点击感谢状态=true
         提示("表达感谢成功")
@@ -888,7 +869,7 @@ thank.onClick=function()
       end
     end)
    else
-    Http.delete(apiurl.."?content_type=answers&content_id="..回答id.."&action_type=emojis&action_value=",head,function(code,content)
+    zHttp.delete(apiurl.."?content_type=answers&content_id="..回答id.."&action_type=emojis&action_value=",posthead,function(code,content)
       if code==200 then
         提示("取消感谢成功")
         thanks_count.text=unthanked[回答id]

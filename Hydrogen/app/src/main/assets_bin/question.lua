@@ -34,7 +34,7 @@ question_list.addFooterView(loadlayout({
     layout_width="19dp",
     ProgressBarBackground2=转0x(primaryc),
     style="?android:attr/progressBarStyleLarge"
-  }, 
+  },
   --[[
   {
     CircularProgressIndicator,
@@ -64,19 +64,7 @@ function 刷新()
 
   question_base:next(function(r,a)
     if r==false and question_base.is_end==false then
-      if a then
-        decoded_content = require "cjson".decode(content)
-        if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
-          AlertDialog.Builder(this)
-          .setTitle("提示")
-          .setMessage(decoded_content.error.message)
-          .setCancelable(false)
-          .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
-          .show()
-         else
-          提示("获取回答列表出错 "..a)
-        end
-      end
+      提示("获取回答列表出错 "..a or "")
       --  刷新()
      else
       resultbar.Visibility=8
@@ -296,9 +284,7 @@ a=MUKPopu({
     {
       src=图标("colorize"),text="回答",onClick=function()
 
-        Http.get("https://www.zhihu.com/api/v4/me",{
-          ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-          },function(code,content)
+        zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
           if code==200 then
             url=" https://www.zhihu.com/question/"..question_id.."/answers/editor"
 

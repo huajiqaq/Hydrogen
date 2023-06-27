@@ -57,9 +57,7 @@ content="]]..setstyle(Html.fromHtml(内容))..[["=}"]])
         end
       end,
       function()
-        Http.get("https://api.zhihu.com/comments/"..id.."/conversation",
-        获取Cookie("https://www.zhihu.com/"),
-        function(code,content)
+        zHttp.get("https://api.zhihu.com/comments/"..id.."/conversation",head,function(code,content)
           if code=="-1" then
             an.dismiss()
             提示("保存失败 可能是网络原因")
@@ -160,19 +158,7 @@ function 刷新()
   function 评论刷新()
     comment_base:next(function(r,a)
       if r==false and comment_base.is_end==false then
-        if a then
-          decoded_content = require "cjson".decode(a)
-          if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
-            AlertDialog.Builder(this)
-            .setTitle("提示")
-            .setMessage(decoded_content.error.message)
-            .setCancelable(false)
-            .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
-            .show()
-           else
-            提示("获取评论列表出错 "..a)
-          end
-        end
+        提示("获取评论列表出错 "..a or "")
         --      评论刷新()
        else
         if _title.text=="评论" then
@@ -223,9 +209,7 @@ content="]]..v.Tag.comment_art.text..[["=}"]])
             end
           end,
           function()
-            Http.get("https://api.zhihu.com/comments/"..v.Tag.comment_id.text.."/conversation",
-            获取Cookie("https://www.zhihu.com/"),
-            function(code,content)
+            zHttp.get("https://api.zhihu.com/comments/"..v.Tag.comment_id.text.."/conversation",head,function(code,content)
               if code=="-1" then
                 an.dismiss()
                 提示("保存失败 可能是网络原因")
@@ -285,15 +269,15 @@ content="]]..v.Tag.comment_art.text..[["=}"]])
   end})
 
   comment_list.setOnScrollListener{
- onScrollStateChanged=function(view,scrollState)
-    if scrollState == 0 then
-      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
-        评论刷新()
-        System.gc()
+    onScrollStateChanged=function(view,scrollState)
+      if scrollState == 0 then
+        if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
+          评论刷新()
+          System.gc()
+        end
       end
     end
-  end
-}
+  }
 end
 
 

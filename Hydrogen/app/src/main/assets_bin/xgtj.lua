@@ -132,20 +132,6 @@ luajava.new(luajava.bindClass("androidx.recyclerview.widget.ItemTouchHelper"), l
   end
 })).attachToRecyclerView(recycler_view);
 
-if activity.getSharedData("signdata")~=nil then
-  local login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
-  access_token_head={
-    ["Content-Type"] = "application/json; charset=UTF-8";
-    ["authorization"] = login_access_token;
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-  }
- else
-  access_token_head={
-    ["Content-Type"] = "application/json; charset=UTF-8";
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-  }
-
-end
 
 local function 页面设置()
   local 其他位置=recycler_view.getChildLayoutPosition(lay["其他"])
@@ -156,7 +142,7 @@ local function 页面设置()
       local 最终处理数据=require "cjson".encode({["section_ids"]=id数据表})
       --转为json中会生成\"转义 替换掉
       local 最终处理数据=string.gsub(最终处理数据,[[\"]],"")
-      Http.post("https://api.zhihu.com/feed-root/sections/submit/v2",最终处理数据,access_token_head,function(code,content)
+      zHttp.post("https://api.zhihu.com/feed-root/sections/submit/v2",最终处理数据,post_access_token_head,function(code,content)
         if code==200 then
           activity.setResult(1200,nil)
           提示("修改成功 返回主页生效")
@@ -171,7 +157,7 @@ local function 页面设置()
 end
 
 function 开始加载推荐()
-  Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
+  zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",post_access_token_head,function(code,content)
     if code==200 then
       --    提示(require "cjson".decode(content).selected_sections[1].section_name)
       for i=1, 3 do

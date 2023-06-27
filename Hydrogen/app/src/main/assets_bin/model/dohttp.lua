@@ -113,7 +113,7 @@ local function g_x(e, t)
 end
 
 local function x_zse_96_b64encode(md5_bytes)
-
+  
   --[[
   function left_shift(x, y)
     return (x << y) % 2~32

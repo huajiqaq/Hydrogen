@@ -179,12 +179,12 @@ history_list.onItemClick=function(l,v,c,b)
   --     初始化历史记录数据(true)
   activity.setResult(1500,nil)
   task(300,function()
-  --自动排序 暂时取消
-  --[[
+    --自动排序 暂时取消
+    --[[
   table.swap(adp.getData(), b, 1, false)
   adp.notifyDataSetChanged()
   ]]
-  --[[    初始化()
+    --[[    初始化()
     adp.clear()
     for n=1,#recordtt do
       adp.add{history_title=recordtt[n],history_num=tostring(n)}

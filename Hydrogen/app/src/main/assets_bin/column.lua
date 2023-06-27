@@ -179,7 +179,7 @@ function 刷新()
     content.setVisibility(0)
 
     _title.Text="查看想法"
-    Http.get("https://www.zhihu.com/api/v4/pins/"..result,function(code,content)
+    zHttp.get("https://www.zhihu.com/api/v4/pins/"..result,head,function(code,content)
       simpletitle=require "cjson".decode(content).excerpt_title
       autoname=require "cjson".decode(content).author.name
       comment_count=tointeger(require "cjson".decode(content).comment_count)
@@ -190,7 +190,7 @@ function 刷新()
    elseif 类型=="视频" then
     content.loadUrl("https://www.zhihu.com/zvideo/"..result.."?utm_id=0")
     _title.Text="视频"
-    Http.get("https://www.zhihu.com/api/v4/zvideos/"..result,function(code,content)
+    zHttp.get("https://www.zhihu.com/api/v4/zvideos/"..result,head,function(code,content)
       simpletitle=require "cjson".decode(content).title
       保存历史记录(simpletitle,"视频分割"..result,50)
     end)

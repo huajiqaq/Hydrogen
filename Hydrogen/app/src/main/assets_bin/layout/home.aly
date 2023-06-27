@@ -204,141 +204,132 @@
     };
   };
 
-  {
-    LinearLayout;
+  {--侧滑
+    NestedScrollView;
+    layout_width="80%w";
+    layout_height="-1";
     backgroundColor=0,
-    layout_width="100%w";
-    layout_height="100%h";
     layout_gravity="left";
-    orientation="vertical";
-    {--侧滑
-      ScrollView;
-      layout_width="80%w";
+    id="_drawer_root";
+    {
+      LinearLayout;
       layout_height="-1";
-      backgroundColor=0,
-      id="_drawer_root";
+      layout_width="-1";
+      orientation="vertical";
+      {
+        TextView;
+        layout_height=状态栏高度;
+        layout_width="-1";
+      };
       {
         LinearLayout;
-        layout_height="-1";
-        layout_width="-1";
-
+        layout_height="-2";
+        layout_width="fill";
         orientation="vertical";
-        {
-          TextView;
-          layout_height=状态栏高度;
-          layout_width="-1";
-        };
+        id="侧滑头",
+        onClick=function()activity.newActivity("login",{"https://www.zhihu.com/signin?next=www.zhihu.com","登录"}) activity.finish() end;
         {
           LinearLayout;
-          layout_height="-2";
-          layout_width="fill";
+          layout_height="-1";
+          layout_width="-1";
+          --padding="16dp";
           orientation="vertical";
-          id="侧滑头",
-          onClick=function()activity.newActivity("login",{"https://www.zhihu.com/signin?next=www.zhihu.com","登录"}) activity.finish() end;
+
           {
             LinearLayout;
-            layout_height="-1";
             layout_width="-1";
-            --padding="16dp";
             orientation="vertical";
-
             {
               LinearLayout;
+              layout_margin="16dp";
+              orientation="horizontal";
               layout_width="-1";
-              orientation="vertical";
+              {
+                CircleImageView;
+                layout_height="48dp";
+                layout_gravity="left";
+                src="logo",
+                id="头像id",
+                layout_width="48dp";
+                layout_weight="-1",
+              };
               {
                 LinearLayout;
-                layout_margin="16dp";
+                layout_marginRight="56dp";
+                layout_marginTop="16dp";
                 orientation="horizontal";
+                gravity="right",
+                id="sign_out";
+                Visibility=4;
                 layout_width="-1";
                 {
-                  CircleImageView;
-                  layout_height="48dp";
-                  layout_gravity="left";
-                  src="logo",
-                  id="头像id",
-                  layout_width="48dp";
-                  layout_weight="-1",
+                  ImageView;
+                  -- layout_marginLeft="100dp";
+                  ColorFilter=textc;
+                  src=图标("exit");
+                  id="注销",
+                  --  layout_gravity="right",
+                  layout_width="25dp";
+                  layout_height="25dp",
+                  onClick=function()
+                    双按钮对话框("注销","你确定要注销吗","手滑了","确定",function() 关闭对话框(an)end,function()
+                      清除所有cookie()
+                      关闭对话框(an)
+                      渐变跳转页面("home")
+                      activity.finish()
+                    end)
+                  end
                 };
-                {
-                  LinearLayout;
-                  layout_marginRight="56dp";
-                  layout_marginTop="16dp";
-                  orientation="horizontal";
-                  gravity="right",
-                  id="sign_out";
-                  Visibility=4;
-                  layout_width="-1";
-                  {
-                    ImageView;
-                    -- layout_marginLeft="100dp";
-                    ColorFilter=textc;
-                    src=图标("exit");
-                    id="注销",
-                    --  layout_gravity="right",
-                    layout_width="25dp";
-                    layout_height="25dp",
-                    onClick=function()
-                      双按钮对话框("注销","你确定要注销吗","手滑了","确定",function() 关闭对话框(an)end,function()
-                        清除所有cookie()
-                        关闭对话框(an)
-                        渐变跳转页面("home")
-                        activity.finish()
-                      end)
-                    end
-                  };
-                };
-              };
-            };
-            {
-              LinearLayout;
-              orientation="vertical";
-              {
-                TextView;
-                layout_marginTop="10dp";
-                layout_height="30dp";
-                layout_width="-2";
-                Text="未登录，点击登录",
-                id="名字id",
-                textColor=primaryc;
-                textSize="15sp";
-                paddingLeft="16dp";
-                layout_marinBottom="15dp",
-                Typeface=字体("product-Bold");
-                SingleLine=true;
-                gravity="center|left";
-              };
-              {
-                TextView;
-                --layout_height="56dp";
-                layout_width="-2";
-                Text="获取失败";
-                textColor=primaryc;
-                id="签名id",
-                textSize="15sp";
-                paddingLeft="16dp";
-
-                Typeface=字体("product");
-                SingleLine=true;
-                gravity="center|left";
-              };
-              {
-                TextView;
-                layout_height="3dp";
               };
             };
           };
-        };
-        {
-          NoScrollListView;
-          id="drawer_lv";
-          layout_height="-1";
-          layout_width="-1";
-          DividerHeight=0;
-          --layout_marginTop="8dp";
+          {
+            LinearLayout;
+            orientation="vertical";
+            {
+              TextView;
+              layout_marginTop="10dp";
+              layout_height="30dp";
+              layout_width="-2";
+              Text="未登录，点击登录",
+              id="名字id",
+              textColor=primaryc;
+              textSize="15sp";
+              paddingLeft="16dp";
+              layout_marinBottom="15dp",
+              Typeface=字体("product-Bold");
+              SingleLine=true;
+              gravity="center|left";
+            };
+            {
+              TextView;
+              --layout_height="56dp";
+              layout_width="-2";
+              Text="获取失败";
+              textColor=primaryc;
+              id="签名id",
+              textSize="15sp";
+              paddingLeft="16dp";
+
+              Typeface=字体("product");
+              SingleLine=true;
+              gravity="center|left";
+            };
+            {
+              TextView;
+              layout_height="3dp";
+            };
+          };
         };
       };
-    }
-  };
-
+      {
+        NoScrollListView;
+        id="drawer_lv";
+        layout_height="-1";
+        layout_width="-1";
+        DividerHeight=0;
+        --layout_marginTop="8dp";
+      };
+    };
+  }
 };

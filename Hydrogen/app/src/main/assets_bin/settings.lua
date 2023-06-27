@@ -132,9 +132,7 @@ tab={ --点击table
     activity.setResult(1200,nil)
   end,
   修改主页排序=function()
-    Http.get("https://www.zhihu.com/api/v4/me",{
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-      },function(code,content)
+    zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
       if code==200 then
         activity.newActivity("xgtj")
        elseif code==401 then

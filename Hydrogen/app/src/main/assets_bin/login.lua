@@ -206,7 +206,7 @@ function 登录(a,b)
   base.password=tostring(b)
   head.cookie=临时cookie
 
-  Http.post("https://api.zhihu.com/sign_in",格式化数据(base),临时cookie,nil,head,function(a,b,c)
+  zHttp.post("https://api.zhihu.com/sign_in",格式化数据(base),临时cookie,nil,head,function(a,b,c)
     临时cookie=""
     是否验证码=false
     --清空验证码信息
@@ -234,7 +234,7 @@ function 登录(a,b)
   end)
 end
 function 输入验证码(text)
-  Http.post("https://api.zhihu.com/captcha","input_text="..text,{["cookie"]=临时cookie},function(code,b,c,d,e)
+  zHttp.post("https://api.zhihu.com/captcha","input_text="..text,{["cookie"]=临时cookie},function(code,b,c,d,e)
 
     if code==201 then --判断返回码
       if b:find("true") then --如果验证成功
@@ -252,7 +252,7 @@ function 输入验证码(text)
 end
 
 function 请求验证码()
-  Http.put("https://api.zhihu.com/captcha",临时cookie,{["cookie"]=临时cookie},function(a,b,c,d,e)
+  zHttp.put("https://api.zhihu.com/captcha",临时cookie,{["cookie"]=临时cookie},function(a,b,c,d,e)
     if a==202 then
       bitmapArray=byte{} --基础的byte数组
       bitmapArray = Base64.decode(require "cjson".decode(b).img_base64, Base64.DEFAULT);
@@ -281,7 +281,7 @@ button.onClick=function()
       提示("请输入账号密码")
       return
     end
-    Http.get("https://api.zhihu.com/captcha",function(a,b,c,d,e)
+    zHttp.get("https://api.zhihu.com/captcha",function(a,b,c,d,e)
       if a==200 then--这里是获取是否需要输入验证码
         临时cookie=c
         if b:find("true") then

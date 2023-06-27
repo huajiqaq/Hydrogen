@@ -43,7 +43,7 @@ yuxuan_adpqy=LuaAdapter(activity,itemc)
 search_list.Adapter=yuxuan_adpqy
 
 local url = "https://api.zhihu.com/search/top_search"
-Http.get(url,function(code,content)
+zHttp.get(url,head,function(code,content)
   if code==200 then
     local data=require "cjson".decode(content)
     for k,v in ipairs(data.top_search.words) do

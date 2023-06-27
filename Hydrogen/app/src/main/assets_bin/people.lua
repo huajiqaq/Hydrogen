@@ -42,10 +42,7 @@ local base_people=require "model.people":new(people_id)
   end
   function following.onClick()
     if followtext.Text=="立即关注"
-      Http.post("https://api.zhihu.com/people/"..用户id.."/followers","",{
-        ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-        ["Content-Type"] = ""
-        },function(a,b)
+      zHttp.post("https://api.zhihu.com/people/"..用户id.."/followers","",posthead,function(a,b)
         if a==200 then
           followtext.Text="取消关注";
           提示("关注成功")
@@ -54,10 +51,7 @@ local base_people=require "model.people":new(people_id)
         end
       end)
      elseif followtext.Text=="取消关注"
-      Http.delete("https://api.zhihu.com/people/"..用户id.."/followers/"..activity.getSharedData("idx"),{
-        ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-        ["Content-Type"] = ""
-        },function(a,b)
+      zHttp.delete("https://api.zhihu.com/people/"..用户id.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
         if a==200 then
           followtext.Text="立即关注";
           提示("取关成功")
@@ -105,32 +99,13 @@ end)
 
 end)
 
-local head = {
-  ["x-api-version"] = "3.0.89";
-  ["x-app-za"] = "OS=Android";
-  ["x-app-version"] = "8.44.0";
-  ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-}
-
 chobu="all"
 
 function 全部()
   _sort.setVisibility(8)
   base_people:next(function(r,a)
     if r==false and base_people.is_end==false then
-      if a then
-        decoded_content = require "cjson".decode(a)
-        if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
-          AlertDialog.Builder(this)
-          .setTitle("提示")
-          .setMessage(decoded_content.error.message)
-          .setCancelable(false)
-          .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
-          .show()
-         else
-          提示("获取个人动态列表出错 "..a)
-        end
-      end
+      提示("获取个人动态列表出错 "..a or "")
       --  刷新()
     end
   end)
@@ -166,7 +141,7 @@ function 其他(isclear)
     end
   end
 
-  Http.get(geturl,head,function(code,content)
+  zHttp.get(geturl,apphead,function(code,content)
     if code==200 then
       if require "cjson".decode(content).paging.next then
         testurl=require "cjson".decode(content).paging.next
@@ -229,7 +204,7 @@ function 其他(isclear)
   end)
 end
 
-Http.get("https://api.zhihu.com/people/"..people_id.."/profile/tab",head,function(code,content)
+zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab",apphead,function(code,content)
 
   if code==200 then
     for i,v in ipairs(require "cjson".decode(content).tabs_v3[1].sub_tab) do
@@ -329,9 +304,7 @@ function nochecktitle(str)
 end
 
 function checktitle(str)
-  Http.get("https://www.zhihu.com/api/v4/me",{
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    },function(code,content)
+  zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
     if code==200 then
       if isstart=="true" then--开启
         local 请求链接="https://www.zhihu.com/api/v4/search_v3?correction=1&t=general&q="..urlEncode(str).."&restricted_scene=member&restricted_field=member_hash_id&restricted_value="..people_id
@@ -469,18 +442,6 @@ a=MUKPopu({
     {src=图标("share"),text="分享",onClick=function()
         分享文本("https://www.zhihu.com/people/"..用户id)
     end},
-    --[[    {src=图标("share"),text="关注",onClick=function()
-     Http.post("https://api.zhihu.com/people/"..用户id.."/followers","",,{
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-    },function(a,b)
-            if a==200 then
-提示("关注成功")
-            end
-          end)
-    end},
-    {src=图标("share"),text="取关",onClick=function()
-        分享文本("删除 后加自己用户"..用户id)
-    end},]]
   }
 })
 

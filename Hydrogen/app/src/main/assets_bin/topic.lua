@@ -35,7 +35,7 @@ end
 
 --local api="https://api.zhihu.com/topics/"..topic_id
 local api="https://api.zhihu.com/v5.1/topics/"..topic_id.."?include=meta%2Cmeta.casts%2Cmeta.medias%2Cmeta.playlist%2Cmeta.awards%2Cmeta.pubinfo%2Cmeta.parameters%2Cvote%2Crank_list_info%2Cmeta.review_question%2Crelated_topics%2Crelated_topics.vote%2Cmeta.game_medias%2Cmeta.game_parameters%2Cmeta.team_parameters%2Cmeta.sports_parameters%2Cclub%2Ctimeline%2Cuniversity%2Cheader_video%2Cactivity%2Cpin_template"
-Http.get(api,head,function(code,content)
+zHttp.get(api,head,function(code,content)
   if code==200 then
     data=require "cjson".decode(content)
     _title.text=data.name
@@ -63,7 +63,6 @@ function 精华刷新(pager,url)
 
   local posturl = url or "https://api.zhihu.com/v5.1/topics/"..topic_id.."/feeds/essence"
 
-  local head = { ["cookie"] = 获取Cookie("https://www.zhihu.com/") }
 
   if pager <2 then
     local best_adp=LuaAdapter(activity,datas,best_itemc)
@@ -71,7 +70,7 @@ function 精华刷新(pager,url)
   end
 
   local json=require "cjson"
-  Http.get(posturl,head,function(code,content)
+  zHttp.get(posturl,head,function(code,content)
     --print(content)
     if code==200 then
 
@@ -189,7 +188,6 @@ function 所有刷新(all_pager,url)
 
   local posturl = url or "https://api.zhihu.com/topics/"..topic_id.."/unanswered_questions?offset=0&limit=8"
 
-  local head = { ["cookie"] = 获取Cookie("https://www.zhihu.com/") }
 
   if all_pager <2 then
     local all_adp=LuaAdapter(activity,all_datas,all_itemc)
@@ -197,7 +195,7 @@ function 所有刷新(all_pager,url)
   end
 
   local json=require "cjson"
-  Http.get(posturl,head,function(code,content)
+  zHttp.get(posturl,head,function(code,content)
     if code==200 then
       for k,v in ipairs(json.decode(content).data) do
         local title=v.target.title

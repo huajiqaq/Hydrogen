@@ -9,9 +9,12 @@ oldTheme=ThemeUtil.getAppTheme()
 oldDarkActionBar=getSharedData("theme_darkactionbar")
 
 --重写SwipeRefreshLayout到自定义view 原SwipeRefreshLayout和滑动组件有bug
-SwipeRefreshLayout = luajava.bindClass "com.crow.laser.view.component.CustomSwipeRefresh"
+SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
+--重写BottomSheetDialog到自定义view 解决横屏显示不全问题
+BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=16.082
+
+versionCode=16.09
 layout_dir="layout/item_layout/"
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
@@ -757,6 +760,8 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
     bwz=0x3fffffff
   end
 
+  import "com.google.android.material.bottomsheet.*"
+
   local gd2 = GradientDrawable()
   gd2.setColor(转0x(backgroundc))--填充
   local radius=dp2px(16)
@@ -1344,9 +1349,7 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/video/") then
     if b then return true end
     local videoid= url:match("video/(.+)")
-    Http.get("https://lens.zhihu.com/api/v4/videos/"..videoid,{
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-      },function(code,content)
+    zHttp.get("https://lens.zhihu.com/api/v4/videos/"..videoid,head,function(code,content)
       if code==200 then
         local v=require "cjson".decode(content)
         xpcall(function()
@@ -1369,9 +1372,7 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/people") then
     if b then return true end
     local people_name=url:match("/people/(.-)?") or url:match("/people/(.+)")
-    Http.get(url,{
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-      },function(code,content)
+    zHttp.get(url,head,function(code,content)
       if code==200 then
         local peopleid=content:match('":{"id":"(.-)","urlToken')
         --        activity.finish()
@@ -2376,9 +2377,7 @@ end
 
 function 加入收藏夹(回答id,收藏类型)
   coll=""
-  Http.get("https://www.zhihu.com/api/v4/me",{
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    },function(code,content)
+  zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
     if code==200 then
       import "android.widget.LinearLayout$LayoutParams"
       local function 新建收藏夹()
@@ -2470,9 +2469,6 @@ function 加入收藏夹(回答id,收藏类型)
         .setNegativeButton("取消",nil)
         .show()
         aaaa.getButton(aaaa.BUTTON_POSITIVE).onClick=function()
-          local head = {
-            ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-          }
           --    local newcollections_url= "https://www.zhihu.com/api/v4/collections"
           if edit.Text==""
             collecttitle=""
@@ -2488,7 +2484,7 @@ function 加入收藏夹(回答id,收藏类型)
             提示("请输入内容")
            else
             加载js(hhhh,'keyboardInput(document.getElementsByClassName("Input")[1], "'..collecttitle..'"); keyboardInput(document.getElementsByClassName("Input")[2], "'..collectde..'"); emulateMouseClick(document.getElementsByClassName("Button Button--primary Button--blue")[1]);  ')
-            Http.get("https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20",head,function(code,content)
+            zHttp.get("https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20",head,function(code,content)
               if code==200 then
                 aaaa.dismiss()
                 adp.clear()
@@ -2508,7 +2504,7 @@ function 加入收藏夹(回答id,收藏类型)
         .setSupportZoom(true)
         .setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36");
 
-        Http.get("https://api.zhihu.com/people/"..activity.getSharedData("idx"),head,function(code,content)
+        zHttp.get("https://api.zhihu.com/people/"..activity.getSharedData("idx"),head,function(code,content)
           if code==200 then
             if require "cjson".decode(content).url_token then
               hhhh.loadUrl("https://www.zhihu.com/people/"..require "cjson".decode(content).url_token.."/collections/")
@@ -2631,7 +2627,7 @@ emulateMouseClick(
           local head = {
             ["cookie"] = 获取Cookie("https://www.zhihu.com/")
           }
-          Http.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..选中收藏夹,head,function(code,json)
+          zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..选中收藏夹,head,function(code,json)
             if code==200 then
               提示("收藏成功")
              else
@@ -2659,7 +2655,7 @@ emulateMouseClick(
         ["cookie"] = 获取Cookie("https://www.zhihu.com/")
       }
 
-      Http.get(collections_url,head,function(code,content)
+      zHttp.get(collections_url,head,function(code,content)
         if code==200 then
           adp.setNotifyOnChange(true)
           for k,v in ipairs(require "cjson".decode(content).data) do
@@ -2772,13 +2768,7 @@ function 获取参数(url,callback)
 
   Http.post(请求url,md5化数据,head,function(code,content)
     if code==200 then
-      Http.get(url,{
-        ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-        ["x-api-version"] = "3.0.91";
-        ["x-zse-93"] = "101_3_3.0";
-        ["x-zse-96"] = "2.0_"..content;
-        ["x-app-za"] = "OS=Web";
-        },function(codee,contentt)
+      zHttp.get(url,app_head,function(codee,contentt)
         if codee==200 then
           callback(contentt)
         end
@@ -3293,4 +3283,80 @@ function table.swap(数据, 查找位置, 替换位置, ismode)
     return false
   end)
   table.insert(数据, 替换位置, 删除数据)
+end
+
+head = {
+  ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+}
+
+posthead = {
+  ["Content-Type"] = "application/json; charset=UTF-8";
+  ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+}
+
+apphead = {
+  ["x-api-version"] = "3.0.89";
+  ["x-app-za"] = "OS=Android";
+  ["x-app-version"] = "8.44.0";
+  ["cookie"] = 获取Cookie("https://www.zhihu.com/")
+}
+
+if activity.getSharedData("signdata")~=nil then
+  login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
+  post_access_token_head={
+    ["Content-Type"] = "application/json; charset=UTF-8";
+    ["authorization"] = login_access_token;
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+  }
+  access_token_head={
+    ["authorization"] = login_access_token;
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+  }
+ else
+  post_access_token_head= posthead
+  access_token_head = head
+end
+
+zHttp = {}
+
+function zHttp.setcallback(code,content,callback)
+  if code==403 then
+    decoded_content = require "cjson".decode(content)
+    if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
+      AlertDialog.Builder(this)
+      .setTitle("提示")
+      .setMessage(decoded_content.error.message)
+      .setCancelable(false)
+      .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
+      .show()
+    end
+   else
+    callback(code,content)
+  end
+end
+
+
+function zHttp.get(url,head,callback)
+  Http.get(url,head,function(code,content)
+    zHttp.setcallback(code,content,callback)
+  end)
+end
+
+function zHttp.delete(url,head,callback)
+  Http.delete(url,head,function(code,content)
+    zHttp.setcallback(code,content,callback)
+  end)
+end
+
+
+function zHttp.post(url,data,head,callback)
+  Http.post(url,data,head,function(code,content)
+    zHttp.setcallback(code,content,callback)
+  end)
+end
+
+function zHttp.put(url,data,head,callback)
+  Http.put(url,data,head,function(code,content)
+    zHttp.setcallback(code,content,callback)
+  end)
 end

@@ -132,7 +132,7 @@ picpage.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，�
       Glide
       .with(activity)
       .asDrawable()--强制gif支持
-      -- .setDefaultRequestOptions(RequestOptions().override(activity.height/1.2, activity.width/1.2))   
+      -- .setDefaultRequestOptions(RequestOptions().override(activity.height/1.2, activity.width/1.2))  
       .load(url)
       --.addListener
       .listener(RequestListener{

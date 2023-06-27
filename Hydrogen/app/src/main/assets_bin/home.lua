@@ -33,19 +33,6 @@ activity.setContentView(loadlayout("layout/home"))
 
 初始化历史记录数据(true)
 
-if activity.getSharedData("signdata")~=nil then
-  local login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
-  access_token_head={
-    ["authorization"] = login_access_token;
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-  }
- else
-  --获取失败时的执行
-  access_token_head={
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-  }
-end
-
 local function firsttip ()
   activity.setSharedData("禁用缓存","true")
   双按钮对话框("提示","软件默认开启「禁用缓存」和 想法功能 你可以在设置中手动设置此开关","我知道了","跳转设置",function()
@@ -81,6 +68,7 @@ if ccc and lll and activity.getSharedData("开源提示")==nil then
     关闭对话框(an) 浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
   end)
 end
+
 
 if this.getSharedData("自动清理缓存") == nil then
   this.setSharedData("自动清理缓存","true")
@@ -208,7 +196,7 @@ function 主页刷新(isclear)
   function 主页推荐刷新(result)
 
     local url= requrl[result] or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
-    Http.get(url,access_token_head,function(code,content)
+    zHttp.get(url,access_token_head,function(code,content)
       if code==200 then
         decoded_content = require "cjson".decode(content)
         if decoded_content.paging.is_end==false then
@@ -224,10 +212,8 @@ function 主页刷新(isclear)
 
   function 随机推荐 ()
     local posturl = requrl[-1] or "https://api.zhihu.com/topstory?action=down"--"https://api.zhihu.com/feeds"
-    local head = {
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-    }
-    Http.get(posturl,head,function(code,content)
+
+    zHttp.get(posturl,access_token_head,function(code,content)
       if code==200 then
         decoded_content = require "cjson".decode(content)
         for k,v in ipairs(decoded_content.data) do
@@ -243,16 +229,6 @@ function 主页刷新(isclear)
         -- empty2.setVisibility(0)
         -- list9.setVisibility(8)
         -- empty9.setVisibility(0)
-       elseif code==403 then
-        decoded_content = require "cjson".decode(content)
-        if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
-          AlertDialog.Builder(this)
-          .setTitle("提示")
-          .setMessage(decoded_content.error.message)
-          .setCancelable(false)
-          .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
-          .show()
-        end
        else
         提示("获取数据失败，请检查网络是否正常，http错误码"..code)
       end
@@ -334,13 +310,13 @@ sr.setOnRefreshListener({
 });
 
 
-Http.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
+zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code,content)
   if code==200 then
     local decoded_content = require "cjson".decode(content)
     --    提示(require "cjson".decode(content).selected_sections[1].section_name)
     for i=1, #decoded_content.selected_sections do
       --提示(tostring(i))
-      if HometabLayout.getTabCount()~="ok" then
+      if HometabLayout.getTabCount()==0 then
         local tab=HometabLayout.newTab()
         tab.setText("全站")
         tab.view.onClick=function() pcall(function()list2.adapter.clear()end) choosebutton=nil 随机推荐() end
@@ -420,19 +396,19 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
 
 
     if pos == 1 then
-      想法刷新(true)
+      想法刷新()
     end
 
     if pos == 2 then
       import "model.hot"
       hotdata=hot:new()
       hotdata:getPartition(function()
-        热榜刷新(true)
+        热榜刷新()
       end)
     end
 
     if pos == 3 then
-      关注刷新(1,nil,true)
+      关注刷新(1)
     end
 
   end;
@@ -445,7 +421,7 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
 
 function 日报刷新(isclear)
 
-  if isclear then
+  if not(itemc3) or isclear then
     itemc3=获取适配器项目布局("home/home_daily")
     thisdata=1
     yuxun_adpqy=LuaAdapter(activity,itemc3)
@@ -480,7 +456,7 @@ function 日报刷新(isclear)
   sp= SimpleDateFormat("yyyyMMdd");
   ZUOTIAN=sp.format(d);
   链接 = 'https://kanzhihu.pro/api/news/'..tostring(ZUOTIAN)
-  Http.get(链接,function(code,content)
+  Http.get(链接,head,function(code,content)
     --  news[tostring(ZUOTIAN)]=content
     if thisdata==0 then
       newnews=content
@@ -751,7 +727,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
           }
         })
       end
-      日报刷新(true)
+      日报刷新()
       --隐藏主页viewpager
       控件隐藏(page_home)
       --隐藏主页底部栏
@@ -863,7 +839,8 @@ end})
 
 function 热榜刷新(isclear)
 
-  if isclear then
+  if not(itemc) or isclear then
+
     itemc=获取适配器项目布局("home/home_hot")
 
     热榜adp=MyLuaAdapter(activity,itemc)
@@ -912,7 +889,7 @@ function 热榜刷新(isclear)
   pcall(function()热榜adp.clear()end)
   Handler().postDelayed(Runnable({
     run=function()
-      Http.get(hotdata:getValue(nil,true),function(code,content)
+      zHttp.get(hotdata:getValue(nil,true),head,function(code,content)
         if code==200 then--判断网站状态
           local tab=require "cjson".decode(content).data
 
@@ -938,7 +915,7 @@ end
 
 function 关注刷新(ppage,url,isclear)
   -- origin15.19 更改
-  if isclear then
+  if not(follow_itemc) or isclear then
     datas9={}
     --关注布局
     follow_itemc=获取适配器项目布局("home/home_following")
@@ -1001,9 +978,6 @@ function 关注刷新(ppage,url,isclear)
   end
 
   local posturl = url or "https://www.zhihu.com/api/v3/moments?limit=10"
-  local head = {
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-  }
 
   if ppage<2 then
     local qqadpqy=LuaAdapter(activity,datas9,follow_itemc)
@@ -1015,7 +989,7 @@ function 关注刷新(ppage,url,isclear)
    else
     提示("加载中")
     local json=require "cjson"
-    Http.get(posturl,head,function(code,content)
+    zHttp.get(posturl,head,function(code,content)
       if code==200 then
         local data=json.decode(content)
         moments_isend=data.paging.is_end
@@ -1088,7 +1062,7 @@ function 关注刷新(ppage,url,isclear)
 end
 
 function 想法刷新(isclear)
-  if isclear==true then
+  if not(itemcc) or isclear then
 
     itemcc=获取适配器项目布局("home/home_thinker")
     mytab={}
@@ -1178,7 +1152,7 @@ function 想法刷新(isclear)
     thisurl=nil
   end
   local geturl=thisurl or "https://api.zhihu.com/prague/feed?offset=0&limit=10"
-  Http.get(geturl,head,function(code,content)
+  zHttp.get(geturl,head,function(code,content)
     if code==200 then--判断网站状态
       thisurl=require "cjson".decode(content).paging.next
       for i,v in ipairs(require "cjson".decode(content).data) do
@@ -1197,7 +1171,7 @@ end
 
 function 收藏刷新(isclear)
 
-  if isclear then
+  if not(itemc4) or isclear then
 
     CollectiontabLayout.setupWithViewPager(page)
 
@@ -1275,12 +1249,8 @@ function 收藏刷新(isclear)
 
     local collections_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20"
 
-    local head = {
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-    }
 
-
-    Http.get(collections_url,head,function(code,content)
+    zHttp.get(collections_url,head,function(code,content)
       if code==200 then
         for k,v in ipairs(require "cjson".decode(content).data) do
           list4.adapter.add{
@@ -1311,11 +1281,8 @@ function 收藏刷新(isclear)
     end)
 
     local mc_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/following_collections?offset=0"
-    head = {
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-    }
 
-    Http.get(mc_url,head,function(c,ct)
+    zHttp.get(mc_url,head,function(c,ct)
       if c==200 then
 
         for k,v in ipairs(require "cjson".decode(ct).data) do
@@ -1368,10 +1335,8 @@ page_home.setCurrentItem(home_list[starthome],false)
 function getuserinfo()
 
   local myurl= 'https://www.zhihu.com/api/v4/me'
-  head = {
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-  }
-  Http.get(myurl,head,function(code,content)
+
+  zHttp.get(myurl,head,function(code,content)
 
     if code==200 then--判断网站状态
       local data=require "cjson".decode(content)
@@ -1454,7 +1419,7 @@ appinfo=this.getPackageManager().getApplicationInfo(this.getPackageName(),(0))
 
 local update_api= "https://mydata.huajicloud.ml/hydrogen.html"
 
-Http.get(update_api,function(code,content)
+Http.get(update_api,head,function(code,content)
   if code==200 then
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
     isstart=content:match("start%=(.+),start")

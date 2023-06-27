@@ -219,7 +219,7 @@ a=MUKPopu({
         提示("如果有问题 可以点击主页右上角 在弹出菜单点击反馈进行反馈")
       end
     },
-    
+
     {
       src=图标("build"),text="关闭硬件加速",onClick=function()
         AlertDialog.Builder(this)
