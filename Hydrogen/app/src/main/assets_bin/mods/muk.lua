@@ -932,35 +932,9 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
       };
     };
   };
-  --[[
-  dialog=BottomDialog(activity)
-  dialog.setView(loadlayout(dann))
-  --设置弹窗位置
-  dialog.setGravity(Gravity.BOTTOM)
-  --设置弹窗高度,宽度，最低高度
-  dialog.setHeight(-2)
-  dialog.setMinHeight(0)
-  dialog.setWidth(activity.getWidth())
-  --设置圆角
-  dialog.setRadius(dp2px(14),转0x(backgroundc))
-  an=dialog.show()
-  an.getWindow().setDimAmount(0.5)
-  an.window.decorView.setPadding(0,0,0,0)
-  ]]
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
   an=bottomSheetDialog.show()
-
-  function onConfigurationChanged(config)
-    --[[
-  if config.orientation == Configuration.ORIENTATION_LANDSCAPE then
-    --横屏
-   elseif config.orientation == Configuration.ORIENTATION_PORTRAIT then
-    --竖屏
-  }
-]]
-  end
-
 end
 
 
@@ -1096,32 +1070,6 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
       };
     };
   };
-
-  --[[dl=AlertDialog.Builder(activity)
-  dl.setView(loadlayout(dann))
-  if gb==0 then
-    dl.setCancelable(false)
-  end
-  an=dl.show()
-  ]]
-  --[[
-  dialog=BottomDialog(activity)
-  dialog.setView(loadlayout(dann))
-  --设置弹窗位置
-  dialog.setGravity(Gravity.BOTTOM)
-  --设置弹窗高度,宽度，最低高度
-  dialog.setHeight(-2)
-  dialog.setMinHeight(0)
-  dialog.setWidth(activity.getWidth())
-  --设置圆角
-  dialog.setRadius(dp2px(14),转0x(backgroundc))
-  an=dialog.show()
-  an.getWindow().setDimAmount(0.5)
-  an.window.decorView.setPadding(0,0,0,0)
-  ]]
-
-
-
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
   an=bottomSheetDialog.show()
@@ -1184,22 +1132,6 @@ function 问题详情(nr,code)
       };
     };
   };
-  --[[
-  dialog=BottomDialog(activity)
-  dialog.setView(loadlayout(dann))
-  --设置弹窗位置
-  dialog.setGravity(Gravity.BOTTOM)
-  --设置弹窗高度,宽度，最低高度
-  dialog.setHeight(-2)
-  dialog.setMinHeight(0)
-  dialog.setWidth(activity.getWidth())
-  --设置圆角
-  dialog.setRadius(dp2px(14),转0x(backgroundc))
-  an=dialog.show()
-
-  an.getWindow().setDimAmount(0.5)
-  an.window.decorView.setPadding(0,0,0,0)
-  ]]
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
   an=bottomSheetDialog.show()
@@ -1718,18 +1650,9 @@ function 下载文件对话框(title,url,path,ex)
     },
   }
 
-  local dldown=AlertDialog.Builder(activity)
-  dldown.setView(loadlayout(布局))
-  进度条.IndeterminateDrawable.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP))
-  dldown.setCancelable(false)
-  local ao=dldown.show()
-  window = ao.getWindow();
-  window.setBackgroundDrawable(ColorDrawable(0x00ffffff));
-  wlp = window.getAttributes();
-  wlp.gravity = Gravity.BOTTOM;
-  wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
-  wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-  window.setAttributes(wlp);
+  local bottomSheetDialog = BottomSheetDialog(this)
+  bottomSheetDialog.setContentView(loadlayout(布局))
+  ao=bottomSheetDialog.show()
 
 
   function ding(a,b)--已下载，总长度(byte)
