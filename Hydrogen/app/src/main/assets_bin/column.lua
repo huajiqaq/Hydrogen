@@ -356,11 +356,6 @@ content.setWebViewClient{
         view.stopLoading()
         view.goBack()
       end
-
-      --      if 全局主题值=="Night" then
-      --        加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-      --      end
-
     end
   end,
   onPageStarted=function(view,url,favicon)
@@ -370,7 +365,6 @@ content.setWebViewClient{
       黑暗模式主题(view)
      else
       白天主题(view)
-      --      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
     end
 
   end,
@@ -378,51 +372,9 @@ content.setWebViewClient{
     if 全局主题值=="Night" then
       黑暗模式主题(v)
     end
-    加载js(v,[[
-	function yh() {
-	if 		(document.getElementsByClassName("css-p13kqn")[0]) {
-				document.getElementsByClassName("css-p13kqn")[0].style.display = "none"
-	}
-		if 		(document.getElementsByClassName("css-1cgfj2y")[0]) {
-					document.getElementsByClassName("css-1cgfj2y")[0].style.display = "none"
-	}
-		if 		(document.getElementsByClassName("css-1pxm4lx")[0]) {
-					document.getElementsByClassName("css-1pxm4lx")[0].style.display = "none"
-	}
-		document.getElementsByClassName("PreviewCommentInput")[0].style.display = "none"
-		document.getElementsByClassName("PreviewCommentSection-viewAllButton")[0].onclick = function() {
-			console.log("显示评论")
-		}
-	}
-	waitForKeyElements(' [class="PreviewCommentInput"]', yh);
-   ]])
   end,
   onLoadResource=function(view,url)
-    --网页加载完成
-    --        print(backgroundc:sub(4,#backgroundc))
-
-    --    if 全局主题值=="Night" then
-    --      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-    --    end
-    view.evaluateJavascript([[(function(){
-    var tags=document.getElementsByTagName("img");         
-    for(var i=0;i<tags.length;i++) {
-    
-        tags[i].onclick=function(){  
-         var tag=document.getElementsByTagName("img"); 
-         var t={};     
-         for(var z=0;z<tag.length;z++) {
-            t[z]=tag[z].src; 
-            if (tag[z].src==this.src) {
-               t[tag.length]=z;
-            }                      
-         };  
-           
-         window.androlua.execute(JSON.stringify(t));
-        }                                  
-     };  
-    return tags.length;  
-    })();]],{onReceiveValue=function(b)end})
+    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
   end,
 }
 
@@ -529,7 +481,10 @@ if 类型=="文章" then
       },
       {
         src=图标("save"),text="保存在本地",onClick=function()
-          创建文件夹(内置存储文件("Download/".._title.Text))
+
+          if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
+            创建文件夹(内置存储文件("Download/".._title.Text))
+          end
           创建文件夹(内置存储文件("Download/".._title.Text.."/"..autoname))
           content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..autoname.."/mht.mht"))
           创建文件(内置存储文件("Download/".._title.Text.."/"..autoname.."/detail.txt"))

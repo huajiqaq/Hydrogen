@@ -13,7 +13,7 @@ function base_question:new(id)
 end
 
 function base_question:getTag(callback)
-  Http.get( "https://api.zhihu.com/questions/"..self.id.."/topics?&limit=20&platform=android",function(code,body)
+  zHttp.get( "https://api.zhihu.com/questions/"..self.id.."/topics?&limit=20&platform=android",head,function(code,body)
 
     if code==200 then
       for k,v in pairs(require "cjson".decode(body).data) do
@@ -69,7 +69,7 @@ function base_question:setresultfunc(tab)
 end
 
 function base_question:getData(callback)
-  --[[  Http.get("https://www.zhihu.com/api/v4/questions/"..self.id.."?include=data%5B*%5D.answer_count,comment_count,follower_count,detail,excerpt",head,function(code,content)
+  --[[  zHttp.get("https://www.zhihu.com/api/v4/questions/"..self.id.."?include=data%5B*%5D.answer_count,comment_count,follower_count,detail,excerpt",head,function(code,content)
     if code==200 then
       local data=require "cjson".decode(content)
       callback(data)
@@ -77,7 +77,7 @@ function base_question:getData(callback)
   end)
   return self]]
 
-  Http.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,excerpt",{
+  zHttp.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,excerpt",{
     ["x-app-za"] = "OS=Android"
   }
   ,function(code,content)
@@ -97,7 +97,7 @@ function base_question:next(callback)
       ["cookie"] = 获取Cookie("https://www.zhihu.com/")
     }
 
-    Http.get(self.nextUrl or "https://api.zhihu.com/questions/"..self.id.."/answers?&include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count&limit=20".."&sort_by="..(self.sortby or "default"),head,function(code,body)
+    zHttp.get(self.nextUrl or "https://api.zhihu.com/questions/"..self.id.."/answers?&include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count&limit=20".."&sort_by="..(self.sortby or "default"),head,function(code,body)
 
       if code==200 then
         self.nextUrl=require "cjson".decode(body).paging.next

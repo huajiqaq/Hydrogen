@@ -23,7 +23,7 @@ import "android.net.*"
 
 import "android.text.*"
 import "android.text.style.*"
-import "com.dingyi.dialog.BottomDialog"
+--import "com.dingyi.dialog.BottomDialog"
 import "android.content.*"
 import "android.content.res.*"
 import "android.content.pm.PackageManager"
@@ -62,7 +62,6 @@ import "android.content.pm.PackageManager"
 import "android.content.Intent"
 import "android.net.Uri"
 import "android.util.Base64"
---import "http"
 
 import "androidx.*"
 import "androidx.appcompat.*"
@@ -77,8 +76,10 @@ import "android.Manifest"
 
 import "android.animation.Animator"
 import "android.animation.ValueAnimator"
-import "mods.loadlayout3"
 import "android.animation.LayoutTransition"
 
 import "androidx.core.content.ContextCompat"
 import "com.google.android.material.card.MaterialCardView"
+
+
+import "com.kn.MyLuaAdapter"

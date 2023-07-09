@@ -29,13 +29,13 @@ local_item=获取适配器项目布局("local_item/local_item")
 if not 文件是否存在(内置存储文件()) then
   xpcall(function()
     创建文件夹(内置存储文件())
-  end,function()
+    end,function()
   end)
 end
 if not 文件是否存在(内置存储文件("Download")) then
   xpcall(function()
     创建文件夹(内置存储文件("Download"))
-  end,function()
+    end,function()
   end)
 end
 
@@ -55,8 +55,9 @@ function 加载笔记(str)
     empty.setVisibility(0)
     return false
   end
-  if str =="全部" then
-    str=nil
+
+  if str =="全部" or str==nil then
+    str="all"
    elseif str =="回答" then
     str="answer_id"
    elseif str=="想法" then
@@ -64,9 +65,9 @@ function 加载笔记(str)
    elseif str=="文章" then
     str="article_id"
   end
-  -- xpcall(function()
+
   notedata={}
-  if not str then
+  if str == "all" then
     for i,v in ipairs(luajava.astable(File(内置存储文件("Download")).listFiles())) do
       local vv=v
       local v=tostring(v)
@@ -74,13 +75,7 @@ function 加载笔记(str)
       notedata[#notedata+1]={
         timestamp=vv.lastModified(),
         catitle=name,
-        --    cid=name,
         file=(v),
-        --   caart="「"..读取文件(v):match([[author="(.-)"]]).."」的回答",
-        --[=[ cavoteup=读取文件(v):match([[vote_count="(.-)"]]),
-        cacomment=读取文件(v):match([[comment_count="(.-)"]]),
-        cid=读取文件(v):match([[question_id="(.-)"]]).."分割"..读取文件(v):match([[answer_id="(.-)"]]),
-]=]
       }
     end
 
@@ -102,11 +97,6 @@ function 加载笔记(str)
           catitle=name,
           --    cid=name,
           file=(v),
-          --   caart="「"..读取文件(v):match([[author="(.-)"]]).."」的回答",
-          --[=[ cavoteup=读取文件(v):match([[vote_count="(.-)"]]),
-        cacomment=读取文件(v):match([[comment_count="(.-)"]]),
-        cid=读取文件(v):match([[question_id="(.-)"]]).."分割"..读取文件(v):match([[answer_id="(.-)"]]),
-]=]
         }
       end
     end
@@ -118,9 +108,6 @@ function 加载笔记(str)
 
   noteadp=LuaAdapter(activity,notedata,local_item)
   local_listview.setAdapter(noteadp)
-  --      end,function()
-  --    双按钮对话框("权限","需要存储权限才可以收藏文章 即使卸载文章也会保存在本地","给","不给",function()关闭对话框(an)申请权限() end,function()关闭对话框(an)end)
-  --  end)
 end
 
 加载笔记()
@@ -277,19 +264,9 @@ function 本地列表(path)
       };
     };
   };
-  dialog=BottomDialog(activity)
-  dialog.setView(loadlayout(dann))
-  --设置弹窗位置
-  dialog.setGravity(Gravity.BOTTOM)
-  --设置弹窗高度,宽度，最低高度
-  dialog.setHeight(-2)
-  dialog.setMinHeight(0)
-  dialog.setWidth(activity.getWidth())
-  --设置圆角
-  dialog.setRadius(dp2px(14),转0x(backgroundc))
-  an=dialog.show()
-  an.getWindow().setDimAmount(0.5)
-  an.window.decorView.setPadding(0,0,0,0)
+  local bottomSheetDialog = BottomSheetDialog(this)
+  bottomSheetDialog.setContentView(loadlayout(dann))
+  an=bottomSheetDialog.show()
   datas={}
   for v,s in pairs(luajava.astable(File(内置存储文件("Download/"..path.."/")).listFiles())) do
     table.insert(datas,s.Name)

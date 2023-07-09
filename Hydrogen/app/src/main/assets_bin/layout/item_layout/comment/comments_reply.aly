@@ -57,7 +57,34 @@
             id="comment_art",
             textSize="12sp";
           };
-        }
+        };
+        {
+          LinearLayout;
+          orientation="horizontal";
+          layout_marginTop="8dp",
+          layout_marginBottom="8dp",
+          gravity="bottom";
+          layout_gravity="bottom";
+          layout_width="fill",
+          {
+            TextView;
+            Typeface=字体("product");
+            textColor=stextc;
+            id="comment_toast",
+            textSize="12sp";
+            gravity="left";
+            text="查看对话列表",
+          };
+          {
+            TextView;
+            layout_weight="1",
+            gravity="right";
+            Typeface=字体("product");
+            textColor=stextc;
+            textSize="12sp";
+            id="comment_time",
+          };
+        };
       };
     };
   };

@@ -113,7 +113,7 @@ local function g_x(e, t)
 end
 
 local function x_zse_96_b64encode(md5_bytes)
-  
+
   --[[
   function left_shift(x, y)
     return (x << y) % 2~32
@@ -223,43 +223,77 @@ function base:setresultfunc(tab)
 end
 
 
+function base:setgetcallback(code,content)
+  if code==200 then
+    local data=require "cjson".decode(content)
+    if data.paging.is_end then
+      提示("已经到底啦")
+      --            end
+     else
+      初始化(data.paging.next,self)
+      self.resultfunc(data)
+    end
+   else
+    local data=require "cjson".decode(content)
+    if data and data.error and data.error.message then
+      提示("报错了 错误原因："..data.error.message)
+     else
+      提示("出错 请重新尝试")
+    end
+  end
+end
 
+function base:setothercallback(code,content)
+  if code==200 then
+    local data=require "cjson".decode(content)
+    self.resultfunc(data)
+   else
+    local data=require "cjson".decode(content)
+    if data and data.error and data.error.message then
+      提示("报错了 错误原因："..data.error.message)
+     else
+      提示("出错 请重新尝试")
+    end
+  end
+end
 
-function base:getData(callback)
-  --[[
-  Http.post("https://x-zse-96.huajicloud.ml/api",self.md5str,head,function(code,content)
-    if code==200 then
-    ]]
-  --提示("搜索中 请耐心等待")
-  Http.get(self.url,{
+function base:getData(method,data)
+  local myhead = {
     ["cookie"] = 获取Cookie("https://www.zhihu.com/");
     ["x-api-version"] = "3.0.91";
     ["x-zse-93"] = "101_3_3.0";
     ["x-zse-96"] = "2.0_"..x_zse_96_b64encode(self.md5str);
     ["x-app-za"] = "OS=Web";
-    },function(codee,contentt)
-    if codee==200 then
-      local data=require "cjson".decode(contentt)
-      if data.paging.is_end then
-        --[[          
-           if #data.data==0 then
-           提示("没有搜索到相关数据")
-           else]]
-        提示("已经到底啦")
-        --            end
-       else
-        初始化(data.paging.next,self)
-        self.resultfunc(data)
-      end
-     elseif codee==403 then
-      提示("出错 请重新尝试")
+  }
+
+  local myjshead = {
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    ["x-api-version"] = "3.0.91";
+    ["x-zse-93"] = "101_3_3.0";
+    ["x-zse-96"] = "2.0_"..x_zse_96_b64encode(self.md5str);
+    ["x-app-za"] = "OS=Web";
+    ["Content-Type"] = "application/json; charset=UTF-8";
+  }
+
+  if not(method) or method=="get" then
+    zHttp.get(self.url,myhead,function(code,content)
+      self:setgetcallback(code,content)
+    end)
+   elseif method == "delete" then
+    zHttp.delete(self.url,myhead,function(code,content)
+      self:setothercallback(code,content)
+    end)
+   else
+    if method == "post" then
+      zHttp.post(self.url,data,myjshead,function(code,content)
+        self:setothercallback(code,content)
+      end)
+     elseif method == "put" then
+      zHttp.put(self.url,data,myjshead,function(code,content)
+        self:setothercallback(code,content)
+      end)
     end
-  end)
-  --[[
-     elseif code==500
-      return 提示("出错")
-    end
-  end)]]
+  end
   return self
 end
 

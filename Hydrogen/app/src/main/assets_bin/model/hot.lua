@@ -40,7 +40,7 @@ end
 function hotdata:getPartitionFromApi(func)
 
 
-  Http.get("https://www.zhihu.com/api/v3/feed/topstory/hot-lists",head,function(code,body)
+  zHttp.get("https://www.zhihu.com/api/v3/feed/topstory/hot-lists",head,function(code,body)
     if code==200 then
       local tab=self.cjson.decode(body)
       if #tab.data>0 then

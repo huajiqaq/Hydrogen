@@ -1,17 +1,15 @@
 --回答也相关数据类
---author dingyi
---time 2020-6-21
+--author huajiqaq
+--time 2023-7-09
 --self:对象本身
---TODO 重写逻辑，没想好
+--TODO 针对pageinfo的获取是即时性的 也就代表如果pageinfo再次多加一个内容 可能会导致内容错位 一个解决方法是使用table本地存储 不过出现几率极低
 
 
 local base={--表初始化
-  nextUrl=nil,
-  is_end=false,
+  isright=false,
   isleft=false,
-  is_add=false,
-  now=0,--当前数据
-  data={},
+  pageinfo={};
+  getid=nil,
 }
 
 function base:new(id)--类的new方法
@@ -20,34 +18,10 @@ function base:new(id)--类的new方法
   return child
 end
 
-function base:addAII(t) --data是数据
-  self.data=t.data
-  self.sortby=t.sortby
-  self.now=t.now
-  self.one=true
-  self.is_add=true
-  self.is_end=t.is_end
-  self.nextUrl=t.nextUrl
-  return self
-end
-
 
 function base:getAnswer(id,cb)
-local include=[[?include=ad_track_url%2Ccontent%2Ccreated_time%2Cupdated_time%2Creshipment_settings%2Cmark_infos%2Ccopyright_applications_count%2Cis_collapsed%2Ccollapse_reason%2Cannotation_detail%2Cis_normal%2Ccollaboration_status%2Creview_info%2Creward_info%2Crelationship.is_author%3Bsuggest_edit.unnormal_details%3Bcommercial_info%2Crelevant_info%2Csearch_words]]
-  --[[  local include=[[?&include=collections_count,thanks_count,comment_count,voteup_count,created_time,updated_time,collections_count,thanks_count,upvoted_followees;voteup_count,badge[?(type=best_answerer)].topics
-  
-  Http.get("https://api.zhihu.com/answers/"..id..include,head,function(a,b)
-    if a==200 then
-      cb(require "cjson".decode(b))
-    end
-  end)]]
-
-  --[[  Http.get("https://api.zhihu.com/answers/"..id,{
-    ["x-app-za"] = "OS=Android";
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-  }
-  ]]
-  Http.get("https://api.zhihu.com/v4/answers/"..id..include,{
+  local include='?include=ad_track_url%2Ccontent%2Ccreated_time%2Cupdated_time%2Creshipment_settings%2Cmark_infos%2Ccopyright_applications_count%2Cis_collapsed%2Ccollapse_reason%2Cannotation_detail%2Cis_normal%2Ccollaboration_status%2Creview_info%2Creward_info%2Crelationship.is_author%3Bsuggest_edit.unnormal_details%3Bcommercial_info%2Crelevant_info%2Csearch_words%2Cpagination_info'
+  zHttp.get("https://api.zhihu.com/v4/answers/"..id..include,{
     ["x-api-version"] = "3.0.89";
     ["x-app-za"] = "OS=Android";
     ["x-app-version"] = "8.44.0";
@@ -65,78 +39,48 @@ local include=[[?include=ad_track_url%2Ccontent%2Ccreated_time%2Cupdated_time%2C
       .show()
     end
   end)
-
 end
 
 
 
 function base:getOneData(cb,z) --获取一条数据
-  local index=z==false and self.now+1 or self.now-1
-  --print(dump(self))
-  if self.now==1 and self.is_add==true then --判断是否添加数据时是否到左顶
-    self.isleft=true
-  end
-
-  if self.one==true then
-    index=self.now
-  end
-
-
-  if self.data[index] then --如果数据存在
-    self:getAnswer(tointeger(self.data[index].id).."",function(z)
-
-      self.now=index
-
-      self.one=nil
-
-      cb(z)
-
-    end)
-
-   else--否则
-    self:next(function(b,e)--调用下一页函数
-      if b==true then--成功
-
-        self.one=nil
-
-        self:getOneData(cb,z)
-
+  --判断id是否存在
+  if self.getid then --如果数据存在
+    --注释同上 这一步其实可以省略 但为了防止报错 所以加了
+    if self.pageinfo.index then
+      --判断是否为左滑
+      if z==true then
+        --获取过去的id表
+        mygetid=self.pageinfo.prev_answer_ids
+        --判断是否在最左
+        self.isleft=(#mygetid>0 and {false} or {true})[1]
+        --取出要访问的id 并保存
+        self.getid=mygetid[1]
        else
-        cb(false,e)--返回false
+        --注释同上
+        mygetid=self.pageinfo.next_answer_ids
+        self.isright=(#mygetid>0 and {false} or {true})[1]
+        self.getid=mygetid[1]
       end
-    end)
-  end
-
-  return self
-end
-
-
-function base:next(callback)--获取下一页数据 callback:回调 Boolean error_info
-
-  if self.is_end~=true then--是否到底，否则刷新
-    local head = {
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-    }
-
-    Http.get(self.nextUrl or "https://api.zhihu.com/questions/"..self.id.."/answers?&include=badge%5B*%5D.topics,follower_count,follower_count,comment_count,collect_count,voteup_count,upvoted_followees,collections_count,thanks_count,voteup_count&limit=20".."&sort_by="..(self.sortby or "default"),head,function(code,body)
-      if code==200 then--判断刷新码是否为200
-        self.nextUrl=require "cjson".decode(body).paging.next
-        self.is_end=require "cjson".decode(body).paging.is_end
-        --解析下一页链接和是否结束flag
-
-        for k,v in pairs(require "cjson".decode(body).data) do--遍历数据
-          self.data[#self.data+1]=v --(概率需要(如果以后需要扩张功能的话))
-
+    end
+    if self.getid then
+      self:getAnswer(tointeger(self.getid),function(myz)
+        --获取并存储pageinfo
+        local mypageinfo=myz.pagination_info
+        local mygetid
+        if mypageinfo then
+          self.pageinfo=mypageinfo
+          --在请求后再次判断是否在最左or最右端
+          self.isleft=(#self.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
+          self.isright=(#self.pageinfo.next_answer_ids>0 and {false} or {true})[1]
+          --更新self.now 不过没什么用
+          self.now=mypageinfo.index
         end
-        callback(true)--回调提示刷新成功
-       else
-        callback(false,body)--不然就返回false和访问错误信息
-      end
-
-    end)
-   else
-    callback(false,body)--同上
+        cb(myz)
+      end)
+    end
   end
+
   return self
 end
 

@@ -45,7 +45,6 @@ login_web.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onProgressChanged=function(view,Progress)
     if 全局主题值=="Night" then
       黑暗模式主题(view)
-      --      加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
     end
 end}))
 
@@ -58,7 +57,6 @@ login_web.setWebViewClient{
   onLoadResource=function(view,url)
     if 全局主题值=="Night" then
       黑暗模式主题(view)
-      --      加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
     end
 
   end,
@@ -93,31 +91,7 @@ login_web.setWebViewClient{
     end
   end,
   onPageStarted=function(view,url)
-    view.evaluateJavascript([[(function(){
-let logFetch = window.fetch
-function onfetch(callback) {
-    window.fetch = function (input, init) {
-        return new Promise((resolve, reject) => {
-            logFetch(input, init)
-                .then(function (response) {
-                    callback(response.clone())
-                    resolve(response)
-                }, reject)
-        })
-    }
-}
-
-onfetch(response => {
-   // response.json()
-   response.text()
-    .then(res=>{
-//    if (res.access_token) {
-    if (/access_token/.test(res)) {
-	console.log("sign_data="+res)
-    }
-	})
-})
-})()]],nil)
+    加载js(view,获取js("login"))
   end,
   onPageFinished=function(view,url)
     if login_web.getUrl():find("https://www.zhihu.com/%?utm_id") or login_web.getUrl()=="https://www.zhihu.com" then
@@ -132,7 +106,6 @@ onfetch(response => {
 
     if 全局主题值=="Night" then
       黑暗模式主题(view)
-      --      加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
     end
 
 end}

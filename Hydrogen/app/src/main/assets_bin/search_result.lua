@@ -16,7 +16,7 @@ tabv.setVisibility(8)
 itemc=获取适配器项目布局("search_result/search_result")
 
 history_list.setDividerHeight(0)
-adp=LuaAdapter(activity,itemc)
+adp=MyLuaAdapter(activity,itemc)
 history_list.Adapter=adp
 
 history_list.setOnScrollListener{

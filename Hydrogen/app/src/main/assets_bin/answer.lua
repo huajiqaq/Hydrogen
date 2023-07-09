@@ -63,12 +63,8 @@ end
 
 回答容器=answer:new(问题id)
 
-
-if 问题对象 then
-  回答容器:addAII(require "cjson".decode(tostring(问题对象)))
-  if 在线页数 then
-    回答容器.now=在线页数
-  end
+if 回答id then
+  回答容器.getid=回答id
 end
 
 --
@@ -94,25 +90,6 @@ function 数据添加(t,b)
           activity.newActivity("question",{问题id})
         end
       end)
-    end
-  end
-
-  all_root.onLongClick=function(v)
-    --  print(回答容器.now)
-    if 回答容器.isleft==false then
-      if not 问题对象 then
-        双按钮对话框("提示","无法获取上一个回答 如若想获取请在问题页点击回答","跳转","取消",function()
-          关闭对话框(an) activity.newActivity("question",{问题id}) end,function()
-          关闭对话框(an)
-        end)
-        return
-      end
-      双按钮对话框("提示","是否要切换上一个回答","是的","取消",function()
-        关闭对话框(an) 提示("切换中") activity.finish() activity.newActivity("answer",{问题id,回答id,问题对象,false,回答容器.now-1}) end,function()
-        关闭对话框(an)
-      end)
-     else
-      提示("不能左滑了")
     end
   end
 
@@ -262,8 +239,7 @@ function 数据添加(t,b)
     onPageStarted=function(view,url,favicon)
       等待doc(view)
       if 全局主题值=="Night" then
-        --       加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=80,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+        加载js(view,获取js("darkpage"))
         --   黑暗模式主题(view)
       end
     end,
@@ -290,106 +266,9 @@ function 数据添加(t,b)
         end)
 
         加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
-        加载js(view,[[
-  function setvideo () {
-    if (document.getElementsByClassName("video-box").length>0 && typeof(document.getElementsByClassName("video-box")[0].href)!="undefined") {
-    for (i = 0; i<document.getElementsByClassName("video-box").length; i++) {
-        (function(i){
-       
-            var k =decodeURIComponent(document.getElementsByClassName("video-box")[i].href).match(/\/video\/(\S*)/)[1]
-            var xhr = new XMLHttpRequest();
-            var url = "https://lens.zhihu.com/api/v4/videos/"+k;
-            xhr.open("get", url);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-				if (xhr.status == 200) {
-				    videohtml= xhr.responseText
-					var getvideourlhtml = JSON.parse(videohtml);
-						try{
-		videourl=getvideourlhtml.playlist.SD.play_url
-	}catch(err){				//抓住throw抛出的错误
-	if (getvideourlhtml.playlist.LD.play_url) {
-	videourl= getvideourlhtml.playlist.LD.play_url  
-	} else if (getvideourlhtml.playlist.HD.play_url) {
-	videourl= getvideourlhtml.playlist.HD.play_url  
-	}
-	}
-	
-                    document.getElementsByClassName("video-box")[i].outerHTML='<div class="video-box"><video src=' +videourl +  ' style="margin: auto;width: 100%;" controls=""></video></div>'
-					} else {
-					}
-                }
-            };
-            xhr.send(null);
-        })(i);
-    }
-}
-}
-waitForKeyElements(' [class="video-box"]', setvideo);
-]])
-        --[==[
-      if not b.attachment then
-        view.evaluateJavascript('document.getElementsByClassName("video-box").length>0?"true":"false"',ValueCallback({
-          onReceiveValue=function(value)
-          提示(value)
-            if value=='"true"' then
-              zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
-                if code==401 then
-                  AlertDialog.Builder(this)
-                  .setTitle("提示")
-                  .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
-                  .setCancelable(false)
-                  .setPositiveButton("我知道了",nil)
-                  .show()
-                end
-                return
-              end)
-              
-              加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
-              加载js(view,[[
-  function setvideo () {
-    if (document.getElementsByClassName("video-box").length>0 && typeof(document.getElementsByClassName("video-box")[0].href)!="undefined") {
-    for (i = 0; i<document.getElementsByClassName("video-box").length; i++) {
-        (function(i){
-       
-            var k =decodeURIComponent(document.getElementsByClassName("video-box")[i].href).match(/\/video\/(\S*)/)[1]
-            var xhr = new XMLHttpRequest();
-            var url = "https://lens.zhihu.com/api/v4/videos/"+k;
-            xhr.open("get", url);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-				if (xhr.status == 200) {
-				    videohtml= xhr.responseText
-					var getvideourlhtml = JSON.parse(videohtml);
-						try{
-		videourl=getvideourlhtml.playlist.SD.play_url
-	}catch(err){				//抓住throw抛出的错误
-	if (getvideourlhtml.playlist.LD.play_url) {
-	videourl= getvideourlhtml.playlist.LD.play_url  
-	} else if (getvideourlhtml.playlist.HD.play_url) {
-	videourl= getvideourlhtml.playlist.HD.play_url  
-	}
-	}
-	
-                    document.getElementsByClassName("video-box")[i].outerHTML='<div class="video-box"><video src=' +videourl +  ' style="margin: auto;width: 100%;" controls=""></video></div>'
-					} else {
-					}
-                }
-            };
-            xhr.send(null);
-        })(i);
-    }
-}
-}
-waitForKeyElements(' [class="video-box"]', setvideo);
-]])
-            end
-          end
-        }))
-        ]==]
+        加载js(view,获取js("videoload"))
 
        elseif b.attachment then
-        --       else
         xpcall(function()
           视频链接=b.attachment.video.video_info.playlist.sd.url
           end,function()
@@ -397,50 +276,12 @@ waitForKeyElements(' [class="video-box"]', setvideo);
           end,function()
           视频链接=b.attachment.video.video_info.playlist.hd.url
         end)
-        加载js(view,[[
-  function setmyvideo() {
-var videotext=document.createElement('div')
-videotext.className="ExtraInfo"
-videotext.innerText="该回答为视频回答"
-document.getElementsByClassName("ExtraInfo")[0].insertBefore(videotext,document.getElementsByClassName("ExtraInfo")[0].firstChild);
-var videourl=document.createElement('div')
-videourl.className="video-box"
-videourl.innerHTML='<video style="margin: auto;width: 100%;"]].." src=" ..视频链接.. [[ controls=""></video>'
-document.getElementsByClassName("RichText ztext")[0].insertBefore(videourl,document.getElementsByClassName("RichText ztext")[0].firstChild);
-}
-waitForKeyElements('.RichText.ztext', setmyvideo);
-]])
-
-      end
-
-
-      --    end
-      if 全局主题值=="Night" then
-        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=80,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+        加载js(view,获取js('videoanswer'))
+        加载js(view,'setmyvideo("'..视频链接..'"')
       end
     end,
     onLoadResource=function(view,url)
-      --      if 全局主题值=="Night" then
-      --        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-      --      end
-      view.evaluateJavascript([[(function(){
-    var tags=document.getElementsByTagName("img");         
-    for(var i=0;i<tags.length;i++) {
-        tags[i].onclick=function(){
-         var tag=document.getElementsByTagName("img"); 
-         var t={};     
-         for(var z=0;z<tag.length;z++) {
-            t[z]=tag[z].src; 
-            if (tag[z].src==this.src) {
-               t[tag.length]=z;
-            }                      
-         };  
-           
-         window.androlua.execute(JSON.stringify(t));
-        }                                  
-     };  
-    return tags.length;  
-    })();]],{onReceiveValue=function(b)end})
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
     end,
   }
 
@@ -458,9 +299,6 @@ waitForKeyElements('.RichText.ztext', setmyvideo);
 
   t.content.setWebChromeClient(luajava.override(WebChromeClient,{
     onProgressChanged=function(super,view,url,favicon)
-      --      if 全局主题值=="Night" then
-      --        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-      --      end
     end,
     onShowCustomView=function(z,a,b)
       v=a
@@ -518,7 +356,6 @@ function 加载页(mviews,a,b)
   if mviews==nil then return end
   if #mviews.ids.username.Text==0 and mviews.load==nil then --判断是否加载过没有
     回答容器:getOneData(function(cb,r)--获取1条数据
-
       if cb==false then
         mviews.load=nil
         提示("已经没有更多数据了")
@@ -530,8 +367,8 @@ function 加载页(mviews,a,b)
         pcall(function()
 
           if table.find(查重表,cb.id) then
-            pg.adapter.remove(a)
-            pg.setCurrentItem(a-1,false)
+            --            pg.adapter.remove(a)
+            --            pg.setCurrentItem(a-1,false)
             mviews.load=nil
             重表状态=true
            else
@@ -540,6 +377,10 @@ function 加载页(mviews,a,b)
 
           查重表[cb.id]=cb.id
 
+        end)
+
+        pcall(function()
+          mviews.pageinfo=cb.pagination_info
         end)
 
         if mviews.data==nil or mviews.data.voteup_count==nil then
@@ -555,31 +396,9 @@ function 加载页(mviews,a,b)
 
         数据添加(mviews.ids,cb) --添加数据
 
-        --        print(数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl())
         mviews.load=true
       end
     end,b or (a==0 and 回答容器.one==nil and a<=上次page and 回答容器.is_add==true and 回答容器.isleft==false and pg.adapter.getItemCount()>1))
-   else
-
-    if mviews.data and mviews.data.id then
-      if mviews.data.voteup_count then
-        vote_count.Text=tointeger(mviews.data.voteup_count)..""
-        thanks_count.Text=tointeger(mviews.data.thanks_count)..""
-        comment_count.Text=tointeger(mviews.data.comment_count)..""
-        --[[
-       else
-        local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
-        zHttp.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
-          if a==200 then
-            mviews.data=require "cjson".decode(b).data[1]
-            vote_count.Text=tointeger(mviews.data.voteup_count)..""
-            thanks_count.Text=tointeger(mviews.data.thanks_count)..""
-            comment_count.Text=tointeger(mviews.data.comment_count)..""
-          end
-        end)
-        ]]
-      end
-    end
   end
 end
 
@@ -597,7 +416,7 @@ function 首次设置()
 
 
   for i=1,3 do
-    pg.setCurrentItem(0,false)--设置正确的列
+    pg.setCurrentItem(1,false)--设置正确的列
   end
 end
 
@@ -613,33 +432,31 @@ id表={}
 
 --首先先加入多个view
 
-id表[pg.adapter.getItemCount()+1]={}
+--加入两个view 防止无法直接左滑
 
-local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
-
-pg.adapter.add(加入view)
-
-数据表[加入view.id]={
-  data={},
-  ids=id表[pg.adapter.getItemCount()],
-}
-
-
+for i=1,2 do
+  id表[pg.adapter.getItemCount()+1]={}
+  local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
+  pg.adapter.add(加入view)
+  数据表[加入view.id]={
+    data={},
+    ids=id表[pg.adapter.getItemCount()],
+  }
+end
 
 pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
   onPageScrolled=function(a,b,c)
-    --  print(回答容器.now)
     if c==0 then
 
-
       --判断页面是否在开头or结尾 是否需要添加
-
       if pg.adapter.getItemCount()==a+1 then
+        if 回答容器.isright then
+          pg.setCurrentItem(a-1,false)
+          return 提示("前面没有内容啦")
+        end
 
         id表[pg.adapter.getItemCount()+1]={}
-
         local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
-
         pg.adapter.add(加入view)
 
 
@@ -648,37 +465,21 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           ids=id表[pg.adapter.getItemCount()],
         }
 
-
         local mviews=数据表[pg.adapter.getItem(a+1).id]
 
         if this.getSharedData("回答预加载(beta)")=="true" then
-
           加载页(mviews,a+1,false)
         end
 
-       elseif a==0 and 回答容器.isleft==false and pg.adapter.getItemCount()>=1
-        id表[pg.adapter.getItemCount()+1]={}
-        if 回答容器.isleft==false or 回答容器.now==1 then
-          if activity.getSharedData("左滑提示0.01")==nil then
-            AlertDialog.Builder(this)
-            .setTitle("小提示")
-            .setCancelable(false)
-            .setMessage("由于左滑有一些bug 已取消左滑刷新内容 如若想要使用请长按问题标题来实现该操作")
-            .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("左滑提示0.01","true") end})
-            .show()
-           else
-            提示("如若想要左滑请长按问题标题来实现该操作")
-          end
-          local mviews=数据表[pg.adapter.getItem(a).id]
-          if mviews.data and mviews.data.id then
-            if mviews.data.voteup_count then
-              vote_count.Text=tointeger(mviews.data.voteup_count)..""
-              thanks_count.Text=tointeger(mviews.data.thanks_count)..""
-              comment_count.Text=tointeger(mviews.data.comment_count)..""
-            end
-          end
-          return false
+        local mviews=数据表[pg.adapter.getItem(a).id]
+        加载页(mviews,a)
+
+       elseif a==0 and pg.adapter.getItemCount()>=0
+        if 回答容器.isleft then
+          pg.setCurrentItem(1,false)
+          return 提示("已经到最左了")
         end
+        id表[pg.adapter.getItemCount()+1]={}
 
         local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
 
@@ -688,37 +489,47 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           data={},
           ids=id表[pg.adapter.getItemCount()],
         }
-        --      local mviews=数据表[pg.adapter.getItem(a+1).id]
-        --      加载页(mviews,a+1)
-        --      return
+        local a=pg.getCurrentItem()+1
+        local mviews=数据表[pg.adapter.getItem(a).id]
+        加载页(mviews,a,true)
 
-      end
+        --判断是否加载过
+       elseif pg.adapter.getItemCount()>=0 then
 
-      local mviews=数据表[pg.adapter.getItem(a).id]
-      加载页(mviews,a)
-      --[[
-      local mviews=数据表[pg.adapter.getItem(a).id]
-      加载页(mviews,a)
-]]
+        local a=pg.getCurrentItem()
+        local mviews=数据表[pg.adapter.getItem(a).id]
 
-      --[[
-      if mviews.data and mviews.data.id then
-        if mviews.data.voteup_count then
-          vote_count.Text=tointeger(mviews.data.voteup_count)..""
-          thanks_count.Text=tointeger(mviews.data.thanks_count)..""
-          comment_count.Text=tointeger(mviews.data.comment_count)..""
-         else
-          local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
-          zHttp.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
-            if a==200 then
-              mviews.data=require "cjson".decode(b).data[1]
+        if mviews.load==true then
+          --更新pageinfo
+          local pageinfodata=mviews.pageinfo
+          回答容器.pageinfo=pageinfodata
+          --在请求后再次判断是否在最左or最右端
+          回答容器.isleft=(#回答容器.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
+          回答容器.isright=(#回答容器.pageinfo.next_answer_ids>0 and {false} or {true})[1]
+          --暂时没用的参数
+          回答容器.now=pageinfodata.index
+
+          --判断更新底栏数据
+          if mviews.data and mviews.data.id then
+            if mviews.data.voteup_count then
               vote_count.Text=tointeger(mviews.data.voteup_count)..""
               thanks_count.Text=tointeger(mviews.data.thanks_count)..""
               comment_count.Text=tointeger(mviews.data.comment_count)..""
+             else
+              local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
+              zHttp.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
+                if a==200 then
+                  mviews.data=require "cjson".decode(b).data[1]
+                  vote_count.Text=tointeger(mviews.data.voteup_count)..""
+                  thanks_count.Text=tointeger(mviews.data.thanks_count)..""
+                  comment_count.Text=tointeger(mviews.data.comment_count)..""
+                end
+              end)
             end
-          end)
+          end
+
         end
-      end]]
+      end
 
       上次page=a
 
@@ -755,59 +566,7 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
 })
 
 
-if 回答id and 问题对象==nil then
-  回答容器.data[1]={}
-  回答容器.data[1].id=回答id
-end
-
 首次设置()
-
---[[
-
-local answerDrawable=LuaDrawable(function(mCanvas,mPaint,mDrawable)
-
-  mPaint.setColor(0xff000000)
-  .setAntiAlias(true)
-  .setStrokeWidth(20)
-  .setStyle(Paint.Style.FILL)
-  .setStrokeCap(Paint.Cap.ROUND)
-
-  local w=mDrawable.getBounds().right
-  local h=mDrawable.getBounds().bottom
-
-  local mPath=Path()
-
-  
-  mPath.moveTo(w, h); --移动到右下角
-  mPath.lineTo(0, h); --移动到左下角
-  mPath.lineTo(0, h-dp2px(56)) --移动到左上角
-  
-  local x=comment.parent.x
-  local width=comment.parent.width
-  
-   
-  comment.parent.visibility=8
-   
-  mPath.lineTo(x-dp2px(6),h-dp2px(56)) --移动到悬浮球的左上
-  
-  mPath.quadTo(x-dp2px(1),h-dp2px(56),x-dp2px(1),h-dp2px(50))
- 
-  mPath.quadTo(x-dp2px(6)+width/2+dp2px(6),h-dp2px(4),x+width+dp2px(6),h-dp2px(54))
-  
-  mPath.quadTo(x+width+dp2px(3),h-dp2px(56),x+width+dp2px(6),h-dp2px(56))
- 
-  
-  mPath.lineTo(w, h-dp2px(56));--移动到右上角
-  mPath.lineTo(w, h); --移动到右下角
- 
-  mCanvas.drawColor(0x00000000)
-  --mPaint.setShadowLayer(dp2px(1), 0, dp2px(-1), 0xff000000);
-  mCanvas.drawPath(mPath, mPaint);
-
-  mPath.close();
-end)
-
-]]
 
 ll.background=answerDrawable
 
@@ -885,41 +644,6 @@ end
 local click=0
 
 mark.onClick=function()
-  --[[
-  --[=[  if click==0 then
-    click=1
-   elseif click==1 then
-    click=0
-  end
-  if click==1 then
-    --  mark.setColorFilter(PorterDuffColorFilter(转0x(secondaryc),PorterDuff.Mode.SRC_ATOP));
-    创建文件(内置存储文件("Collection/".._title.Text))]]
-  --    写入文件(内置存储文件("Collection/".._title.Text),[[question_id="]]..问题id..[["
-  --]]..[[answer_id="]]..回答id..[["
-  --]]..[[vote_count="]]..vote_count.Text..[["
-  --]]..[[comment_count="]]..comment_count.Text..[["
-  --]]..[[author="]]..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text..[["
-  --]]
-  --    )
-  --    提示("已收藏")
-  --       elseif click==0 then
-  --  mark.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
-  --    删除文件(内置存储文件("Collection/".._title.Text))
-  --    提示("已取消收藏")
-
-  -- end]=]
-  --
-  --  xpcall(function()
-  --    创建文件夹(内置存储文件("Collection/".._title.Text))
-  --    创建文件夹(内置存储文件("Collection/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text))
-  --    创建文件(内置存储文件("Collection/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"))
-  --   写入文件(内置存储文件("Collection/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"),[[question_id="]]..问题id..[["
-  --]]..[[answer_id="]]..回答id..[["
-  --]])
-  --    提示("收藏成功")
-  --    end,function()
-  --    提示("收藏失败 可能是未授予本地存储权限")
-  --  end)
   local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
   加入收藏夹(url:match("answer/(.+)"),"answer")
 
@@ -980,47 +704,32 @@ a=MUKPopu({
     {
       src=图标("get_app"),text="保存到本地",onClick=function()
 
-        if 文件是否存在(内置存储文件("Download/".._title.Text))then
+        local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
 
-          xpcall(function()
-            创建文件夹(内置存储文件("Download/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text))
-            创建文件(内置存储文件("Download/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"))
-            写入文件(内置存储文件("Download/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"),[[question_id="]]..问题id..[["
-]]..[[answer_id="]]..回答id..[["
-]]..[[thanks_count="]]..thanks_count.Text..[["
-]]..[[vote_count="]]..vote_count.Text..[["
-]]..[[comment_count="]]..comment_count.Text..[["
-]]..[[author="]]..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text..[["
-]]..[[headline="]]..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.userheadline.Text..[["
-]])
-            数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/mht.mht"))
-            提示("保存成功")
-            end,function()
-            提示("保存失败 可能是未授予本地存储权限")
+        local pgids=数据表[pgnum].ids
 
-          end)
+        local 保存路径=内置存储文件("Download/".._title.Text.."/"..pgids.username.Text)
 
-         else
-          xpcall(function()
-            创建文件夹(内置存储文件("Download/".._title.Text))
-            创建文件夹(内置存储文件("Download/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text))
-            创建文件(内置存储文件("Download/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"))
-            写入文件(内置存储文件("Download/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/detail.txt"),[[question_id="]]..问题id..[["
-]]..[[answer_id="]]..回答id..[["
-]]..[[thanks_count="]]..thanks_count.Text..[["
-]]..[[vote_count="]]..vote_count.Text..[["
-]]..[[comment_count="]]..comment_count.Text..[["
-]]..[[author="]]..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text..[["
-]]..[[headline="]]..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.userheadline.Text..[["
-]])
-            数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text.."/mht.mht"))
-            提示("保存成功")
-            end,function()
-            提示("保存失败 可能是未授予本地存储权限")
-          end)
-
+        if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
+          创建文件夹(内置存储文件("Download/".._title.Text))
         end
 
+        xpcall(function()
+          创建文件夹(保存路径)
+          创建文件(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/detail.txt"))
+          写入内容='question_id="'..问题id..'"\n'
+          写入内容=写入内容..'answer_id="'..回答id..'"\n'
+          写入内容=写入内容..'thanks_count="'..thanks_count.Text..'"\n'
+          写入内容=写入内容..'vote_count="'..vote_count.Text..'"\n'
+          写入内容=写入内容..'comment_count="'..comment_count.Text..'"\n'
+          写入内容=写入内容..'author="'..pgids.username.Text..'"\n'
+          写入内容=写入内容..'headline="'..pgids.userheadline.Text..'"\n'
+          写入文件(保存路径.."/detail.txt",写入内容)
+          pgids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/mht.mht"))
+          提示("保存成功")
+          end,function(e)
+          提示("保存失败 可能是未授予本地存储权限".."错误代码"..e)
+        end)
       end
     },
 
@@ -1076,16 +785,16 @@ end
 
 --[[
 if this.getSharedData("使用音量键滑动")=="true" then
-function onKeyDown(keycode,event)
-  if keycode==24 then
-    pg.setCurrentItem(pg.getCurrentItem()+1,false)
-    return true
-  elseif keycode==25 then
-    pg.setCurrentItem(pg.getCurrentItem()-1,false)
-    return true
-    else
-    return false
+  function onKeyDown(keycode,event)
+    if keycode==24 then
+      pg.setCurrentItem(pg.getCurrentItem()+1,false)
+      return true
+     elseif keycode==25 then
+      pg.setCurrentItem(pg.getCurrentItem()-1,false)
+      return true
+     else
+      return false
+    end
   end
-end
 end
 ]]

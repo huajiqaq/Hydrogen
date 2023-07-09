@@ -32,7 +32,6 @@
           layout_height="56dp";
 
 
-
           {
             LinearLayout;
             layout_width="32dp";
@@ -95,7 +94,7 @@
                   提示("你可能需要登录")
                  else
                   task(20,function()
-                    activity.newActivity("huida",{"https://www.zhihu.com",true,true})
+                    activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
                   end)
                 end
               end;

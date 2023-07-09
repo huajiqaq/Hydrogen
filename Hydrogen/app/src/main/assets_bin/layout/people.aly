@@ -142,30 +142,63 @@
                   --                    singleLine=true;
                 };
                 {
-                  CardView;
-                  id="following";
+                  LinearLayout;
+                  id="people_o";
+                  layout_marginTop="10dp",
+                  layout_width="-1";
+                  layout_height="-1",
+                  gravity="center",
                   Visibility=View.GONE;
-                  layout_width="-2";
-                  layout_height="-2";
-                  radius="4dp";
-                  layout_marginTop="8dp";
-                  layout_gravity="center",
-                  --background=primaryc;
-                  CardBackgroundColor=primaryc;
                   {
-                    TextView;
-                    id="followtext",
-                    layout_width="-1";
-                    layout_height="-1";
-                    textSize="14sp";
-                    paddingRight="12dp";
-                    paddingLeft="12dp";
-                    paddingTop="8dp";
-                    paddingBottom="8dp";
-                    Text="立即关注";
-                    textColor=backgroundc;
-                    gravity="center";
-                    Typeface=字体("product-Bold");
+                    CardView;
+                    layout_marginRight="10dp";
+                    id="following";
+                    layout_width="-2";
+                    layout_height="-2";
+                    radius="4dp";
+                    layout_gravity="center",
+                    --background=primaryc;
+                    CardBackgroundColor=primaryc;
+                    {
+                      TextView;
+                      id="followtext",
+                      layout_width="-1";
+                      layout_height="-1";
+                      textSize="14sp";
+                      paddingRight="12dp";
+                      paddingLeft="12dp";
+                      paddingTop="8dp";
+                      paddingBottom="8dp";
+                      Text="关注";
+                      textColor=backgroundc;
+                      gravity="center";
+                      Typeface=字体("product-Bold");
+                    };
+                  };
+                  {
+                    CardView;
+                    id="sixin";
+                    layout_width="-2";
+                    layout_height="-2";
+                    radius="4dp";
+                    layout_gravity="center",
+                    --background=primaryc;
+                    CardBackgroundColor=primaryc;
+                    {
+                      TextView;
+                      id="sixintext",
+                      layout_width="-1";
+                      layout_height="-1";
+                      textSize="14sp";
+                      paddingRight="12dp";
+                      paddingLeft="12dp";
+                      paddingTop="8dp";
+                      paddingBottom="8dp";
+                      Text="私信";
+                      textColor=backgroundc;
+                      gravity="center";
+                      Typeface=字体("product-Bold");
+                    };
                   };
                 };
               };

@@ -21,6 +21,11 @@
       id="comment_id",
     };
     {
+      TextView;
+      textSize="0sp";
+      id="isme",
+    };
+    {
       LinearLayout;
       layout_height="fill";
       id="background";
@@ -61,6 +66,8 @@
             Typeface=字体("product");
             textColor=stextc;
             id="comment_art",
+            textIsSelectable=true;
+            linksClickable=true;
             textSize="12sp";
           };
           {

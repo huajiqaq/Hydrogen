@@ -37,7 +37,7 @@ function base_collections:next(callback)--获取下一页数据 callback:回调 
       ["cookie"] = 获取Cookie("https://www.zhihu.com/")
     }
 
-    Http.get(self.nextUrl,head,function(code,body)--http.get
+    zHttp.get(self.nextUrl,head,function(code,body)--http.get
       if code==200 then--判断刷新码是否为200
         self.nextUrl=require "cjson".decode(body).paging.next
         self.is_end=require "cjson".decode(body).paging.is_end

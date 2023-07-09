@@ -86,7 +86,72 @@
         background=backgroundc,
         layout_height="-1";
         id="comment_list";
+        layout_weight=1;
       };
+
+      {
+        MaterialCardView;
+        --layout_gravity="bottom";
+        layout_width="fill";
+        StrokeColor=oricardedge;
+        StrokeWidth=dp2px(1),
+        radius="8dp";
+        CardBackgroundColor=barbackgroundc;
+        id="inputLay";
+        --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
+        {
+          LinearLayout;
+          layout_width="fill";
+          layout_height="fill";
+          gravity="center";
+          --minimumHeight="56dp";
+          Focusable=true;
+          FocusableInTouchMode=true;
+          --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+          {
+            EditText;
+            id="edit";
+            --layout_gravity="center";
+            layout_weight=1;
+            layout_marginLeft="16dp";
+            layout_margin="8dp";
+            --layout_marginRight="8dp";
+            maxLines=10;
+            --tag="编辑框";
+            hint="输入评论";
+          };
+
+          {
+            CardView;
+            id="send";
+            layout_width="-2";
+            layout_height="-2";
+            radius="4dp";
+            layout_marginRight="6dp";
+            layout_gravity="center",
+            --background=primaryc;
+            CardBackgroundColor=primaryc;
+            Visibility=View.GONE;
+            {
+              TextView;
+              id="sendtext",
+              layout_width="-1";
+              layout_height="-1";
+              textSize="14sp";
+              paddingRight="12dp";
+              paddingLeft="12dp";
+              paddingTop="8dp";
+              paddingBottom="8dp";
+              Text="发送";
+              textColor=backgroundc;
+              gravity="center";
+              Typeface=字体("product-Bold");
+            };
+          };
+        };
+      };
+
     };
     {
       LinearLayout,

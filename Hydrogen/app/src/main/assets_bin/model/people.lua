@@ -32,7 +32,7 @@ function base:getData(callback)
   local head = {
     ["cookie"] = 获取Cookie("https://www.zhihu.com/")
   }
-  Http.get("https://api.zhihu.com/people/"..self.id.."/profile?profile_new_version=1",head,function(code,content)
+  zHttp.get("https://api.zhihu.com/people/"..self.id.."/profile?profile_new_version=1",head,function(code,content)
     if code==200 then
       local data=require "cjson".decode(content)
       callback(data)
@@ -56,8 +56,8 @@ function base:next(callback)
       nextoffset=self.nextUrl:match("?offset=(.-)&page_num")
     end
 
-    --    Http.get(self.nextUrl or "https://api.zhihu.com/people/"..self.id.."/activities?limit=20",head,function(code,body)
-    Http.get("https://api.zhihu.com/people/"..self.id.."/activities?limit=20&offset="..nextoffset or "https://api.zhihu.com/people/"..self.id.."/activities?limit=20",head,function(code,body)
+    --    zHttp.get(self.nextUrl or "https://api.zhihu.com/people/"..self.id.."/activities?limit=20",head,function(code,body)
+    zHttp.get("https://api.zhihu.com/people/"..self.id.."/activities?limit=20&offset="..nextoffset or "https://api.zhihu.com/people/"..self.id.."/activities?limit=20",head,function(code,body)
 
       if code==200 then
         self.nextUrl=require "cjson".decode(body).paging.next

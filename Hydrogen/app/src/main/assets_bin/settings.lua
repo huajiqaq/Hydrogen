@@ -12,44 +12,7 @@ import "com.google.android.material.materialswitch.MaterialSwitch"
 
 
 function clear()
-  task(function(dar)
-    --   dar=File(activity.getLuaDir()).parent.."/cache/webviewCache"
-    require "import"
-    import "java.io.File"
-    local tmp={[1]=0}
-
-    local function getDirSize(tab,path)
-      if File(path).exists() then
-        local a=luajava.astable(File(path).listFiles() or {})
-
-        for k,v in pairs(a) do
-          if v.isDirectory() then
-            getDirSize(tab,tostring(v))
-           else
-
-            tab[1]=tab[1]+v.length()
-          end
-        end
-      end
-    end
-    dar=tostring(ContextCompat.getDataDir(activity)).."/cache"
-    getDirSize(tmp,dar)
-    getDirSize(tmp,"/sdcard/Android/data/"..activity.getPackageName().."/cache/")
-
-    local a1,a2=File("/data/data/"..activity.getPackageName().."/database/webview.db"),File("/data/data/"..activity.getPackageName().."/database/webviewCache.db")
-    pcall(function()
-      tmp[1]=tmp[1]+(a1.length() or 0)+(a2.length() or 0)
-      a1.delete()
-      a2.delete()
-    end)
-    LuaUtil.rmDir(File(dar))
-    LuaUtil.rmDir(File("/sdcard/Android/data/"..activity.getPackageName().."/cache/images"))
-
-    return tmp[1]
-    end,APP_CACHEDIR,function(m)
-
-    提示("清理成功,共清理 "..tokb(m))
-  end)
+  清理内存()
 end
 
 
@@ -129,7 +92,8 @@ tab={ --点击table
     提示("设置成功 重启软件生效")
   end,
   开启想法=function()
-    activity.setResult(1200,nil)
+    提示("下次启动软件生效")
+    --    activity.setResult(1200,nil)
   end,
   修改主页排序=function()
     zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)

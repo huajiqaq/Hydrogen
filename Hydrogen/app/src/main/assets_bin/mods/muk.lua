@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.09
+versionCode=16.10
 layout_dir="layout/item_layout/"
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
@@ -186,7 +186,10 @@ end
 
 function 写入文件(路径,内容)
   xpcall(function()
-    f=File(tostring(File(tostring(路径)).getParentFile())).mkdirs()
+    local 文件夹路径=tostring(File(tostring(路径)).getParentFile())
+    if not(文件夹是否存在(文件夹路径)) then
+      f=File(文件夹路径).mkdirs()
+    end
     io.open(tostring(路径),"w"):write(tostring(内容)):close()
     end,function()
     提示("写入文件 "..路径.." 失败")
@@ -405,6 +408,7 @@ function 主题(str)
     ripplec="#559E9E9E"
     --    cardedge="#FFE0E0E0"
     cardedge="#"..dec2hex(res.color.attr.colorSurface)
+    oricardedge="#FFF6F6F6"
     --    cardedge="#FFF6F6F6"
     状态栏颜色(0x3f000000)
     导航栏颜色(0x3f000000)
@@ -437,6 +441,7 @@ function 主题(str)
     grayc="#212121"
     ripplec="#559E9E9E"
     cardedge="#"..dec2hex(res.color.attr.colorSurface)
+    oricardedge="#555555"
     --    cardedge="#555555"
     状态栏颜色(0xff191919)
     导航栏颜色(0xff191919)
@@ -606,6 +611,13 @@ function 加载js(id,js)
   if js~=nil then
     id.evaluateJavascript(js,nil)
   end
+end
+
+function 获取js(jsname)
+  local path=activity.getLuaPath('/js')
+  local path=path.."/"..jsname..".js"
+  local content=io.open(path):read("*a")
+  return content
 end
 
 
@@ -938,6 +950,17 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
   an=bottomSheetDialog.show()
+
+  function onConfigurationChanged(config)
+    --[[
+  if config.orientation == Configuration.ORIENTATION_LANDSCAPE then
+    --横屏
+   elseif config.orientation == Configuration.ORIENTATION_PORTRAIT then
+    --竖屏
+  }
+]]
+  end
+
 end
 
 
@@ -1096,6 +1119,9 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
   an.getWindow().setDimAmount(0.5)
   an.window.decorView.setPadding(0,0,0,0)
   ]]
+
+
+
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
   an=bottomSheetDialog.show()
@@ -1369,7 +1395,7 @@ function 检查链接(url,b)
     if b then return true end
     local videoid=url:match("/zvideo/(.-)?") or url:match("/zvideo/(.+)")
     activity.newActivity("column",{videoid,"视频"})
-   elseif url:find("zhihu.com/people") then
+   elseif url:find("zhihu.com/people") or url:find("zhihu.com/org") then
     if b then return true end
     local people_name=url:match("/people/(.-)?") or url:match("/people/(.+)")
     zHttp.get(url,head,function(code,content)
@@ -1638,6 +1664,9 @@ function appDownload(url,path)
 end
 
 function 下载文件对话框(title,url,path,ex)
+
+  import "com.google.android.material.bottomsheet.*"
+
   local path=内置存储("Download/"..path)
   appDownload(url,path)
   local gd2 = GradientDrawable()
@@ -1688,6 +1717,7 @@ function 下载文件对话框(title,url,path,ex)
       layout_marginBottom="24dp",
     },
   }
+
   local dldown=AlertDialog.Builder(activity)
   dldown.setView(loadlayout(布局))
   进度条.IndeterminateDrawable.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP))
@@ -1700,6 +1730,7 @@ function 下载文件对话框(title,url,path,ex)
   wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
   wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
   window.setAttributes(wlp);
+
 
   function ding(a,b)--已下载，总长度(byte)
     appdowninfo.Text=string.format("%0.2f",a/1024/1024).."MB/"..string.format("%0.2f",b/1024/1024).."MB".."\n下载状态：正在下载"
@@ -1822,75 +1853,20 @@ function 颜色字体(t,c)
   return sp
 end
 
-function 翻译(str,sth)
-  retstr=str
-  import "com.kn.rhino.*"
-  import "java.net.URLEncoder"
 
-  res=Js.runFunction(activity,[[function token(a) {
-    var k = "";
-    var b = 406644;
-    var b1 = 3293161072;
-
-    var jd = ".";
-    var sb = "+-a^+6";
-    var Zb = "+-3^+b+-f";
-
-    for (var e = [], f = 0, g = 0; g < a.length; g++) {
-        var m = a.charCodeAt(g);
-        128 > m ? e[f++] = m: (2048 > m ? e[f++] = m >> 6 | 192 : (55296 == (m & 64512) && g + 1 < a.length && 56320 == (a.charCodeAt(g + 1) & 64512) ? (m = 65536 + ((m & 1023) << 10) + (a.charCodeAt(++g) & 1023), e[f++] = m >> 18 | 240, e[f++] = m >> 12 & 63 | 128) : e[f++] = m >> 12 | 224, e[f++] = m >> 6 & 63 | 128), e[f++] = m & 63 | 128)
-    }
-    a = b;
-    for (f = 0; f < e.length; f++) a += e[f],
-    a = RL(a, sb);
-    a = RL(a, Zb);
-    a ^= b1 || 0;
-    0 > a && (a = (a & 2147483647) + 2147483648);
-    a %= 1E6;
-    return a.toString() + jd + (a ^ b)
-};
-
-function RL(a, b) {
-    var t = "a";
-    var Yb = "+";
-    for (var c = 0; c < b.length - 2; c += 3) {
-        var d = b.charAt(c + 2),
-        d = d >= t ? d.charCodeAt(0) - 87 : Number(d),
-        d = b.charAt(c + 1) == Yb ? a >>> d: a << d;
-        a = b.charAt(c) == Yb ? a + d & 4294967295 : a ^ d ;
-    }
-    return a
-};]],"token",{str})
-  url="https://translate.google.cn/translate_a/single?"
-  datastr=""
-  data={"client=webapp",
-    "sl=auto",
-    "tl=zh-CN",
-    "hl=zh-CN",
-    "dt=at",
-    "dt=bd",
-    "dt=ex",
-    "dt=ld",
-    "dt=md",
-    "dt=qca",
-    "dt=rw",
-    "dt=rm",
-    "dt=ss",
-    "dt=t",
-    "ie=UTF-8",
-    "oe=UTF-8",
-    "source=btn",
-    "ssel=0",
-    "tsel=0",
-    "kc=0",
-    "tk="..res,
-    "q="..URLEncoder.encode(str)}
-  datastr=table.concat(data,"&")
-  Http.get(url..datastr,{["User-Agent"]="Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7"},function(code,content)
-    rettior=content
-    sth()
-  end)
+--[[
+function runJsFuncion(jscode,runFunc)
+  import "com.hydrogen.rhino.JsRun"
+  JsRun.initScript(jscode);
+  local str =JsRun.callFunc(runFunc,{str});
+  return str
 end
+
+--[[
+--执行js示例
+local jstest=runJsFuncion('"function Test(){return "jsTest";}";',"Test")
+print(jstest)
+]]
 
 function MD5(str)
 
@@ -1929,23 +1905,23 @@ function MD5(str)
   local function I(x,y,z)
     return y ~ (x | (~z))
   end
-  local function FF(a,b,c,d,x,s,ac)
-    a = a + F(b,c,d) + x + ac
+  local function FF(a,b,c,d,x,s,tip_text)
+    a = a + F(b,c,d) + x + tip_text
     a = (((a & 0xffffffff) << s) | ((a & 0xffffffff) >> 32 - s)) + b
     return a & 0xffffffff
   end
-  local function GG(a,b,c,d,x,s,ac)
-    a = a + G(b,c,d) + x + ac
+  local function GG(a,b,c,d,x,s,tip_text)
+    a = a + G(b,c,d) + x + tip_text
     a = (((a & 0xffffffff) << s) | ((a & 0xffffffff) >> 32 - s)) + b
     return a & 0xffffffff
   end
-  local function HH(a,b,c,d,x,s,ac)
-    a = a + H(b,c,d) + x + ac
+  local function HH(a,b,c,d,x,s,tip_text)
+    a = a + H(b,c,d) + x + tip_text
     a = (((a & 0xffffffff) << s) | ((a & 0xffffffff) >> 32 - s)) + b
     return a & 0xffffffff
   end
-  local function II(a,b,c,d,x,s,ac)
-    a = a + I(b,c,d) + x + ac
+  local function II(a,b,c,d,x,s,tip_text)
+    a = a + I(b,c,d) + x + tip_text
     a = (((a & 0xffffffff) << s) | ((a & 0xffffffff) >> 32 - s)) + b
     return a & 0xffffffff
   end
@@ -2388,7 +2364,7 @@ function 加入收藏夹(回答id,收藏类型)
           FocusableInTouchMode=true,
           {
             LuaWebView;
-            id="hhhh";
+            id="collection_webview";
             layout_width="0dp";
             layout_height="0dp";
           };
@@ -2439,37 +2415,23 @@ function 加入收藏夹(回答id,收藏类型)
             Text="仅自己可见";
             id="新建私密";
             onClick=function() if 新建公开.checked==true then 新建公开.checked=false 新建状况="false";
-                加载js(hhhh,[[
-        emulateMouseClick(
-  document.getElementsByClassName("Favlists-privacyOptionRadio")[1]
-);
-        ]]) end end;
+            加载js(collection_webview,'setprivacy()') end end;
           };
           {
             RadioButton;
             Text="公开";
             id="新建公开";
             onClick=function() if 新建私密.checked==true then 新建私密.checked=false 新建状况="true"
-                加载js(hhhh,[[
-        emulateMouseClick(
-  document.getElementsByClassName("Favlists-privacyOptionRadio")[0]
-);
-        ]]) end end;
+            加载js(collection_webview,'setpublic()') end end;
           };
-          --[[      {
-        CheckBox;
-        Text="设置为默认收藏夹";
-        id="设置默认";
-      };]]
         };
-        aaaa=AlertDialog.Builder(this)
+        collection_dialog=AlertDialog.Builder(this)
         .setTitle("新建收藏夹页面")
         .setView(loadlayout(InputLayout))
         .setPositiveButton("确定",nil)
         .setNegativeButton("取消",nil)
         .show()
-        aaaa.getButton(aaaa.BUTTON_POSITIVE).onClick=function()
-          --    local newcollections_url= "https://www.zhihu.com/api/v4/collections"
+        collection_dialog.getButton(collection_dialog.BUTTON_POSITIVE).onClick=function()
           if edit.Text==""
             collecttitle=""
            else
@@ -2483,10 +2445,10 @@ function 加入收藏夹(回答id,收藏类型)
           if edit.Text=="" then
             提示("请输入内容")
            else
-            加载js(hhhh,'keyboardInput(document.getElementsByClassName("Input")[1], "'..collecttitle..'"); keyboardInput(document.getElementsByClassName("Input")[2], "'..collectde..'"); emulateMouseClick(document.getElementsByClassName("Button Button--primary Button--blue")[1]);  ')
+            加载js(collection_webview,'submit("'..edit.text'","'..editt.text..'"')
             zHttp.get("https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20",head,function(code,content)
               if code==200 then
-                aaaa.dismiss()
+                collection_dialog.dismiss()
                 adp.clear()
                 adp.setNotifyOnChange(true)
                 for k,v in ipairs(require "cjson".decode(content).data) do
@@ -2498,64 +2460,40 @@ function 加入收藏夹(回答id,收藏类型)
             end)
           end
         end
-        hhhh.getSettings()
+        collection_webview.getSettings()
         .setUseWideViewPort(true)
         .setBuiltInZoomControls(true)
         .setSupportZoom(true)
         .setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36");
 
-        zHttp.get("https://api.zhihu.com/people/"..activity.getSharedData("idx"),head,function(code,content)
+        zHttp.get("https://api.zhihu.com/people/"..activity.getSharedData("idx").."/profile?profile_new_version=1",head,function(code,content)
           if code==200 then
             if require "cjson".decode(content).url_token then
-              hhhh.loadUrl("https://www.zhihu.com/people/"..require "cjson".decode(content).url_token.."/collections/")
+              collection_webview.loadUrl("https://www.zhihu.com/people/"..require "cjson".decode(content).url_token.."/collections/")
              else
               提示("出错 请联系作者")
-              aaaa.dismiss()
+              collection_dialog.dismiss()
             end
           end
         end)
 
-        dl=ProgressDialog.show(activity,nil,'加载中 请耐心等待')
-        dl.show()
+        local dl=AlertDialog.Builder(this)
+        .setTitle("提示")
+        .setMessage("内容加载中 请耐心等待 如若想停止加载 请点击下方取消")
+        .setNeutralButton("取消",nil)
+        .setCancelable(false)
+        .show()
 
 
-        hhhh.setWebViewClient{
+        collection_webview.setWebViewClient{
           shouldOverrideUrlLoading=function(view,url)
             --Url即将跳转
           end,
           onPageStarted=function(view,url,favicon)
+            加载js(view,获取js("collection"))
             --网页加载
           end,
           onPageFinished=function(view,url)
-            view.evaluateJavascript([[
-function emulateMouseClick(element) {
-  // 创建事件
-  var event = document.createEvent("MouseEvents");
-  // 定义事件 参数： type, bubbles, cancelable
-  event.initEvent("click", true, true);
-  // 触发对象可以是任何元素或其他事件目标
-  element.dispatchEvent(event);
-}
-function keyboardInput(dom, value) {
-  let input = dom;
-  let lastValue = input.value;
-  input.value = value;
-  let event = new Event("input", { bubbles: true });
-  let tracker = input._valueTracker;
-  if (tracker) {
-    tracker.setValue(lastValue);
-  }
-  input.dispatchEvent(event);
-}
-emulateMouseClick(
-  document.getElementsByClassName(
-    "Button CollectionsHeader-addFavlistButton Button--link Button--withIcon Button--withLabel"
-  )[0]
-);
-        emulateMouseClick(
-  document.getElementsByClassName("Favlists-privacyOptionRadio")[1]
-);
- ]],nil)
             dl.dismiss()
             --网页加载完成
         end}
@@ -2564,28 +2502,11 @@ emulateMouseClick(
           新建私密.checked=true
           新建状态="false"
         end
-        import "android.view.View$OnFocusChangeListener"
-        edit.setOnFocusChangeListener(OnFocusChangeListener{
-          onFocusChange=function(v,hasFocus)
-            if hasFocus then
-              Prompt.setTextColor(0xFD009688)
-             else
-              Prompt.setTextColor(-1979711488)
-            end
-        end})
-        editt.setOnFocusChangeListener(OnFocusChangeListener{
-          onFocusChange=function(v,hasFocus)
-            if hasFocus then
-              Promptt.setTextColor(0xFD009688)
-             else
-              Promptt.setTextColor(-1979711488)
-            end
-        end})
       end
 
       --创建ListView作为文件列表
-      lv=ListView(activity).setFastScrollEnabled(true)
-      addd=LinearLayout(activity)
+      list=ListView(activity).setFastScrollEnabled(true)
+      dialog_lay=LinearLayout(activity)
       .setOrientation(0)
       .setGravity(Gravity.RIGHT|Gravity.CENTER)
       --创建路径标签
@@ -2596,30 +2517,24 @@ emulateMouseClick(
       lq=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
       lq.gravity = Gravity.CENTER
 
-      ac=TextView(activity).setText("待选中收藏夹")
+      tip_text=TextView(activity).setText("待选中收藏夹")
       .setLayoutParams(lq);
 
-      ab=ImageView(activity).setImageBitmap(loadbitmap(图标("add")))
+      add_button=ImageView(activity).setImageBitmap(loadbitmap(图标("add")))
       .setColorFilter(转0x(textc))
       .setLayoutParams(lp);
 
-      ap=TextView(activity).setText("新建收藏夹")
-      --      .setTextColor(0xFF000300)
-      --      .setLayoutParams(lp);
+      add_text=TextView(activity).setText("新建收藏夹")
       .setLayoutParams(lp);
 
-      addd.addView(ap).addView(ab)
-      --      addd.addView(ap)
-      --[[      ab.onClick=function()
-        新建收藏夹()
-      end
-]]
-      ap.onClick=function()
+      dialog_lay.addView(add_text).addView(add_button)
+
+      add_text.onClick=function()
         新建收藏夹()
       end
 
       cp=TextView(activity)
-      lay=LinearLayout(activity).setOrientation(1).addView(ac).addView(addd).addView(cp).addView(lv)
+      lay=LinearLayout(activity).setOrientation(1).addView(tip_text).addView(dialog_lay).addView(cp).addView(list)
       ChoiceFile_dialog=AlertDialog.Builder(activity)--创建对话框
       .setTitle("选择路径")
       .setPositiveButton("确认",{
@@ -2642,10 +2557,10 @@ emulateMouseClick(
 
 
       adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1)
-      lv.setAdapter(adp)
+      list.setAdapter(adp)
 
-      lv.onItemClick=function(l,v,p,s)--列表点击事件
-        ac.Text="当前选中收藏夹："..v.Text
+      list.onItemClick=function(l,v,p,s)--列表点击事件
+        tip_text.Text="当前选中收藏夹："..v.Text
         选中收藏夹=coll:match(v.Text..'(.-)'..v.Text)
       end
 
@@ -2781,7 +2696,7 @@ end
 
 function urlEncode(s)
   s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
-  return string.gsub(s, " ", " ")
+  return string.gsub(s, "", " ")
 end
 
 function urlDecode(s)
@@ -2806,370 +2721,15 @@ cardback=全局主题值=="Day" and cardedge or backgroundc
 cardmargin=全局主题值=="Day" and "4px" or false
 
 function 黑暗模式主题(view)
-  加载js(view,[[;(function () {
-    'use strict';
-
-    let util = {
-
-        addStyle(id, tag, css) {
-            tag = tag || 'style';
-            let doc = document, styleDom = doc.getElementById(id);
-            if (styleDom) return;
-            let style = doc.createElement(tag);
-            style.rel = 'stylesheet';
-            style.id = id;
-            tag === 'style' ? style.innerHTML = css : style.href = css;
-            doc.head.appendChild(style);
-        },
-
-        hover(ele, fn1, fn2) {
-            ele.onmouseenter = function () {  //移入事件
-                fn1.call(ele);
-            };
-            ele.onmouseleave = function () { //移出事件
-                fn2.call(ele);
-            };
-        },
-
-        addThemeColor(color) {
-            let doc = document, meta = doc.getElementsByName('theme-color')[0];
-            if (meta) return meta.setAttribute('content', color);
-            let metaEle = doc.createElement('meta');
-            metaEle.name = 'theme-color';
-            metaEle.content = color;
-            doc.head.appendChild(metaEle);
-        },
-
-        getThemeColor() {
-            let meta = document.getElementsByName('theme-color')[0];
-            if (meta) {
-                return meta.content;
-            }
-            return '#ffffff';
-        },
-
-        removeElementById(eleId) {
-            let ele = document.getElementById(eleId);
-            ele && ele.parentNode.removeChild(ele);
-        },
-
-        hasElementById(eleId) {
-            return document.getElementById(eleId);
-        },
-
-        filter: '-webkit-filter: url(#dark-mode-filter) !important; filter: url(#dark-mode-filter) !important;',
-        reverseFilter: '-webkit-filter: url(#dark-mode-reverse-filter) !important; filter: url(#dark-mode-reverse-filter) !important;',
-        firefoxFilter: `filter: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="dark-mode-filter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.283 -0.567 -0.567 0 0.925 -0.567 0.283 -0.567 0 0.925 -0.567 -0.567 0.283 0 0.925 0 0 0 1 0"/></filter></svg>#dark-mode-filter') !important;`,
-        firefoxReverseFilter: `filter: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="dark-mode-reverse-filter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.333 -0.667 -0.667 0 1 -0.667 0.333 -0.667 0 1 -0.667 -0.667 0.333 0 1 0 0 0 1 0"/></filter></svg>#dark-mode-reverse-filter') !important;`,
-        noneFilter: '-webkit-filter: none !important; filter: none !important;',
-    };
-
-    let main = {
-
-        addExtraStyle() {
-            try {
-                return darkModeRule;
-            } catch (e) {
-                return '';
-            }
-        },
-
-        createDarkFilter() {
-            if (util.hasElementById('dark-mode-svg')) return;
-            let svgDom = '<svg id="dark-mode-svg" style="height: 0; width: 0;"><filter id="dark-mode-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.283 -0.567 -0.567 0 0.925 -0.567 0.283 -0.567 0 0.925 -0.567 -0.567 0.283 0 0.925 0 0 0 1 0"></feColorMatrix></filter><filter id="dark-mode-reverse-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.333 -0.667 -0.667 0 1 -0.667 0.333 -0.667 0 1 -0.667 -0.667 0.333 0 1 0 0 0 1 0"></feColorMatrix></filter></svg>';
-            let div = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-            div.innerHTML = svgDom;
-            let frag = document.createDocumentFragment();
-            while (div.firstChild)
-                frag.appendChild(div.firstChild);
-            document.head.appendChild(frag);
-        },
-
-        createDarkStyle() {
-            util.addStyle('dark-mode-style', 'style', `
-                @media screen {
-                    html {
-                        ${this.isFirefox() ? util.firefoxFilter : util.filter}
-                        scrollbar-color: #454a4d #202324;
-                    }
-            
-                    /* Default Reverse rule */
-                    img, 
-                    .sr-backdrop {
-                        ${this.isFirefox() ? util.firefoxReverseFilter : util.reverseFilter}
-                    }
-            
-                    [style*="background:url"] *,
-                    [style*="background-image:url"] *,
-                    [style*="background: url"] *,
-                    [style*="background-image: url"] *,
-                    input,
-                    [background] *,
-                    img[src^="https://s0.wp.com/latex.php"],
-                    twitterwidget .NaturalImage-image {
-                        ${util.noneFilter}
-                    }
-            
-                    /* Text contrast */
-                    html {
-                        text-shadow: 0 0 0 !important;
-                    }
-            
-                    /* Full screen */
-                    .no-filter,
-                    :-webkit-full-screen,
-                    :-webkit-full-screen *,
-                    :-moz-full-screen,
-                    :-moz-full-screen *,
-                    :fullscreen,
-                    :fullscreen * {
-                        ${util.noneFilter}
-                    }
-                    
-                    ::-webkit-scrollbar {
-                        background-color: #202324;
-                        color: #aba499;
-                    }
-                    ::-webkit-scrollbar-thumb {
-                        background-color: #454a4d;
-                    }
-                    ::-webkit-scrollbar-thumb:hover {
-                        background-color: #575e62;
-                    }
-                    ::-webkit-scrollbar-thumb:active {
-                        background-color: #484e51;
-                    }
-                    ::-webkit-scrollbar-corner {
-                        background-color: #181a1b;
-                    }
-            
-                    /* Page background */
-                    html {
-                        background: #fff !important;
-                    }
-                    
-                    ${this.addExtraStyle()}
-                }
-            
-                @media print {
-                    .no-print {
-                        display: none !important;
-                    }
-                }`);
-        },
-
-
-
-        enableDarkMode() {
-            if (this.isFullScreen()) return;
-            !this.isFirefox() && this.createDarkFilter();
-            this.createDarkStyle();
-            util.addThemeColor('#131313');
-        },
-
-        disableDarkMode() {
-            util.removeElementById('dark-mode-svg');
-            util.removeElementById('dark-mode-style');
-            util.addThemeColor('#ffffff');
-        },
-
-        addDarkTheme() {
-
-                        lightDOM.style.transform = 'scale(1)';
-                        lightDOM.style.opacity = '1';
-                        darkDOM.style.transform = 'scale(0)';
-                        darkDOM.style.opacity = '0';
-                        this.enableDarkMode();
-        },
-
-        isTopWindow() {
-            return window.self === window.top;
-        },
-
-        addListener() {
-            document.addEventListener("fullscreenchange", (e) => {
-                if (this.isFullScreen()) {
-                    //进入全屏
-                    this.disableDarkMode();
-                } else {
-                    //退出全屏
-                    this.enableDarkMode();
-                }
-            });
-        },
-
-        isFullScreen() {
-            return document.fullscreenElement;
-        },
-
-        isFirefox() {
-            return /Firefox/i.test(navigator.userAgent);
-        },
-
-        firstEnableDarkMode() {
-            if (document.head) {
-                this.enableDarkMode();
-            }
-            const headObserver = new MutationObserver(() => {
-                his.enableDarkMode();
-            });
-            headObserver.observe(document.head, {childList: true, subtree: true});
-
-            if (document.body) {
-                this.addDarkTheme();
-            } else {
-                const bodyObserver = new MutationObserver(() => {
-                    if (document.body) {
-                        bodyObserver.disconnect();
-                        this.addDarkTheme();
-                    }
-                });
-                bodyObserver.observe(document, {childList: true, subtree: true});
-            }
-        },
-
-        init() {
-            this.addListener();
-            this.firstEnableDarkMode();
-        }
-    };
-    main.init();
-})();
-]])
+  加载js(view,获取js("darktheme"))
 end
 
 function 白天主题(view)
-  加载js(view,[[;(function () {
-    'use strict';
-
-    let util = {
-
-        addStyle(id, tag, css) {
-            tag = tag || 'style';
-            let doc = document, styleDom = doc.getElementById(id);
-            if (styleDom) return;
-            let style = doc.createElement(tag);
-            style.rel = 'stylesheet';
-            style.id = id;
-            tag === 'style' ? style.innerHTML = css : style.href = css;
-            doc.head.appendChild(style);
-        },
-
-        hover(ele, fn1, fn2) {
-            ele.onmouseenter = function () {  //移入事件
-                fn1.call(ele);
-            };
-            ele.onmouseleave = function () { //移出事件
-                fn2.call(ele);
-            };
-        },
-
-        addThemeColor(color) {
-            let doc = document, meta = doc.getElementsByName('theme-color')[0];
-            if (meta) return meta.setAttribute('content', color);
-            let metaEle = doc.createElement('meta');
-            metaEle.name = 'theme-color';
-            metaEle.content = color;
-            doc.head.appendChild(metaEle);
-        },
-
-        getThemeColor() {
-            let meta = document.getElementsByName('theme-color')[0];
-            if (meta) {
-                return meta.content;
-            }
-            return '#ffffff';
-        },
-
-        removeElementById(eleId) {
-            let ele = document.getElementById(eleId);
-            ele && ele.parentNode.removeChild(ele);
-        },
-
-        hasElementById(eleId) {
-            return document.getElementById(eleId);
-        },
-
-        filter: '-webkit-filter: url(#dark-mode-filter) !important; filter: url(#dark-mode-filter) !important;',
-        reverseFilter: '-webkit-filter: url(#dark-mode-reverse-filter) !important; filter: url(#dark-mode-reverse-filter) !important;',
-        firefoxReverseFilter: `filter: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="dark-mode-reverse-filter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.333 -0.667 -0.667 0 1 -0.667 0.333 -0.667 0 1 -0.667 -0.667 0.333 0 1 0 0 0 1 0"/></filter></svg>#dark-mode-reverse-filter') !important;`,
-    };
-
-    let main = {
-    
-        addExtraStyle() {
-            try {
-                return darkModeRule;
-            } catch (e) {
-                return '';
-            }
-        },
-
-
-
-        createDayStyle() {
-            util.addStyle('day-style', 'style', `
-                @media screen {
-                    img, 
-                    .sr-backdrop {
-                        ${this.isFirefox() ? util.firefoxReverseFilter : util.reverseFilter}
-                    }                                                   
-                }
-            `);
-        },
-
-
-        isFirefox() {
-            return /Firefox/i.test(navigator.userAgent);
-        },
-
-
-        init() {
-            this.createDayStyle();
-        }
-    };
-    main.init();
-})();
-]])
+  加载js(view,获取js("daytheme"))
 end
 
 function 等待doc(view)
-  加载js(view,[[function waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals) {
-		if (typeof waitOnce === "undefined") {
-			waitOnce = true;
-		}
-		if (typeof interval === "undefined") {
-			interval = 300;
-		}
-		if (typeof maxIntervals === "undefined") {
-			maxIntervals = -1;
-		}
-		var targetNodes =
-			typeof selectorOrFunction === "function" ? selectorOrFunction() : document.querySelectorAll(selectorOrFunction);
-
-		var targetsFound = targetNodes && targetNodes.length > 0;
-		if (targetsFound) {
-			targetNodes.forEach(function(targetNode) {
-				var attrAlreadyFound = "data-userscript-alreadyFound";
-				var alreadyFound = targetNode.getAttribute(attrAlreadyFound) || false;
-				if (!alreadyFound) {
-					var cancelFound = callback(targetNode);
-					if (cancelFound) {
-						targetsFound = false;
-					} else {
-						targetNode.setAttribute(attrAlreadyFound, true);
-					}
-				}
-			});
-		}
-
-		if (maxIntervals !== 0 && !(targetsFound && waitOnce)) {
-			maxIntervals -= 1;
-			setTimeout(function() {
-				waitForKeyElements(selectorOrFunction, callback, waitOnce, interval, maxIntervals);
-			}, interval);
-		}
-	}]])
+  加载js(view,获取js("waitdoc"))
 end
 
 function matchtext(str,regex)
@@ -3236,6 +2796,22 @@ function webview下载文件(链接, UA, 相关信息, 类型, 大小)
   .show()
 end
 
+function getDirSize(path)
+  local len=0
+  if not(File(path).exists()) then
+    return 0
+  end
+  local a=luajava.astable(File(path).listFiles() or {})
+  for k,v in pairs(a) do
+    if v.isDirectory() then
+      len=len+v.length()
+    end
+  end
+  return len
+end
+
+import "androidx.core.content.ContextCompat"
+
 --1毫秒后添加 防止加载失败
 task(1,function()
 
@@ -3247,7 +2823,8 @@ task(1,function()
         old_onDestroy()
       end
       old_onDestroy=nil
-      LuaUtil.rmDir(File(activity.getExternalCacheDir().toString()))
+      LuaUtil.rmDir(File(tostring(activity.getExternalCacheDir()).."/images"))
+      LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
       collectgarbage("collect")
       System.gc()
     end
@@ -3358,5 +2935,56 @@ end
 function zHttp.put(url,data,head,callback)
   Http.put(url,data,head,function(code,content)
     zHttp.setcallback(code,content,callback)
+  end)
+end
+
+
+
+function 清理内存()
+  task(function(dar)
+
+    import "androidx.core.content.ContextCompat"
+    local datadir=tostring(ContextCompat.getDataDir(activity))
+    local imagetmp=tostring(activity.getExternalCacheDir()).."/images"
+    --   dar=File(activity.getLuaDir()).parent.."/cache/webviewCache"
+    require "import"
+    import "java.io.File"
+    local tmp={[1]=0}
+
+    local function getDirSize(tab,path)
+      if File(path).exists() then
+        local a=luajava.astable(File(path).listFiles() or {})
+
+        for k,v in pairs(a) do
+          if v.isDirectory() then
+            getDirSize(tab,tostring(v))
+           else
+
+            tab[1]=tab[1]+v.length()
+          end
+        end
+      end
+    end
+
+    dar=datadir.."/cache"
+    getDirSize(tmp,dar)
+    getDirSize(tmp,imagetmp)
+
+    local a1,a2=File(datadir.."/database/webview.db"),File(datadir.."/database/webviewCache.db")
+    pcall(function()
+      tmp[1]=tmp[1]+(a1.length() or 0)+(a2.length() or 0)
+      a1.delete()
+      a2.delete()
+    end)
+    LuaUtil.rmDir(File(dar))
+    LuaUtil.rmDir(File(imagetmp))
+
+    return tmp[1]
+    end,APP_CACHEDIR,function(m)
+    if m == 0 then
+      提示("没有可清理的缓存")
+     else
+      提示("清理成功,共清理 "..tokb(m))
+    end
   end)
 end

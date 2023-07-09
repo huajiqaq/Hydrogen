@@ -18,18 +18,28 @@ liulan.loadUrl(liulanurl)
 if docode~=nil then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
   -- else
- elseif liulanurl:match("zhihu") and not liulanurl:match("zvideo") then
+ elseif liulanurl:find("zhihu") and not liulanurl:find("zvideo") then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")--设置UA
 end
 
 liulan.removeView(liulan.getChildAt(0))
 
-if liulanurl=="https://www.zhihu.com" then
-  liulan.setVisibility(View.INVISIBLE)
-  dl=ProgressDialog.show(activity,nil,'加载中 请耐心等待')
-  dl.show()
+if ischeck then
+  if liulanurl=="https://www.zhihu.com" or docode=="提问" then
+    加载js内容=true
+   elseif liulanurl:find("zhihu") and liulanurl:find("answer") then
+    加载js内容=true
+   elseif liulanurl:find("https://www.zhihu.com/messages") then
+    加载js内容=true
+   elseif liulanurl:find("zhihu") and liulanurl:find("question") and liulanurl:find("write") then
+    加载js内容=true
+  end
 end
 
+if 加载js内容 then
+  liulan.setVisibility(8)
+  progress.setVisibility(0)
+end
 
 function setProgress(p)
   ValueAnimator.ofFloat({pbar.getWidth(),activity.getWidth()/100*p})
@@ -50,9 +60,14 @@ _title.text="加载中"
 liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onReceivedTitle=function(view, title)
     --_title.text=(liulan.getTitle())
+    if type(docode)=="string" then
+      title=docode.." - 知乎"
+    end
     if _title.text~="搜索" then
       if liulanurl~="https://www.zhihu.com" and activity.getSharedData("标题简略化")~="true" then
         _title.text=(title)
+       elseif liulanurl=="https://www.zhihu.com"
+        _title.text="提问 - 知乎"
        else
         _title.text="加载完成"
       end
@@ -69,11 +84,6 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
 
   onShowFileChooser=function(v,fic,fileChooserParams)
     uploadMessageAboveL=fic
-    --              acceptTypes = fileChooserParams.getAcceptTypes();
-    --[[   i =  Intent(Intent.ACTION_GET_CONTENT);
-            i.addCategory(Intent.CATEGORY_OPENABLE);
-           i.setType("image/*");
-            activity.startActivityForResult(Intent.createChooser(i, "Image Chooser"), 10011);]]
     local intent= Intent(Intent.ACTION_PICK)
     intent.setType("image/*")
     this.startActivityForResult(intent, 1)
@@ -82,10 +92,12 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
 
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
-    if consoleMessage.message()=="提问加载完成" then
-      dl.dismiss()
-      _title.text="提问"
-      liulan.setVisibility(View.VISIBLE)
+    if consoleMessage.message():find("加载完成") then
+      liulan.setVisibility(0)
+      progress.setVisibility(8)
+     elseif consoleMessage.message():find("重新加载") then
+      liulan.setVisibility(8)
+      progress.setVisibility(0)
     end
   end,
 
@@ -155,101 +167,41 @@ liulan.setWebViewClient{
         view.stopLoading()
         检查链接(url)
       end
-      --      if ischeck==nil then 检查链接(url) else return false end
     end
-    --    return true
   end,
   onPageStarted=function(view,url,favicon)
 
     等待doc(view)
+    if url:find("zhihu.com/search") then
+      加载js(view,'window.open=function() { return false }')
+    end
     if 全局主题值=="Night" then
       黑暗模式主题(view)
     end
 
-    --[[    if tostring(docode):match("默认") ~=true then load(docode)(tostring(url)) end--登录判断]]
-
-    加载js(view,[[var setooo
-
-window.open=function() { return false }
-
-function emulateMouseClick(element) {
-  // 创建事件
-  var event = document.createEvent("MouseEvents");
-  // 定义事件 参数： type, bubbles, cancelable
-  event.initEvent("click", true, true);
-  // 触发对象可以是任何元素或其他事件目标
-  element.dispatchEvent(event);
-}
-]])
-
-    if liulanurl:match("zhihu") and liulanurl:match("answer") then
-      加载js(view,[[
-    function setq() {
-let observer = new MutationObserver(() => {
-	if (document.getElementsByClassName("Body--Android Body--Tablet Body--BaiduApp")[0].style.position == "fixed")
-		document.getElementsByClassName("css-1cqr2ue")[0].style.width = '100%',
-		document.getElementsByClassName("Button css-1x9te0t")[0].style.position = 'unset'
-});
-
-// 监听body元素的属性变化
-observer.observe(document.getElementsByClassName("Body--Android Body--Tablet Body--BaiduApp")[0], {
-	attributes: true,
-	attributeFilter: ['style', 'position']
-});
-}
-
-
-
-waitForKeyElements(' [class="Body--Android Body--Tablet Body--BaiduApp"]', setq)
-    ]])
+    if url=="https://www.zhihu.com" or docode=="提问" then
+      加载js内容=获取js("ask")
+     elseif url:find("zhihu") and url:find("answer") then
+      加载js内容=获取js("answer")
+     elseif url:find("https://www.zhihu.com/messages") then
+      加载js内容=获取js("messages")
+     elseif url:find("zhihu") and url:find("question") and url:find("write") or url:find("zhihu") and url:find("question") and url:find("edit") then
+      加载js内容=获取js("answering")
     end
 
 
+    if 加载js内容 then
+      加载js(view,加载js内容)
+    end
+
   end,
   onLoadResource=function(view,url)
-    --    加载js(view,[[window.open=function() { return false }]])
-    --    if 全局主题值=="Night" then
-    --      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-    --    end
-    --    if docode then 屏蔽元素(view,{"SignFlowHomepage-footer"}) end
-
   end,
   onPageFinished=function(view,url)
     if 全局主题值=="Night" then
       黑暗模式主题(view)
     end
-    --    if 全局主题值=="Night" then
-    --      加载js(view,[[(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-    --    end
     if docode~="默认" then 屏蔽元素(view,{"SignFlowHomepage-footer"})
-    end
-    if liulanurl=="https://www.zhihu.com" then
-      加载js(view,[[
-    document.getElementById("root").style.display="none"
-    function set() {
-    document.getElementsByClassName("Button Modal-closeButton")[0].style.display="none"
-    document.getElementsByClassName("Modal Modal--large")[0].style.width="-webkit-fill-available"
-    
-    let observer = new MutationObserver(() => {
-	if (document.getElementsByClassName("Modal-wrapper Modal-wrapper--transparent")[0]) {
-   document.getElementsByClassName("Modal Modal--default Editable-videoModal")[0].style.width="unset"
-alert("如若无关闭按钮 请点击空白处关闭")
-}
-});
-   
-   observer.observe(document.getElementsByClassName("Modal-wrapper")[0], {
-	attributes: true,
-	attributeFilter: ['class','className']
-});
-console.log("提问加载完成")
-    }
-    waitForKeyElements(' [class="Button Modal-closeButton Button--plain"]', set)    
-    function setq() {
-    emulateMouseClick(document.getElementsByClassName("Button SearchBar-askButton")[0])
-    }
-    waitForKeyElements('.SearchBar-askButton', setq)    
-    ]]
-      )
     end
 end}
 
@@ -258,9 +210,7 @@ end}
 liulan.getSettings()
 .setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
 .setJavaScriptEnabled(true)--设置支持Js
---  .setSupportZoom(true)
 .setLoadWithOverviewMode(true)
---.setUseWideViewPort(true)
 .setDefaultTextEncodingName("utf-8")
 .setLoadsImagesAutomatically(true)
 .setAllowFileAccess(false)
@@ -269,9 +219,9 @@ liulan.getSettings()
 .setAppCachePath(APP_CACHEDIR)
 --//开启 DOM 存储功能
 .setDomStorageEnabled(true)
---        //开启 数据库 存储功能
+--//开启 数据库 存储功能
 .setDatabaseEnabled(true)
---     //开启 应用缓存 功能
+--//开启 应用缓存 功能
 
 .setUseWideViewPort(true)
 .setBuiltInZoomControls(true)

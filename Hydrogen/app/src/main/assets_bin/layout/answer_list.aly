@@ -57,7 +57,7 @@
           textSize="14sp",--文本大小
           layout_marginLeft="60dp",--布局左距
           layout_marginRight="5dp",
-          layout_marginTop="40dp",--布局底距 
+          layout_marginTop="40dp",--布局底距
           layout_marginBottom="10dp",
           gravity="left|bottom",--顶：top｜中：center｜左：left｜右：right｜底：bottom
           textColor="#FF767676",--文本颜色
@@ -69,7 +69,6 @@
       LinearLayout,
       layout_width="-1";
       layout_height="-2";
-
       {
         LuaWebView,
         id="content",

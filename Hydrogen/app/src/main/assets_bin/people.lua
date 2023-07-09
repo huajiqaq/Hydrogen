@@ -11,13 +11,12 @@ activity.setContentView(loadlayout("layout/people"))
 
 初始化历史记录数据(true)
 波纹({followtext},"方自适应")
+波纹({sixintext},"方自适应")
 
 
 people_itemc=获取适配器项目布局("people/people")
 
-local people_adp=LuaAdapter(activity,people_datas,people_itemc)
-
-
+local people_adp=MyLuaAdapter(activity,people_datas,people_itemc)
 
 people_list.adapter=people_adp
 
@@ -35,29 +34,33 @@ local base_people=require "model.people":new(people_id)
   end
 
   if 用户id~=nil and 用户id~="" and 用户id~=activity.getSharedData("idx") then
-    following.setVisibility(View.VISIBLE)
+    people_o.setVisibility(View.VISIBLE)
   end
   if data.is_following then
-    followtext.Text="取消关注";
+    followtext.Text="取关";
   end
   function following.onClick()
-    if followtext.Text=="立即关注"
+    if followtext.Text=="关注"
       zHttp.post("https://api.zhihu.com/people/"..用户id.."/followers","",posthead,function(a,b)
         if a==200 then
-          followtext.Text="取消关注";
+          followtext.Text="取关";
           提示("关注成功")
          elseif a==500 then
           提示("请登录后使用本功能")
         end
       end)
-     elseif followtext.Text=="取消关注"
+     elseif followtext.Text=="取关"
       zHttp.delete("https://api.zhihu.com/people/"..用户id.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
         if a==200 then
-          followtext.Text="立即关注";
+          followtext.Text="关注";
           提示("取关成功")
         end
       end)
     end
+  end
+
+  function sixin.onClick()
+    activity.newActivity("huida",{"https://www.zhihu.com/messages/"..people_id,true,true})
   end
 
   _title.Text=名字
@@ -66,7 +69,6 @@ local base_people=require "model.people":new(people_id)
   people_image.setImageBitmap(loadbitmap(大头像))
 
 end)
-
 
 :setresultfunc(function(v)
   local 活动=v.action_text
@@ -223,18 +225,6 @@ end)
 
 
 function 刷新()
-  --[[
-  base_people:next(function(r,a)
-    if r==false and base_people.is_end==false then
-      提示("获取个人动态列表出错 "..a)
-      
-      --  刷新()
-      
-
-
-    end
-  end)
-  ]]
   其他()
 end
 

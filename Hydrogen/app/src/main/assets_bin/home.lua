@@ -21,7 +21,6 @@ import "androidx.swiperefreshlayout.widget.*"
 import "com.google.android.material.tabs.TabLayout"
 
 
-import "com.kn.MyLuaAdapter"
 import "com.bumptech.glide.Glide"
 
 import "com.daimajia.androidanimations.library.Techniques"
@@ -188,7 +187,7 @@ function 主页刷新(isclear)
       问题id等="视频分割"..v.target.id
       标题=v.target.title
      else
-      --      提示("未知类型"..v.target.type or "无法获取type".." id"..v.target.id or "无法获取id")
+      提示("未知类型"..v.target.type or "无法获取type".." id"..v.target.id or "无法获取id")
     end
     return {点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等}
   end
@@ -223,12 +222,6 @@ function 主页刷新(isclear)
         requrl[-1] = decoded_content.paging.next
        elseif code==401 then
         提示("请登录后访问推荐，http错误码401")
-        --[[      list2.Text="请先登录"
-      list9.Text="请先登录"]]
-        -- list2.setVisibility(8)
-        -- empty2.setVisibility(0)
-        -- list9.setVisibility(8)
-        -- empty9.setVisibility(0)
        else
         提示("获取数据失败，请检查网络是否正常，http错误码"..code)
       end
@@ -332,15 +325,6 @@ zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code
           主页推荐刷新(decoded_content.selected_sections[i].section_id)
         end
         HometabLayout.addTab(tab)
-        --[[
-        hometab:addTab(
-        decoded_content.selected_sections[i].section_name,function() pcall(
-          function()list2.adapter.clear()end
-          ) choosebutton=decoded_content.selected_sections[i].section_id 主页推荐刷新(
-          decoded_content.selected_sections[i].section_id
-          ) end
-        )
-        ]]
       end
     end
    else
@@ -354,8 +338,6 @@ function bnv.onNavigationItemSelected(item)
   activity.setTitle(item)
   if item =="主页" then item="推荐" end
   page_home.setCurrentItem(home_list[item])
-
-  --print(itemId)
   return true;
 end
 
@@ -379,21 +361,10 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
       pos=position
     end
     for i=0,bnv.getChildCount() do
-      --print(bnv.getChildCount(),i)
       bnv.getMenu().getItem(i).setChecked(false)
     end
     bnv.getMenu().getItem(position).setChecked(true)
     ctl.Title=(bnv.getMenu().getItem(position).getTitle())
-    --[[
-    if position==0 then
-      fab.setVisibility(0)
-      YoYo.with(Techniques.ZoomIn).duration(200).playOn(fab)
-     else
-      YoYo.with(Techniques.ZoomOut).duration(200).playOn(fab)
-      task(50,function()fab.setVisibility(8)end)
-    end
-  ]]
-
 
     if pos == 1 then
       想法刷新()
@@ -410,9 +381,7 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
     if pos == 3 then
       关注刷新(1)
     end
-
   end;
-
 
   onPageScrollStateChanged=function(state)
 
@@ -447,7 +416,7 @@ function 日报刷新(isclear)
     }
   end
 
-  --  链接= 'http://www.zhihudaily.me/'
+  --链接='http://www.zhihudaily.me/'
   thisdata=thisdata-1
   import "android.icu.text.SimpleDateFormat"
   cal=Calendar.getInstance();
@@ -660,8 +629,6 @@ ch_table={
   "分割线",
   {"历史","history",},
   {"设置","settings",},
-  --   {"debug","settings",},
-  --  {"Cookie","bug_report",},
 };
 
 
@@ -787,22 +754,17 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       控件可见(page_collections)
       task(400,function()收藏刷新(true) end)
       ctl.setTitle("收藏")
-      --      _title.Text="收藏"
      elseif s=="本地" then
-      --activity.newActivity("local_list")
       task(300,function()activity.newActivity("local_list")end)
      elseif s=="debug" then
-      --activity.newActivity("feedback")
       task(300,function()activity.newActivity("feedback")end)
      elseif s=="设置" then
       task(300,function()activity.newActivity("settings")end)
      elseif s=="一文" then
-      --activity.newActivity("artical")
       task(300,function()activity.newActivity("artical")end)
      elseif s=="Cookie" then
       双按钮对话框("查看Cookie", 获取Cookie("https://www.zhihu.com/"),"复制","关闭",function()复制文本(获取Cookie("https://www.zhihu.com/"))提示("已复制到剪切板")关闭对话框(an)end,function()关闭对话框(an)end)
      elseif s=="历史" then
-      --  activity.newActivity("history")
       task(300,function()activity.newActivity("history")end)
      elseif s=="消息" then
 
@@ -839,52 +801,54 @@ end})
 
 function 热榜刷新(isclear)
 
-  if not(itemc) or isclear then
+  if not isclear then
+    if itemc then
+      return false
+    end
+  end
 
-    itemc=获取适配器项目布局("home/home_hot")
+  itemc=获取适配器项目布局("home/home_hot")
 
-    热榜adp=MyLuaAdapter(activity,itemc)
+  热榜adp=MyLuaAdapter(activity,itemc)
 
-    list3.adapter=热榜adp
+  list3.adapter=热榜adp
 
-    hotsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-    hotsr.setColorSchemeColors({转0x(primaryc)});
-    hotsr.setOnRefreshListener({
-      onRefresh=function()
-        热榜刷新()
-        Handler().postDelayed(Runnable({
-          run=function()
-            hotsr.setRefreshing(false);
-          end,
-        }),1000)
+  hotsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+  hotsr.setColorSchemeColors({转0x(primaryc)});
+  hotsr.setOnRefreshListener({
+    onRefresh=function()
+      热榜刷新()
+      Handler().postDelayed(Runnable({
+        run=function()
+          hotsr.setRefreshing(false);
+        end,
+      }),1000)
 
-      end,
-    });
+    end,
+  });
 
 
-    list3.setOnItemClickListener(AdapterView.OnItemClickListener{
-      onItemClick=function(parent,v,pos,id)
+  list3.setOnItemClickListener(AdapterView.OnItemClickListener{
+    onItemClick=function(parent,v,pos,id)
 
-        local open=activity.getSharedData("内部浏览器查看回答")
+      local open=activity.getSharedData("内部浏览器查看回答")
 
-        if tostring(v.Tag.导向链接.text):find("文章分割") then
-          activity.newActivity("column",{tostring(v.Tag.导向链接.Text):match("文章分割(.+)"),tostring(v.Tag.导向链接.Text):match("分割(.+)")})
+      if tostring(v.Tag.导向链接.text):find("文章分割") then
+        activity.newActivity("column",{tostring(v.Tag.导向链接.Text):match("文章分割(.+)"),tostring(v.Tag.导向链接.Text):match("分割(.+)")})
 
-         elseif tostring(v.Tag.导向链接.text):find("想法分割") then
-          activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
+       elseif tostring(v.Tag.导向链接.text):find("想法分割") then
+        activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
+       else
+        保存历史记录(v.Tag.标题.Text,v.Tag.导向链接.Text,50)
+        if open=="false" then
+
+          activity.newActivity("question",{v.Tag.导向链接.Text,nil})
          else
-          保存历史记录(v.Tag.标题.Text,v.Tag.导向链接.Text,50)
-          if open=="false" then
-
-            activity.newActivity("question",{v.Tag.导向链接.Text,nil})
-           else
-            activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.导向链接.Text)})
-          end
+          activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.导向链接.Text)})
         end
       end
-    })
-
-  end
+    end
+  })
 
   pcall(function()热榜adp.clear()end)
   Handler().postDelayed(Runnable({
@@ -915,72 +879,75 @@ end
 
 function 关注刷新(ppage,url,isclear)
   -- origin15.19 更改
-  if not(follow_itemc) or isclear then
-    datas9={}
-    --关注布局
-    follow_itemc=获取适配器项目布局("home/home_following")
-    moments_nextUrl=""
-    moments_isend=false
+  if not isclear then
+    if follow_itemc then
+      return false
+    end
+  end
+  datas9={}
+  --关注布局
+  follow_itemc=获取适配器项目布局("home/home_following")
+  moments_nextUrl=""
+  moments_isend=false
 
-    gsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-    gsr.setColorSchemeColors({转0x(primaryc)});
-    gsr.setOnRefreshListener({
-      onRefresh=function()
-        关注刷新(1)
-        isadd=true
-        ppage=2
+  gsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+  gsr.setColorSchemeColors({转0x(primaryc)});
+  gsr.setOnRefreshListener({
+    onRefresh=function()
+      关注刷新(1)
+      isadd=true
+      ppage=2
+      Handler().postDelayed(Runnable({
+        run=function()
+          gsr.setRefreshing(false);
+        end,
+      }),1000)
+
+    end,
+  });
+
+  list9_r.setOnScrollChangeListener{
+    onScrollChange=function(view,scrollX,scrollY,oldScrollX,oldScrollY)
+      if scrollY == (view.getChildAt(0).getMeasuredHeight() - view.getMeasuredHeight())
+        gsr.setRefreshing(true)
+        ppage=ppage+1
+        关注刷新(ppage,moments_nextUrl)
+        System.gc()
         Handler().postDelayed(Runnable({
           run=function()
-            gsr.setRefreshing(false);
+            isadd=true
+            gsr.setRefreshing(false)
           end,
         }),1000)
-
-      end,
-    });
-
-    list9_r.setOnScrollChangeListener{
-      onScrollChange=function(view,scrollX,scrollY,oldScrollX,oldScrollY)
-        if scrollY == (view.getChildAt(0).getMeasuredHeight() - view.getMeasuredHeight())
-          gsr.setRefreshing(true)
-          ppage=ppage+1
-          关注刷新(ppage,moments_nextUrl)
-          System.gc()
-          Handler().postDelayed(Runnable({
-            run=function()
-              isadd=true
-              gsr.setRefreshing(false)
-            end,
-          }),1000)
-        end
       end
-    }
+    end
+  }
 
-    list9.setOnItemClickListener(AdapterView.OnItemClickListener{
-      onItemClick=function(parent,v,pos,id)
-        local open=activity.getSharedData("内部浏览器查看回答")
-        if tostring(v.Tag.follow_id.text):find("文章分割") then
-          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-         elseif tostring(v.Tag.follow_id.text):find("想法分割") then
-          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("想法分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)"),"想法"})
-         elseif tostring(v.Tag.follow_id.text):find("问题分割") then
-          activity.newActivity("question",{tostring(v.Tag.follow_id.Text):match("问题分割(.+)"),true})
+  list9.setOnItemClickListener(AdapterView.OnItemClickListener{
+    onItemClick=function(parent,v,pos,id)
+      local open=activity.getSharedData("内部浏览器查看回答")
+      if tostring(v.Tag.follow_id.text):find("文章分割") then
+        activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+       elseif tostring(v.Tag.follow_id.text):find("想法分割") then
+        activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("想法分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)"),"想法"})
+       elseif tostring(v.Tag.follow_id.text):find("问题分割") then
+        activity.newActivity("question",{tostring(v.Tag.follow_id.Text):match("问题分割(.+)"),true})
+       else
+        保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
+
+        if open=="false" then
+          activity.newActivity("answer",{tostring(v.Tag.follow_id.Text):match("(.+)分割"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
          else
-          保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
-
-          if open=="false" then
-            activity.newActivity("answer",{tostring(v.Tag.follow_id.Text):match("(.+)分割"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-           else
-            activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-          end
+          activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
         end
       end
-    })
-  end
+    end
+  })
 
   local posturl = url or "https://www.zhihu.com/api/v3/moments?limit=10"
 
   if ppage<2 then
-    local qqadpqy=LuaAdapter(activity,datas9,follow_itemc)
+    local qqadpqy=MyLuaAdapter(activity,datas9,follow_itemc)
     list9.Adapter=qqadpqy
   end
 
@@ -1044,19 +1011,7 @@ function 关注刷新(ppage,url,isclear)
             list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
           end
         end
-       elseif require "cjson".decode(content).error.message and code==401 then
-        authorerror=AlertDialog.Builder(this)
-        .setTitle("提示")
-        .setMessage("账号存在风险 请更改密码 由于风险问题 不更改密码会无法使用该功能")
-        .setCancelable(false)
-        .setPositiveButton("立即更改密码",nil)
-        .show()
-        authorerror.create()
-        authorerror.getButton(authorerror.BUTTON_POSITIVE).onClick=function()
-          activity.newActivity("huida",{"https://www.zhihu.com/account/password_reset?utm_id=0"})
-        end
       end
-
     end)
   end
 end
@@ -1156,7 +1111,12 @@ function 想法刷新(isclear)
     if code==200 then--判断网站状态
       thisurl=require "cjson".decode(content).paging.next
       for i,v in ipairs(require "cjson".decode(content).data) do
-        local url=v.target.images[1].url
+        local url
+        xpcall(function()
+          url=v.target.images[1].url
+          end,function()
+          url=v.target.video.thumbnail
+        end)
         local title=v.target.excerpt
         local tzurl=v.target.url:match("pin/(.-)?")
         table.insert(mytab,{url=url,title=title,tzurl=tzurl})
@@ -1373,8 +1333,6 @@ function onActivityResult(a,b,c)
     关注刷新(1)
    elseif b==1200 then --夜间模式开启
     设置主题()
-    --    activity.newActivity("home",android.R.anim.fade_in,android.R.anim.fade_out)
-    --    activity.finish()
    elseif b==200 then
     activity.finish()
    elseif b==1500 then
@@ -1446,40 +1404,7 @@ Http.get(update_api,head,function(code,content)
 end)
 
 if activity.getSharedData("自动清理缓存")=="true" then
-  task(function(dar)
-    require "import"
-    import "java.io.File"
-    local tmp={[1]=0}
-
-    local function getDirSize(tab,path)
-      if File(path).exists() then
-        local a=luajava.astable(File(path).listFiles() or {})
-
-        for k,v in pairs(a) do
-          if v.isDirectory() then
-            getDirSize(tab,tostring(v))
-           else
-
-            tab[1]=tab[1]+v.length()
-          end
-        end
-      end
-    end
-    dar=tostring(ContextCompat.getDataDir(activity)).."/cache"
-
-    local a1,a2=File("/data/data/"..activity.getPackageName().."/database/webview.db"),File("/data/data/"..activity.getPackageName().."/database/webviewCache.db")
-    pcall(function()
-      tmp[1]=tmp[1]+(a1.length() or 0)+(a2.length() or 0)
-      a1.delete()
-      a2.delete()
-    end)
-    LuaUtil.rmDir(File(dar))
-
-    return tmp[1]
-    end,APP_CACHEDIR,function(m)
-    if m==nil then m=0 end
-    提示("清理成功,共清理 "..tokb(m))
-  end)
+  清理内存()
 end
 
 a=MUKPopu({
@@ -1526,133 +1451,20 @@ function onCreate()
   end
 end
 
+if not(this.getSharedData("hometip0.01")) then
 
-if 全局主题值=="Day" then
-  bwz=0x3f000000
- else
-  bwz=0x3fffffff
+  task(50,function()
+    if _drawer.isDrawerOpen(Gravity.LEFT) then
+      --如果左侧侧滑显示，关闭左侧侧滑并阻止返回键
+      _drawer.closeDrawer(Gravity.LEFT)
+      return
+    end
+    _drawer.openDrawer(Gravity.LEFT)
+    AlertDialog.Builder(this)
+    .setTitle("小提示")
+    .setCancelable(false)
+    .setMessage("如想使用私信 通知功能 请展开侧边栏的信息按钮")
+    .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("hometip0.01","true") end})
+    .show()
+  end)
 end
-
-local gd2 = GradientDrawable()
-gd2.setColor(转0x(backgroundc))--填充
-local radius=dp2px(16)
-gd2.setCornerRadii({radius,radius,radius,radius,0,0,0,0})--圆角
-gd2.setShape(0)--形状，0矩形，1圆形，2线，3环形
-local dann={
-  LinearLayout;
-  layout_width="-1";
-  layout_height="-1";
-  {
-    LinearLayout;
-    orientation="vertical";
-    layout_width="-1";
-    layout_height="-2";
-    Elevation="4dp";
-    BackgroundDrawable=gd2;
-    id="ztbj";
-    {
-      CardView;
-      layout_gravity="center",
-      --background=cardedge,
-      CardBackgroundColor=cardedge;
-      radius="3dp",
-      Elevation="0dp";
-      layout_height="6dp",
-      layout_width="56dp",
-      layout_marginTop="12dp";
-    };
-    {
-      TextView;
-      layout_width="-1";
-      layout_height="-2";
-      textSize="20sp";
-      layout_marginTop="24dp";
-      layout_marginLeft="24dp";
-      layout_marginRight="24dp";
-      Text=bt;
-      Typeface=字体("product-Bold");
-      textColor=primaryc;
-    };
-    {
-      ScrollView;
-      layout_width="-1";
-      layout_height="-1";
-      {
-        TextView;
-        layout_width="-1";
-        layout_height="-2";
-        textSize="14sp";
-        layout_marginTop="8dp";
-        layout_marginLeft="24dp";
-        layout_marginRight="24dp";
-        layout_marginBottom="8dp";
-        Typeface=字体("product");
-        Text=nr;
-        textColor=textc;
-        id="sandhk_wb";
-      };
-    };
-    {
-      LinearLayout;
-      orientation="horizontal";
-      layout_width="-1";
-      layout_height="-2";
-      gravity="right|center";
-      {
-        CardView;
-        layout_width="-2";
-        layout_height="-2";
-        radius="2dp";
-        --background="#00000000";
-        CardBackgroundColor="#00000000";
-        layout_marginTop="8dp";
-        layout_marginLeft="8dp";
-        layout_marginBottom="24dp";
-        Elevation="0";
-        onClick=qxnr;
-        {
-          TextView;
-          layout_width="-1";
-          layout_height="-2";
-          textSize="16sp";
-          Typeface=字体("product-Bold");
-          paddingRight="16dp";
-          paddingLeft="16dp";
-          paddingTop="8dp";
-          paddingBottom="8dp";
-          Text=qx;
-          textColor=stextc;
-          BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-        };
-      };
-      {
-        CardView;
-        layout_width="-2";
-        layout_height="-2";
-        radius="4dp";
-        --background=primaryc;
-        CardBackgroundColor=primaryc;
-        layout_marginTop="8dp";
-        layout_marginLeft="8dp";
-        layout_marginRight="24dp";
-        layout_marginBottom="24dp";
-        Elevation="1dp";
-        onClick=qdnr;
-        {
-          TextView;
-          layout_width="-1";
-          layout_height="-2";
-          textSize="16sp";
-          paddingRight="16dp";
-          paddingLeft="16dp";
-          Typeface=字体("product-Bold");
-          paddingTop="8dp";
-          paddingBottom="8dp";
-          Text=qd;
-          textColor=backgroundc;
-          BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-        };
-      };
-    };
-  };
-};

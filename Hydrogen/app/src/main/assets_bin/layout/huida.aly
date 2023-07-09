@@ -87,6 +87,13 @@
         layout_width="0";
         layout_height="2dp";
       },
+    {
+      LinearLayout;
+      orientation="vertical";
+      layout_height="-1",
+      layout_width="-1",
+      gravity="center",
+      layout_gravity="center",
       {
         LuaWebView;
         layout_height="fill";
@@ -94,6 +101,15 @@
         layout_wieght="1",
         BackgroundColor="0x01000000",
         id="liulan";
+      };
+      {
+        ProgressBar;
+        ProgressBarBackground2=转0x(primaryc),
+        id="progress";
+        Visibility=8,
+        layout_height="56dp",
+        layout_width="56dp",
+      };    
       };
     };
   };

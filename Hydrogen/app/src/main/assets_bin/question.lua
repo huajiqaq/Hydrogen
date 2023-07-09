@@ -16,10 +16,7 @@ question_id,是否记录历史记录=...
 --卡片布局
 question_itemc=获取适配器项目布局("question/question")
 
-
-question_adp=LuaAdapter(activity,question_datas,question_itemc)
-
---import "com.google.android.material.progressindicator.CircularProgressIndicator"
+question_adp=MyLuaAdapter(activity,question_datas,question_itemc)
 
 question_list.addFooterView(loadlayout({
   LinearLayout,
@@ -35,15 +32,6 @@ question_list.addFooterView(loadlayout({
     ProgressBarBackground2=转0x(primaryc),
     style="?android:attr/progressBarStyleLarge"
   },
-  --[[
-  {
-    CircularProgressIndicator,
-    layout_height="19dp",
-    layout_width="19dp",
-    indeterminate="true",
---    style="?android:attr/progressBarStyleLarge"
-  },
-  ]]
   {
     TextView,
     text="加载中",
@@ -84,8 +72,6 @@ function bit.onScrollChange(a,b,j,y,u)
 end
 
 
-
-
 question_base=require "model.question":new(question_id)
 :setresultfunc(function(tab)
   question_adp.add{
@@ -103,12 +89,8 @@ end)
 end)
 :getData(function(tab)
 
-  --[[
-  if this.getSharedData("标题简略化")=="true" then
-    title.Text="问题"
-   else]]
+
   title.Text=tab.title
-  --  end
 
   if 是否记录历史记录 then
     初始化历史记录数据(true)
@@ -151,7 +133,7 @@ end)
     .setAppCacheEnabled(false)
     --//开启 DOM 存储功能
     .setDomStorageEnabled(false)
-    --        //开启 数据库 存储功能
+    --//开启 数据库 存储功能
     .setDatabaseEnabled(false)
     .setCacheMode(WebSettings.LOAD_NO_CACHE);
    else
@@ -160,7 +142,7 @@ end)
     .setAppCacheEnabled(true)
     --//开启 DOM 存储功能
     .setDomStorageEnabled(true)
-    --        //开启 数据库 存储功能
+    --//开启 数据库 存储功能
     .setDatabaseEnabled(true)
     .setCacheMode(2)
   end
@@ -177,42 +159,14 @@ end)
     end,
     onPageFinished=function(view,url)
       show.setFocusable(false)
-      --[[
-      w = View.MeasureSpec.makeMeasureSpec(0,
-
-      View.MeasureSpec.UNSPECIFIED);
-
-      h = View.MeasureSpec.makeMeasureSpec(0,
-
-      View.MeasureSpec.UNSPECIFIED);
-      show.measure(w, h);]
-      ]]
 
       if 全局主题值=="Night" then
-        --      黑暗模式主题(view)
-        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=80,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+        加载js(view,获取js("darkpage"))
       end
 
       imgReset()
 
-      view.evaluateJavascript([[(function(){
-    var tags=document.getElementsByTagName("img");         
-    for(var i=0;i<tags.length;i++) {
-        tags[i].onclick=function(){
-         var tag=document.getElementsByTagName("img"); 
-         var t={};     
-         for(var z=0;z<tag.length;z++) {
-            t[z]=tag[z].src; 
-            if (tag[z].src==this.src) {
-               t[tag.length]=z;
-            }                      
-         };  
-           
-         window.androlua.execute(JSON.stringify(t));
-        }                                  
-     };  
-    return tags.length;  
-    })();]],{onReceiveValue=function(b)end})
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
 
       local z=JsInterface{
         execute=function(b)
@@ -233,18 +187,9 @@ end)
     end,
 
     onProgressChanged=function(view,Progress)
-      --      if 全局主题值=="Night" then
-      --        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-      --      end
-
     end,
     onLoadResource=function(view,url)
-      --      if 全局主题值=="Night" then
-      --        加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-      --      end
-
     end,
-
   }
 
 end)
@@ -286,7 +231,7 @@ a=MUKPopu({
 
         zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
           if code==200 then
-            url=" https://www.zhihu.com/question/"..question_id.."/answers/editor"
+            url=" https://www.zhihu.com/question/"..question_id.."/write"
 
             activity.newActivity("huida",{url,nil,true})
            elseif code==401 then

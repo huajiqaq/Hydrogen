@@ -27,9 +27,11 @@ end
 function base:getUrlByType(id,type)
 
   if type~="comments" then
-    return "https://api.zhihu.com/"..type.."/"..id.."/comments?include=badge%5B%2A%5D.topics%2Ccomment_count%2Cexcerpt%2Cvoteup_count%2Ccreated_time%2Cupdated_time%2Cupvoted_followees%2Cvoteup_count&limit=20&sort_by="..(self.sortby or "default")
+    return "https://api.zhihu.com/comment_v5/"..type.."/"..id.."/root_comment?order_by="..(self.sortby or "score").."&type="
+--    return "https://api.zhihu.com/"..type.."/"..id.."/comments?include=badge%5B%2A%5D.topics%2Ccomment_count%2Cexcerpt%2Cvoteup_count%2Ccreated_time%2Cupdated_time%2Cupvoted_followees%2Cvoteup_count&limit=20&sort_by="..(self.sortby or "default")
    else
-    return ("https://api.zhihu.com/comments/"..id.."/conversation")--.."?include=badge%5B%2A%5D.topics%2Ccomment_count%2Cexcerpt%2Cvoteup_count%2Ccreated_time%2Cupdated_time%2Cupvoted_followees%2Cvoteup_count&limit=20")
+    return ("https://api.zhihu.com/comment_v5/comment/"..id.."/child_comment")
+    --    return ("https://api.zhihu.com/comments/"..id.."/conversation")--.."?include=badge%5B%2A%5D.topics%2Ccomment_count%2Cexcerpt%2Cvoteup_count%2Ccreated_time%2Cupdated_time%2Cupvoted_followees%2Cvoteup_count&limit=20")
   end
 end
 
@@ -56,18 +58,14 @@ function base:next(callback)
       ["cookie"] = 获取Cookie("https://www.zhihu.com/")
     }
 
-    Http.get(self.nextUrl or self:getUrlByType(self.id,self.type),head ,function(code,body)
+    zHttp.get(self.nextUrl or self:getUrlByType(self.id,self.type),head ,function(code,body)
 
       if code==200 then
         decoded_content=require "cjson".decode(body)
         self.nextUrl=decoded_content.paging.next
         self.is_end=decoded_content.paging.is_end
-        self.common_counts=tointeger(decoded_content.common_counts)
-        --[[
-        if self.type=="pins" then
-        self.common_counts_pins=tointeger(#decoded_content)
-        end
-        ]]
+        self.common_counts=tointeger(decoded_content.counts.total_counts)
+--        self.common_counts=tointeger(decoded_content.common_counts)
         for k,v in ipairs(decoded_content.data) do
           if self.data[v.id] then
            else

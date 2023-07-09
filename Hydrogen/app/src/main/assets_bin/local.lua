@@ -16,8 +16,9 @@ title,author=...
 波纹({fh,_more,mark},"圆主题")
 波纹({all_root},"方自适应")
 
+myuri = Uri.fromFile(File(内置存储文件("Download/"..title.."/"..author.."/mht.mht"))).toString();
 
-webview.loadUrl("file://"..内置存储文件("Download/"..urlEncode(title).."/"..urlEncode(author).."/mht.mht"))
+webview.loadUrl(myuri)
 
 _title.text=title
 xxx=读取文件(内置存储文件("Download/"..title.."/"..author.."/detail.txt"))
@@ -38,12 +39,13 @@ if userheadline.text=="" then
 end
 
 mark.onClick=function()
-  提示("暂不支持查看评论")
-  --activity.newActivity("comment",{nil,"local",title,title,username.text})
-  --print(nil,"local",title,username.text)
-
+  local 保存路径=内置存储文件("Download/"..title:gsub("/","or").."/"..username.text)
+  if getDirSize(保存路径.."/".."fold/")==0 then
+    提示("你还没有收藏评论")
+   else
+    activity.newActivity("comment",{nil,"local",title,username.text})
+  end
 end
-
 
 
 local function 设置滑动跟随(t)
@@ -81,8 +83,6 @@ webview
 .setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
 .setJavaScriptEnabled(true)--设置支持Js
 .setJavaScriptCanOpenWindowsAutomatically(true)
---  .setSupportZoom(true)
---  .setLoadWithOverviewMode(true)
 .setUseWideViewPort(true)
 .setDefaultTextEncodingName("utf-8")
 .setLoadsImagesAutomatically(true)
@@ -92,9 +92,9 @@ webview
 .setAppCachePath(APP_CACHEDIR)
 --//开启 DOM 存储功能
 .setDomStorageEnabled(false)
---        //开启 数据库 存储功能
+--//开启 数据库 存储功能
 .setDatabaseEnabled(false)
---     //开启 应用缓存 功能
+--//开启 应用缓存 功能
 .setSupportZoom(true)
 .setBuiltInZoomControls(true)
 
@@ -116,20 +116,16 @@ end
 webview.setDownloadListener({
   onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
     提示("本地暂不支持下载")
-    --webview下载文件(链接, UA, 相关信息, 类型, 大小)
 end})
 
 webview.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)
-    --    if url~=("https://www.zhihu.com/appview/answer/"..tointeger(b.id).."") then
     检查链接(url)
     view.stopLoading()
     view.goBack()
-    --    end
   end,
   onPageStarted=function(view,url,favicon)
     if 全局主题值=="Night" then
-      --      加载js(webview,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
       黑暗模式主题(view)
     end
   end,
@@ -137,32 +133,9 @@ webview.setWebViewClient{
     if 全局主题值=="Night" then
       黑暗模式主题(view)
     end
-    --    if 全局主题值=="Night" then
-    --      加载js(webview,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-    --    end
   end,
   onLoadResource=function(view,url)
-    --    if 全局主题值=="Night" then
-    --      加载js(webview,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-    --    end
-    view.evaluateJavascript([[(function(){
-    var tags=document.getElementsByTagName("img");         
-    for(var i=0;i<tags.length;i++) {
-        tags[i].onclick=function(){
-         var tag=document.getElementsByTagName("img"); 
-         var t={};     
-         for(var z=0;z<tag.length;z++) {
-            t[z]=tag[z].src; 
-            if (tag[z].src==this.src) {
-               t[tag.length]=z;
-            }                      
-         };  
-           
-         window.androlua.execute(JSON.stringify(t));
-        }                                  
-     };  
-    return tags.length;  
-    })();]],{onReceiveValue=function(b)end})
+    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
   end,
 }
 
@@ -180,9 +153,6 @@ webview.addJSInterface(z,"androlua")
 
 webview.setWebChromeClient(luajava.override(WebChromeClient,{
   onProgressChanged=function(super,view,url,favicon)
-    --    if 全局主题值=="Night" then
-    --      加载js(webview,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=50,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
-    --    end
   end,
   onShowCustomView=function(z,a,b)
     v=a
