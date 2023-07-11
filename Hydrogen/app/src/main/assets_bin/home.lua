@@ -3,8 +3,6 @@ import "mods.muk"
 
 import "android.os.Handler"
 import "java.lang.Runnable"
-import "com.michael.NoScrollListView"
-import "com.michael.NoScrollGridView"
 import "android.widget.ImageView$ScaleType"
 import "com.lua.custrecycleradapter.*"
 import "androidx.recyclerview.widget.*"
@@ -12,7 +10,6 @@ import "androidx.recyclerview.widget.*"
 import "com.google.android.material.bottomnavigation.BottomNavigationView"
 import "androidx.viewpager.widget.ViewPager"
 import "androidx.core.widget.NestedScrollView"
-import "com.michael.NoScrollListView"
 import "androidx.appcompat.widget.LinearLayoutCompat"
 import "com.google.android.material.appbar.*"
 import "com.google.android.material.floatingactionbutton.FloatingActionButton"
@@ -23,12 +20,13 @@ import "com.google.android.material.tabs.TabLayout"
 
 import "com.bumptech.glide.Glide"
 
-import "com.daimajia.androidanimations.library.Techniques"
-import "com.daimajia.androidanimations.library.YoYo"
+--import "com.daimajia.androidanimations.library.Techniques"
+--import "com.daimajia.androidanimations.library.YoYo"
 import "com.getkeepsafe.taptargetview.*"
 
 activity.setSupportActionBar(toolbar)
 activity.setContentView(loadlayout("layout/home"))
+
 
 初始化历史记录数据(true)
 

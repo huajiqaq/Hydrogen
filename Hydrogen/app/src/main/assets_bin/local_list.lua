@@ -3,7 +3,6 @@ import "mods.muk"
 import "com.lua.*"
 
 activity.setContentView(loadlayout("layout/local_list"))
---设置视图
 
 初始化历史记录数据(true)
 
@@ -21,7 +20,7 @@ end
 
 
 波纹({fh,_more},"圆主题")
-_title.Text="已保存的回答"
+_title.Text="已保存的内容"
 
 local_item=获取适配器项目布局("local_item/local_item")
 
@@ -43,7 +42,7 @@ notedata={}
 noteadp=LuaAdapter(activity,notedata,local_item)
 local_listview.setAdapter(noteadp)
 
-mytab={"全部","回答","想法","文章"}
+mytab={"全部","回答","想法","文章","视频"}
 for i,v in ipairs(mytab) do
   localtab:addTab(v,function() pcall(function()noteadp.clear()end) 加载笔记(v) mystr=v noteadp.notifyDataSetChanged() end,3)
 end
@@ -61,9 +60,11 @@ function 加载笔记(str)
    elseif str =="回答" then
     str="answer_id"
    elseif str=="想法" then
-    str="pin_id"
+    str="pin"
    elseif str=="文章" then
-    str="article_id"
+    str="article"
+   elseif str=="视频" then
+    str="video"
   end
 
   notedata={}
@@ -138,9 +139,9 @@ end})
 
 local_listview.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
   onItemLongClick=function(id,v,zero,one)
-    双按钮对话框("删除","删除该问题？该操作不可撤消！","是的","点错了",function()删除文件(内置存储文件("Download/"..v.Tag.catitle.Text))
+    双按钮对话框("删除","删除该内容？该操作不可撤消！","是的","点错了",function()删除文件(内置存储文件("Download/"..v.Tag.catitle.Text))
       an.dismiss()
-      加载笔记()
+      加载笔记(mystr)
       提示("已删除")end,function()an.dismiss()end)
     return true
 end})
@@ -187,7 +188,7 @@ function 本地列表(path)
         layout_marginTop="24dp";
         layout_marginLeft="24dp";
         layout_marginRight="24dp";
-        Text="选择回答者";
+        Text="选择作者";
         Typeface=字体("product-Bold");
         textColor=primaryc;
       };
@@ -235,7 +236,7 @@ function 本地列表(path)
           layout_width="-2";
           layout_height="-2";
           radius="4dp";
-          background=primaryc;
+          CardBackgroundColor=primaryc;
           layout_marginTop="8dp";
           layout_marginLeft="8dp";
           layout_marginRight="24dp";

@@ -5,7 +5,6 @@ import "android.graphics.PorterDuffColorFilter"
 import "android.graphics.PorterDuff"
 import "mods.muk"
 --import "mods.loadlayout"
-import "com.michael.NoScrollListView"
 import "android.widget.NumberPicker$OnValueChangeListener"
 import "mods.muk"
 import "com.lua.custrecycleradapter.*"
@@ -17,19 +16,14 @@ import "androidx.recyclerview.widget.*"
 波纹({fh},"圆主题")
 波纹({moren,xiugai},"方自适应")
 
---dl=ProgressDialog.show(activity,nil,'加载中 请耐心等待')
---dl.show()
 
 local list_item=获取适配器项目布局("xgtj/xgtj")
 
 data={}
---myview = LayoutInflater.from(this).inflate(R.layout.recycler_view, null);
 
---设置布局管理器
 
 --设置线性列表布局
 recycler_view.layoutManager=ExetendFlexboxLayoutManager(this)
-
 
 import "android.widget.LinearLayout$LayoutParams"
 
@@ -76,24 +70,17 @@ local adapter=LuaCustRecyclerAdapter(AdapterCreator({
       end
      else
 
-
       lay[newdata.myt]=tag.root
-
       tag.cardv.setVisibility(View.GONE)
       tag.myt.setVisibility(View.VISIBLE)
       tag.myt.text=newdata.myt
-
-
       local hhh=LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-
       tag.root.setLayoutParams(hhh)
     end
   end
 }))
 
-
 recycler_view.adapter=adapter
-
 
 luajava.new(luajava.bindClass("androidx.recyclerview.widget.ItemTouchHelper"), luajava.override(luajava.bindClass("androidx.recyclerview.widget.ItemTouchHelper").Callback,{
   getMovementFlags=function(b,c,d)
@@ -159,16 +146,12 @@ end
 function 开始加载推荐()
   zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",post_access_token_head,function(code,content)
     if code==200 then
-      --    提示(require "cjson".decode(content).selected_sections[1].section_name)
       for i=1, 3 do
         if i==1 then
           alldata=#require "cjson".decode(content).selected_sections+#require "cjson".decode(content).guess_like_sections+#require "cjson".decode(content).more_sections-1
 
-          table.insert(data,{myt=[[提示：你可点击标签来添加/删除 可长按拖动排序 可拖动其他来快速添加  
- ]]})
+          table.insert(data,{myt="提示：你可点击标签来添加/删除 可长按拖动排序 可拖动其他来快速添加".."\n"})
           table.insert(data,{myt="我的"})
-          --提示(tostring(i))
-
           for i=1, #require "cjson".decode(content).selected_sections do
             adapter.notifyDataSetChanged()
             if i<#require "cjson".decode(content).selected_sections+1 and require "cjson".decode(content).selected_sections[i].section_name~="圈子" then
@@ -199,7 +182,6 @@ function 开始加载推荐()
             页面设置()
           end
           adapter.notifyDataSetChanged()
-          --        dl.dismiss()
         end
       end
     end

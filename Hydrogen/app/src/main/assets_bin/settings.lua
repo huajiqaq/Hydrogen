@@ -5,7 +5,6 @@ import "android.graphics.PorterDuffColorFilter"
 import "android.graphics.PorterDuff"
 import "mods.muk"
 --import "mods.loadlayout"
-import "com.michael.NoScrollListView"
 import "android.widget.NumberPicker$OnValueChangeListener"
 import "com.google.android.material.materialswitch.MaterialSwitch"
 设置视图("layout/settings")
@@ -26,9 +25,7 @@ data = {
   {__type=4,subtitle="夜间模式追随系统",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))}},
   {__type=4,subtitle="夜间模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
 
-  --  {__type=4,subtitle="内部搜索(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("内部搜索(beta)"))}},
   {__type=4,subtitle="回答预加载(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
-  --  {__type=4,subtitle="加载回答中存在的视频(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("加载回答中存在的视频(beta)"))}},
   {__type=4,subtitle="标题简略化",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
   {__type=4,subtitle="全屏模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=5,subtitle="字体大小",image=图标(""),status={
@@ -67,14 +64,11 @@ data = {
 }
 
 
-tab={ --点击table
+tab={
 
   ["回答预加载(beta)"]=function()
     提示("此功能可能还有隐性bug,仅供体验，若影响体验请关闭")
   end,
-  --  "加载回答中存在的视频(beta)"]=function()
-  --    提示("开启后如果没有加载请多次尝试")
-  --  end,
   夜间模式=function()
     提示("返回主页面生效")
     activity.setResult(1200,nil)
@@ -93,7 +87,6 @@ tab={ --点击table
   end,
   开启想法=function()
     提示("下次启动软件生效")
-    --    activity.setResult(1200,nil)
   end,
   修改主页排序=function()
     zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
@@ -362,97 +355,12 @@ about_item={
 };
 
 
-
 if this.getSharedData("内部浏览器查看回答") == nil then
   this.setSharedData("内部浏览器查看回答","false")
 end
 
---[[
-if this.getSharedData("加载回答中存在的视频(beta)") == nil then
-  this.setSharedData("加载回答中存在的视频(beta)","true")
-end
-]]
-
-
---activity.setTheme(Theme_Material_Light)
-
-
 adp=LuaMultiAdapter(this,data,about_item)
-
---[[adp.addAll{
-  --{__type=1,title=""},
-  {__type=4,subtitle="内部浏览器查看回答",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("内部浏览器查看回答"))}},
-  {__type=4,subtitle="自动打开剪贴板上的知乎链接",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("自动打开剪贴板上的知乎链接"))}},
-  --  {__type=1,title=""},
-  {__type=4,subtitle="夜间模式追随系统",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))}},
-  {__type=4,subtitle="夜间模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
-  --  {__type=1,title=""},
-  --  {__type=4,subtitle="内部搜索(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("内部搜索(beta)"))}},
-  {__type=4,subtitle="回答预加载(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
-  {__type=4,subtitle="加载回答中存在的视频(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("加载回答中存在的视频(beta)"))}},
-  {__type=5,subtitle="字体大小",image=图标(""),status={
-      minValue=10,
-      value=tonumber(activity.getSharedData("font_size")),
-      maxValue=30,
-      OnValueChangedListener=OnValueChangeListener{
-        onValueChange=function(_,a)
-          activity.setResult(1200,nil)
-
-          activity.setSharedData("font_size",(a+1).."")
-        end,
-      },
-      wrapSelectorWheel=false,
-  }},
-  --  {__type=1,title=""},
-  {__type=3,subtitle="清理缓存",image=图标("")},--,status={Checked=Boolean.valueOf(this.getSharedData("内部浏览器查看回答"))}}
-  {__type=3,subtitle="关于",image=图标("")},
-  {__type=3,subtitle="修改主页推荐顺序",image=图标("")},
-}]]
-
 settings_list.setAdapter(adp)
-
-
---[[function clear()
-  task(function(dar)
-    --   dar=File(activity.getLuaDir()).parent.."/cache/webviewCache"
-    require "import"
-    import "java.io.File"
-    local tmp={[1]=0}
-
-    local function getDirSize(tab,path)
-      if File(path).exists() then
-        local a=luajava.astable(File(path).listFiles() or {})
-
-        for k,v in pairs(a) do
-          if v.isDirectory() then
-            getDirSize(tab,tostring(v))
-           else
-
-            tab[1]=tab[1]+v.length()
-          end
-        end
-      end
-    end
-    getDirSize(tmp,dar)
-    getDirSize(tmp,"/sdcard/Android/data/"..activity.getPackageName().."/cache/images")
-
-    local a1,a2=File("/data/data/"..activity.getPackageName().."/database/webview.db"),File("/data/data/"..activity.getPackageName().."/database/webviewCache.db")
-    pcall(function()
-      tmp[1]=tmp[1]+(a1.length() or 0)+(a2.length() or 0)
-      a1.delete()
-      a2.delete()
-    end)
-    LuaUtil.rmDir(File(dar))
-    LuaUtil.rmDir(File("/sdcard/Android/data/"..activity.getPackageName().."/cache/images"))
-
-    return tmp[1]
-    end,APP_CACHEDIR,function(m)
-
-    提示("清理成功,共清理 "..tokb(m))
-  end)
-end]]
-
-
 
 
 settab={

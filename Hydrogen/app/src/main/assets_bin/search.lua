@@ -4,7 +4,6 @@ import "andoid.os.*"
 import "android.widget.*"
 import "android.view.*"
 import "mods.muk"
-import "com.michael.NoScrollGridView"
 import "com.google.android.material.textfield.TextInputLayout"
 import "com.google.android.material.textfield.TextInputEditText"
 
@@ -18,11 +17,7 @@ button.onClick=function()
   if #(tostring(t2.text):gsub("\n",""):gsub(" ",""))<1 then
     提示("请输入您要搜索的内容")
    else
-    --[[    if activity.getSharedData("内部搜索(beta)")=="true" then
-      activity.newActivity("search_result",{search_editor.EditText.text})
-     else]]
     activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..t2.text})
-    --    end
   end
 end
 

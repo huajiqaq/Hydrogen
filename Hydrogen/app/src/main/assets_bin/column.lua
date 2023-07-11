@@ -12,7 +12,7 @@ import "com.androlua.LuaWebView$JsInterface"
 
 --下面是监听滑动代码部分，
 
-local result,类型=...
+local result,类型,islocal,uri,simpletitle,autoname=...
 
 if 类型==nil or 类型:match("%d") then
   类型="文章"
@@ -20,9 +20,25 @@ end
 
 初始化历史记录数据(true)
 
-ishavepic=true
-
 activity.setContentView(loadlayout("layout/column_parent"))
+
+if islocal then
+  if 类型~="视频" then
+    原类型=类型
+    类型="本地"
+  end
+  comment_type="local"
+ else
+
+  if 类型=="文章" then
+    comment_type="articles"
+   elseif 文章=="想法"
+    comment_type="pins"
+   elseif 类型=="视频"
+    comment_type="zvideos"
+  end
+
+end
 
 
 local hsn=this.getResources().getDimensionPixelSize( luajava.bindClass("com.android.internal.R$dimen")().status_bar_height )--获取状态栏高
@@ -43,118 +59,9 @@ function setProgress(p)
 
 end
 
---[[task(1,function()
-  ades=menus.getHeight()
-  mbt=_title.getY()
-  bhj.Alpha=0
-  gft.alpha=0
-  if mty.getHeight()<(ades*2)+bit.getHeight() then
-    layoutParams = mty.getLayoutParams();
-    layoutParams.setMargins(0,ades,0,0);--4个参数按顺序分别是左上右下
-    layoutParams.height =bit.getHeight()-(mby.getHeight()/3)--hsn
-    mty.setLayoutParams(layoutParams);
-   else
-    layoutParams = mty.getLayoutParams();
-    layoutParams.setMargins(0,ades,0,0);--4个参数按顺序分别是左上右下
-    mty.setLayoutParams(layoutParams);
-  end
-end)
-
-
-function 恢复白色()
-  ishavepic=false
-  mn.setTranslationY(-((mbys.getHeight())/2))
-  linearParams = menus.getLayoutParams()
-  linearParams.height =(mbys.getHeight()/4)+hsn
-  menus.setLayoutParams(linearParams)
-  gft.alpha=1
-  bhj.alpha=1
-  layoutParams = mty.getLayoutParams();
-  layoutParams.setMargins(0,dp2px(56),0,0);--4个参数按顺序分别是左上右下
-  mty.setLayoutParams(layoutParams);
-end
-
-
-function 恢复沉浸()
-  ishavepic=true
-  mn.setTranslationY(0)
-
-  linearParams = menus.getLayoutParams()
-  linearParams.height =mbys.getHeight()+((mby.getHeight()/2.2)+hsn)
-  menus.setLayoutParams(linearParams)
-
-  gft.alpha=0
-  bhj.alpha=0
-  if mty.getHeight()<(ades*2)+bit.getHeight() then
-    layoutParams = mty.getLayoutParams();
-    layoutParams.setMargins(0,ades,0,0);--4个参数按顺序分别是左上右下
-    layoutParams.height =bit.getHeight()-(mby.getHeight()/3)-hsn
-    mty.setLayoutParams(layoutParams);
-   else
-    layoutParams = mty.getLayoutParams();
-    layoutParams.setMargins(0,ades,0,0);--4个参数按顺序分别是左上右下
-    mty.setLayoutParams(layoutParams);
-  end
-end
-
-ase=true
-
-
-version_sdk = Build.VERSION.SDK
-
-
-function bit.onScrollChange(a,b,j,y,u)
-  if ishavepic==false then
-    --    bit.ScrollTo(205,0)
-    return
-  end
-  scale = j / mbys.getHeight();
-
-  if CoordProg~=nil then
-    CoordProg(scale<=1 and scale or 1)
-  end
-  if j==0 then
-
-    linearParams = menus.getLayoutParams()
-    linearParams.height =mbys.getHeight()+((mby.getHeight()/2.2)+hsn)
-    menus.setLayoutParams(linearParams)
-    mn.setTranslationY(0)
-
-   elseif j > 0 and j <= mbys.getHeight() then
-
-    scale = j / mbys.getHeight();
-    alpha = (255 * scale);
-    if CoordProg~=nil then
-      CoordProg(scale)
-    end
-    mn.setTranslationY((-j/3))
-    linearParams = menus.getLayoutParams()
-    linearParams.height =((mbys.getHeight()/4)+hsn)+(mbys.getHeight()-((j/mbys.getHeight())*mbys.getHeight()))
-    menus.setLayoutParams(linearParams)
-
-   else
-
-    mn.setTranslationY(-((mbys.getHeight())/2))
-    linearParams = menus.getLayoutParams()
-    linearParams.height =(mbys.getHeight()/4)+hsn
-    menus.setLayoutParams(linearParams)
-    if CoordTop~=nil then
-      CoordTop()
-    end
-  end
-end
-
-]]
---监听滑动代码 结束
-
-
 _title.Text="加载中"
 
 mcolumn=column:new(result)
-
-
-urls=0
-
 
 function 刷新()
   if 类型=="文章" then
@@ -168,8 +75,8 @@ function 刷新()
        else
         content.setVisibility(0)
         autoname=url.author.name
+        simpletitle=url.title
         _title.Text=url.title
-        urls=url
         --  恢复白色()
         content.loadUrl("https://www.zhihu.com/appview/p/"..result)
         保存历史记录(_title.Text,"文章分割"..result,50)
@@ -192,6 +99,7 @@ function 刷新()
     _title.Text="视频"
     zHttp.get("https://www.zhihu.com/api/v4/zvideos/"..result,head,function(code,content)
       simpletitle=require "cjson".decode(content).title
+      autoname=require "cjson".decode(content).author.name
       保存历史记录(simpletitle,"视频分割"..result,50)
     end)
     if activity.getSharedData("视频提示0.01")==nil
@@ -202,98 +110,12 @@ function 刷新()
       .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("视频提示0.01","true") end})
       .show()
     end
-    -- 恢复白色()
-  end
-  --[[      if #url.title_image>0 then
-
-        task(function(url)return loadbitmap(url)
-          end,url.title_image,function(url)
-          恢复沉浸()
-          mn.setImageBitmap(url)
-          content.setVisibility(0)
-          content.loadUrl("https://www.zhihu.com/appview/p/"..result)
-        end)
-       else
-        恢复白色()
-        content.setVisibility(0)
-        content.loadUrl("https://www.zhihu.com/appview/p/"..result)
-      end]]
-
-
-end
-
-ur=false
-
-function 高斯模糊(id,tp,radius1,radius2)
-  function blur( context, bitmap, blurRadius)
-    local renderScript = RenderScript.create(context);
-    local blurScript = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
-    local inAllocation = Allocation.createFromBitmap(renderScript, bitmap);
-    local outputBitmap = bitmap;
-    local outAllocation = Allocation.createTyped(renderScript, inAllocation.getType());
-    blurScript.setRadius(blurRadius);
-    blurScript.setInput(inAllocation);
-    blurScript.forEach(outAllocation);
-    outAllocation.copyTo(outputBitmap);
-    inAllocation.destroy();
-    outAllocation.destroy();
-    renderScript.destroy();
-    blurScript.destroy();
-
-    return outputBitmap;
+   elseif 类型=="本地" then
+    content.loadUrl(uri)
+    _title.Text=simpletitle
   end
 
-  bitmap=tp
-
-  function blurAndZoom(context,bitmap,blurRadius,scale)
-    return zoomBitmap(blur(context,zoomBitmap(bitmap, 1 / scale), blurRadius), scale);
-  end
-
-  function zoomBitmap(bitmap,scale)
-    local w = bitmap.getWidth();
-    local h = bitmap.getHeight();
-    local matrix = Matrix();
-    matrix.postScale(scale, scale);
-    local mbitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
-
-    return mbitmap;
-  end
-
-
-  local 加深后的图片=blurAndZoom(activity,bitmap,radius1,radius2)
-
-
-
-  id.setImageBitmap(加深后的图片)
 end
-
---置顶事件
-function CoordBottom()
-
-end
---事件
-function CoordTop()
-  --  setTitleColor(转0x(primaryc))
-
-
-end
---移动监听事件
-function CoordProg(num)
-  local ss=num
-  if num<0.3 then
-    gft.alpha=0
-    _title.alpha=0
-   elseif num<0.35 then
-    gft.animate().alpha(num).setDuration(150).start()
-    _title.animate().alpha(num).setDuration(150).start()
-    return
-  end
-  gft.alpha=(lambda ss:ss<0.3 and 0 or ss)(ss)
-  _title.alpha=(lambda ss:ss<0.3 and 0 or ss)(ss)
-
-end
-
-
 
 --设置webview
 
@@ -308,7 +130,7 @@ content.getSettings()
 .setUseWideViewPort(true)
 .setDefaultTextEncodingName("utf-8")
 .setLoadsImagesAutomatically(true)
-.setAllowFileAccess(false)
+.setAllowFileAccess(true)
 .setDatabasePath(APP_CACHEDIR)
 --//设置 应用 缓存目录
 .setAppCachePath(APP_CACHEDIR)
@@ -326,7 +148,7 @@ if activity.getSharedData("禁用缓存")=="true"
   .setCacheMode(WebSettings.LOAD_NO_CACHE)
   --//开启 DOM 存储功能
   .setDomStorageEnabled(true)
-  --        //开启 数据库 存储功能
+  -- //开启 数据库 存储功能
   .setDatabaseEnabled(false)
  else
   content
@@ -335,7 +157,7 @@ if activity.getSharedData("禁用缓存")=="true"
   .setCacheMode(2)
   --//开启 DOM 存储功能
   .setDomStorageEnabled(true)
-  --        //开启 数据库 存储功能
+  -- //开启 数据库 存储功能
   .setDatabaseEnabled(true)
 end
 
@@ -377,7 +199,6 @@ content.setWebViewClient{
     view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
   end,
 }
-
 
 刷新()
 
@@ -427,8 +248,6 @@ content.setDownloadListener({
     webview下载文件(链接, UA, 相关信息, 类型, 大小)
 end})
 
---
-
 
 --退出时去除bitmap的内存
 
@@ -469,7 +288,7 @@ if 类型=="文章" then
       },
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
-          activity.newActivity("comment",{result,"articles"})
+          activity.newActivity("comment",{result,comment_type,simpletitle,autoname})
 
         end
       },
@@ -514,7 +333,7 @@ if 类型=="文章" then
 
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
-          activity.newActivity("comment",{result,"pins",nil,nil,tostring(comment_count)})
+          activity.newActivity("comment",{result,comment_type,simpletitle,autoname,tostring(comment_count)})
 
         end
       },
@@ -556,16 +375,79 @@ if 类型=="文章" then
 
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
-          activity.newActivity("comment",{result,"zvideos",nil,nil,tostring(comment_count)})
+          activity.newActivity("comment",{result,comment_type,simpletitle,autoname,tostring(comment_count)})
+
+        end
+      },
+
+      {
+        src=图标("chat_bubble"),text="查看保存评论",onClick=function()
+          local 保存路径=内置存储文件("Download/"..simpletitle.."/"..autoname)
+          if getDirSize(保存路径.."/".."fold/")==0 then
+            --            提示("你还没有收藏评论")
+           else
+            activity.newActivity("comment",{result,"local",simpletitle,autoname})
+          end
+
+        end
+      },
+
+      {
+        src=图标("explore"),text="收藏文件夹",onClick=function()
+          加入收藏夹(result,"zvideo",simpletitle,autoname)
 
         end
       },
       {
-        src=图标("explore"),text="收藏文件夹",onClick=function()
-          加入收藏夹(result,"zvideo")
+        src=图标("save"),text="保存在本地",onClick=function()
+          创建文件夹(内置存储文件("Download/"..simpletitle))
+          创建文件夹(内置存储文件("Download/"..simpletitle.."/"..autoname))
 
+          创建文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"))
+
+          写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"),'video_url="'..content.getUrl()..'"')
+
+          写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/mht.mht"),'video_id="'..result..'"')
+
+          提示("保存成功")
         end
-      },
+      }
     }
   })
+
+ elseif 类型=="本地" then
+  a=MUKPopu({
+    tittle="本地",
+    list={
+      {
+        src=图标("refresh"),text="刷新",onClick=function()
+          if _title.Text=="加载失败" then
+            刷新()
+           else
+            content.reload()
+          end
+          提示("正在刷新中")
+        end
+      },
+
+      {
+        src=图标("chat_bubble"),text="查看评论",onClick=function()
+          local 保存路径=内置存储文件("Download/"..simpletitle.."/"..autoname)
+          if getDirSize(保存路径.."/".."fold/")==0 then
+            提示("你还没有收藏评论")
+           else
+            activity.newActivity("comment",{result,comment_type,simpletitle,autoname})
+          end
+        end
+      },
+
+      {
+        src=图标("cloud"),text="使用网络打开",onClick=function()
+          activity.newActivity("column",{result,原类型})
+        end
+      },
+
+    }
+  })
+
 end

@@ -37,8 +37,6 @@ history_list.setOnScrollListener{
 
 function 刷新()
   geturl=myurl or "https://api.zhihu.com/columns/"..id.."/items"
-
-
   zHttp.get(geturl,head,function(code,content)
     if code==200 then
       if require "cjson".decode(content).paging.next then

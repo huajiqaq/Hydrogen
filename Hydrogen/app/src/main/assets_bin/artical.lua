@@ -23,6 +23,7 @@ if not 文件是否存在(内置存储文件("Note")) then
   end)
 end
 
+
 function 动画消失(back)
   back.startAnimation(ScaleAnimation(1.0, 0.0, 1.0, 0.0,1, 0.5, 1, 0.5).setDuration(200))
   back.setVisibility(View.INVISIBLE)
@@ -43,7 +44,6 @@ function 申请权限()
   activity.requestPermissions(mArray,0);
 end
 
-
 back.onClick=function()
   动画消失(back_root)
   if is_star==true then
@@ -54,7 +54,6 @@ back.onClick=function()
   atitle.Text=backtitle
   atext.Text=backtext
 end
-
 
 function 获取每日一文()
   local api="https://interface.meiriyiwen.com/article/today?dev=1"
@@ -69,9 +68,6 @@ function 获取每日一文()
     end
   end)
 end
-
-
-
 
 function 获取随机一文()
   local api="https://interface.meiriyiwen.com/article/random?dev=1"
@@ -121,10 +117,7 @@ _refre.onClick=function()
   end
 end
 
-
 noteitem=获取适配器项目布局("note/note")
-
-
 notedata={}
 noteadp=LuaAdapter(activity,notedata,noteitem)
 notelist.setAdapter(noteadp)
@@ -166,8 +159,6 @@ notelist.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
     end,function()关闭对话框(an)end)
     return true
 end})
-
-
 
 
 artical_list_sr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));

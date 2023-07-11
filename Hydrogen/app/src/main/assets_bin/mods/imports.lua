@@ -3,7 +3,6 @@ require "import"
 import "android.app.*"
 import "android.os.*"
 import "android.widget.*"
---import 'org.jsoup.*'
 import "android.view.*"
 import "android.view.animation.*"
 import "android.view.animation.Animation$AnimationListener"
@@ -23,7 +22,6 @@ import "android.net.*"
 
 import "android.text.*"
 import "android.text.style.*"
---import "com.dingyi.dialog.BottomDialog"
 import "android.content.*"
 import "android.content.res.*"
 import "android.content.pm.PackageManager"
@@ -82,4 +80,6 @@ import "androidx.core.content.ContextCompat"
 import "com.google.android.material.card.MaterialCardView"
 
 
-import "com.kn.MyLuaAdapter"
+import "com.hydrogen.adapter.MyLuaAdapter"
+import "com.hydrogen.view.NoScrollListView"
+import "com.hydrogen.view.NoScrollGridView"

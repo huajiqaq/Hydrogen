@@ -58,8 +58,6 @@ function tokb(m)
   end
 end
 
-
-
 function Ripple(id,color,t)
   local ripple
   if t=="圆" or t==nil then
@@ -80,8 +78,6 @@ function Ripple(id,color,t)
     return Pretend.setColor(ColorStateList(int[0].class{int{}},int{color}))
   end
 end
-
-
 
 function 时间戳(t)
   --local t=t/1000
@@ -259,10 +255,6 @@ function 内置存储(t)
   return Environment.getExternalStorageDirectory().toString().."/"..t
 end
 
-function 压缩(from,to,name)
-  ZipUtil.zip(from,to,name)
-end
-
 
 function 获取Cookie(url)
   local cookieManager = CookieManager.getInstance();
@@ -295,6 +287,7 @@ function 初始化历史记录数据(save)
     end
   end
 end
+
 function saveHistoryrecord(a,b,num)
   recordtitle[#recordtitle+1]=a
   recordid[#recordid+1]=b
@@ -320,6 +313,7 @@ function saveHistoryrecord(a,b,num)
     end
   end
 end
+
 function 保存历史记录(a,b,num)
   local ok=nil
   for i,v in ipairs(recordid)do
@@ -338,14 +332,13 @@ function 保存历史记录(a,b,num)
     saveHistoryrecord(a,b,num)
   end
 end
+
 function 清除历史记录()
   this.getSharedPreferences("Historyrecordtitle",0).edit().clear().commit()
   this.getSharedPreferences("Historyrecordid",0).edit().clear().commit()
   recordtitle={}
   recordid={}
 end
-
-pcall(function()activity.getActionBar().hide()end)
 
 
 function 获取系统夜间模式()
@@ -685,46 +678,6 @@ function 波纹(id,lx)
       end
     end
   end,function(e)end)
-end
-
-function 返回波纹(lx)
-  if lx=="圆白" then
-    return (activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3fffffff})))
-  end
-
-  if lx=="方白" then
-    return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3fffffff})))
-  end
-  if lx=="圆黑" then
-    return (activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
-  end
-  if lx=="方黑" then
-    return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
-  end
-  if lx=="圆主题" then
-    return (activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
-    --    return (activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
-  end
-  if lx=="方主题" then
-    return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
-    --    return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
-  end
-  if lx=="圆自适应" then
-    if 全局主题值=="Day" then
-      return (activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
-     else
-      return (activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3fffffff})))
-    end
-  end
-  if lx=="方自适应" then
-    if 全局主题值=="Day" then
-      return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
-     else
-      return (activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3fffffff})))
-    end
-  end
-
-
 end
 
 function 控件显示(a)
@@ -1158,20 +1111,11 @@ function 获取文件修改时间(path)
 end
 
 
-
 function 解压缩(压缩路径,解压缩路径)
   xpcall(function()
     ZipUtil.unzip(压缩路径,解压缩路径)
     end,function()
     提示("解压文件 "..压缩路径.." 失败")
-  end)
-end
-
-function 压缩(原路径,压缩路径,名称)
-  xpcall(function()
-    LuaUtil.zip(原路径,压缩路径,名称)
-    end,function()
-    提示("压缩文件 "..原路径.." 至 "..压缩路径.."/"..名称.." 失败")
   end)
 end
 
@@ -1219,48 +1163,9 @@ function 渐变跳转页面(ym,cs)
   end
 end
 
---[[function 检查链接(url,b)
-  local url="https"..url:match("https(.+)")
-
-  if url:find("zhihu.com/question") then
-
-    local answer,questions=0,0
-    if url:find("answer") then
-      questions,answer=url:match("question/(.-)/"),url:match("answer/(.+)")
-     else
-      questions,answer=url:match("question/(.+)"),nil
-    end
-    local open=activity.getSharedData("内部浏览器查看回答")
-    if b then
-      return true
-    end
-    if open=="false" then
-      activity.newActivity("answer",{questions,answer})
-     else
-      activity.newActivity("huida",{url})--"https://www.zhihu.com/question/"..tostring(v.Tag.链接2.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.链接2.Text):match("分割(.+)")})
-    end
-   elseif url:find("zhuanlan.zhihu.com/p/") then--/p/143744216
-    if b then return true end
-    activity.newActivity("column",{url:match("zhihu.com/p/(.+)")})
-   elseif url:find("zhuanlan.zhihu.com") then--/p/143744216
-    if b then return true end
-    activity.newActivity("huida",{url})
-   elseif url:find("zhihu.com/appview/p/") then--/p/143744216
-    if b then return true end
-    activity.newActivity("column",{url:match("appview/p/(.+)")})
-   elseif url:find("zhihu.com/topics/") then--/p/143744216
-    if b then return true end
-    activity.newActivity("topic",{url:match("/topics/(.+)")})
-   else
-    if b then return false end
-    activity.newActivity("huida",{url})
-  end
-end]]
-
 function 检查链接(url,b)
   local open=activity.getSharedData("内部浏览器查看回答")
   --  local url="https"..url:match("https(.+)")
-
   if url:find("zhihu.com/question") then
 
     local answer,questions=0,0
@@ -1407,70 +1312,20 @@ function 检查意图(url,b)
   end
 end
 
-function 检测键盘()
-  imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE)
-  isOpen=imm.isActive()
-  return isOpen==true or false
-end
-
-function 隐藏键盘()
-  activity.getSystemService(INPUT_METHOD_SERVICE).hideSoftInputFromWindow(WidgetSearchActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS)
-end
-
-function 显示键盘(id)
-  activity.getSystemService(INPUT_METHOD_SERVICE).showSoftInput(id, 0)
-end
-
 function 关闭页面()
   activity.finish()
 end
 
-function filter_spec_chars(s)
-  local ss = {}
-  for k = 1, #s do
-    local c = string.byte(s,k)
-    if not c then break end
-    if ((c>=48 and c<=57) or (c>= 65 and c<=90) or (c>=97 and c<=122) )then
-
-      table.insert(ss, string.char(c))
-
-     elseif c>=228 and c<=233 then
-      local c1 = string.byte(s,k+1)
-      local c2 = string.byte(s,k+2)
-      if c1 and c2 then
-        local a1,a2,a3,a4 = 128,191,128,191
-        if c == 228 then a1 = 184
-         elseif c == 233 then a2,a4 = 190,c1 ~= 190 and 191 or 165
-        end
-        if c1>=a1 and c1<=a2 and c2>=a3 and c2<=a4 then
-          k = k + 2
-          table.insert(ss, string.char(c,c1,c2))
-        end
-      end
-    end
-  end
-  return table.concat(ss)
-end
 function 清除所有cookie()
   local cookieManager=CookieManager.getInstance();
   cookieManager.setAcceptCookie(true);
   cookieManager.removeSessionCookie();
-
   cookieManager.removeAllCookie();
+  activity.setSharedData("signdata",nil)
 end
 
 function 复制文本(文本)
   activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(文本)
-end
-
-function QQ群(h)
-  url="mqqapi://card/show_pslcard?src_type=internal&version=1&uin="..h.."&card_type=group&source=qrcode"
-  activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-end
-
-function QQ(h)
-  url="mqqapi://card/show_pslcard?src_type=internal&source=sharecard&version=1&uin="..h
-  activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 end
 
 function 全屏()
@@ -1543,10 +1398,6 @@ function 获取应用信息(archiveFilePath)
     icon = pm.getApplicationIcon(appInfo);--图标
   end
   return packageName,version,icon
-end
-
-function 编辑框颜色(eid,color)
-  eid.getBackground().setColorFilter(PorterDuffColorFilter(color,PorterDuff.Mode.SRC_ATOP))
 end
 
 function 下载文件(链接,文件名)
@@ -1639,6 +1490,7 @@ function 下载文件对话框(title,url,path,ex)
     },
     {
       ProgressBar,
+      ProgressBarBackground2=转0x(primaryc),
       id="进度条",
       style="?android:attr/progressBarStyleHorizontal",
       layout_width="fill",
@@ -1661,21 +1513,14 @@ function 下载文件对话框(title,url,path,ex)
   end
 
   function dstop(c)--总长度
-    --[[if path:find(".bin") then
-      lpath=path
-      path=path:gsub(".bin",".apk")
-      重命名文件(lpath,path)
-    end ]]
     关闭对话框(ao)
 
-    --    if url:find("step")~=nil then
     if ex then
       提示("导入中…稍等哦(^^♪")
       解压缩(path,ex)
       删除文件(path)
       提示("导入完成ʕ•ٹ•ʔ")
      else
-      --      提示("下载完成，大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
       if path:find(".apk$")~=nil then
         提示("安装包下载成功,大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
         双按钮对话框("安装APP",[===[您下载了安装包文件，要现在安装吗？ 取消后可前往]===]..path.."手动安装","立即安装","取消",function()
@@ -1732,43 +1577,7 @@ function 开关颜色(id,color,color2)
   id.ThumbDrawable.setColorFilter(PorterDuffColorFilter(转0x(color),PorterDuff.Mode.SRC_ATOP))
   id.TrackDrawable.setColorFilter(PorterDuffColorFilter(转0x(color2),PorterDuff.Mode.SRC_ATOP))
 end
---[[
-function 微信扫一扫()
-  intent = activity.getPackageManager().getLaunchIntentForPackage("com.tencent.mm");
-  intent.putExtra("LauncherUI.From.Scaner.Shortcut", true);
-  activity.startActivity(intent);
-end]]
 
-function 微信扫一扫()
-  import "android.content.Intent"
-  import "android.content.ComponentName"
-  intent = Intent();
-  intent.setComponent( ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI"));
-  intent.putExtra("LauncherUI.From.Scaner.Shortcut", true);
-  intent.setFlags(335544320);
-  intent.setAction("android.intent.action.VIEW");
-  activity.startActivity(intent);
-end
-
-function 支付宝扫一扫()
-  import "android.net.Uri"
-  import "android.content.Intent"
-  uri = Uri.parse("alipayqr://platformapi/startapp?saId=10000007");
-  intent = Intent(Intent.ACTION_VIEW, uri);
-  activity.startActivity(intent);
-end
-
-function 支付宝捐赠()
-  --https://qr.alipay.com/fkx06301lzsvnw6bnfkfqe5
-  xpcall(function()
-    local url = "alipayqr://platformapi/startapp?saId=10000007&clientVersion=3.7.0.0718&qrcode=https://qr.alipay.com/fkx06301lzsvnw6bnfkfqe5"
-    activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-  end,
-  function()
-    local url = "https://qr.alipay.com/fkx06301lzsvnw6bnfkfqe5";
-    activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-  end)
-end
 
 function 颜色字体(t,c)
   local sp = SpannableString(t)
@@ -1776,20 +1585,6 @@ function 颜色字体(t,c)
   return sp
 end
 
-
---[[
-function runJsFuncion(jscode,runFunc)
-  import "com.hydrogen.rhino.JsRun"
-  JsRun.initScript(jscode);
-  local str =JsRun.callFunc(runFunc,{str});
-  return str
-end
-
---[[
---执行js示例
-local jstest=runJsFuncion('"function Test(){return "jsTest";}";',"Test")
-print(jstest)
-]]
 
 function MD5(str)
 
@@ -2167,78 +1962,6 @@ function 系统下载文件(a,b,c,d)
   downloadManager.enqueue(request);
 end
 
---[[function java下载(url,path,进度条id,大小id,百分之id)
-function xdc(url,path)
-  require "import"
-  import "java.net.URL"
-  local ur =URL(url)
-  import "java.io.File"
-  file =File(path);
-  con = ur.openConnection();
-  co = con.getContentLength();
-  is = con.getInputStream();
-  bs = byte[1024]
-  local len,read=0,0
-  import "java.io.FileOutputStream"
-  wj= FileOutputStream(path);
-  len = is.read(bs)
-  while len~=-1 do
-    wj.write(bs, 0, len);
-    read=read+len
-    pcall(call,"ding",read,co)
-    len = is.read(bs)
-  end
-  wj.close();
-  is.close();
-  pcall(call,"dstop",co)
-end
-function download(url,path)
-  thread(xdc,url,path)
-end
-function ding(a,b)--已下载，总长度(byte)
-if 进度条id~=false then
-  进度条id.Max=(b)
-  进度条id.Progress=(a)
-  end
-if 大小id~=false then
-  大小id.Text=(a/1024).."kb / "..(b/1024).."kb"
-  end
-if 百分之id~=false then
-  百分之id.Text="正在下载中…"..(a/b*100).."%"
-  end
-end
---下载完成后调用
-function dstop(c)--总长度
-  function 完成()
-    --完成id.Text="文件下载完成，总长度"..(c/1024).."kb"
-    提示("下载完成")
-  end
-  function 完成b()
-   -- text2.Text="正在加载中,稍等"
-   downcallback()
-    import "com.androlua.ZipUtil"
-    import "java.io.File"
-    ZipUtil.unzip(activity.getLuaDir()..".zip",activity.getLuaDir().."/")
-    text2.Text="加载完成"
-    os.remove(activity.getLuaDir()..".zip")
-    activity.setSharedData("version",版本)
-    local dl=AlertDialog.Builder(this)
-    .setTitle("告知")
-    .setMessage("恭喜你 文件加载成功 返回请点击我知道了")
-    .setCancelable(false)
-    .setPositiveButton("我知道了",{onClick=function()
-        activity.newActivity("main")
-        activity.finish()
-    end})
-    dl.create()
-    dl.show()
-  end
-  thread(function()
-    call("完成")
-    call("完成b")
-  end)
-end
-end]]
 
 function table2string(tablevalue)
   local function serialize(obj)
@@ -2427,13 +2150,10 @@ function 加入收藏夹(回答id,收藏类型)
         end
       end
 
-      --创建ListView作为文件列表
       list=ListView(activity).setFastScrollEnabled(true)
       dialog_lay=LinearLayout(activity)
       .setOrientation(0)
       .setGravity(Gravity.RIGHT|Gravity.CENTER)
-      --创建路径标签
-
 
       lp=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
       lp.gravity = Gravity.RIGHT|Gravity.CENTER
@@ -2458,7 +2178,7 @@ function 加入收藏夹(回答id,收藏类型)
 
       cp=TextView(activity)
       lay=LinearLayout(activity).setOrientation(1).addView(tip_text).addView(dialog_lay).addView(cp).addView(list)
-      ChoiceFile_dialog=AlertDialog.Builder(activity)--创建对话框
+      Choice_dialog=AlertDialog.Builder(activity)--创建对话框
       .setTitle("选择路径")
       .setPositiveButton("确认",{
         onClick=function()
@@ -2630,18 +2350,12 @@ end
 if not isstart and this.getSharedData("解析zse开关") then
   isstart=this.getSharedData("解析zse开关")
 end
---[[
-local get_api= "https://mydata.huajicloud.ml/hydrogen.html"
 
-Http.get(get_api,function(code,content)
-  if code==200 then
-    isstart=content:match("start%=(.+),start")
-  end
-end)
-]]
+cardback=cardedge
+cardmargin="4px"
 
-cardback=全局主题值=="Day" and cardedge or backgroundc
-cardmargin=全局主题值=="Day" and "4px" or false
+--cardback=全局主题值=="Day" and cardedge or backgroundc
+--cardmargin=全局主题值=="Day" and "4px" or false
 
 function 黑暗模式主题(view)
   加载js(view,获取js("darktheme"))
@@ -2669,13 +2383,6 @@ function webview下载文件(链接, UA, 相关信息, 类型, 大小)
     文件名=urlDecode(相关信息:match('filename="(.-)"'))
    else
     import "android.webkit.URLUtil"
-    --[[
-      import "java.util.regex.Matcher";
-      import "java.util.regex.Pattern";
-      filename=Pattern.compile("(\\w+)(\\.\\w+)+(?!.*(\\w+)(\\.\\w+)+)").matcher(链接)
-      filename.find()
-      文件名=filename.group(0)
-      ]]
     文件名=URLUtil.guessFileName(链接,nil,nil)
   end
   local Download_layout={
@@ -2709,7 +2416,7 @@ function webview下载文件(链接, UA, 相关信息, 类型, 大小)
   .setMessage("文件类型："..类型.."\n".."文件大小："..大小)
   .setView(loadlayout(Download_layout))
   .setNeutralButton("复制",{onClick=function(v)
-      复制文本(url)
+      复制文本(链接)
       提示("复制下载链接成功")
   end})
   .setPositiveButton("下载",{onClick=function(v)
@@ -2727,6 +2434,8 @@ function getDirSize(path)
   local a=luajava.astable(File(path).listFiles() or {})
   for k,v in pairs(a) do
     if v.isDirectory() then
+      len=len+getDirSize(tab,tostring(v))
+     else
       len=len+v.length()
     end
   end
@@ -2746,8 +2455,31 @@ task(1,function()
         old_onDestroy()
       end
       old_onDestroy=nil
+
+      --判断是否为主线程
+      if Looper.myLooper() == Looper.getMainLooper() then
+        --清理内存缓存
+        Glide.get(this).clearMemory();
+      end
+
+      --[[
+      --判断是否为主线程
+      if Looper.myLooper() == Looper.getMainLooper() then
+        --新建线程清理磁盘上的缓存
+        Thread(Runnable({
+          run=function()
+            Glide.get(context).clearDiskCache()
+          end
+        })).start()
+        --清理内存缓存
+        Glide.get(this).clearMemory();
+      end
+
+      --清理缓存
       LuaUtil.rmDir(File(tostring(activity.getExternalCacheDir()).."/images"))
       LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
+]]
+
       collectgarbage("collect")
       System.gc()
     end

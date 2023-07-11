@@ -234,7 +234,7 @@ if activity.getSharedData("禁用缓存")=="true"
   .setAppCacheEnabled(false)
   --//开启 DOM 存储功能
   .setDomStorageEnabled(true)
-  --        //开启 数据库 存储功能
+  --//开启 数据库 存储功能
   .setDatabaseEnabled(true)
   .setCacheMode(WebSettings.LOAD_NO_CACHE);
  else
@@ -243,7 +243,7 @@ if activity.getSharedData("禁用缓存")=="true"
   .setAppCacheEnabled(true)
   --//开启 DOM 存储功能
   .setDomStorageEnabled(true)
-  --        //开启 数据库 存储功能
+  --//开启 数据库 存储功能
   .setDatabaseEnabled(true)
   .setCacheMode(2)
 end

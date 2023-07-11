@@ -24,8 +24,19 @@ _title.text=title
 xxx=读取文件(内置存储文件("Download/"..title.."/"..author.."/detail.txt"))
 
 if not(xxx:match("question_id")) then
+  local mynum = string.match(xxx, "(%d+)[^/]*$")
+  if xxx:match("article")
+    mytype="文章"
+   elseif xxx:match("pin")
+    mytype="想法"
+   elseif xxx:match("video")
+    mytype="视频"
+    activity.finish()
+    activity.newActivity("column",{mynum,mytype})
+    return
+  end
   activity.finish()
-  activity.newActivity("huida",{"file://"..内置存储文件("Download/"..urlEncode(title).."/"..urlEncode(author).."/mht.mht"),nil,nil,xxx:match('url="(.-)"')})
+  activity.newActivity("column",{mynum,mytype,true,myuri,title,author})
   return
 end
 
@@ -97,7 +108,6 @@ webview
 --//开启 应用缓存 功能
 .setSupportZoom(true)
 .setBuiltInZoomControls(true)
-
 
 webview.removeView(webview.getChildAt(0))
 
@@ -203,6 +213,14 @@ a=MUKPopu({
         .setNeutralButton("取消",{onClick=function(v)
         end})
         .show()
+      end
+    },
+
+    {
+      src=图标("cloud"),text="使用网络打开",onClick=function()
+        local questionid=xxx:match[[question_id="(.-)"]]
+        local answerid=xxx:match[[answer_id="(.-)"]]
+        activity.newActivity("answer",{questionid,answerid})
       end
     },
 

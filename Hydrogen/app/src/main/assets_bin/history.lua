@@ -53,7 +53,6 @@ for n=1,#recordtt do
   adp.add{history_title=recordtt[n],history_num=tostring(n)}
 end
 
---mytab={"全部","回答","视频","想法","文章","提问","专栏"}
 mytab={"全部","回答","想法","文章","提问","用户","视频","专栏"}
 
 
@@ -112,7 +111,7 @@ function checktitle(str)
 end
 
 history_list.onItemLongClick=function(l,v,c,b)
-  双按钮对话框("删除","删除该历史记录？该操作不可撤消！ 确认后将会重启页面","是的","点错了",function()
+  双按钮对话框("删除","删除该历史记录？该操作不可撤消！","是的","点错了",function()
 
     adp.clear()
     清除历史记录()
@@ -130,8 +129,6 @@ history_list.onItemLongClick=function(l,v,c,b)
     end
 
 
-    --     初始化历史记录数据(true)
-    --           print(recordtitle[#recordtitle])
     初始化()
     for n=1,#recordtt do
       adp.add{history_title=recordtt[n],history_num=tostring(n)}
@@ -176,21 +173,8 @@ history_list.onItemClick=function(l,v,c,b)
       activity.newActivity("huida",{"https://www.zhihu.com/question/"..(recordii[clicknum])})
     end
   end
-  --     初始化历史记录数据(true)
   activity.setResult(1500,nil)
   task(300,function()
-    --自动排序 暂时取消
-    --[[
-  table.swap(adp.getData(), b, 1, false)
-  adp.notifyDataSetChanged()
-  ]]
-    --[[    初始化()
-    adp.clear()
-    for n=1,#recordtt do
-      adp.add{history_title=recordtt[n],history_num=tostring(n)}
-    end
-    adp.notifyDataSetChanged()
-    ]]
   end)
 end
 

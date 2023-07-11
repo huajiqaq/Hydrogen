@@ -42,7 +42,6 @@ function base:getAnswer(id,cb)
 end
 
 
-
 function base:getOneData(cb,z) --获取一条数据
   --判断id是否存在
   if self.getid then --如果数据存在
@@ -55,7 +54,7 @@ function base:getOneData(cb,z) --获取一条数据
         --判断是否在最左
         self.isleft=(#mygetid>0 and {false} or {true})[1]
         --取出要访问的id 并保存
-        self.getid=mygetid[1]
+        self.getid=mygetid[#mygetid]
        else
         --注释同上
         mygetid=self.pageinfo.next_answer_ids

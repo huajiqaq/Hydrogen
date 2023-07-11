@@ -1,7 +1,6 @@
 require "import"
 import "android.widget.*"
 import "android.view.*"
-import "com.michael.NoScrollListView"
 import "mods.muk"
 import "android.text.method.LinkMovementMethod"
 activity.setContentView(loadlayout("layout/comment"))
@@ -10,9 +9,17 @@ activity.setContentView(loadlayout("layout/comment"))
 comment_id,comment_type,answer_title,answer_author,comment_count,oricomment_id,oricomment_type=...
 波纹({fh,_more},"圆主题")
 
-
 local 保存路径=内置存储文件("Download/"..answer_title:gsub("/","or").."/"..answer_author)
 
+if comment_type=="answers" then
+  savetype="回答"
+ elseif comment_type=="articles" then
+  savetype="文章"
+ elseif comment_type=="pins" then
+  savetype="想法"
+ elseif comment_type=="zvideos" then
+  savetype="视频"
+end
 
 local function setstyle(styleee)
   stylee = SpannableStringBuilder(styleee);
@@ -49,16 +56,10 @@ function 刷新()
   :new(comment_id,comment_type)
   :setresultfunc(function(v)
     local 头像=v.author.avatar_url
-    --    local 头像=v.author.member.avatar_url
     local 内容=v.content
     local 点赞数=tointeger(v.vote_count)
-    --[[    if 点赞数==0 then
-      comment_vote.setVisibility(8)
-    end
-    ]]
     local 时间=时间戳(v.created_time)
     local 名字,id=v.author.name,"没有id"
-    --    local 名字,id=v.author.member.name,"没有id"
     local function isauthor(v)
       local a=""
       if v.role=="author" then
@@ -116,7 +117,6 @@ function 刷新()
   end
 
 
-
   评论刷新()
 
   comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
@@ -127,7 +127,6 @@ function 刷新()
         当前回复人=v.Tag.comment_id.Text
       end
   end})
-
 
 
   comment_list.setOnScrollListener{
@@ -178,7 +177,7 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
     local 写入内容=写入内容..'\n'
 
     if not(文件是否存在(保存路径.."/mht.mht"))then
-      return 提示("先保存回答 才可以收藏评论")
+      return 提示("先保存"..savetype.."才可以收藏评论")
     end
 
     if _title.text~="对话列表" then
@@ -285,8 +284,6 @@ if comment_type=="comments" then
   end
 
 
-
-
  elseif comment_type=="local" then
   _title.text="保存的评论"
   Internetnet.setVisibility(8)
@@ -296,7 +293,6 @@ if comment_type=="comments" then
 
   sadapter=LuaAdapter(activity,comment_itemc)
   local_comment_list.setAdapter(sadapter)
-
   for v,s in pairs(luajava.astable(File(保存路径.."/".."fold/").listFiles())) do
     xxx=读取文件(tostring(s))
     name=s.Name:match('(.+)+')
@@ -401,7 +397,7 @@ send.onClick=function()
   end
 
   local replyid=当前回复人 or ""
-  
+
   local unicode=require "unicode"
 
   local mytext=unicode.encode(send_text)

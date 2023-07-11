@@ -59,8 +59,6 @@ pager=1
 
 function 精华刷新(pager,url)
 
-  --  local posturl = url or "https://www.zhihu.com/api/v4/topics/"..topic_id.."/feeds/essence"
-
   local posturl = url or "https://api.zhihu.com/v5.1/topics/"..topic_id.."/feeds/essence"
 
 
@@ -88,13 +86,6 @@ function 精华刷新(pager,url)
 
           local excerpt_data=v.target.excerpt or ""
           local excerpt=name.." : "..excerpt_data
-          --[[        xpcall(function()
-          title=v.target.question.title
-          id=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
-          end,function()
-          title=v.target.title
-          id="文章分割"..tointeger(v.target.id)
-        end)]]
           if v.target.type=="answer" then
             title=v.target.question.title
             id=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
@@ -174,20 +165,13 @@ best_list.setOnScrollListener{
   end
 }
 
-
-
-
-
 all_itemc=获取适配器项目布局("topic/topic_all")
-
-
 all_nexturl=""
 all_isend=false
 
 function 所有刷新(all_pager,url)
 
   local posturl = url or "https://api.zhihu.com/topics/"..topic_id.."/unanswered_questions?offset=0&limit=8"
-
 
   if all_pager <2 then
     local all_adp=LuaAdapter(activity,all_datas,all_itemc)
@@ -227,7 +211,6 @@ all_list.setOnScrollListener{
     end
   end
 }
-
 
 
 all_list.setOnItemClickListener(AdapterView.OnItemClickListener{

@@ -70,52 +70,6 @@
           layout_width="fill",
           layout_height="fill",
           background=backgroundc,
-          --[[     {
-        MyEditText
-        {
-          Hint="类别*";
-          HintTextColor=转0x(primaryc);
-          textColor=转0x(textc);
-          focusable=true;
-          backgroundColor=转0x(backgroundc);
-    
-          id="type_editor",
-        };
-        layout_width="-1";
-        layout_margin="36dp";
-        layout_marginTop="8dp";
-        layout_marginBottom="8dp";
-      };
-      {
-        MyEditText
-        {
-          Hint="反馈内容*";
-          HintTextColor=转0x(primaryc);
-          textColor=转0x(textc);
-          focusable=true;
-          backgroundColor=转0x(backgroundc);
-          id="context_editor",
-        };
-        layout_width="-1";
-        layout_margin="36dp";
-        layout_marginTop="8dp";
-        layout_marginBottom="8dp";
-      };
-      {
-        MyEditText
-        {
-          Hint="联系方式(可选)";
-          HintTextColor=转0x(primaryc);
-          textColor=转0x(textc);
-          focusable=true;
-          backgroundColor=转0x(backgroundc);
-          id="contact_editor",
-        };
-        layout_width="-1";
-        layout_margin="36dp";
-        layout_marginTop="8dp";
-        layout_marginBottom="8dp";
-      };]]
           {
             NoScrollListView;
             layout_height="-1";

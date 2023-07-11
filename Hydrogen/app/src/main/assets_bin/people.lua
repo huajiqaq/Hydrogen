@@ -2,8 +2,6 @@ require "import"
 import "android.widget.*"
 import "android.view.*"
 import "mods.muk"
-import "com.michael.NoScrollListView"
-import "com.michael.NoScrollGridView"
 
 people_id,是否记录=...
 
@@ -156,7 +154,6 @@ function 其他(isclear)
         提示("已经没有更多内容了")
       end
       for i,v in ipairs(require "cjson".decode(content).data) do
-        --  local 预览内容=v.excerpt_new
         local 预览内容=v.excerpt
         local 点赞数=tointeger(v.voteup_count)
         local 评论数=tointeger(v.comment_count)
@@ -207,7 +204,6 @@ function 其他(isclear)
 end
 
 zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab",apphead,function(code,content)
-
   if code==200 then
     for i,v in ipairs(require "cjson".decode(content).tabs_v3[1].sub_tab) do
       if v.name~="更多" then
@@ -229,7 +225,6 @@ function 刷新()
 end
 
 刷新()
-
 
 add=true
 
@@ -366,9 +361,7 @@ function checktitle(str)
     end
   end)
 
-
 end
-
 
 people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)

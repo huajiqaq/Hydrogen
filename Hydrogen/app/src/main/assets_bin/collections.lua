@@ -1,15 +1,12 @@
 require "import"
 import "mods.muk"
 import "com.lua.*"
-import "com.michael.NoScrollListView"
 
 collections_url,collections_title=...
 
 activity.setContentView(loadlayout("layout/collections"))
---设置视图
 
 初始化历史记录数据(true)
-
 
 function 申请权限()
   import "android.content.pm.PackageManager"
@@ -28,10 +25,9 @@ end
 _title.Text=collections_title
 itemc5=获取适配器项目布局("collections/collections")
 
-
 local_item=获取适配器项目布局("collections/local")
 
-
+--判断收藏为本地
 if collections_url=="local" then
 
   if not 文件是否存在(内置存储文件()) then
@@ -61,18 +57,17 @@ if collections_url=="local" then
       }
     end
 
-
     noteadp=LuaAdapter(activity,notedata,local_item)
-
     list5.setAdapter(noteadp)
-    --      end,function()
-    --    双按钮对话框("权限","需要存储权限才可以收藏文章 即使卸载文章也会保存在本地","给","不给",function()关闭对话框(an)申请权限() end,function()关闭对话框(an)end)
-    --  end)
+
   end
 
   加载笔记()
 
   function 本地列表(path)
+
+    import "com.google.android.material.bottomsheet.*"
+
     if 全局主题值=="Day" then
       bwz=0x3f000000
      else
@@ -191,19 +186,11 @@ if collections_url=="local" then
         };
       };
     };
-    dialog=BottomDialog(activity)
-    dialog.setView(loadlayout(dann))
-    --设置弹窗位置
-    dialog.setGravity(Gravity.BOTTOM)
-    --设置弹窗高度,宽度，最低高度
-    dialog.setHeight(-2)
-    dialog.setMinHeight(0)
-    dialog.setWidth(activity.getWidth())
-    --设置圆角
-    dialog.setRadius(dp2px(14),转0x(backgroundc))
-    an=dialog.show()
-    an.getWindow().setDimAmount(0.5)
-    an.window.decorView.setPadding(0,0,0,0)
+
+
+    local bottomSheetDialog = BottomSheetDialog(this)
+    bottomSheetDialog.setContentView(loadlayout(dann))
+    an=bottomSheetDialog.show()
     datas={}
     for v,s in pairs(luajava.astable(File(内置存储文件("Collection/"..path.."/")).listFiles())) do
       table.insert(datas,s.Name)
@@ -228,7 +215,6 @@ if collections_url=="local" then
   end
 
 
-
   list5.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(parent,v,pos,id)
       本地列表(v.Tag.catitle.Text)
@@ -244,9 +230,7 @@ if collections_url=="local" then
       return true
   end})
 
-
-
-
+  --判断收藏不为本地
  else
 
   local yuxunnn_ay=LuaAdapter(activity,datas5,itemc5)

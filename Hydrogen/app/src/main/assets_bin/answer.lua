@@ -26,7 +26,7 @@ import "model.answer"
 
 comment.onClick=function()
   xpcall(function()
-    activity.newActivity("comment",{tointeger(数据表[pg.adapter.getItem(pg.getCurrentItem()).id].data.id).."","answers",_title.Text,数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text})
+    activity.newActivity("comment",{tointeger(数据表[pg.adapter.getItem(pg.getCurrentItem()).id].data.id),"answers",_title.Text,数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text})
     end,function()
     提示("请稍等")
   end)
@@ -245,13 +245,11 @@ function 数据添加(t,b)
     end,
     onPageFinished=function(view,url,favicon)
       加载js(view,[[
-	function yh() {
+	waitForKeyElements(' [class="AnswerReward"]', 	function() {
 		document.getElementsByClassName("AnswerReward")[0].style.display = "none"
-	}
-	waitForKeyElements(' [class="AnswerReward"]', yh);
+	});
    ]])
 
-      --      if activity.getSharedData("加载回答中存在的视频(beta)")=="true" then
       if b.content:find("video%-box") then
         zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
           if code==401 then
@@ -276,8 +274,8 @@ function 数据添加(t,b)
           end,function()
           视频链接=b.attachment.video.video_info.playlist.hd.url
         end)
+        加载js(view,'var myvideourl="'..视频链接..'"')
         加载js(view,获取js('videoanswer'))
-        加载js(view,'setmyvideo("'..视频链接..'"')
       end
     end,
     onLoadResource=function(view,url)
@@ -352,23 +350,23 @@ function 数据添加(t,b)
 end
 
 
-function 加载页(mviews,a,b)
+function 加载页(mviews,pos,isleftadd,isload)
   if mviews==nil then return end
   if #mviews.ids.username.Text==0 and mviews.load==nil then --判断是否加载过没有
     回答容器:getOneData(function(cb,r)--获取1条数据
       if cb==false then
         mviews.load=nil
         提示("已经没有更多数据了")
-        pg.adapter.remove(a)
-        pg.setCurrentItem(a-1,false)
+        pg.adapter.remove(pos)
+        pg.setCurrentItem(pos-1,false)
         重表状态=true
        else
 
         pcall(function()
 
           if table.find(查重表,cb.id) then
-            --            pg.adapter.remove(a)
-            --            pg.setCurrentItem(a-1,false)
+            --            pg.adapter.remove(pos)
+            --            pg.setCurrentItem(pos-1,false)
             mviews.load=nil
             重表状态=true
            else
@@ -387,7 +385,7 @@ function 加载页(mviews,a,b)
           mviews.data=cb
         end
 
-        if mviews.data and mviews.data.voteup_count and 重表状态==false then
+        if mviews.data and mviews.data.voteup_count and 重表状态==false and not(isload) then
 
           vote_count.Text=tointeger(mviews.data.voteup_count)..""
           thanks_count.Text=tointeger(mviews.data.thanks_count)..""
@@ -397,13 +395,36 @@ function 加载页(mviews,a,b)
         数据添加(mviews.ids,cb) --添加数据
 
         mviews.load=true
+
+        if not(isload) then
+          if this.getSharedData("回答预加载(beta)")=="true" then
+            mpos=pos+1
+            local mviews=数据表[pg.adapter.getItem(mpos).id]
+            加载页(mviews,mpos,false,true)
+          end
+         else
+          if not(isleftadd) then
+            --调整pageinfo 防止数据对不上
+            local mviews=数据表[pg.adapter.getItem(pos-1).id]
+            回答容器.pageinfo=mviews.pageinfo
+            回答容器.isleft=(#回答容器.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
+            回答容器.isright=(#回答容器.pageinfo.next_answer_ids>0 and {false} or {true})[1]
+            --再新建一页 防止误触右滑事件      
+            id表[pg.adapter.getItemCount()+1]={}
+            local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
+            pg.adapter.add(加入view)
+            数据表[加入view.id]={
+              data={},
+              ids=id表[pg.adapter.getItemCount()],
+            }
+
+          end
+        end
+
       end
-    end,b or (a==0 and 回答容器.one==nil and a<=上次page and 回答容器.is_add==true and 回答容器.isleft==false and pg.adapter.getItemCount()>1))
+    end,isleftadd or (pos==0 and 回答容器.one==nil and pos<=上次page and 回答容器.is_add==true and 回答容器.isleft==false and pg.adapter.getItemCount()>1))
   end
 end
-
-
---
 
 function 首次设置()
   defer local question_base=require "model.question":new(问题id)
@@ -445,13 +466,13 @@ for i=1,2 do
 end
 
 pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
-  onPageScrolled=function(a,b,c)
-    if c==0 then
+  onPageScrolled=function(pos,positionOffset,positionOffsetPixels)
+    if positionOffsetPixels==0 then
 
       --判断页面是否在开头or结尾 是否需要添加
-      if pg.adapter.getItemCount()==a+1 then
+      if pg.adapter.getItemCount()==pos+1 then
         if 回答容器.isright then
-          pg.setCurrentItem(a-1,false)
+          pg.setCurrentItem(pos-1,false)
           return 提示("前面没有内容啦")
         end
 
@@ -465,16 +486,11 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           ids=id表[pg.adapter.getItemCount()],
         }
 
-        local mviews=数据表[pg.adapter.getItem(a+1).id]
+        local mviews=数据表[pg.adapter.getItem(pos).id]
+        加载页(mviews,pos)
 
-        if this.getSharedData("回答预加载(beta)")=="true" then
-          加载页(mviews,a+1,false)
-        end
 
-        local mviews=数据表[pg.adapter.getItem(a).id]
-        加载页(mviews,a)
-
-       elseif a==0 and pg.adapter.getItemCount()>=0
+       elseif pos==0 and pg.adapter.getItemCount()>=0
         if 回答容器.isleft then
           pg.setCurrentItem(1,false)
           return 提示("已经到最左了")
@@ -489,15 +505,15 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           data={},
           ids=id表[pg.adapter.getItemCount()],
         }
-        local a=pg.getCurrentItem()+1
-        local mviews=数据表[pg.adapter.getItem(a).id]
-        加载页(mviews,a,true)
+        local pos=pg.getCurrentItem()+1
+        local mviews=数据表[pg.adapter.getItem(pos).id]
+        加载页(mviews,pos,true)
 
         --判断是否加载过
        elseif pg.adapter.getItemCount()>=0 then
 
-        local a=pg.getCurrentItem()
-        local mviews=数据表[pg.adapter.getItem(a).id]
+        local pos=pg.getCurrentItem()
+        local mviews=数据表[pg.adapter.getItem(pos).id]
 
         if mviews.load==true then
           --更新pageinfo

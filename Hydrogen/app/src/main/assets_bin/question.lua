@@ -2,8 +2,6 @@ require "import"
 import "android.widget.*"
 import "android.view.*"
 import "mods.muk"
-import "com.michael.NoScrollGridView"
-import "com.michael.NoScrollListView"
 import "android.text.Html$TagHandler"
 import "android.text.Html$ImageGetter"
 question_id,是否记录历史记录=...
@@ -64,10 +62,8 @@ end
 function bit.onScrollChange(a,b,j,y,u)
   if (bit.getChildAt(0).getMeasuredHeight()==bit.getScrollY()+bit.getHeight() and question_base.is_end==false) then
     resultbar.Visibility=0
-    --sr.setRefreshing(true)
     刷新()
     System.gc()
-
   end
 end
 

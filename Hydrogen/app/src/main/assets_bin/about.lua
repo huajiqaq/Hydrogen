@@ -2,7 +2,6 @@ require "import"
 import "android.widget.*"
 import "android.view.*"
 import "mods.muk"
-import "com.michael.NoScrollListView"
 
 设置视图("layout/about")
 
@@ -139,24 +138,17 @@ about_item={
 
 };
 
---[[packinfo=this.getPackageManager().getPackageInfo(this.getPackageName(),((32552732/2/2-8183)/10000-6-231)/9)
-appinfo=this.getPackageManager().getApplicationInfo(this.getPackageName(),0)
-versionName=tostring(packinfo.versionName)
-versionCode=tonumber(packinfo.versionCode)]]
+
 appinfo=this.getPackageManager().getPackageInfo(this.getPackageName(),(0))
 
 versionName=tostring(appinfo.versionName)
-
---versionCode=tonumber(appinfo.versionCode)
 
 data = {}
 adp=LuaMultiAdapter(this,data,about_item)
 adp.add{__type=2,image=图标(""),subtitle="当前版本",message=versionName.."("..versionCode..")"}
 adp.add{__type=3,image=图标(""),subtitle="前往官网"}
---adp.add{__type=2,image=图标(""),subtitle="Telegram群组",message="获取最新更新，提出建议或反馈"}
 adp.add{__type=2,image=图标(""),subtitle="提交BUG",message="提出建议或反馈"}
 adp.add{__type=3,image=图标(""),subtitle="开源地址"}
---adp.add{__type=3,image=图标(""),subtitle="反馈Bug"}
 
 about_list.setAdapter(adp)
 
@@ -168,26 +160,19 @@ function check_update()
   update_title.Text="检查更新"
   update_message.Text="正在检查更新"
   update_info.Text="正在检查更新"
-  --  local update_api= "https://cdn.jsdelivr.net/gh/ouyangyanhuo/API/Liusanming/Update.html"
   local update_api= "https://mydata.huajicloud.ml/hydrogen.html"
 
-  --  Http.get(update_api,function(code,ctt)
   Http.get(update_api,function(code,content)
     if code==200 then
-      --    content=table2string(require "cjson".decode(ctt))
-      -- updateversioncode=tonumber(content:match[[updateversioncode=(.+),]])
       updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
       if updateversioncode > versionCode
         then
         控件可见(card_root)
         控件可见(download)
-        --  updateversionname=content:match[[updateversionname=(.+),]]
         updateversionname=content:match("updateversionname%=(.+),updateversionname")
         update_message.Text="发现新版本"..updateversionname.."("..updateversioncode..")"
-        --  updateinfo=content:match[[updateinfo=(.+),]]
         updateinfo=content:match("updateinfo%=(.+),updateinfo")
         update_info.Text=updateinfo
-        -- updateurl=content:match[[updateurl=(.+),]]
         updateurl=tostring(content:match("updateurl%=(.+),updateurl"))
         update_title.Text="更新•正式版"
        else
@@ -207,27 +192,18 @@ function check_update()
   end)
 end
 
---check_update()
-
 
 about_list.setOnItemClickListener(AdapterView.OnItemClickListener{
 
   onItemClick=function(id,v,zero,one)
 
-
     if v.Tag.subtitle.Text=="当前版本" then
       check_update()
-      --      提示("您已是最新版本")
     end
-
 
     if v.Tag.subtitle.Text=="前往官网" then
       浏览器打开("https://myhydrogen.gitee.io/")
     end
-
-    --[[    if v.Tag.subtitle.Text=="Telegram群组" then
-     浏览器打开("https://t.me/zhihu_lite") 
-    end]]
 
     if v.Tag.subtitle.Text=="提交BUG" then
       activity.newActivity("feedback")
@@ -235,7 +211,6 @@ about_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     if v.Tag.subtitle.Text=="开源地址" then
       浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
     end
-
 
     adp.notifyDataSetChanged()--更新列表
 end})
