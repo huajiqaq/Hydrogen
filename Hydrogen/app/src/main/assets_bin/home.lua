@@ -27,13 +27,13 @@ import "com.getkeepsafe.taptargetview.*"
 activity.setSupportActionBar(toolbar)
 activity.setContentView(loadlayout("layout/home"))
 
-
+提示("新建收藏文件夹")
 初始化历史记录数据(true)
 
 local function firsttip ()
   activity.setSharedData("禁用缓存","true")
   双按钮对话框("提示","软件默认开启「禁用缓存」和 想法功能 你可以在设置中手动设置此开关","我知道了","跳转设置",function()
-    关闭对话框(an) end,function()
+  关闭对话框(an) end,function()
     关闭对话框(an) 跳转页面("settings")
   end)
 end
@@ -61,7 +61,7 @@ local qqq=activity.getSharedData("开启想法")
 if ccc and lll and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
   双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function()
-    关闭对话框(an) end,function()
+  关闭对话框(an) end,function()
     关闭对话框(an) 浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
   end)
 end
@@ -82,7 +82,6 @@ end
 MDC_R=luajava.bindClass"com.jesse205.R"
 
 array = activity.getTheme().obtainStyledAttributes(activity.getThemeResId(),{
-
   MDC_R.attr.colorSurface
 })
 colorSurfaceVariant=array.getColor(0,0)
@@ -276,8 +275,6 @@ function 主页刷新(isclear)
         end
       end
     }
-
-    --新建适配器
   end
   if choosebutton==nil then
     随机推荐()
@@ -655,6 +652,16 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
     if s=="退出" then--判断项目并执行代码
       关闭页面()
      elseif s=="主页" then
+      --setmyToolip在loadlayout中
+      setmyToolip(_ask,"提问")
+      _ask.onClick=function()
+        if not(getLogin()) then
+          return 提示("你可能需要登录")
+        end
+        task(20,function()
+          activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
+        end)
+      end
       ch_light("主页")
       if isstart=="true" then
         a=MUKPopu({
@@ -678,20 +685,16 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       切换页面(0)
       ctl.setTitle("主页")
      elseif s=="日报" then
-      ch_light("日报")
-      if isstart=="true" then
-        a=MUKPopu({
-          tittle="菜单",
-          list={
-            {src=图标("email"),text="反馈",onClick=function()
-                跳转页面("feedback")
-            end},
-            {src=图标("info"),text="关于",onClick=function()
-                跳转页面("about")
-            end},
-          }
-        })
+      setmyToolip(_ask,"提问")
+      _ask.onClick=function()
+        if not(getLogin()) then
+          return 提示("你可能需要登录")
+        end
+        task(20,function()
+          activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
+        end)
       end
+      ch_light("日报")
       日报刷新()
       --隐藏主页viewpager
       控件隐藏(page_home)
@@ -701,39 +704,68 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       控件可见(page_daily)
       ctl.setTitle("日报")
      elseif s=="收藏" then
+      setmyToolip(_ask,"新建收藏夹")
+      _ask.onClick=function()
+        if not(getLogin()) then
+          return 提示("你可能需要登录")
+        end
+        新建收藏夹(function(mytext,myid,ispublic)
+
+          list4.adapter.add{
+            collections_title={
+              text=mytext,
+            },
+            is_lock=is_public==false and 图标("https") or nil,
+
+            collections_art={
+              text="0个内容"
+            },
+            collections_item={
+              text="0"
+            },
+            collections_follower={
+              text="0"
+            },
+            collections_id={
+              text="https://api.zhihu.com/collections/"..tointeger(myid).."/answers?offset=0"
+
+            },
+          }
+
+        end)
+      end
       ch_light("收藏")
       if isstart=="true" then
         a=MUKPopu({
           tittle="菜单",
           list={
             {src=图标("search"),text="在收藏中搜索",onClick=function()
-                if 状态=="未登录" then
-                  提示("你可能需要登录哦")
-                 else
-                  InputLayout={
-                    LinearLayout;
-                    orientation="vertical";
-                    Focusable=true,
-                    FocusableInTouchMode=true,
-                    {
-                      EditText;
-                      hint="输入";
-                      layout_marginTop="5dp";
-                      layout_marginLeft="10dp",
-                      layout_marginRight="10dp",
-                      layout_width="match_parent";
-                      layout_gravity="center",
-                      id="edit";
-                    };
-                  };
-
-                  AlertDialog.Builder(this)
-                  .setTitle("请输入")
-                  .setView(loadlayout(InputLayout))
-                  .setPositiveButton("确定", {onClick=function() activity.newActivity("search_result",{edit.text}) end})
-                  .setNegativeButton("取消", nil)
-                  .show();
+                if not(getLogin()) then
+                  return 提示("请登录后使用本功能")
                 end
+                InputLayout={
+                  LinearLayout;
+                  orientation="vertical";
+                  Focusable=true,
+                  FocusableInTouchMode=true,
+                  {
+                    EditText;
+                    hint="输入";
+                    layout_marginTop="5dp";
+                    layout_marginLeft="10dp",
+                    layout_marginRight="10dp",
+                    layout_width="match_parent";
+                    layout_gravity="center",
+                    id="edit";
+                  };
+                };
+
+                AlertDialog.Builder(this)
+                .setTitle("请输入")
+                .setView(loadlayout(InputLayout))
+                .setPositiveButton("确定", {onClick=function() activity.newActivity("search_result",{edit.text}) end})
+                .setNegativeButton("取消", nil)
+                .show();
             end},
             {src=图标("email"),text="反馈",onClick=function()
                 跳转页面("feedback")
@@ -766,24 +798,23 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       task(300,function()activity.newActivity("history")end)
      elseif s=="消息" then
 
-      if 状态=="未登录" then
-        提示("你可能需要登录")
-       else
-        task(20,function()
-          AlertDialog.Builder(this)
-          .setTitle("请选择")
-          .setSingleChoiceItems({"通知","私信"}, 0,{onClick=function(v,p)
-              if p==0 then
-                jumpurl="https://www.zhihu.com/notifications"
-              end
-              if p==1 then
-                jumpurl ="https://www.zhihu.com/messages"
-              end
-          end})
-          .setNegativeButton("确定", {onClick=function() if jumpurl==nil then jumpurl="https://www.zhihu.com/notifications" end activity.newActivity("huida",{jumpurl,true,true}) jumpurl=nil 提示("如显示不全请自行缩放") end})
-          .show();
-        end)
+      if not(getLogin()) then
+        return 提示("请登录后使用本功能")
       end
+      task(20,function()
+        AlertDialog.Builder(this)
+        .setTitle("请选择")
+        .setSingleChoiceItems({"通知","私信"}, 0,{onClick=function(v,p)
+            if p==0 then
+              jumpurl="https://www.zhihu.com/notifications"
+            end
+            if p==1 then
+              jumpurl ="https://www.zhihu.com/messages"
+            end
+        end})
+        .setNegativeButton("确定", {onClick=function() if jumpurl==nil then jumpurl="https://www.zhihu.com/notifications" end activity.newActivity("huida",{jumpurl,true,true}) jumpurl=nil 提示("如显示不全请自行缩放") end})
+        .show();
+      end)
      else
       Snakebar(s)
 
@@ -949,69 +980,68 @@ function 关注刷新(ppage,url,isclear)
     list9.Adapter=qqadpqy
   end
 
-  if 状态=="未登录" then
-    提示("请登录后使用关注功能")
-   else
-    提示("加载中")
-    local json=require "cjson"
-    zHttp.get(posturl,head,function(code,content)
-      if code==200 then
-        local data=json.decode(content)
-        moments_isend=data.paging.is_end
-        moments_nextUrl=data.paging.next
-        for k,v in ipairs(data.data) do
-          if v.type=="feed_group"
-            for d,e in ipairs(v.list) do
-              local 关注作者头像=e.actors[1].avatar_url
-              local 点赞数=tointeger(e.target.voteup_count)
-              local 评论数=tointeger(e.target.comment_count)
-              local 标题=e.target.title or e.target.question.title
-              local 关注名字=e.action_text
-              local 时间=时间戳(e.created_time)
-              local 预览内容=e.target.excerpt
-              if e.target.type=="answer" then
-                问题id等=tointeger(e.target.question.id or 1).."分割"..tointeger(e.target.id)
-                标题=e.target.question.title
-               elseif e.target.type=="question" then
-                问题id等="问题分割"..tointeger(e.target.id)
-                标题=e.target.title
-               elseif e.target.type=="article"
-                问题id等="文章分割"..tointeger(e.target.id)
-                标题=e.target.title
-               elseif e.target.type=="pin"
-                问题id等="想法分割"..tointeger(e.target.id)
-                标题=e.target.title
-              end
-              list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
-
-            end
-           elseif v.type=="feed" then
-            local 关注作者头像=v.actors[1].avatar_url
-            local 点赞数=tointeger(v.target.voteup_count)
-            local 评论数=tointeger(v.target.comment_count)
-            local 标题=v.target.title
-            local 关注名字=v.action_text
-            local 时间=时间戳(v.created_time)
-            local 预览内容=v.target.excerpt
-            if v.target.type=="answer" then
-              问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
-              标题=v.target.question.title
-             elseif v.target.type=="question" then
-              问题id等="问题分割"..tointeger(v.target.id)
-              标题=v.target.title
-             elseif v.target.type=="article"
-              问题id等="文章分割"..tointeger(v.target.id)
-              标题=v.target.title
-             elseif v.target.type=="pin"
-              问题id等="想法分割"..tointeger(v.target.id)
-              标题=v.target.title
+  if not(getLogin()) then
+    return 提示("请登录后使用本功能")
+  end
+  提示("加载中")
+  local json=require "cjson"
+  zHttp.get(posturl,head,function(code,content)
+    if code==200 then
+      local data=json.decode(content)
+      moments_isend=data.paging.is_end
+      moments_nextUrl=data.paging.next
+      for k,v in ipairs(data.data) do
+        if v.type=="feed_group"
+          for d,e in ipairs(v.list) do
+            local 关注作者头像=e.actors[1].avatar_url
+            local 点赞数=tointeger(e.target.voteup_count)
+            local 评论数=tointeger(e.target.comment_count)
+            local 标题=e.target.title or e.target.question.title
+            local 关注名字=e.action_text
+            local 时间=时间戳(e.created_time)
+            local 预览内容=e.target.excerpt
+            if e.target.type=="answer" then
+              问题id等=tointeger(e.target.question.id or 1).."分割"..tointeger(e.target.id)
+              标题=e.target.question.title
+             elseif e.target.type=="question" then
+              问题id等="问题分割"..tointeger(e.target.id)
+              标题=e.target.title
+             elseif e.target.type=="article"
+              问题id等="文章分割"..tointeger(e.target.id)
+              标题=e.target.title
+             elseif e.target.type=="pin"
+              问题id等="想法分割"..tointeger(e.target.id)
+              标题=e.target.title
             end
             list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
+
           end
+         elseif v.type=="feed" then
+          local 关注作者头像=v.actors[1].avatar_url
+          local 点赞数=tointeger(v.target.voteup_count)
+          local 评论数=tointeger(v.target.comment_count)
+          local 标题=v.target.title
+          local 关注名字=v.action_text
+          local 时间=时间戳(v.created_time)
+          local 预览内容=v.target.excerpt
+          if v.target.type=="answer" then
+            问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
+            标题=v.target.question.title
+           elseif v.target.type=="question" then
+            问题id等="问题分割"..tointeger(v.target.id)
+            标题=v.target.title
+           elseif v.target.type=="article"
+            问题id等="文章分割"..tointeger(v.target.id)
+            标题=v.target.title
+           elseif v.target.type=="pin"
+            问题id等="想法分割"..tointeger(v.target.id)
+            标题=v.target.title
+          end
+          list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
         end
       end
-    end)
-  end
+    end
+  end)
 end
 
 function 想法刷新(isclear)
@@ -1180,7 +1210,7 @@ function 收藏刷新(isclear)
   xpcall(function()
     local yuxun_ay=LuaAdapter(activity,datas4,itemc4)
 
-    list4.Adapter=yuxun_ay
+    list4.adapter=yuxun_ay
     list4.adapter.add{
       collections_title={
         text="本地收藏",
@@ -1314,9 +1344,8 @@ function getuserinfo()
       侧滑头.onClick=function()
         activity.newActivity("people",{uid})
       end
+     else
       sign_out.setVisibility(View.VISIBLE)
-     elseif code==401 then
-      状态="未登录"
     end
   end)
 
@@ -1336,7 +1365,7 @@ function onActivityResult(a,b,c)
    elseif b==1500 then
     初始化历史记录数据(true)
    elseif b==1600 then
-    收藏刷新()
+    收藏刷新(true)
   end
 end
 
@@ -1370,11 +1399,8 @@ if not(this.getSharedData("内部浏览器查看回答")) then
   activity.setSharedData("内部浏览器查看回答","false")
 end
 
-appinfo=this.getPackageManager().getApplicationInfo(this.getPackageName(),(0))
---versionCode=tointeger(appinfo.versionCode)
 
 local update_api= "https://mydata.huajicloud.ml/hydrogen.html"
-
 Http.get(update_api,head,function(code,content)
   if code==200 then
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))

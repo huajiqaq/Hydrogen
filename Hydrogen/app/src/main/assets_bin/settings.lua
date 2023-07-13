@@ -89,13 +89,10 @@ tab={
     提示("下次启动软件生效")
   end,
   修改主页排序=function()
-    zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
-      if code==200 then
-        activity.newActivity("xgtj")
-       elseif code==401 then
-        提示("请登录后使用本功能")
-      end
-    end)
+    if not(getLogin()) then
+      return 提示("请登录后使用本功能")
+    end
+    activity.newActivity("xgtj")
   end,
   主页设置=function()
     if this.getSharedData("starthome")=="推荐" then

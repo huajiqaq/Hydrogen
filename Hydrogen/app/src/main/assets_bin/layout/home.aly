@@ -90,13 +90,12 @@
               tooltip="提问",
               layout_margin="8dp";
               onClick=function()
-                if 状态=="未登录" then
-                  提示("你可能需要登录")
-                 else
-                  task(20,function()
-                    activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
-                  end)
+                if not(getLogin()) then
+                  return 提示("请登录后使用本功能")
                 end
+                task(20,function()
+                  activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
+                end)
               end;
             };
             {
@@ -273,6 +272,8 @@
                   onClick=function()
                     双按钮对话框("注销","你确定要注销吗","手滑了","确定",function() 关闭对话框(an)end,function()
                       清除所有cookie()
+                      activity.setSharedData("signdata",nil)
+                      activity.setSharedData("idx",nil)
                       关闭对话框(an)
                       渐变跳转页面("home")
                       activity.finish()

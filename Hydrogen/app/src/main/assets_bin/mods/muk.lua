@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.10
+versionCode=16.11
 layout_dir="layout/item_layout/"
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
@@ -1321,7 +1321,6 @@ function 清除所有cookie()
   cookieManager.setAcceptCookie(true);
   cookieManager.removeSessionCookie();
   cookieManager.removeAllCookie();
-  activity.setSharedData("signdata",nil)
 end
 
 function 复制文本(文本)
@@ -1963,273 +1962,302 @@ function 系统下载文件(a,b,c,d)
 end
 
 
-function table2string(tablevalue)
-  local function serialize(obj)
-    local lua = ""
-    local t = type(obj)
-    if t == "number" then
-      lua = lua .. obj
-     elseif t == "boolean" then
-      lua = lua .. tostring(obj)
-     elseif t == "string" then
-      lua = lua .. string.format("%q", obj)
-     elseif t == "table" then
-      lua = lua .. "{"
-      for k, v in pairs(obj) do
-        lua = lua .. "[" .. serialize(k) .. "]=" .. serialize(v) .. ","
-      end
-      local metatable = getmetatable(obj)
-      if metatable ~= nil and type(metatable.__index) == "table" then
-        for k, v in pairs(metatable.__index) do
-          lua = lua .. "[" .. serialize(k) .. "]=" .. serialize(v) .. ","
-        end
-      end
-      lua = lua .. "}"
-     elseif t == "nil" then
-      return nil
-     else
-      error("can not serialize a " .. t .. " type.")
-    end
-    return lua
-  end
-  local stringtable = serialize(tablevalue)
-  return stringtable
-end
-
-
 function 加入收藏夹(回答id,收藏类型)
-  coll=""
-  zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
-    if code==200 then
-      import "android.widget.LinearLayout$LayoutParams"
-      local function 新建收藏夹()
-        InputLayout={
-          LinearLayout;
-          orientation="vertical";
-          Focusable=true,
-          FocusableInTouchMode=true,
-          {
-            LuaWebView;
-            id="collection_webview";
-            layout_width="0dp";
-            layout_height="0dp";
-          };
-          {
-            TextView;
-            id="Prompt",
-            textSize="15sp",
-            layout_marginTop="10dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            layout_width="match_parent";
-            layout_gravity="center",
-            text="收藏夹标题:";
-          };
-          {
-            EditText;
-            hint="输入";
-            layout_marginTop="5dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            layout_width="match_parent";
-            layout_gravity="center",
-            id="edit";
-          };
-          {
-            TextView;
-            id="Promptt",
-            textSize="15sp",
-            layout_marginTop="10dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            layout_width="match_parent";
-            layout_gravity="center",
-            text="收藏夹描述(可选):";
-          };
-          {
-            EditText;
-            hint="输入";
-            layout_marginTop="5dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            layout_width="match_parent";
-            layout_gravity="center",
-            id="editt";
-          };
-          {
-            RadioButton;
-            Text="仅自己可见";
-            id="新建私密";
-            onClick=function() if 新建公开.checked==true then 新建公开.checked=false 新建状况="false";
-            加载js(collection_webview,'setprivacy()') end end;
-          };
-          {
-            RadioButton;
-            Text="公开";
-            id="新建公开";
-            onClick=function() if 新建私密.checked==true then 新建私密.checked=false 新建状况="true"
-            加载js(collection_webview,'setpublic()') end end;
-          };
-        };
-        collection_dialog=AlertDialog.Builder(this)
-        .setTitle("新建收藏夹页面")
-        .setView(loadlayout(InputLayout))
-        .setPositiveButton("确定",nil)
-        .setNegativeButton("取消",nil)
-        .show()
-        collection_dialog.getButton(collection_dialog.BUTTON_POSITIVE).onClick=function()
-          if edit.Text==""
-            collecttitle=""
-           else
-            collecttitle=edit.Text
-          end
-          if editt.Text==""
-            collectde=""
-           else
-            collectde=editt.Text
-          end
-          if edit.Text=="" then
-            提示("请输入内容")
-           else
-            加载js(collection_webview,'submit("'..edit.text'","'..editt.text..'"')
-            zHttp.get("https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20",head,function(code,content)
-              if code==200 then
-                collection_dialog.dismiss()
-                adp.clear()
-                adp.setNotifyOnChange(true)
-                for k,v in ipairs(require "cjson".decode(content).data) do
+  if not(getLogin()) then
+    return 提示("请登录后使用本功能")
+  end
+  import "android.widget.LinearLayout$LayoutParams"
+  list=ListView(activity).setFastScrollEnabled(true)
+  dialog_lay=LinearLayout(activity)
+  .setOrientation(0)
+  .setGravity(Gravity.RIGHT|Gravity.CENTER)
 
-                  adp.add(v.title);
-                end
+  lp=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+  lp.gravity = Gravity.RIGHT|Gravity.CENTER
+  lq=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+  lq.gravity = Gravity.CENTER
 
-              end
-            end)
-          end
-        end
-        collection_webview.getSettings()
-        .setUseWideViewPort(true)
-        .setBuiltInZoomControls(true)
-        .setSupportZoom(true)
-        .setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36");
+  tip_text=TextView(activity)
+  .setText("待选中收藏夹")
+  .setTypeface(字体("product"))
+  .setLayoutParams(lq);
 
-        zHttp.get("https://api.zhihu.com/people/"..activity.getSharedData("idx").."/profile?profile_new_version=1",head,function(code,content)
-          if code==200 then
-            if require "cjson".decode(content).url_token then
-              collection_webview.loadUrl("https://www.zhihu.com/people/"..require "cjson".decode(content).url_token.."/collections/")
-             else
-              提示("出错 请联系作者")
-              collection_dialog.dismiss()
-            end
-          end
-        end)
+  add_button=ImageView(activity).setImageBitmap(loadbitmap(图标("add")))
+  .setColorFilter(转0x(textc))
+  .setLayoutParams(lp);
 
-        local dl=AlertDialog.Builder(this)
-        .setTitle("提示")
-        .setMessage("内容加载中 请耐心等待 如若想停止加载 请点击下方取消")
-        .setNeutralButton("取消",nil)
-        .setCancelable(false)
-        .show()
+  add_text=TextView(activity).setText("新建收藏夹")
+  .setTypeface(字体("product"))
+  .setLayoutParams(lp);
 
+  dialog_lay.addView(add_text).addView(add_button)
 
-        collection_webview.setWebViewClient{
-          shouldOverrideUrlLoading=function(view,url)
-            --Url即将跳转
-          end,
-          onPageStarted=function(view,url,favicon)
-            加载js(view,获取js("collection"))
-            --网页加载
-          end,
-          onPageFinished=function(view,url)
-            dl.dismiss()
-            --网页加载完成
-        end}
+  add_text.onClick=function()
+    新建收藏夹(function(mytext,myid)
+      adp.add({
+        mytext=mytext,
+        myid=myid
+      })
+    end)
 
-        if 新建公开.checked==false and 新建私密.checked==false then
-          新建私密.checked=true
-          新建状态="false"
-        end
-      end
+  end
 
-      list=ListView(activity).setFastScrollEnabled(true)
-      dialog_lay=LinearLayout(activity)
-      .setOrientation(0)
-      .setGravity(Gravity.RIGHT|Gravity.CENTER)
-
-      lp=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-      lp.gravity = Gravity.RIGHT|Gravity.CENTER
-      lq=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-      lq.gravity = Gravity.CENTER
-
-      tip_text=TextView(activity).setText("待选中收藏夹")
-      .setLayoutParams(lq);
-
-      add_button=ImageView(activity).setImageBitmap(loadbitmap(图标("add")))
-      .setColorFilter(转0x(textc))
-      .setLayoutParams(lp);
-
-      add_text=TextView(activity).setText("新建收藏夹")
-      .setLayoutParams(lp);
-
-      dialog_lay.addView(add_text).addView(add_button)
-
-      add_text.onClick=function()
-        新建收藏夹()
-      end
-
-      cp=TextView(activity)
-      lay=LinearLayout(activity).setOrientation(1).addView(tip_text).addView(dialog_lay).addView(cp).addView(list)
-      Choice_dialog=AlertDialog.Builder(activity)--创建对话框
-      .setTitle("选择路径")
-      .setPositiveButton("确认",{
-        onClick=function()
-          local head = {
-            ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-          }
-          zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..选中收藏夹,head,function(code,json)
-            if code==200 then
-              提示("收藏成功")
-             else
-              提示("收藏失败")
-            end
-          end)
-      end})
-      .setNegativeButton("取消",nil)
-      .setView(lay)
-      .show()
-      datas={}
-
-
-      adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1)
-      list.setAdapter(adp)
-
-      list.onItemClick=function(l,v,p,s)--列表点击事件
-        tip_text.Text="当前选中收藏夹："..v.Text
-        选中收藏夹=coll:match(v.Text..'(.-)'..v.Text)
-      end
-
-      local collections_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20"
-
+  cp=TextView(activity)
+  lay=LinearLayout(activity).setOrientation(1).addView(tip_text).addView(dialog_lay).addView(cp).addView(list)
+  Choice_dialog=AlertDialog.Builder(activity)--创建对话框
+  .setTitle("选择路径")
+  .setPositiveButton("确认",{
+    onClick=function()
       local head = {
         ["cookie"] = 获取Cookie("https://www.zhihu.com/")
       }
-
-      zHttp.get(collections_url,head,function(code,content)
+      zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..选中收藏夹,head,function(code,json)
         if code==200 then
-          adp.setNotifyOnChange(true)
-          for k,v in ipairs(require "cjson".decode(content).data) do
-            if coll:match(v.title) then
-              coll=""
-            end
-            coll=coll..v.title..tostring(tointeger(v.id))..v.title
-            adp.add(v.title);
-          end
-
+          提示("收藏成功")
+         else
+          提示("收藏失败")
         end
       end)
-     elseif code==401 then
-      提示("请登录后使用本功能")
+  end})
+  .setNegativeButton("取消",nil)
+  .setView(lay)
+  .show()
+
+  local item={
+    LinearLayout,
+    orientation="vertical",
+    layout_width="fill",
+    {
+      TextView,
+      id="mytext",
+      layout_width="match_parent",
+      layout_height="wrap_content",
+      textSize="16sp",
+      gravity="center_vertical",
+      Typeface=字体("product-Bold");
+      paddingStart=64,
+      paddingEnd=64,
+      minHeight=192
+    },
+    {
+      TextView,
+      id="myid",
+      layout_width="0dp",
+      layout_height="0dp",
+    },
+  }
+
+  adp=LuaAdapter(activity,item)
+  list.setAdapter(adp)
+
+
+  list.onItemClick=function(l,v,p,s)--列表点击事件
+    tip_text.Text="当前选中收藏夹："..v.Tag.mytext.Text
+    选中收藏夹=v.Tag.myid.Text
+  end
+
+  list.onItemLongClick=function(l,v,p,s)--列表长按事件
+    双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function()
+      an.dismiss()
+      zHttp.delete("https://api.zhihu.com/collections/"..选中收藏夹,head,function(code,json)
+        if code==200 then
+          提示("已删除")
+          adp.setNotifyOnChange(true)
+          adp.remove(p)
+          adp.notifyDataSetChanged()
+        end
+      end)
+    end,function()an.dismiss()end)
+  end
+
+  local collections_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20"
+
+  local head = {
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
+  }
+
+  zHttp.get(collections_url,head,function(code,content)
+    if code==200 then
+      adp.setNotifyOnChange(true)
+      for k,v in ipairs(require "cjson".decode(content).data) do
+        adp.add({
+          mytext=v.title,
+          myid=tostring(tointeger(v.id))
+        })
+      end
+
     end
   end)
+end
+
+function 新建收藏夹(callback)
+  import "com.lua.LuaWebChrome"
+  InputLayout={
+    LinearLayout;
+    orientation="vertical";
+    Focusable=true,
+    FocusableInTouchMode=true,
+    {
+      LuaWebView;
+      id="collection_webview";
+      layout_width="0dp";
+      layout_height="0dp";
+    };
+    {
+      TextView;
+      id="Prompt",
+      textSize="15sp",
+      layout_marginTop="10dp";
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
+      layout_width="match_parent";
+      layout_gravity="center",
+      Typeface=字体("product");
+      text="收藏夹标题:";
+    };
+    {
+      EditText;
+      hint="输入";
+      layout_marginTop="5dp";
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
+      layout_width="match_parent";
+      layout_gravity="center",
+      Typeface=字体("product");
+      id="edit";
+    };
+    {
+      TextView;
+      id="Promptt",
+      textSize="15sp",
+      layout_marginTop="10dp";
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
+      layout_width="match_parent";
+      layout_gravity="center",
+      Typeface=字体("product");
+      text="收藏夹描述(可选):";
+    };
+    {
+      EditText;
+      hint="输入";
+      layout_marginTop="5dp";
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
+      layout_width="match_parent";
+      layout_gravity="center",
+      Typeface=字体("product");
+      id="editt";
+    };
+    {
+      RadioButton;
+      Text="仅自己可见";
+      Typeface=字体("product");
+      id="新建私密";
+      onClick=function() if 新建公开.checked==true then 新建公开.checked=false 新建状况="false";
+      加载js(collection_webview,'setprivacy()') end end;
+    };
+    {
+      RadioButton;
+      Text="公开";
+      Typeface=字体("product");
+      id="新建公开";
+      onClick=function() if 新建私密.checked==true then 新建私密.checked=false 新建状况="true"
+      加载js(collection_webview,'setpublic()') end end;
+    };
+  };
+  collection_dialog=AlertDialog.Builder(this)
+  .setTitle("新建收藏夹页面")
+  .setView(loadlayout(InputLayout))
+  .setPositiveButton("确定",nil)
+  .setNegativeButton("返回",nil)
+  .setCancelable(false)
+  .show()
+  collection_dialog.getButton(collection_dialog.BUTTON_NEGATIVE).onClick=function()
+    if waitload then
+      提示("你还不可以离开 正在添加中 如果长时间没反应请检查网络或报告bug")
+     else
+      collection_dialog.dismiss()
+    end
+  end
+
+  collection_dialog.getButton(collection_dialog.BUTTON_POSITIVE).onClick=function()
+    waitload=true
+    if waitload then
+      提示("正在添加中 请耐心等待 如果长时间没反应请检查网络或报告bug")
+    end
+    if edit.Text=="" then
+      提示("请输入内容")
+     else
+      加载js(collection_webview,'submit("'..edit.text..'","'..editt.text..'")')
+    end
+  end
+  collection_webview.getSettings()
+  .setUseWideViewPort(true)
+  .setBuiltInZoomControls(true)
+  .setSupportZoom(true)
+  .setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36");
+
+  collection_webview.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
+    onConsoleMessage=function(consoleMessage)
+      local console_message=consoleMessage.message()
+      if console_message:find("新建收藏夹成功")
+        waitload=nil
+        local mytext=edit.text
+        local myid=console_message:match("(.+)新建收藏夹成功")
+        local ispublic=console_message:match("新建收藏夹成功(.+)")
+        if callback then
+          callback(mytext,myid,ispublic)
+        end
+        提示("添加成功")
+        加载js(collection_webview,'start()')
+       elseif console_message:find("失败")
+        提示(console_message)
+      end
+  end}))
+
+  zHttp.get("https://api.zhihu.com/people/"..activity.getSharedData("idx").."/profile?profile_new_version=1",head,function(code,content)
+    if code==200 then
+      if require "cjson".decode(content).url_token then
+        collection_webview.loadUrl("https://www.zhihu.com/people/"..require "cjson".decode(content).url_token.."/collections/")
+       else
+        提示("出错 请联系作者")
+        collection_dialog.dismiss()
+      end
+    end
+  end)
+
+  local dl=AlertDialog.Builder(this)
+  .setTitle("提示")
+  .setMessage("内容加载中 请耐心等待 如若想停止加载 请点击下方取消")
+  .setNeutralButton("取消",{onClick=function()
+      --加载一个空白页
+      collection_webview.loadUrl("about:blank");
+      --移除webview
+      collection_webview.removeAllViews();
+      --销毁webview自身
+      collection_webview.destroy();
+      collection_dialog.dismiss()
+  end})
+  .setCancelable(false)
+  .show()
+
+
+  collection_webview.setWebViewClient{
+    shouldOverrideUrlLoading=function(view,url)
+      --Url即将跳转
+    end,
+    onPageStarted=function(view,url,favicon)
+      加载js(view,获取js("collection"))
+    end,
+    onPageFinished=function(view,url)
+      dl.dismiss()
+  end}
+
+  if 新建公开.checked==false and 新建私密.checked==false then
+    新建私密.checked=true
+    新建状态="false"
+  end
 end
 
 import "android.graphics.drawable.GradientDrawable"
@@ -2517,6 +2545,14 @@ function table.swap(数据, 查找位置, 替换位置, ismode)
   table.insert(数据, 替换位置, 删除数据)
 end
 
+function getLogin()
+  if activity.getSharedData("idx") then
+    return true
+   else
+    return fasle
+  end
+end
+
 head = {
   ["cookie"] = 获取Cookie("https://www.zhihu.com/");
 }
@@ -2533,7 +2569,7 @@ apphead = {
   ["cookie"] = 获取Cookie("https://www.zhihu.com/")
 }
 
-if activity.getSharedData("signdata")~=nil then
+if activity.getSharedData("signdata")~=nil and getLogin() then
   login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
   post_access_token_head={
     ["Content-Type"] = "application/json; charset=UTF-8";

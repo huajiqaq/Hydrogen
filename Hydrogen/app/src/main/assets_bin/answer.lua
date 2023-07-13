@@ -251,17 +251,14 @@ function 数据添加(t,b)
    ]])
 
       if b.content:find("video%-box") then
-        zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
-          if code==401 then
-            AlertDialog.Builder(this)
-            .setTitle("提示")
-            .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
-            .setCancelable(false)
-            .setPositiveButton("我知道了",nil)
-            .show()
-          end
-          return
-        end)
+        if not(getLogin()) then
+          AlertDialog.Builder(this)
+          .setTitle("提示")
+          .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
+          .setCancelable(false)
+          .setPositiveButton("我知道了",nil)
+          .show()
+        end
 
         加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
         加载js(view,获取js("videoload"))
@@ -409,7 +406,7 @@ function 加载页(mviews,pos,isleftadd,isload)
             回答容器.pageinfo=mviews.pageinfo
             回答容器.isleft=(#回答容器.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
             回答容器.isright=(#回答容器.pageinfo.next_answer_ids>0 and {false} or {true})[1]
-            --再新建一页 防止误触右滑事件      
+            --再新建一页 防止误触右滑事件  
             id表[pg.adapter.getItemCount()+1]={}
             local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
             pg.adapter.add(加入view)
@@ -662,7 +659,6 @@ local click=0
 mark.onClick=function()
   local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
   加入收藏夹(url:match("answer/(.+)"),"answer")
-
 end
 
 a=MUKPopu({
@@ -754,6 +750,25 @@ a=MUKPopu({
         local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
         加入收藏夹(url:match("answer/(.+)"),"answer")
       end
+      --[[
+        local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
+        local pgids=数据表[pgnum].ids
+        local username=pgids.username.text
+        local 写入内容='question_id="'..问题id..'"'
+        local 保存路径=内置存储文件("Collection/".._title.text)
+        写入内容=写入内容..'\n'
+        写入内容=写入内容..'answer_id="'..回答id..'"'
+        xpcall(function()
+          创建文件夹(保存路径)
+          创建文件夹(保存路径.."/"..username)
+          创建文件(保存路径.."/"..username.."/detail.txt")
+          写入文件(保存路径.."/"..username.."/detail.txt",写入内容)
+          提示("保存成功")
+          end,function()
+          提示("保存失败 可能是未授予本地存储权限")
+        end)
+      end
+      ]]
     },
 
     {

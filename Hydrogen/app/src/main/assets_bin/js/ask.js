@@ -1,10 +1,9 @@
 window.onload = function () {
     function emulateMouseClick(element) {
-        // 创建事件
-        var event = document.createEvent("MouseEvents");
-        // 定义事件 参数： type, bubbles, cancelable
-        event.initEvent("click", true, true);
-        // 触发对象可以是任何元素或其他事件目标
+        let event = new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true
+        });
         element.dispatchEvent(event);
     }
 

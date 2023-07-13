@@ -4,6 +4,12 @@ import "com.lua.*"
 
 collections_url,collections_title=...
 
+if collections_url~="local" then
+  collections_id=collections_url:match("collections/(.+)/")
+ else
+  collections_id=nil
+end
+
 activity.setContentView(loadlayout("layout/collections"))
 
 初始化历史记录数据(true)
@@ -53,7 +59,6 @@ if collections_url=="local" then
       notedata[#notedata+1]={
         catitle=name,
         file=(v),
-
       }
     end
 
@@ -157,7 +162,7 @@ if collections_url=="local" then
             layout_width="-2";
             layout_height="-2";
             radius="4dp";
-            background=primaryc;
+            CardBackgroundColor=primaryc;
             layout_marginTop="8dp";
             layout_marginLeft="8dp";
             layout_marginRight="24dp";
@@ -203,7 +208,8 @@ if collections_url=="local" then
       onItemClick=function(id,v,zero,one)
         --print(path,v.Text)
         local open=activity.getSharedData("内部浏览器查看回答")
-        local id=tostring(io.open(内置存储文件("Collection/"..path.."/"..v.Text.."/".."detail.txt")):read("*a"):match[[question_id="(.-)"]]).."分割"..tostring(io.open(内置存储文件("Collection/"..path.."/"..v.Text.."/".."detail.txt")):read("*a"):match[[answer_id="(.-)"]])
+        local filestr=io.open(内置存储文件("Collection/"..path.."/"..v.Text.."/".."detail.txt"))
+        local id=tostring(filestr:read("*a"):match[[question_id="(.-)"]]).."分割"..tostring(io.open(内置存储文件("Collection/"..path.."/"..v.Text.."/".."detail.txt")):read("*a"):match[[answer_id="(.-)"]])
         if open=="false" then
           activity.newActivity("answer",{tostring(id):match("(.+)分割"),tostring(id):match("分割(.+)")})
          else
@@ -429,6 +435,24 @@ a=MUKPopu({
     {src=图标("email"),text="反馈",onClick=function()
         activity.newActivity("feedback")
     end},
+
+    {src=图标("close"),text="删除收藏夹",onClick=function()
+        if not(collections_id) then
+          return 提示("本地收藏不支持此功能")
+         else
+          双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function()
+            an.dismiss()
+            zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
+              if code==200 then
+                提示("已删除")
+                activity.setResult(1600,nil)
+                activity.finish()
+              end
+            end)
+          end,function()an.dismiss()end)
+        end
+    end},
+
   }
 })
 

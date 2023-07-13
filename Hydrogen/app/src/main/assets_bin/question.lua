@@ -224,16 +224,12 @@ a=MUKPopu({
     end},
     {
       src=图标("colorize"),text="回答",onClick=function()
+        if not(getLogin()) then
+          return 提示("请登录后使用本功能")
+        end
+        local url=" https://www.zhihu.com/question/"..question_id.."/write"
 
-        zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
-          if code==200 then
-            url=" https://www.zhihu.com/question/"..question_id.."/write"
-
-            activity.newActivity("huida",{url,nil,true})
-           elseif code==401 then
-            提示("请登录后使用本功能")
-          end
-        end)
+        activity.newActivity("huida",{url,nil,true})
       end
     },
   }

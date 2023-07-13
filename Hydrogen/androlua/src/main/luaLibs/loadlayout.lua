@@ -407,6 +407,55 @@ local function dump2 (t)
   return t
 end
 
+--有点用 不设置为local了
+function getviewListener(view,listener)
+  --获取android.view.View类的对象
+  local viewclass = Class.forName("android.view.View")
+  --获取view类中的getListenerInfo方法，该方法返回一个ListenerInfo对象，包含了view的各种事件监听器
+  local getListenerInfo = viewclass.getDeclaredMethod("getListenerInfo",nil)
+  --设置getListenerInfo方法为可访问的，否则会抛出异常
+  getListenerInfo.setAccessible(true);
+  --调用getListenerInfo方法，传入view作为参数，得到listenerInfo对象
+  local listenerInfo = getListenerInfo.invoke(view,nil);
+  --获取listenerInfo对象的类对象
+  local listenerInfoClass = listenerInfo.getClass();
+  --获取listenerInfo类中的字段，该字段存储了view的事件监听器
+  local mOnClickListenerField = listenerInfoClass.getDeclaredField(listener);
+  --设置字段为可访问的，否则会抛出异常
+  mOnClickListenerField.setAccessible(true);
+  --获取字段的值，即view的事件监听器
+  local monClick = mOnClickListenerField.get(listenerInfo);
+  return monClick
+end
+
+function getonClick(view)
+  return getviewListener(view,"mOnClickListener")
+end
+
+function getonLongClick(view)
+  return getviewListener(view,"mOnLongClickListener")
+end
+
+function setmyToolip(view,toolip_text)
+  if Build.VERSION.SDK_INT>=26 then
+    view.setTooltipText(toolip_text)
+   else
+    local savelongClick=getonLongClick(view)
+    if savelongClick then
+      view.setOnLongClickListener(View.OnLongClickListener {
+        onLongClick=function(view)
+          savelongClick.onLongClick(view)
+          Snakebar(toolip_text)
+      end})
+     else
+      view.setOnLongClickListener(View.OnLongClickListener {
+        onLongClick=function(view)
+          Snakebar(toolip_text)
+      end})
+    end
+  end
+end
+
 local ver = luajava.bindClass("android.os.Build").VERSION.SDK_INT;
 local function setBackground(view,bg)
   if ver<16 then
@@ -455,7 +504,9 @@ local function setattribute(root,view,params,k,v,ids)
 
       local ScrollingViewBehavior = import "com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
 
-      params.setBehavior(ScrollingViewBehavior())
+      local mScrollingViewBehavior=ScrollingViewBehavior()
+
+      params.setBehavior(mScrollingViewBehavior)
 
      elseif tostring(v) == "@string/bottom_sheet_behavior" then
 
@@ -555,7 +606,7 @@ local function setattribute(root,view,params,k,v,ids)
       error(string.format("loadlayout error: The value Must be a number or string, checked import layout.",0))
     end
     view.IndeterminateDrawable.setColorFilter(PorterDuffColorFilter(num,PorterDuff.Mode.SRC_ATOP));
-    
+
    elseif k=="ProgressBarBackground2" then
     local num
     if type(v)=="string" then
@@ -573,9 +624,7 @@ local function setattribute(root,view,params,k,v,ids)
 
     --针对小于api26报错问题的解决
    elseif string.lower(k)=="tooltip" then
-    if Build.VERSION.SDK_INT>=26 then
-      view.setTooltipText(v)
-    end
+    setmyToolip(view,v)
    elseif rules[k] and (v==true or v=="true") then
     params.addRule(rules[k])
    elseif rules[k] then
