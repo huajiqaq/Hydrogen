@@ -27,7 +27,6 @@ import "com.getkeepsafe.taptargetview.*"
 activity.setSupportActionBar(toolbar)
 activity.setContentView(loadlayout("layout/home"))
 
-提示("新建收藏文件夹")
 初始化历史记录数据(true)
 
 local function firsttip ()
