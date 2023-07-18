@@ -136,12 +136,13 @@ webview.setWebViewClient{
   end,
   onPageStarted=function(view,url,favicon)
     if 全局主题值=="Night" then
-      黑暗模式主题(view)
+      黑暗页(view)
     end
   end,
   onPageFinished=function(view,url,favicon)
+        view.evaluateJavascript([[alert("hhh")]],nil)
     if 全局主题值=="Night" then
-      黑暗模式主题(view)
+      黑暗页(view)
     end
   end,
   onLoadResource=function(view,url)

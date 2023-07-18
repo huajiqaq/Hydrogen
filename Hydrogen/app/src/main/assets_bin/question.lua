@@ -157,7 +157,7 @@ end)
       show.setFocusable(false)
 
       if 全局主题值=="Night" then
-        加载js(view,获取js("darkpage"))
+        黑暗页(view)
       end
 
       imgReset()

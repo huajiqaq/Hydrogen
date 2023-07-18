@@ -77,9 +77,7 @@ function base_question:getData(callback)
   end)
   return self]]
 
-  zHttp.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,excerpt",{
-    ["x-app-za"] = "OS=Android"
-  }
+  zHttp.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,excerpt",apphead
   ,function(code,content)
     if code==200 then
       local data=require "cjson".decode(content)
@@ -93,9 +91,6 @@ end
 function base_question:next(callback)
 
   if self.is_end~=true then
-    local head = {
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-    }
 
     zHttp.get(self.nextUrl or "https://api.zhihu.com/questions/"..self.id.."/answers?&include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count&limit=20".."&sort_by="..(self.sortby or "default"),head,function(code,body)
 

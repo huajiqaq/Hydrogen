@@ -29,9 +29,6 @@ function base:setresultfunc(tab)
 end
 
 function base:getData(callback)
-  local head = {
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-  }
   zHttp.get("https://api.zhihu.com/people/"..self.id.."/profile?profile_new_version=1",head,function(code,content)
     if code==200 then
       local data=require "cjson".decode(content)
@@ -46,10 +43,6 @@ end
 function base:next(callback)
 
   if self.is_end~=true then
-    local head = {
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-    }
-
     if self.nextUrl==nil then
       nextoffset=""
      else

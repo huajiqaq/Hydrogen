@@ -102,6 +102,7 @@ function 数据添加(t,b)
 
   t.content.setVisibility(0)
 
+  --[[
   if not(b) then return end
 
   defer local question_base=require "model.question":new(tointeger(b.question.id))
@@ -109,6 +110,7 @@ function 数据添加(t,b)
     all_answer.Text="点击查看全部"..tointeger(tab.answer_count).."个回答 >"
 
   end)
+  ]]
 
   if activity.getSharedData("标题简略化")~="true" then
     _title.Text=b.question.title:gsub("/",[[ 或 ]])
@@ -239,11 +241,15 @@ function 数据添加(t,b)
     onPageStarted=function(view,url,favicon)
       等待doc(view)
       if 全局主题值=="Night" then
-        加载js(view,获取js("darkpage"))
+        黑暗页(view)
         --   黑暗模式主题(view)
       end
     end,
     onPageFinished=function(view,url,favicon)
+      if 全局主题值=="Night" then
+        黑暗页(view)
+        --   黑暗模式主题(view)
+      end
       加载js(view,[[
 	waitForKeyElements(' [class="AnswerReward"]', 	function() {
 		document.getElementsByClassName("AnswerReward")[0].style.display = "none"
@@ -406,7 +412,7 @@ function 加载页(mviews,pos,isleftadd,isload)
             回答容器.pageinfo=mviews.pageinfo
             回答容器.isleft=(#回答容器.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
             回答容器.isright=(#回答容器.pageinfo.next_answer_ids>0 and {false} or {true})[1]
-            --再新建一页 防止误触右滑事件  
+            --再新建一页 防止误触右滑事件
             id表[pg.adapter.getItemCount()+1]={}
             local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
             pg.adapter.add(加入view)

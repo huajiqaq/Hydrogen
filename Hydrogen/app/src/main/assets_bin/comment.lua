@@ -9,7 +9,9 @@ activity.setContentView(loadlayout("layout/comment"))
 comment_id,comment_type,answer_title,answer_author,comment_count,oricomment_id,oricomment_type=...
 波纹({fh,_more},"圆主题")
 
-local 保存路径=内置存储文件("Download/"..answer_title:gsub("/","or").."/"..answer_author)
+if answer_title then
+  local 保存路径=内置存储文件("Download/"..answer_title:gsub("/","or").."/"..answer_author)
+end
 
 if comment_type=="answers" then
   savetype="回答"
@@ -149,6 +151,10 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
       activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(v.Text)
       提示("复制文本成功")
       return false
+    end
+
+    if answer_title~=true then
+      return
     end
 
     local commenttype

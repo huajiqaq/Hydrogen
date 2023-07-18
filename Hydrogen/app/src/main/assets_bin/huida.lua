@@ -198,9 +198,6 @@ liulan.setWebViewClient{
   onLoadResource=function(view,url)
   end,
   onPageFinished=function(view,url)
-    if 全局主题值=="Night" then
-      黑暗模式主题(view)
-    end
     if docode~="默认" then 屏蔽元素(view,{"SignFlowHomepage-footer"})
     end
 end}

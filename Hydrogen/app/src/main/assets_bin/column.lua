@@ -190,10 +190,7 @@ content.setWebViewClient{
     end
 
   end,
-  onPageFinished=function(v,l)
-    if 全局主题值=="Night" then
-      黑暗模式主题(v)
-    end
+  onPageFinished=function(view,l)
   end,
   onLoadResource=function(view,url)
     view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})

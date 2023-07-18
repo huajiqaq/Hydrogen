@@ -54,9 +54,6 @@ end
 function base:next(callback)
 
   if self.is_end~=true then
-    local head = {
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-    }
 
     zHttp.get(self.nextUrl or self:getUrlByType(self.id,self.type),head ,function(code,body)
 

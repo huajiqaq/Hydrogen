@@ -1,4 +1,5 @@
-; (function () {
+;(function () {
+    document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
     let util = {
@@ -12,15 +13,6 @@
             style.id = id;
             tag === 'style' ? style.innerHTML = css : style.href = css;
             doc.head.appendChild(style);
-        },
-
-        hover(ele, fn1, fn2) {
-            ele.onmouseenter = function () {  //移入事件
-                fn1.call(ele);
-            };
-            ele.onmouseleave = function () { //移出事件
-                fn2.call(ele);
-            };
         },
 
         addThemeColor(color) {
@@ -87,6 +79,20 @@
             
                     /* Default Reverse rule */
                     img, 
+                    video, 
+                    iframe,
+                    canvas,
+                    :not(object):not(body) > embed,
+                    object,
+                    svg image,
+                    [style*="background:url"],
+                    [style*="background-image:url"],
+                    [style*="background: url"],
+                    [style*="background-image: url"],
+                    [background],
+                    twitterwidget,
+                    .sr-reader,
+                    .no-dark-mode,
                     .sr-backdrop {
                         ${this.isFirefox() ? util.firefoxReverseFilter : util.reverseFilter}
                     }
@@ -150,8 +156,6 @@
                 }`);
         },
 
-
-
         enableDarkMode() {
             if (this.isFullScreen()) return;
             !this.isFirefox() && this.createDarkFilter();
@@ -162,16 +166,7 @@
         disableDarkMode() {
             util.removeElementById('dark-mode-svg');
             util.removeElementById('dark-mode-style');
-            util.addThemeColor('#ffffff');
-        },
-
-        addDarkTheme() {
-
-            lightDOM.style.transform = 'scale(1)';
-            lightDOM.style.opacity = '1';
-            darkDOM.style.transform = 'scale(0)';
-            darkDOM.style.opacity = '0';
-            this.enableDarkMode();
+            util.addThemeColor("#ffffff");
         },
 
         isTopWindow() {
@@ -203,21 +198,9 @@
                 this.enableDarkMode();
             }
             const headObserver = new MutationObserver(() => {
-                his.enableDarkMode();
+                this.enableDarkMode();
             });
-            headObserver.observe(document.head, { childList: true, subtree: true });
-
-            if (document.body) {
-                this.addDarkTheme();
-            } else {
-                const bodyObserver = new MutationObserver(() => {
-                    if (document.body) {
-                        bodyObserver.disconnect();
-                        this.addDarkTheme();
-                    }
-                });
-                bodyObserver.observe(document, { childList: true, subtree: true });
-            }
+            headObserver.observe(document.head, {childList: true, subtree: true});
         },
 
         init() {
@@ -226,4 +209,5 @@
         }
     };
     main.init();
+    })
 })();

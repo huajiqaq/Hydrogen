@@ -41,9 +41,6 @@ login_web.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     end
   end,
   onProgressChanged=function(view,Progress)
-    if 全局主题值=="Night" then
-      黑暗模式主题(view)
-    end
 end}))
 
 login_web.setDownloadListener({
@@ -53,9 +50,6 @@ end})
 
 login_web.setWebViewClient{
   onLoadResource=function(view,url)
-    if 全局主题值=="Night" then
-      黑暗模式主题(view)
-    end
 
   end,
   shouldOverrideUrlLoading=function(view,url)
@@ -90,6 +84,9 @@ login_web.setWebViewClient{
   end,
   onPageStarted=function(view,url)
     加载js(view,获取js("login"))
+    if 全局主题值=="Night" then
+      黑暗模式主题(view)
+    end
   end,
   onPageFinished=function(view,url)
     if login_web.getUrl():find("https://www.zhihu.com/%?utm_id") or login_web.getUrl()=="https://www.zhihu.com" then
@@ -100,10 +97,6 @@ login_web.setWebViewClient{
      else
       progress.setVisibility(8)
       login_web.setVisibility(0)
-    end
-
-    if 全局主题值=="Night" then
-      黑暗模式主题(view)
     end
 
 end}
