@@ -160,7 +160,7 @@ function check_update()
   update_title.Text="检查更新"
   update_message.Text="正在检查更新"
   update_info.Text="正在检查更新"
-  local update_api= "https://mydata.huajicloud.ml/hydrogen.html"
+  local update_api=getApiurl()
 
   Http.get(update_api,function(code,content)
     if code==200 then

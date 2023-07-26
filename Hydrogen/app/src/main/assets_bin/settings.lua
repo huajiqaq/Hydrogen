@@ -60,6 +60,7 @@ data = {
   {__type=1,title="其他"},
   {__type=3,subtitle="关于",image=图标("")},
   {__type=4,subtitle="调式模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
+  {__type=4,subtitle="允许加载代码",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
 
 }
 
@@ -176,6 +177,10 @@ tab={
       this.setSharedData("调式模式","false")
       提示("成功！重启App生效")
     end
+  end,
+
+  允许加载代码=function()
+    提示("开启后 将在右上角的功能中增加一个可以执行代码的选项")
   end
 }
 

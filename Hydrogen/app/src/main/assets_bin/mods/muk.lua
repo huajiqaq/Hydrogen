@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.12
+versionCode=16.13
 layout_dir="layout/item_layout/"
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
@@ -364,17 +364,9 @@ end
 
 
 function dec2hex(n)
-  local hexMap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"}
-  if n < 0 then
-    n = n + 256 * 256 * 256 -- 8位8字节,溢出后为255
-  end
-  local hex = ""
-  while n > 0 do
-    local remainder = n % 16 -- 取余
-    hex = string.format("%s%s", hexMap[remainder + 1], hex)
-    n = math.floor(n / 16) -- 除16取整
-  end
-  return hex
+  local color=0xFFFFFFFF & n
+  hex_str = string.format("#%08X", color)
+  return hex_str
 end
 
 function 主题(str)
@@ -389,7 +381,7 @@ function 主题(str)
       activity.recreate()
     end
     --    primaryc="#448aff"
-    primaryc="#"..dec2hex(res.color.attr.colorPrimary)
+    primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#fdd835"
     textc="#212121"
     stextc="#424242"
@@ -400,7 +392,7 @@ function 主题(str)
     grayc="#ECEDF1"
     ripplec="#559E9E9E"
     --    cardedge="#FFE0E0E0"
-    cardedge="#"..dec2hex(res.color.attr.colorSurface)
+    cardedge=dec2hex(res.color.attr.colorSurface)
     oricardedge="#FFF6F6F6"
     --    cardedge="#FFF6F6F6"
     状态栏颜色(0x3f000000)
@@ -421,7 +413,7 @@ function 主题(str)
       activity.recreate()
     end
     --    primaryc="#FF88B0F8"
-    primaryc="#"..dec2hex(res.color.attr.colorPrimary)
+    primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#ffbfa328"
     --    textc="#808080"
     textc="#FFCBCBCB"
@@ -433,7 +425,7 @@ function 主题(str)
     viewshaderc="#80000000"
     grayc="#212121"
     ripplec="#559E9E9E"
-    cardedge="#"..dec2hex(res.color.attr.colorSurface)
+    cardedge=dec2hex(res.color.attr.colorSurface)
     oricardedge="#555555"
     --    cardedge="#555555"
     状态栏颜色(0xff191919)
@@ -1489,7 +1481,7 @@ function 下载文件对话框(title,url,path,ex)
     },
     {
       ProgressBar,
-      ProgressBarBackground2=转0x(primaryc),
+      ProgressBarBackground=转0x(primaryc),
       id="进度条",
       style="?android:attr/progressBarStyleHorizontal",
       layout_width="fill",
@@ -1905,10 +1897,46 @@ function MUKPopu(t)
 
   end
   tab.pop=pop
-  for k,v in ipairs(t.list) do
 
+  if this.getSharedData("允许加载代码")=="true" then
+    table.insert(t.list,{src=图标("build"),text="执行代码",onClick=function()
+        local InputLayout={
+          LinearLayout;
+          orientation="vertical";
+          Focusable=true,
+          FocusableInTouchMode=true,
+          {
+            EditText;
+            hint="输入";
+            layout_marginTop="5dp";
+            layout_marginLeft="10dp",
+            layout_marginRight="10dp",
+            layout_width="match_parent";
+            layout_gravity="center",
+            lines="1",
+            ellipsize="end",
+            id="edit";
+          };
+        };
+
+        local dialog=AlertDialog.Builder(this)
+        .setTitle("输入要执行的代码")
+        .setView(loadlayout(InputLayout))
+        .setPositiveButton("确定",nil)
+        .setNegativeButton("取消",nil)
+        .setCancelable(false)
+        .show()
+
+        dialog.getButton(dialog.BUTTON_POSITIVE).onClick=function()
+          load(edit.Text)()
+        end
+    end})
+  end
+
+  for k,v in ipairs(t.list) do
     tab.poplist.adapter.add{popadp_image=loadbitmap(v.src),popadp_text=v.text}
   end
+
   tab.poplist.adapter.notifyDataSetChanged()
   return tab
 end
@@ -2671,6 +2699,7 @@ function 清理内存()
       a1.delete()
       a2.delete()
     end)
+
     LuaUtil.rmDir(File(dar))
     LuaUtil.rmDir(File(imagetmp))
 
@@ -2682,4 +2711,62 @@ function 清理内存()
       提示("清理成功,共清理 "..tokb(m))
     end
   end)
+end
+
+write_permissions={"android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_EXTERNAL_STORAGE"};
+
+function get_write_permissions()
+  if PermissionUtil.check(write_permissions)~=true then
+    PermissionUtil.askForRequestPermissions({
+      {
+        name=R.string.jesse205_permission_storage,
+        tool=R.string.app_name,
+        todo=getLocalLangObj("获取文件列表，读取文件和保存文件","Get file list, read file and save file"),
+        permissions=write_permissions;
+      },
+    })
+    return
+  end
+end
+
+function 替换文件字符串(路径,要替换的字符串,替换成的字符串)
+  if 路径 then
+    路径=tostring(路径)
+    内容=io.open(路径):read("*a")
+    io.open(路径,"w+"):write(tostring(内容:gsub(要替换的字符串,替换成的字符串))):close()
+   else
+    return false
+  end
+end
+
+function getNetwork_connect()
+  import "android.content.Context"
+  import "android.net.NetworkInfo"
+  connectivityManager =this.getSystemService(Context.CONNECTIVITY_SERVICE);
+  networkInfo = connectivityManager.getActiveNetworkInfo();
+  if networkInfo~=nil and networkInfo.isConnected() then
+    if networkInfo.getState()== NetworkInfo.State.CONNECTED then
+      return true;
+     else
+      return false;
+    end
+  end
+  return false
+end
+
+function getApiurl()
+  import "java.net.URL"
+  local urlConnection = URL("http://mtw.so/6h4kqE").openConnection();
+  urlConnection.setRequestMethod("GET");
+  local location = urlConnection.getHeaderField("Location");
+  urlConnection.disconnect();
+  return location
+end
+
+function loadglide(view,url)
+  import "com.bumptech.glide.load.engine.DiskCacheStrategy"
+  Glide.with(this)
+  .load(url)
+  .diskCacheStrategy(DiskCacheStrategy.NONE)
+  .into(view)
 end

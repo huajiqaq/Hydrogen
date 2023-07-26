@@ -6,18 +6,6 @@ activity.setContentView(loadlayout("layout/local_list"))
 
 初始化历史记录数据(true)
 
-function 申请权限()
-  import "android.content.pm.PackageManager"
-  local mAppPermissions = ArrayList();
-
-  权限="android.permission.WRITE_EXTERNAL_STORAGE"
-  mAppPermissions.add(权限);
-
-  local size = mAppPermissions.size();
-  local mArray = mAppPermissions.toArray(String[size])
-  activity.requestPermissions(mArray,0);
-end
-
 
 波纹({fh,_more},"圆主题")
 _title.Text="已保存的内容"

@@ -27,7 +27,7 @@ question_list.addFooterView(loadlayout({
     ProgressBar,
     layout_height="19dp",
     layout_width="19dp",
-    ProgressBarBackground2=转0x(primaryc),
+    ProgressBarBackground=转0x(primaryc),
     style="?android:attr/progressBarStyleLarge"
   },
   {

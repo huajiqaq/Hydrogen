@@ -15,23 +15,6 @@
             doc.head.appendChild(style);
         },
 
-        addThemeColor(color) {
-            let doc = document, meta = doc.getElementsByName('theme-color')[0];
-            if (meta) return meta.setAttribute('content', color);
-            let metaEle = doc.createElement('meta');
-            metaEle.name = 'theme-color';
-            metaEle.content = color;
-            doc.head.appendChild(metaEle);
-        },
-
-        getThemeColor() {
-            let meta = document.getElementsByName('theme-color')[0];
-            if (meta) {
-                return meta.content;
-            }
-            return '#ffffff';
-        },
-
         removeElementById(eleId) {
             let ele = document.getElementById(eleId);
             ele && ele.parentNode.removeChild(ele);
@@ -60,7 +43,7 @@
 
         createDarkFilter() {
             if (util.hasElementById('dark-mode-svg')) return;
-            let svgDom = '<svg id="dark-mode-svg" style="height: 0; width: 0;"><filter id="dark-mode-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.283 -0.567 -0.567 0 0.925 -0.567 0.283 -0.567 0 0.925 -0.567 -0.567 0.283 0 0.925 0 0 0 1 0"></feColorMatrix></filter><filter id="dark-mode-reverse-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.333 -0.667 -0.667 0 1 -0.667 0.333 -0.667 0 1 -0.667 -0.667 0.333 0 1 0 0 0 1 0"></feColorMatrix></filter></svg>';
+            let svgDom = '<svg id="dark-mode-svg" style="height: 0; width: 0; display: none;"><filter id="dark-mode-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.283 -0.567 -0.567 0 0.925 -0.567 0.283 -0.567 0 0.925 -0.567 -0.567 0.283 0 0.925 0 0 0 1 0"></feColorMatrix></filter><filter id="dark-mode-reverse-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.333 -0.667 -0.667 0 1 -0.667 0.333 -0.667 0 1 -0.667 -0.667 0.333 0 1 0 0 0 1 0"></feColorMatrix></filter></svg>';
             let div = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
             div.innerHTML = svgDom;
             let frag = document.createDocumentFragment();
@@ -160,13 +143,11 @@
             if (this.isFullScreen()) return;
             !this.isFirefox() && this.createDarkFilter();
             this.createDarkStyle();
-            util.addThemeColor('#131313');
         },
 
         disableDarkMode() {
             util.removeElementById('dark-mode-svg');
             util.removeElementById('dark-mode-style');
-            util.addThemeColor("#ffffff");
         },
 
         isTopWindow() {

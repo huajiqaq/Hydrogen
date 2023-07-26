@@ -32,7 +32,7 @@ activity.setContentView(loadlayout("layout/home"))
 local function firsttip ()
   activity.setSharedData("禁用缓存","true")
   双按钮对话框("提示","软件默认开启「禁用缓存」和 想法功能 你可以在设置中手动设置此开关","我知道了","跳转设置",function()
-  关闭对话框(an) end,function()
+    关闭对话框(an) end,function()
     关闭对话框(an) 跳转页面("settings")
   end)
 end
@@ -60,7 +60,7 @@ local qqq=activity.getSharedData("开启想法")
 if ccc and lll and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
   双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function()
-  关闭对话框(an) end,function()
+    关闭对话框(an) end,function()
     关闭对话框(an) 浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
   end)
 end
@@ -335,10 +335,6 @@ function bnv.onNavigationItemSelected(item)
   return true;
 end
 
-fab.setVisibility(8)
-
-fab.setImageBitmap((loadbitmap(图标("refresh"))))
-fab.onClick=function() 主页刷新("refresh") end
 page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
 
   onPageScrolled=function( position, positionOffset, positionOffsetPixels)
@@ -1070,21 +1066,15 @@ function 想法刷新(isclear)
         view=holder.view.getTag()
 
         url=mytab[position+1].url
-        layoutParams=view.img.getLayoutParams()
         import "android.util.DisplayMetrics"
         dm=DisplayMetrics()
         activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        hj=loadbitmap(url)
-        wtt=hj.getWidth()
-        kkk=dm.widthPixels-80
-        ooo=kkk/2
-        koo=ooo/wtt
-        layoutParams.width=ooo
-        layoutParams.height=hj.getHeight()*koo
 
 
-        view.img.setImageBitmap(hj)
-        view.img.setLayoutParams(layoutParams)
+        import "com.bumptech.glide.load.engine.DiskCacheStrategy"
+
+        loadglide(view.img,url)
+
         view.tv.Text=StringHelper.Sub(mytab[position+1].title,1,20).."....."
 
 
@@ -1146,8 +1136,9 @@ function 想法刷新(isclear)
         end)
         local title=v.target.excerpt
         local tzurl=v.target.url:match("pin/(.-)?")
+        local num=#mytab
         table.insert(mytab,{url=url,title=title,tzurl=tzurl})
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemRangeInserted(num,#mytab)
       end
      else
       --错误时的操作
@@ -1333,7 +1324,7 @@ function getuserinfo()
       local uid=data.id--用tointeger不行数值太大了会
       activity.setSharedData("idx",uid)
       ---      activity.setSharedData("name",名字)
-      头像id.setImageBitmap(loadbitmap(头像))
+      loadglide(头像id,头像)
       名字id.Text=名字
       if #签名:gsub(" ","")<1 then
         签名id.Text="你还没有签名呢"
@@ -1398,8 +1389,7 @@ if not(this.getSharedData("内部浏览器查看回答")) then
   activity.setSharedData("内部浏览器查看回答","false")
 end
 
-
-local update_api= "https://mydata.huajicloud.ml/hydrogen.html"
+local update_api=getApiurl()
 Http.get(update_api,head,function(code,content)
   if code==200 then
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
@@ -1418,11 +1408,30 @@ Http.get(update_api,head,function(code,content)
       .show()
       myupdatedialog.create()
       myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+        get_write_permissions()
         下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
       end
     end
    else
-    提示("检查更新失败，请检查网络连接后再试")
+    myupdatedialog=AlertDialog.Builder(this)
+    .setTitle("提示")
+    .setMessage("检测版本失败 如若是网络问题 请找到网络信号良好的地方使用 如果检查网络后不是网络问题 请打开官网更新 或前往项目页查看往下滑查看最新下载链接 如果开源项目页没了 软件就是寄了")
+    .setCancelable(false)
+    .setPositiveButton("官网",nil)
+    .setNeutralButton("退出软件",nil)
+    .setNegativeButton("项目页",nil)
+    .show()
+    myupdatedialog.findViewById(android.R.id.message).TextIsSelectable=true
+    myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+      浏览器打开("https://myhydrogen.gitee.io")
+    end
+    myupdatedialog.getButton(myupdatedialog.BUTTON_NEGATIVE).onClick=function()
+      浏览器打开("https://gitee.com/huajicloud/hydrogen")
+    end
+    myupdatedialog.getButton(myupdatedialog.BUTTON_NEUTRAL).onClick=function()
+      activity.finish()
+    end
+
   end
 end)
 

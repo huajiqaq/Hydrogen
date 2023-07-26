@@ -23,7 +23,7 @@ data={}
 
 
 --设置线性列表布局
-recycler_view.layoutManager=ExetendFlexboxLayoutManager(this)
+recycler_view.LayoutManager=ExetendFlexboxLayoutManager(this);
 
 import "android.widget.LinearLayout$LayoutParams"
 

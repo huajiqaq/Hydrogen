@@ -58,7 +58,7 @@ local base=
     id="pg",
     {
       ProgressBar,
-      ProgressBarBackground2=转0x(primaryc),
+      ProgressBarBackground=转0x(primaryc),
     },
   },
 

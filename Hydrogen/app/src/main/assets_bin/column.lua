@@ -10,8 +10,6 @@ import "android.animation.ValueAnimator"
 import "android.graphics.Typeface"
 import "com.androlua.LuaWebView$JsInterface"
 
---下面是监听滑动代码部分，
-
 local result,类型,islocal,uri,simpletitle,autoname=...
 
 if 类型==nil or 类型:match("%d") then
@@ -92,7 +90,7 @@ function 刷新()
       comment_count=tointeger(require "cjson".decode(content).comment_count)
       保存历史记录(simpletitle,"想法分割"..result,50)
     end)
-    content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
+     content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
     --对应api是https://www.zhihu.com/api/v4/pins/ID，或者https://api.zhihu.com/pins/ID，均可以取得内容，后续再做
    elseif 类型=="视频" then
     content.loadUrl("https://www.zhihu.com/zvideo/"..result.."?utm_id=0")
@@ -298,6 +296,8 @@ if 类型=="文章" then
       {
         src=图标("save"),text="保存在本地",onClick=function()
 
+          get_write_permissions()
+
           if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
             创建文件夹(内置存储文件("Download/".._title.Text))
           end
@@ -352,7 +352,7 @@ if 类型=="文章" then
           content.saveWebArchive(内置存储文件("Download/"..simpletitle.."/"..autoname.."/mht.mht"))
           提示("保存成功")
         end
-      }
+      },
     }
   })
  elseif 类型=="视频" then

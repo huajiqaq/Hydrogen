@@ -32,17 +32,6 @@ function 动画出现(back)
   back.setVisibility(View.VISIBLE)
   back.startAnimation(ScaleAnimation(0.0, 1.0, 0.0, 1.0,1, 0.5, 1, 0.5).setDuration(300))
 end
-function 申请权限()
-  import "android.content.pm.PackageManager"
-  local mAppPermissions = ArrayList();
-
-  权限="android.permission.WRITE_EXTERNAL_STORAGE"
-  mAppPermissions.add(权限);
-
-  local size = mAppPermissions.size();
-  local mArray = mAppPermissions.toArray(String[size])
-  activity.requestPermissions(mArray,0);
-end
 
 back.onClick=function()
   动画消失(back_root)
@@ -123,18 +112,15 @@ noteadp=LuaAdapter(activity,notedata,noteitem)
 notelist.setAdapter(noteadp)
 
 function 加载笔记()
-  xpcall(function()
-    notedata={}
-    for i,v in ipairs(luajava.astable(File(内置存储文件("Note")).listFiles())) do
-      local v=tostring(v)
-      local _,name=v:match("(.+)/(.+)")
-      notedata[#notedata+1]={title=name,text=(v),preview=读取文件(v)}
-    end
-    noteadp=LuaAdapter(activity,notedata,noteitem)
-    notelist.setAdapter(noteadp)
-    end,function()
-    双按钮对话框("权限","需要存储权限才可以收藏文章 即使卸载文章也会保存在本地","给","不给",function()关闭对话框(an)申请权限() end,function()关闭对话框(an)end)
-  end)
+  get_write_permissions()
+  notedata={}
+  for i,v in ipairs(luajava.astable(File(内置存储文件("Note")).listFiles())) do
+    local v=tostring(v)
+    local _,name=v:match("(.+)/(.+)")
+    notedata[#notedata+1]={title=name,text=(v),preview=读取文件(v)}
+  end
+  noteadp=LuaAdapter(activity,notedata,noteitem)
+  notelist.setAdapter(noteadp)
 end
 
 加载笔记()
@@ -146,6 +132,7 @@ notelist.setOnItemClickListener(AdapterView.OnItemClickListener{
     artical_page.setCurrentItem(0,false)
     动画出现(back_root)
     _star.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
+    print(tostring(转0x(primaryc)))
 end})
 
 

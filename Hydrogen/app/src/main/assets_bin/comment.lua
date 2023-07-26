@@ -157,6 +157,8 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
       return
     end
 
+    get_write_permissions()
+
     local commenttype
     local 对话id=v.Tag.comment_id.text
     local 对话用户=v.Tag.comment_author.text

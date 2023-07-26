@@ -722,6 +722,8 @@ a=MUKPopu({
     {
       src=图标("get_app"),text="保存到本地",onClick=function()
 
+        get_write_permissions()
+
         local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
 
         local pgids=数据表[pgnum].ids
@@ -732,22 +734,18 @@ a=MUKPopu({
           创建文件夹(内置存储文件("Download/".._title.Text))
         end
 
-        xpcall(function()
-          创建文件夹(保存路径)
-          创建文件(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/detail.txt"))
-          写入内容='question_id="'..问题id..'"\n'
-          写入内容=写入内容..'answer_id="'..回答id..'"\n'
-          写入内容=写入内容..'thanks_count="'..thanks_count.Text..'"\n'
-          写入内容=写入内容..'vote_count="'..vote_count.Text..'"\n'
-          写入内容=写入内容..'comment_count="'..comment_count.Text..'"\n'
-          写入内容=写入内容..'author="'..pgids.username.Text..'"\n'
-          写入内容=写入内容..'headline="'..pgids.userheadline.Text..'"\n'
-          写入文件(保存路径.."/detail.txt",写入内容)
-          pgids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/mht.mht"))
-          提示("保存成功")
-          end,function(e)
-          提示("保存失败 可能是未授予本地存储权限".."错误代码"..e)
-        end)
+        创建文件夹(保存路径)
+        创建文件(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/detail.txt"))
+        写入内容='question_id="'..问题id..'"\n'
+        写入内容=写入内容..'answer_id="'..回答id..'"\n'
+        写入内容=写入内容..'thanks_count="'..thanks_count.Text..'"\n'
+        写入内容=写入内容..'vote_count="'..vote_count.Text..'"\n'
+        写入内容=写入内容..'comment_count="'..comment_count.Text..'"\n'
+        写入内容=写入内容..'author="'..pgids.username.Text..'"\n'
+        写入内容=写入内容..'headline="'..pgids.userheadline.Text..'"\n'
+        写入文件(保存路径.."/detail.txt",写入内容)
+        pgids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/mht.mht"))
+        提示("保存成功")
       end
     },
 

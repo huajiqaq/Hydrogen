@@ -185,14 +185,6 @@
         layout_gravity="bottom";
       };
       {
-        FloatingActionButton;
-        id="fab";
-        layout_margin="32dp";
-        layout_marginBottom="128dp";
-        layout_gravity="bottom|end";
-
-      };
-      {
         CoordinatorLayout;
         id="vcl";
         layout_width="fill";

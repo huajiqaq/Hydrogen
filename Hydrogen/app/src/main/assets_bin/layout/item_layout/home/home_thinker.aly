@@ -29,6 +29,7 @@
       {
         TextView,
         paddingTop="20",
+        layout_width="match",
         Gravity="center",
         textColor=textc;
         textSize="14sp";

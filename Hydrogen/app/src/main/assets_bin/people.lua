@@ -64,7 +64,7 @@ local base_people=require "model.people":new(people_id)
   _title.Text=名字
   people_name.Text=名字
   people_sign.Text=签名
-  people_image.setImageBitmap(loadbitmap(大头像))
+  loadglide(people_image,大头像)
 
 end)
 

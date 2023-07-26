@@ -14,19 +14,6 @@ activity.setContentView(loadlayout("layout/collections"))
 
 初始化历史记录数据(true)
 
-function 申请权限()
-  import "android.content.pm.PackageManager"
-  local mAppPermissions = ArrayList();
-
-  权限="android.permission.WRITE_EXTERNAL_STORAGE"
-  mAppPermissions.add(权限);
-
-  local size = mAppPermissions.size();
-  local mArray = mAppPermissions.toArray(String[size])
-  activity.requestPermissions(mArray,0);
-end
-
-
 波纹({fh,_more},"圆主题")
 _title.Text=collections_title
 itemc5=获取适配器项目布局("collections/collections")

@@ -39,8 +39,8 @@ zHttp.get(api,head,function(code,content)
   if code==200 then
     data=require "cjson".decode(content)
     _title.text=data.name
-    _image.setImageBitmap(loadbitmap(data.avatar_url))
-    _bigimage.setImageBitmap(loadbitmap(data.avatar_url))
+    loadglide(_image,data.avatar_url)
+    loadglide(_bigimage,data.avatar_url)
     if data.introduction==""then
       _excerpt.text="暂无话题描述"
      else
