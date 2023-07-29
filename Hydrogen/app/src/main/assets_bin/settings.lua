@@ -45,7 +45,7 @@ data = {
 
   {__type=4,subtitle="开启想法",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("开启想法"))}},
   {__type=4,subtitle="热榜关闭图片",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭图片"))}},
-  {__type=3,subtitle="设置每次打开页面",image=图标("")},
+  {__type=3,subtitle="设置默认主页",image=图标("")},
   {__type=3,subtitle="修改主页排序",image=图标("")},
 
   {__type=1,title="缓存设置",image=图标("")},
@@ -96,7 +96,7 @@ tab={
     end
     activity.newActivity("xgtj")
   end,
-  主页设置=function()
+  设置默认主页=function()
     if this.getSharedData("starthome")=="推荐" then
       starnum=0
      elseif this.getSharedData("starthome")=="想法" then
@@ -407,5 +407,4 @@ function onActivityResult(a,b,c)
     end
     activity.setResult(1200,nil)
   end
-
 end
