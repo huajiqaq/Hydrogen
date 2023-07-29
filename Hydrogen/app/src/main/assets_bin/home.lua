@@ -825,56 +825,94 @@ end})
 
 function 热榜刷新(isclear)
 
-  if not isclear then
-    if itemc then
-      return false
-    end
-  end
+  if isclear or not(itemc) then
 
-  itemc=获取适配器项目布局("home/home_hot")
+    itemc=获取适配器项目布局("home/home_hot")
 
-  热榜adp=MyLuaAdapter(activity,itemc)
+    import "androidx.recyclerview.widget.LinearLayoutManager"
 
-  list3.adapter=热榜adp
+    热榜adp=LuaCustRecyclerAdapter(AdapterCreator({
 
-  hotsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-  hotsr.setColorSchemeColors({转0x(primaryc)});
-  hotsr.setOnRefreshListener({
-    onRefresh=function()
-      热榜刷新()
-      Handler().postDelayed(Runnable({
-        run=function()
-          hotsr.setRefreshing(false);
-        end,
-      }),1000)
+      getItemCount=function()
+        return #myhotdata
+      end,
 
-    end,
-  });
-
-
-  list3.setOnItemClickListener(AdapterView.OnItemClickListener{
-    onItemClick=function(parent,v,pos,id)
-
-      local open=activity.getSharedData("内部浏览器查看回答")
-
-      if tostring(v.Tag.导向链接.text):find("文章分割") then
-        activity.newActivity("column",{tostring(v.Tag.导向链接.Text):match("文章分割(.+)"),tostring(v.Tag.导向链接.Text):match("分割(.+)")})
-
-       elseif tostring(v.Tag.导向链接.text):find("想法分割") then
-        activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
-       else
-        保存历史记录(v.Tag.标题.Text,v.Tag.导向链接.Text,50)
-        if open=="false" then
-
-          activity.newActivity("question",{v.Tag.导向链接.Text,nil})
+      getItemViewType=function(position)
+        local data=myhotdata[position+1]
+        if data.热图片.Visibility==0 then
+          return 0
          else
-          activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.导向链接.Text)})
+          return 1
         end
-      end
-    end
-  })
+      end,
 
-  pcall(function()热榜adp.clear()end)
+      onCreateViewHolder=function(parent,viewType)
+        local views={}
+        local loaditem
+        if viewType==0 then
+          loaditem=itemc
+         else
+          loaditem=获取适配器项目布局("home/home_hot_noimage")
+        end
+        holder=LuaCustRecyclerHolder(loadlayout(loaditem,views))
+        holder.view.setTag(views)
+        return holder
+      end,
+
+      onBindViewHolder=function(holder,position)
+        local view=holder.view.getTag()
+        local data=myhotdata[position+1]
+        view.标题.text=data.标题
+        view.热度.text=tostring(data.热度)
+        view.排行.text=tostring(data.排行)
+        view.导向链接.text=data.导向链接
+        波纹({view.hot_ripple},"圆自适应")
+
+        view.content.onClick=function()
+          local open=activity.getSharedData("内部浏览器查看回答")
+          if tostring(view.导向链接.text):find("文章分割") then
+            activity.newActivity("column",{tostring(view.导向链接.Text):match("文章分割(.+)"),tostring(view.导向链接.Text):match("分割(.+)")})
+
+           elseif tostring(view.导向链接.text):find("想法分割") then
+            activity.newActivity("column",{tostring(view.链接2.Text):match("想法分割(.+)"),"想法"})
+           else
+            保存历史记录(view.标题.Text,view.导向链接.Text,50)
+            if open=="false" then
+              activity.newActivity("question",{view.导向链接.Text,nil})
+             else
+              activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(view.导向链接.Text)})
+            end
+          end
+        end
+
+        if data.热图片.Visibility==0 then
+          loadglide(view.热图片,data.热图片.src)
+        end
+
+      end,
+    }))
+
+
+    myhotdata={}
+    list3.setAdapter(热榜adp)
+    list3.setLayoutManager(LinearLayoutManager(this,RecyclerView.VERTICAL,false))
+
+    hotsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+    hotsr.setColorSchemeColors({转0x(primaryc)});
+    hotsr.setOnRefreshListener({
+      onRefresh=function()
+        热榜刷新(true)
+        Handler().postDelayed(Runnable({
+          run=function()
+            hotsr.setRefreshing(false);
+          end,
+        }),1000)
+
+      end,
+    });
+
+    pcall(function()热榜adp.clear()end)
+  end
   Handler().postDelayed(Runnable({
     run=function()
       zHttp.get(hotdata:getValue(nil,true),head,function(code,content)
@@ -887,10 +925,8 @@ function 热榜刷新(isclear)
             if tab[i].target.type=="article" then
               导向链接="文章分割"..tointeger(tab[i].target.id)
             end
-            table.insert(热榜adp.getData(),{标题=标题,热度=热度,排行=排行,导向链接=导向链接,热图片={src=热榜图片,Visibility=#热榜图片>0 and 0 or 8}})
-            Glide.get(this).clearMemory();
+            table.insert(myhotdata,{标题=标题,热度=热度,排行=排行,导向链接=导向链接,热图片={src=热榜图片,Visibility=#热榜图片>0 and 0 or 8}})
           end
-          Glide.get(this).clearMemory();
           热榜adp.notifyDataSetChanged()
          else
           --错误时的操作

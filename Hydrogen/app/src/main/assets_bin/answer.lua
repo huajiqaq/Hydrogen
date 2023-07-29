@@ -67,7 +67,8 @@ if 回答id then
   回答容器.getid=回答id
 end
 
---
+local 点赞状态={}
+local 感谢状态={}
 
 function 数据添加(t,b)
   local detector=GestureDetector(this,{a=lambda _:_})
@@ -219,7 +220,8 @@ function 数据添加(t,b)
   end})
 
   回答id=tointeger(b.id)
-  点击感谢状态=b.relationship.is_thanked
+  点赞状态[回答id]=(b.relationship.voting==1 and {true} or {false})[1]
+  感谢状态[回答id]=b.relationship.is_thanked
 
   if 是否记录历史记录 and not(已记录) then
     初始化历史记录数据(true)
@@ -596,67 +598,63 @@ function onDestroy()
   end
 end
 
-
-local voted={}
-local unvoted={}
 voteup.onClick=function()
-  if not voted[回答id] then
-    voted[回答id]=tostring(tointeger(vote_count.text+1))
-    unvoted[回答id]=tostring(tointeger(vote_count.text))
-  end
-  local head={
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    ["Content-Type"] = "application/json"
-  }
-  zHttp.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"up"}',head,function(code,content)
-    if code==200 then
-      提示("点赞成功")
-      vote_count.text=voted[回答id]
-     elseif code==400
-      zHttp.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"neutral"}',head,function(code,content)
-        if code==200 then
-          提示("取消点赞成功")
-          vote_count.text=unvoted[回答id]
-        end
-      end)
-     elseif code==401 then
-      提示("请登录后使用本功能")
-    end
-  end)
-end
-local thanked={}
-local unthanked={}
-thank.onClick=function()
-  if not thanked[回答id] then
-    thanked[回答id]=tostring(tointeger(thanks_count.text+1))
-    unthanked[回答id]=tostring(tointeger(thanks_count.text))
-  end
-  apiurl="https://www.zhihu.com/api/v4/zreaction"
-  head={
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    ["Content-Type"] = "application/json"
-  }
-  if not 点击感谢状态 then
-    zHttp.post(apiurl,'{"content_type":"answers","content_id":"'..回答id..'","action_type":"emojis","action_value":"red_heart"}',posthead,function(code,content)
+  local pos=pg.getCurrentItem()
+  local mviews=数据表[pg.adapter.getItem(pos).id]
+  if not 点赞状态[回答id] then
+    zHttp.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"up"}',posthead,function(code,content)
       if code==200 then
-        点击感谢状态=true
-        提示("表达感谢成功")
-        thanks_count.text=thanked[回答id]
+        提示("点赞成功")
+        点赞状态[回答id]=true
+        local data=require "cjson".decode(content)
+        vote_count.text=tostring(tointeger(data.voteup_count))
+        mviews.data.voteup_count=vote_count.text
        elseif code==401 then
         提示("请登录后使用本功能")
       end
     end)
    else
-    zHttp.delete(apiurl.."?content_type=answers&content_id="..回答id.."&action_type=emojis&action_value=",posthead,function(code,content)
+    zHttp.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"neutral"}',posthead,function(code,content)
       if code==200 then
-        提示("取消感谢成功")
-        thanks_count.text=unthanked[回答id]
-        点击感谢状态=false
+        提示("取消点赞成功")
+        点赞状态[回答id]=false
+        local data=require "cjson".decode(content)
+        vote_count.text=tostring(tointeger(data.voteup_count))
+        mviews.data.voteup_count=vote_count.text
        elseif code==401 then
         提示("请登录后使用本功能")
       end
     end)
+  end
+end
 
+thank.onClick=function()
+  local pos=pg.getCurrentItem()
+  local mviews=数据表[pg.adapter.getItem(pos).id]
+  if not 感谢状态[回答id] then
+    zHttp.post("https://www.zhihu.com/api/v4/zreaction",'{"content_type":"answers","content_id":"'..回答id..'","action_type":"emojis","action_value":"red_heart"}',posthead,function(code,content)
+      if code==200 then
+        提示("表达感谢成功")
+        感谢状态[回答id]=true
+        local data=require "cjson".decode(content)
+        thanks_count.text=tostring(tointeger(data.red_heart_count))
+        mviews.data.thanks_count=thanks_count.text
+       elseif code==401 then
+        提示("请登录后使用本功能")
+      end
+    end)
+   else
+    zHttp.delete("https://www.zhihu.com/api/v4/zreaction?content_type=answers&content_id="..回答id.."&action_type=emojis&action_value=",posthead,function(code,content)
+      if code==200 then
+        提示("取消感谢成功")
+        感谢状态[回答id]=false
+        local data=require "cjson".decode(content)
+        thanks_count.text=tostring(tointeger(data.red_heart_count))
+        mviews.data.thanks_count=thanks_count.text
+       elseif code==401 then
+        提示("请登录后使用本功能")
+      end
+    end)
   end
 end
 

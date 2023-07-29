@@ -91,11 +91,11 @@
           layout_height="fill";
           layout_width="fill";
           {
-            NoScrollListView;
-            DividerHeight="0",
-            layout_width="fill";
+            RecyclerView;
+            nestedScrollingEnabled=false,
+            layout_height="fill",
+            layout_width="fill",
             id="list3",
-            layout_height="fill";
           };
         };
       };

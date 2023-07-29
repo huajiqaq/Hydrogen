@@ -8,7 +8,7 @@
 local base={--表初始化
   isright=false,
   isleft=false,
-  pageinfo={};
+  pageinfo={},
   getid=nil,
 }
 
@@ -20,7 +20,7 @@ end
 
 
 function base:getAnswer(id,cb)
-  local include='?include=ad_track_url%2Ccontent%2Ccreated_time%2Cupdated_time%2Creshipment_settings%2Cmark_infos%2Ccopyright_applications_count%2Cis_collapsed%2Ccollapse_reason%2Cannotation_detail%2Cis_normal%2Ccollaboration_status%2Creview_info%2Creward_info%2Crelationship.is_author%3Bsuggest_edit.unnormal_details%3Bcommercial_info%2Crelevant_info%2Csearch_words%2Cpagination_info'
+  local include='?include=ad_track_url%2Ccontent%2Ccreated_time%2Cupdated_time%2Creshipment_settings%2Cmark_infos%2Ccopyright_applications_count%2Cis_collapsed%2Ccollapse_reason%2Cannotation_detail%2Cis_normal%2Ccollaboration_status%2Creview_info%2Creward_info%2Crelationship.voting%2Crelationship.is_author%3Bsuggest_edit.unnormal_details%3Bcommercial_info%2Crelevant_info%2Csearch_words%2Cpagination_info'
   zHttp.get("https://api.zhihu.com/v4/answers/"..id..include,apphead
   ,function(a,b)
     if a==200 then

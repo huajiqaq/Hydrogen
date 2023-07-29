@@ -1,4 +1,10 @@
 {
+  FrameLayout,
+  layout_width="-1",
+  layout_height="-2",
+  id="content",
+  clickable="true";
+{
   LinearLayout,
   layout_width="-1",
   -- layout_height='56dp';
@@ -22,7 +28,7 @@
     {
       LinearLayout;
       layout_height="fill";
-      ripple="圆自适应",
+      id="hot_ripple",
       layout_width="fill";
       {
         LinearLayout;
@@ -85,6 +91,7 @@
       };
     };
   };
+};
 };
 --老版本
 --[[

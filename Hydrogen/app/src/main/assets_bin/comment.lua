@@ -9,8 +9,8 @@ activity.setContentView(loadlayout("layout/comment"))
 comment_id,comment_type,answer_title,answer_author,comment_count,oricomment_id,oricomment_type=...
 波纹({fh,_more},"圆主题")
 
-if answer_title then
-  local 保存路径=内置存储文件("Download/"..answer_title:gsub("/","or").."/"..answer_author)
+if answer_title and answer_author then
+  保存路径=内置存储文件("Download/"..answer_title:gsub("/","or").."/"..answer_author)
 end
 
 if comment_type=="answers" then
@@ -153,7 +153,7 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
       return false
     end
 
-    if answer_title~=true then
+    if type(answer_title)~="string" then
       return
     end
 
