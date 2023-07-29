@@ -17,7 +17,6 @@ import "com.google.android.material.floatingactionbutton.FloatingActionButton"
 import "androidx.swiperefreshlayout.widget.*"
 import "com.google.android.material.tabs.TabLayout"
 
-
 import "com.bumptech.glide.Glide"
 
 --import "com.daimajia.androidanimations.library.Techniques"
@@ -84,8 +83,8 @@ array = activity.getTheme().obtainStyledAttributes(activity.getThemeResId(),{
   MDC_R.attr.colorSurface
 })
 colorSurfaceVariant=array.getColor(0,0)
-ctl.BackgroundColor=tonumber(colorSurfaceVariant)
-toolbar.BackgroundColor=tonumber(colorSurfaceVariant)
+--ctl.BackgroundColor=tonumber(colorSurfaceVariant)
+--toolbar.BackgroundColor=tonumber(colorSurfaceVariant)
 
 pagadp=SWKLuaPagerAdapter()
 
@@ -146,7 +145,7 @@ optmenu = {}
 
 loadmenu(bnv.getMenu(), m, optmenu, 3)
 
-ctl.setTitle("主页")
+_title.setText("主页")
 
 --主页布局
 itemc2=获取适配器项目布局("home/home_layout")
@@ -354,7 +353,7 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
       bnv.getMenu().getItem(i).setChecked(false)
     end
     bnv.getMenu().getItem(position).setChecked(true)
-    ctl.Title=(bnv.getMenu().getItem(position).getTitle())
+    _title.text=(bnv.getMenu().getItem(position).getTitle())
 
     if pos == 1 then
       想法刷新()
@@ -678,7 +677,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       控件隐藏(page_daily)
       控件隐藏(page_collections)
       切换页面(0)
-      ctl.setTitle("主页")
+      _title.setText("主页")
      elseif s=="日报" then
       setmyToolip(_ask,"提问")
       _ask.onClick=function()
@@ -697,7 +696,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       控件隐藏(bottombar)
       控件隐藏(page_collections)
       控件可见(page_daily)
-      ctl.setTitle("日报")
+      _title.setText("日报")
      elseif s=="收藏" then
       setmyToolip(_ask,"新建收藏夹")
       _ask.onClick=function()
@@ -778,7 +777,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       控件隐藏(page_daily)
       控件可见(page_collections)
       task(400,function()收藏刷新(true) end)
-      ctl.setTitle("收藏")
+      _title.setText("收藏")
      elseif s=="本地" then
       task(300,function()activity.newActivity("local_list")end)
      elseif s=="debug" then
@@ -849,7 +848,7 @@ function 热榜刷新(isclear)
       onCreateViewHolder=function(parent,viewType)
         local views={}
         local loaditem
-        if viewType==1 or activity.getSharedData("热榜关闭图片") then
+        if viewType==1 or activity.getSharedData("热榜关闭图片")=="true" then
           loaditem=获取适配器项目布局("home/home_hot_noimage")
          else
           loaditem=itemc

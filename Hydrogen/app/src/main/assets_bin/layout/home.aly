@@ -14,137 +14,139 @@
 
     {
       AppBarLayout;
-      layout_height="100dp";
+      layout_height="wrap";
       layout_width="fill";
       TargetElevation=0;
       {
-        CollapsingToolbarLayout;
-        id="ctl";
-        title="Material 3";
+        MaterialToolbar;
+        id="toolbar";
         layout_width="fill";
-        layout_height="fill";
+        layout_height="56dp";
+        layout_gravity="center";
         layout_scrollFlags="scroll|exitUtilCollapsed|snap";
+
         {
-          MaterialToolbar;
-          id="toolbar";
-          layout_width="fill";
-          layout_collapseMode="pin";
-          layout_height="56dp";
-
-
+          LinearLayout;
+          layout_width="32dp";
+          layout_height="32dp";
+          layout_margin="12dp";
+          gravity="center";
+          contentDescription="侧滑栏按钮",
+          orientation="vertical";
+          onClick=function()
+            if _drawer.isDrawerOpen(Gravity.LEFT) then
+              --如果左侧侧滑显示，关闭左侧侧滑并阻止返回键
+              _drawer.closeDrawer(Gravity.LEFT)
+              return
+            end
+            _drawer.openDrawer(Gravity.LEFT)
+          end;
+          id="_menu";
           {
-            LinearLayout;
-            layout_width="32dp";
-            layout_height="32dp";
-            layout_margin="12dp";
-            gravity="center";
-            contentDescription="侧滑栏按钮",
-            orientation="vertical";
-            onClick=function()
-              if _drawer.isDrawerOpen(Gravity.LEFT) then
-                --如果左侧侧滑显示，关闭左侧侧滑并阻止返回键
-                _drawer.closeDrawer(Gravity.LEFT)
-                return
-              end
-              _drawer.openDrawer(Gravity.LEFT)
-            end;
-            id="_menu";
-            {
-              TextView;
-              layout_width="18.8dp";
-              layout_height="2.2dp";
-              BackgroundColor=primaryc;
-              id="_menu_1";
-            };
-            {
-              TextView;
-              layout_width="18.8dp";
-              layout_height="2.2dp";
-              BackgroundColor=primaryc;
-              layout_marginTop="6";
-              id="_menu_2";
-            };
-            {
-              TextView;
-              layout_width="18.8dp";
-              layout_height="2.2dp";
-              BackgroundColor=primaryc;
-              layout_marginTop="6";
-              id="_menu_3";
-            };
+            TextView;
+            layout_width="18.8dp";
+            layout_height="2.2dp";
+            BackgroundColor=primaryc;
+            id="_menu_1";
           };
-
           {
-            LinearLayout;
-            orientation="horizontal";
-            layout_gravity="center";
-            --顶栏图标
-            {
-              ImageView;
-              src=图标("add");
-              ColorFilter=primaryc;
-              layout_width="32dp",
-              layout_height="32dp",
-              padding="4dp";
-              id="_ask";
-              tooltip="提问",
-              layout_margin="8dp";
-              onClick=function()
-                if not(getLogin()) then
-                  return 提示("请登录后使用本功能")
-                end
-                task(20,function()
-                  activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
-                end)
-              end;
-            };
-            {
-              ImageView;
-              src=图标("search");
-              ColorFilter=primaryc;
-              layout_width="32dp",
-              layout_height="32dp",
-              padding="4dp";
-              id="_search";
-              tooltip="搜索",
-              layout_margin="8dp";
-              onClick=function()
-                task(20,function()
-                  activity.newActivity("search")
-                end)
-              end;
-            };
-            {
-              ImageView;
-              src=图标("more_vert");
-              ColorFilter=primaryc;
-              layout_width="32dp",
-              layout_height="32dp",
-              padding="4dp";
-              id="_more";
-              tooltip="更多",
-              layout_margin="8dp";
-              onClick=function()
-                --pop.showAsDropDown(_more_lay,dp2px(-8-192),dp2px(8))
-                a.pop.showAsDropDown(_more_lay)
-                --   print(a.pop.isShowing())
-              end;
-            };
-            {
-              TextView;
-              id="_more_lay";
-              layout_width="0",
-              layout_height="0",
-              --            layout_gravity="top";
-              layout_gravity="end";
-            };
+            TextView;
+            layout_width="18.8dp";
+            layout_height="2.2dp";
+            BackgroundColor=primaryc;
+            layout_marginTop="6";
+            id="_menu_2";
+          };
+          {
+            TextView;
+            layout_width="18.8dp";
+            layout_height="2.2dp";
+            BackgroundColor=primaryc;
+            layout_marginTop="6";
+            id="_menu_3";
+          };
+        };
+
+        {
+          TextView;
+          textColor=primaryc;
+          textSize="20sp";
+          id="_title";
+          SingleLine=true;
+          ellipsize='marquee',
+          Selected=true,
+          gravity="center|left";
+          -- paddingLeft="16dp";
+          Typeface=字体("product-Bold");
+        };
+
+        {
+          LinearLayout;
+          orientation="horizontal";
+          layout_gravity="center|end";
+          --顶栏图标
+          {
+            ImageView;
+            src=图标("add");
+            ColorFilter=primaryc;
+            layout_width="32dp",
+            layout_height="32dp",
+            padding="4dp";
+            id="_ask";
+            tooltip="提问",
+            layout_margin="8dp";
+            onClick=function()
+              if not(getLogin()) then
+                return 提示("请登录后使用本功能")
+              end
+              task(20,function()
+                activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
+              end)
+            end;
+          };
+          {
+            ImageView;
+            src=图标("search");
+            ColorFilter=primaryc;
+            layout_width="32dp",
+            layout_height="32dp",
+            padding="4dp";
+            id="_search";
+            tooltip="搜索",
+            layout_margin="8dp";
+            onClick=function()
+              task(20,function()
+                activity.newActivity("search")
+              end)
+            end;
+          };
+          {
+            ImageView;
+            src=图标("more_vert");
+            ColorFilter=primaryc;
+            layout_width="32dp",
+            layout_height="32dp",
+            padding="4dp";
+            id="_more";
+            tooltip="更多",
+            layout_margin="8dp";
+            onClick=function()
+              --pop.showAsDropDown(_more_lay,dp2px(-8-192),dp2px(8))
+              a.pop.showAsDropDown(_more_lay)
+              --   print(a.pop.isShowing())
+            end;
+          };
+          {
+            TextView;
+            id="_more_lay";
+            layout_width="0",
+            layout_height="0",
+            --            layout_gravity="top";
+            layout_gravity="end";
           };
         };
       };
-
     };
-
-
 
     {
       NestedScrollView;
