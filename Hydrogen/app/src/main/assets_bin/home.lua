@@ -849,10 +849,10 @@ function 热榜刷新(isclear)
       onCreateViewHolder=function(parent,viewType)
         local views={}
         local loaditem
-        if viewType==0 then
-          loaditem=itemc
-         else
+        if viewType==1 or activity.getSharedData("热榜关闭图片") then
           loaditem=获取适配器项目布局("home/home_hot_noimage")
+         else
+          loaditem=itemc
         end
         holder=LuaCustRecyclerHolder(loadlayout(loaditem,views))
         holder.view.setTag(views)
@@ -885,7 +885,7 @@ function 热榜刷新(isclear)
           end
         end
 
-        if data.热图片.Visibility==0 then
+        if view.热图片 then
           loadglide(view.热图片,data.热图片.src)
         end
 

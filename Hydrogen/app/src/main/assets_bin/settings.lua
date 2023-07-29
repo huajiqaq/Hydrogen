@@ -44,7 +44,8 @@ data = {
   {__type=1,title="主页设置",image=图标("")},
 
   {__type=4,subtitle="开启想法",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("开启想法"))}},
-  {__type=3,subtitle="主页设置",image=图标("")},
+  {__type=4,subtitle="热榜关闭图片",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭图片"))}},
+  {__type=3,subtitle="设置每次打开页面",image=图标("")},
   {__type=3,subtitle="修改主页排序",image=图标("")},
 
   {__type=1,title="缓存设置",image=图标("")},
@@ -83,7 +84,7 @@ tab={
   全屏模式=function()
     提示("为了更好的浏览体验 推荐重启App")
   end,
-  暗色工具栏主题=function()
+  热榜关闭图片=function()
     提示("设置成功 重启软件生效")
   end,
   开启想法=function()
