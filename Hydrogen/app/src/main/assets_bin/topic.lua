@@ -197,6 +197,23 @@ function 所有刷新(all_pager,url)
   end)
 end
 
+-- 定义一个函数，接受一个URL字符串作为参数
+local function replace_domain (url,replace_str)
+  -- 使用string.match函数，从URL中提取域名
+  local domain = string.match (url, "https?://([^/]+)")
+  -- 如果域名不是replace_str，就用string.gsub函数，将域名替换
+  if domain ~= replace_str then
+    if domain then
+      url = string.gsub (url, domain, replace_str)
+     else
+      return 提示(url.."不是一个有效的http链接")
+    end
+  end
+  -- 返回替换后的URL字符串
+  return url
+end
+
+
 所有刷新(1)
 all_pager=2
 
@@ -205,6 +222,7 @@ all_list.setOnScrollListener{
     if scrollState == 0 then
       if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
         all_pager=2
+        all_nexturl=replace_domain (all_nexturl,"api.zhihu.com")
         所有刷新(all_pager,all_nexturl)
         System.gc()
       end

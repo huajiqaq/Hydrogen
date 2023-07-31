@@ -368,7 +368,7 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
     end
 
     if pos == 3 then
-      关注刷新(1)
+      关注刷新()
     end
   end;
 
@@ -847,13 +847,17 @@ function 热榜刷新(isclear)
 
       onCreateViewHolder=function(parent,viewType)
         local views={}
-        local loaditem
+        local loaditemc
         if viewType==1 or activity.getSharedData("热榜关闭图片")=="true" then
-          loaditem=获取适配器项目布局("home/home_hot_noimage")
+          loaditemc=获取适配器项目布局("home/home_hot_noimage")
          else
-          loaditem=itemc
+          loaditemc=itemc
         end
-        holder=LuaCustRecyclerHolder(loadlayout(loaditem,views))
+        if activity.getSharedData("热榜关闭热度")=="true" then
+          --tab索引的view为id为热度的view
+          loaditemc[2][2][2][2][2][4][3]=nil
+        end
+        holder=LuaCustRecyclerHolder(loadlayout(loaditemc,views))
         holder.view.setTag(views)
         return holder
       end,
@@ -862,7 +866,9 @@ function 热榜刷新(isclear)
         local view=holder.view.getTag()
         local data=myhotdata[position+1]
         view.标题.text=data.标题
-        view.热度.text=tostring(data.热度)
+        if view.热度 then
+          view.热度.text=tostring(data.热度)
+        end
         view.排行.text=tostring(data.排行)
         view.导向链接.text=data.导向链接
         波纹({view.hot_ripple},"圆自适应")
@@ -911,105 +917,104 @@ function 热榜刷新(isclear)
     });
 
     pcall(function()热榜adp.clear()end)
-  end
-  Handler().postDelayed(Runnable({
-    run=function()
-      zHttp.get(hotdata:getValue(nil,true),head,function(code,content)
-        if code==200 then--判断网站状态
-          local tab=require "cjson".decode(content).data
+    Handler().postDelayed(Runnable({
+      run=function()
+        zHttp.get(hotdata:getValue(nil,true),head,function(code,content)
+          if code==200 then--判断网站状态
+            local tab=require "cjson".decode(content).data
 
-          for i=1,#tab do
-            local 标题,热度,排行,导向链接=tab[i].target.title,tab[i].detail_text,i,tointeger(tab[i].target.id)..""
-            local 热榜图片=tab[i].children[1].thumbnail
-            if tab[i].target.type=="article" then
-              导向链接="文章分割"..tointeger(tab[i].target.id)
+            for i=1,#tab do
+              local 标题,热度,排行,导向链接=tab[i].target.title,tab[i].detail_text,i,tointeger(tab[i].target.id)..""
+              local 热榜图片=tab[i].children[1].thumbnail
+              if tab[i].target.type=="article" then
+                导向链接="文章分割"..tointeger(tab[i].target.id)
+              end
+              table.insert(myhotdata,{标题=标题,热度=热度,排行=排行,导向链接=导向链接,热图片={src=热榜图片,Visibility=#热榜图片>0 and 0 or 8}})
             end
-            table.insert(myhotdata,{标题=标题,热度=热度,排行=排行,导向链接=导向链接,热图片={src=热榜图片,Visibility=#热榜图片>0 and 0 or 8}})
+            热榜adp.notifyDataSetChanged()
+           else
+            --错误时的操作
           end
-          热榜adp.notifyDataSetChanged()
-         else
-          --错误时的操作
-        end
-      end)
-    end
-  }),120)
+        end)
+      end
+    }),120)
+  end
 end
 
 
-function 关注刷新(ppage,url,isclear)
+function 关注刷新(isclear)
   -- origin15.19 更改
-  if not isclear then
-    if follow_itemc then
-      return false
-    end
+  if isclear==nil and follow_itemc then
+    return false
   end
-  datas9={}
-  --关注布局
-  follow_itemc=获取适配器项目布局("home/home_following")
-  moments_nextUrl=""
-  moments_isend=false
+  if isclear or not(follow_itemc) then
+    datas9={}
+    --关注布局
+    follow_itemc=获取适配器项目布局("home/home_following")
+    moments_nextUrl=nil
+    moments_isend=false
 
-  gsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-  gsr.setColorSchemeColors({转0x(primaryc)});
-  gsr.setOnRefreshListener({
-    onRefresh=function()
-      关注刷新(1)
-      isadd=true
-      ppage=2
-      Handler().postDelayed(Runnable({
-        run=function()
-          gsr.setRefreshing(false);
-        end,
-      }),1000)
-
-    end,
-  });
-
-  list9_r.setOnScrollChangeListener{
-    onScrollChange=function(view,scrollX,scrollY,oldScrollX,oldScrollY)
-      if scrollY == (view.getChildAt(0).getMeasuredHeight() - view.getMeasuredHeight())
-        gsr.setRefreshing(true)
-        ppage=ppage+1
-        关注刷新(ppage,moments_nextUrl)
-        System.gc()
+    gsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+    gsr.setColorSchemeColors({转0x(primaryc)});
+    gsr.setOnRefreshListener({
+      onRefresh=function()
+        关注刷新(true)
         Handler().postDelayed(Runnable({
           run=function()
-            isadd=true
-            gsr.setRefreshing(false)
+            gsr.setRefreshing(false);
           end,
         }),1000)
-      end
-    end
-  }
 
-  list9.setOnItemClickListener(AdapterView.OnItemClickListener{
-    onItemClick=function(parent,v,pos,id)
-      local open=activity.getSharedData("内部浏览器查看回答")
-      if tostring(v.Tag.follow_id.text):find("文章分割") then
-        activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-       elseif tostring(v.Tag.follow_id.text):find("想法分割") then
-        activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("想法分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)"),"想法"})
-       elseif tostring(v.Tag.follow_id.text):find("问题分割") then
-        activity.newActivity("question",{tostring(v.Tag.follow_id.Text):match("问题分割(.+)"),true})
-       else
-        保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
+      end,
+    });
 
-        if open=="false" then
-          activity.newActivity("answer",{tostring(v.Tag.follow_id.Text):match("(.+)分割"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-         else
-          activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+    list9_r.setOnScrollChangeListener{
+      onScrollChange=function(view,scrollX,scrollY,oldScrollX,oldScrollY)
+        if scrollY == (view.getChildAt(0).getMeasuredHeight() - view.getMeasuredHeight())
+          gsr.setRefreshing(true)
+          关注刷新(false)
+          System.gc()
+          Handler().postDelayed(Runnable({
+            run=function()
+              isadd=true
+              gsr.setRefreshing(false)
+            end,
+          }),1000)
         end
       end
-    end
-  })
+    }
 
-  local posturl = url or "https://www.zhihu.com/api/v3/moments?limit=10"
+    list9.setOnItemClickListener(AdapterView.OnItemClickListener{
+      onItemClick=function(parent,v,pos,id)
+        local open=activity.getSharedData("内部浏览器查看回答")
+        if tostring(v.Tag.follow_id.text):find("文章分割") then
+          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+         elseif tostring(v.Tag.follow_id.text):find("想法分割") then
+          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("想法分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)"),"想法"})
+         elseif tostring(v.Tag.follow_id.text):find("问题分割") then
+          activity.newActivity("question",{tostring(v.Tag.follow_id.Text):match("问题分割(.+)"),true})
+         else
+          保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
 
-  if ppage<2 then
+          if open=="false" then
+            activity.newActivity("answer",{tostring(v.Tag.follow_id.Text):match("(.+)分割"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+           else
+            activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+          end
+        end
+      end
+    })
+
     local qqadpqy=MyLuaAdapter(activity,datas9,follow_itemc)
     list9.Adapter=qqadpqy
   end
 
+  if moments_isend then
+    return 提示("已经到底了")
+  end
+
+
+  local posturl = moments_nextUrl or "https://www.zhihu.com/api/v3/moments?limit=10"
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
@@ -1369,8 +1374,9 @@ function getuserinfo()
       侧滑头.onClick=function()
         activity.newActivity("people",{uid})
       end
-     else
       sign_out.setVisibility(View.VISIBLE)
+     else
+      --状态码不为200的事件
     end
   end)
 
@@ -1382,7 +1388,7 @@ function onActivityResult(a,b,c)
   if b==100 then
     getuserinfo()
     主页刷新()
-    关注刷新(1)
+    关注刷新(true)
    elseif b==1200 then --夜间模式开启
     设置主题()
    elseif b==200 then

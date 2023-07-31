@@ -45,6 +45,7 @@ data = {
 
   {__type=4,subtitle="开启想法",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("开启想法"))}},
   {__type=4,subtitle="热榜关闭图片",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭图片"))}},
+  {__type=4,subtitle="热榜关闭热度",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭热度"))}},
   {__type=3,subtitle="设置默认主页",image=图标("")},
   {__type=3,subtitle="修改主页排序",image=图标("")},
 
@@ -85,6 +86,9 @@ tab={
     提示("为了更好的浏览体验 推荐重启App")
   end,
   热榜关闭图片=function()
+    提示("设置成功 重启软件生效")
+  end,
+  热榜关闭热度=function()
     提示("设置成功 重启软件生效")
   end,
   开启想法=function()
