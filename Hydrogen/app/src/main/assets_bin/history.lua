@@ -179,57 +179,58 @@ history_list.onItemClick=function(l,v,c,b)
 end
 
 
-
-a=MUKPopu({
-  tittle="历史记录",
-  list={
-    {
-      src=图标("search"),text="搜索历史记录",onClick=function()
-        InputLayout={
-          LinearLayout;
-          orientation="vertical";
-          Focusable=true,
-          FocusableInTouchMode=true,
-          {
-            EditText;
-            hint="输入";
-            layout_marginTop="5dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            layout_width="match_parent";
-            layout_gravity="center",
-            id="edit";
+task(1,function()
+  a=MUKPopu({
+    tittle="历史记录",
+    list={
+      {
+        src=图标("search"),text="搜索历史记录",onClick=function()
+          InputLayout={
+            LinearLayout;
+            orientation="vertical";
+            Focusable=true,
+            FocusableInTouchMode=true,
+            {
+              EditText;
+              hint="输入";
+              layout_marginTop="5dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              layout_width="match_parent";
+              layout_gravity="center",
+              id="edit";
+            };
           };
-        };
 
-        AlertDialog.Builder(this)
-        .setTitle("请输入")
-        .setView(loadlayout(InputLayout))
-        .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
-        .setNegativeButton("取消", nil)
-        .show();
+          AlertDialog.Builder(this)
+          .setTitle("请输入")
+          .setView(loadlayout(InputLayout))
+          .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
+          .setNegativeButton("取消", nil)
+          .show();
 
-    end},
-    {
-      src=图标("list_alt"),text="清理历史记录",onClick=function()
-        双按钮对话框("提示","确定要清理历史记录吗 清除将会重启应用","我知道了","暂不清理",function()
-          关闭对话框(an)
-          清除历史记录()
-          提示("已清除,即将重启")
-          task(200,function()
-            import "android.os.Process"
-            local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            activity.startActivity(intent);
-            Process.killProcess(Process.myPid());
+      end},
+      {
+        src=图标("list_alt"),text="清理历史记录",onClick=function()
+          双按钮对话框("提示","确定要清理历史记录吗 清除将会重启应用","我知道了","暂不清理",function()
+            关闭对话框(an)
+            清除历史记录()
+            提示("已清除,即将重启")
+            task(200,function()
+              import "android.os.Process"
+              local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+              activity.startActivity(intent);
+              Process.killProcess(Process.myPid());
+            end)
+            end,function()
+            关闭对话框(an)
           end)
-          end,function()
-          关闭对话框(an)
-        end)
 
-    end},
-  }
-})
+      end},
+    }
+  })
+end)
 
 function onPause()
   if ishava then

@@ -158,30 +158,32 @@ artical_list_sr.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener{onRefr
     }),300)
 end})
 
-a=MUKPopu({
-  tittle="一文",
-  list={
-    {src=图标("share"),text="每日一文",onClick=function()
-        _title.Text="每日一文"
-        atitle.text="加载中.."
-        atext.text=""
-        获取每日一文()
-        if is_star==true then
-          _star.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
-         else
+task(1,function()
+  a=MUKPopu({
+    tittle="一文",
+    list={
+      {src=图标("share"),text="每日一文",onClick=function()
+          _title.Text="每日一文"
+          atitle.text="加载中.."
+          atext.text=""
+          获取每日一文()
+          if is_star==true then
+            _star.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
+           else
+            _star.setColorFilter(PorterDuffColorFilter(转0x(textc),PorterDuff.Mode.SRC_ATOP));
+          end
+      end},
+      {src=图标("share"),text="随机一文",onClick=function()
+          _title.Text="随机一文"
+          atitle.text="加载中.."
+          atext.text=""
+          获取随机一文()
+          click=0
           _star.setColorFilter(PorterDuffColorFilter(转0x(textc),PorterDuff.Mode.SRC_ATOP));
-        end
-    end},
-    {src=图标("share"),text="随机一文",onClick=function()
-        _title.Text="随机一文"
-        atitle.text="加载中.."
-        atext.text=""
-        获取随机一文()
-        click=0
-        _star.setColorFilter(PorterDuffColorFilter(转0x(textc),PorterDuff.Mode.SRC_ATOP));
-    end},
-  }
-})
+      end},
+    }
+  })
+end)
 
 if activity.getSharedData("一文提示0.01")==nil
   AlertDialog.Builder(this)

@@ -21,6 +21,8 @@ if comment_type=="answers" then
   savetype="想法"
  elseif comment_type=="zvideos" then
   savetype="视频"
+ elseif comment_type then
+  savetype=""
 end
 
 local function setstyle(styleee)
@@ -344,43 +346,47 @@ if comment_type=="comments" then
 end
 
 if _title.text=="对话列表" then
+  task(1,function()
+    a=MUKPopu({
+      tittle=_title.text,
+      list={
 
-  a=MUKPopu({
-    tittle=_title.text,
-    list={
-
-    }
-  })
+      }
+    })
+  end)
 
  elseif _title.text=="保存的评论" then
-  a=MUKPopu({
-    tittle=_title.text,
-    list={
+  task(1,function()
+    a=MUKPopu({
+      tittle=_title.text,
+      list={
 
-    }
-  })
+      }
+    })
+  end)
 
  else
-  a=MUKPopu({
-    tittle="评论",
-    list={
-      {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-          comment_base:setSortBy("ts")
-          --          comment_base:setSortBy("created")
-          comment_base:clear()
-          comment_adp.clear()
-          评论刷新()
-      end},
-      {src=图标("notes"),text="按默认顺序",onClick=function()
-          comment_base:setSortBy("score")
-          --          comment_base:setSortBy("default")
-          comment_base:clear()
-          comment_adp.clear()
-          评论刷新()
-      end},
-    }
-  })
-
+  task(1,function()
+    a=MUKPopu({
+      tittle="评论",
+      list={
+        {src=图标("format_align_left"),text="按时间顺序",onClick=function()
+            comment_base:setSortBy("ts")
+            --          comment_base:setSortBy("created")
+            comment_base:clear()
+            comment_adp.clear()
+            评论刷新()
+        end},
+        {src=图标("notes"),text="按默认顺序",onClick=function()
+            comment_base:setSortBy("score")
+            --          comment_base:setSortBy("default")
+            comment_base:clear()
+            comment_adp.clear()
+            评论刷新()
+        end},
+      }
+    })
+  end)
 end
 
 function onActivityResult(a,b,c)

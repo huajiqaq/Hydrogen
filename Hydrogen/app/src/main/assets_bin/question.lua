@@ -16,32 +16,33 @@ question_itemc=获取适配器项目布局("question/question")
 
 question_adp=MyLuaAdapter(activity,question_datas,question_itemc)
 
-question_list.addFooterView(loadlayout({
-  LinearLayout,
-  layout_width="fill",
-  layout_height="55dp",
-  orientation="horizontal",
-  gravity= "center",
-  id="resultbar",
-  {
-    ProgressBar,
-    layout_height="19dp",
-    layout_width="19dp",
-    ProgressBarBackground=转0x(primaryc),
-    style="?android:attr/progressBarStyleLarge"
-  },
-  {
-    TextView,
-    text="加载中",
-    layout_marginLeft="15dp",
-    Typeface=字体("product");
-    textSize="14sp",
+task(1,function()
+  question_list.addFooterView(loadlayout({
+    LinearLayout,
+    layout_width="fill",
+    layout_height="55dp",
+    orientation="horizontal",
     gravity= "center",
-    textColor=primaryc;
-  },
-},nil),nil,false)
-
-resultbar.Visibility=8
+    id="resultbar",
+    {
+      ProgressBar,
+      layout_height="19dp",
+      layout_width="19dp",
+      ProgressBarBackground=转0x(primaryc),
+      style="?android:attr/progressBarStyleLarge"
+    },
+    {
+      TextView,
+      text="加载中",
+      layout_marginLeft="15dp",
+      Typeface=字体("product");
+      textSize="14sp",
+      gravity= "center",
+      textColor=primaryc;
+    },
+  },nil),nil,false)
+  resultbar.Visibility=8
+end)
 
 question_list.adapter=question_adp
 
@@ -204,36 +205,38 @@ question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   end
 })
 
-a=MUKPopu({
-  tittle="问题",
-  list={
-    {src=图标("share"),text="分享",onClick=function()
-        分享文本("https://www.zhihu.com/question/"..question_id)
-    end},
-    {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-        question_base:setSortBy("created")
-        question_base:clear()
-        question_adp.clear()
-        刷新()
-    end},
-    {src=图标("notes"),text="按默认顺序",onClick=function()
-        question_base:setSortBy("default")
-        question_base:clear()
-        question_adp.clear()
-        刷新()
-    end},
-    {
-      src=图标("colorize"),text="回答",onClick=function()
-        if not(getLogin()) then
-          return 提示("请登录后使用本功能")
-        end
-        local url=" https://www.zhihu.com/question/"..question_id.."/write"
+task(1,function()
+  a=MUKPopu({
+    tittle="问题",
+    list={
+      {src=图标("share"),text="分享",onClick=function()
+          分享文本("https://www.zhihu.com/question/"..question_id)
+      end},
+      {src=图标("format_align_left"),text="按时间顺序",onClick=function()
+          question_base:setSortBy("created")
+          question_base:clear()
+          question_adp.clear()
+          刷新()
+      end},
+      {src=图标("notes"),text="按默认顺序",onClick=function()
+          question_base:setSortBy("default")
+          question_base:clear()
+          question_adp.clear()
+          刷新()
+      end},
+      {
+        src=图标("colorize"),text="回答",onClick=function()
+          if not(getLogin()) then
+            return 提示("请登录后使用本功能")
+          end
+          local url=" https://www.zhihu.com/question/"..question_id.."/write"
 
-        activity.newActivity("huida",{url,nil,true})
-      end
-    },
-  }
-})
+          activity.newActivity("huida",{url,nil,true})
+        end
+      },
+    }
+  })
+end)
 
 if activity.getSharedData("问题提示0.01")==nil
   AlertDialog.Builder(this)

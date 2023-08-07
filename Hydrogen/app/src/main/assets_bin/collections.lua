@@ -387,61 +387,62 @@ function checktitle(str)
   end
 end
 
-
-a=MUKPopu({
-  tittle="收藏",
-  list={
-    {
-      src=图标("search"),text="在当前内容中搜索",onClick=function()
-        InputLayout={
-          LinearLayout;
-          orientation="vertical";
-          Focusable=true,
-          FocusableInTouchMode=true,
-          {
-            EditText;
-            hint="输入";
-            layout_marginTop="5dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            layout_width="match_parent";
-            layout_gravity="center",
-            id="edit";
+task(1,function()
+  a=MUKPopu({
+    tittle="收藏",
+    list={
+      {
+        src=图标("search"),text="在当前内容中搜索",onClick=function()
+          InputLayout={
+            LinearLayout;
+            orientation="vertical";
+            Focusable=true,
+            FocusableInTouchMode=true,
+            {
+              EditText;
+              hint="输入";
+              layout_marginTop="5dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              layout_width="match_parent";
+              layout_gravity="center",
+              id="edit";
+            };
           };
-        };
 
-        AlertDialog.Builder(this)
-        .setTitle("请输入")
-        .setView(loadlayout(InputLayout))
-        .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
-        .setNegativeButton("取消", nil)
-        .show();
+          AlertDialog.Builder(this)
+          .setTitle("请输入")
+          .setView(loadlayout(InputLayout))
+          .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
+          .setNegativeButton("取消", nil)
+          .show();
 
-    end},
+      end},
 
-    {src=图标("email"),text="反馈",onClick=function()
-        activity.newActivity("feedback")
-    end},
+      {src=图标("email"),text="反馈",onClick=function()
+          activity.newActivity("feedback")
+      end},
 
-    {src=图标("close"),text="删除收藏夹",onClick=function()
-        if not(collections_id) then
-          return 提示("本地收藏不支持此功能")
-         else
-          双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function()
-            an.dismiss()
-            zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
-              if code==200 then
-                提示("已删除")
-                activity.setResult(1600,nil)
-                activity.finish()
-              end
-            end)
-          end,function()an.dismiss()end)
-        end
-    end},
+      {src=图标("close"),text="删除收藏夹",onClick=function()
+          if not(collections_id) then
+            return 提示("本地收藏不支持此功能")
+           else
+            双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function()
+              an.dismiss()
+              zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
+                if code==200 then
+                  提示("已删除")
+                  activity.setResult(1600,nil)
+                  activity.finish()
+                end
+              end)
+            end,function()an.dismiss()end)
+          end
+      end},
 
-  }
-})
+    }
+  })
+end)
 
 function onActivityResult(a,b,c)
   if b==100 then

@@ -273,42 +273,43 @@ function 本地列表(path)
 
 end
 
-
-a=MUKPopu({
-  tittle="已保存的回答",
-  list={
-    {
-      src=图标("search"),text="搜索已保存的回答",onClick=function()
-        InputLayout={
-          LinearLayout;
-          orientation="vertical";
-          Focusable=true,
-          FocusableInTouchMode=true,
-          {
-            EditText;
-            hint="输入";
-            layout_marginTop="5dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            layout_width="match_parent";
-            layout_gravity="center",
-            id="edit";
+task(1,function()
+  a=MUKPopu({
+    tittle="已保存的回答",
+    list={
+      {
+        src=图标("search"),text="搜索已保存的回答",onClick=function()
+          InputLayout={
+            LinearLayout;
+            orientation="vertical";
+            Focusable=true,
+            FocusableInTouchMode=true,
+            {
+              EditText;
+              hint="输入";
+              layout_marginTop="5dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              layout_width="match_parent";
+              layout_gravity="center",
+              id="edit";
+            };
           };
-        };
 
-        AlertDialog.Builder(this)
-        .setTitle("请输入")
-        .setView(loadlayout(InputLayout))
-        .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
-        .setNegativeButton("取消", nil)
-        .show();
+          AlertDialog.Builder(this)
+          .setTitle("请输入")
+          .setView(loadlayout(InputLayout))
+          .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
+          .setNegativeButton("取消", nil)
+          .show();
 
-    end},
-    {src=图标("email"),text="反馈",onClick=function()
-        activity.newActivity("feedback")
-    end},
-    {src=图标("info"),text="问题",onClick=function()
-        Snakebar("文件保存在根目录/Hydrogen/Download/ 下 可手动修改")
-    end},
-  }
-})
+      end},
+      {src=图标("email"),text="反馈",onClick=function()
+          activity.newActivity("feedback")
+      end},
+      {src=图标("info"),text="问题",onClick=function()
+          Snakebar("文件保存在根目录/Hydrogen/Download/ 下 可手动修改")
+      end},
+    }
+  })
+end)

@@ -1480,17 +1480,19 @@ if activity.getSharedData("自动清理缓存")=="true" then
   清理内存()
 end
 
-a=MUKPopu({
-  tittle="菜单",
-  list={
-    {src=图标("email"),text="反馈",onClick=function()
-        跳转页面("feedback")
-    end},
-    {src=图标("info"),text="关于",onClick=function()
-        跳转页面("about")
-    end},
-  }
-})
+task(1,function()
+  a=MUKPopu({
+    tittle="菜单",
+    list={
+      {src=图标("email"),text="反馈",onClick=function()
+          跳转页面("feedback")
+      end},
+      {src=图标("info"),text="关于",onClick=function()
+          跳转页面("about")
+      end},
+    }
+  })
+end)
 
 lastclick = os.time() - 2
 function onKeyDown(code,event)

@@ -665,94 +665,95 @@ mark.onClick=function()
   加入收藏夹(url:match("answer/(.+)"),"answer")
 end
 
-a=MUKPopu({
-  tittle="回答",
-  list={
-    {
-      src=图标("refresh"),text="刷新",onClick=function()
+task(1,function()
+  a=MUKPopu({
+    tittle="回答",
+    list={
+      {
+        src=图标("refresh"),text="刷新",onClick=function()
 
-        数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.reload()
+          数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.reload()
 
-        提示("刷新中")
-      end
-    },
-
-    {
-      src=图标("share"),text="分享",onClick=function()
-
-        local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
-
-        if url==nil then
-          提示("加载中")
-          return
+          提示("刷新中")
         end
+      },
 
-        local format="【%s】%s:… %s"
+      {
+        src=图标("share"),text="分享",onClick=function()
 
-        分享文本(string.format(format,_title.Text,数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
+          local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
 
-      end
-    },
+          if url==nil then
+            提示("加载中")
+            return
+          end
 
-    {
-      src=图标("explore"),text="内部浏览器打开",onClick=function()
+          local format="【%s】%s:… %s"
 
-        local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
+          分享文本(string.format(format,_title.Text,数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
 
-        if url==nil then
-          提示("加载中")
-          return
         end
+      },
 
-        url=" https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")
+      {
+        src=图标("explore"),text="内部浏览器打开",onClick=function()
 
-        activity.newActivity("huida",{url,nil,true})
+          local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
 
-      end
-    },
-    {
-      src=图标("chat_bubble"),text="查看评论",onClick=function()
+          if url==nil then
+            提示("加载中")
+            return
+          end
 
-        activity.newActivity("comment",{回答id,"answers"})
+          url=" https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")
 
-      end
-    },
-    {
-      src=图标("get_app"),text="保存到本地",onClick=function()
+          activity.newActivity("huida",{url,nil,true})
 
-        get_write_permissions()
-
-        local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
-
-        local pgids=数据表[pgnum].ids
-
-        local 保存路径=内置存储文件("Download/".._title.Text.."/"..pgids.username.Text)
-
-        if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
-          创建文件夹(内置存储文件("Download/".._title.Text))
         end
+      },
+      {
+        src=图标("chat_bubble"),text="查看评论",onClick=function()
 
-        创建文件夹(保存路径)
-        创建文件(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/detail.txt"))
-        写入内容='question_id="'..问题id..'"\n'
-        写入内容=写入内容..'answer_id="'..回答id..'"\n'
-        写入内容=写入内容..'thanks_count="'..thanks_count.Text..'"\n'
-        写入内容=写入内容..'vote_count="'..vote_count.Text..'"\n'
-        写入内容=写入内容..'comment_count="'..comment_count.Text..'"\n'
-        写入内容=写入内容..'author="'..pgids.username.Text..'"\n'
-        写入内容=写入内容..'headline="'..pgids.userheadline.Text..'"\n'
-        写入文件(保存路径.."/detail.txt",写入内容)
-        pgids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/mht.mht"))
-        提示("保存成功")
-      end
-    },
+          activity.newActivity("comment",{回答id,"answers"})
 
-    {
-      src=图标("book"),text="加入收藏夹",onClick=function()
-        local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
-        加入收藏夹(url:match("answer/(.+)"),"answer")
-      end
-      --[[
+        end
+      },
+      {
+        src=图标("get_app"),text="保存到本地",onClick=function()
+
+          get_write_permissions()
+
+          local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
+
+          local pgids=数据表[pgnum].ids
+
+          local 保存路径=内置存储文件("Download/".._title.Text.."/"..pgids.username.Text)
+
+          if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
+            创建文件夹(内置存储文件("Download/".._title.Text))
+          end
+
+          创建文件夹(保存路径)
+          创建文件(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/detail.txt"))
+          写入内容='question_id="'..问题id..'"\n'
+          写入内容=写入内容..'answer_id="'..回答id..'"\n'
+          写入内容=写入内容..'thanks_count="'..thanks_count.Text..'"\n'
+          写入内容=写入内容..'vote_count="'..vote_count.Text..'"\n'
+          写入内容=写入内容..'comment_count="'..comment_count.Text..'"\n'
+          写入内容=写入内容..'author="'..pgids.username.Text..'"\n'
+          写入内容=写入内容..'headline="'..pgids.userheadline.Text..'"\n'
+          写入文件(保存路径.."/detail.txt",写入内容)
+          pgids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/mht.mht"))
+          提示("保存成功")
+        end
+      },
+
+      {
+        src=图标("book"),text="加入收藏夹",onClick=function()
+          local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
+          加入收藏夹(url:match("answer/(.+)"),"answer")
+        end
+        --[[
         local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
         local pgids=数据表[pgnum].ids
         local username=pgids.username.text
@@ -771,25 +772,26 @@ a=MUKPopu({
         end)
       end
       ]]
-    },
+      },
 
-    {
-      src=图标("build"),text="关闭硬件加速",onClick=function()
-        AlertDialog.Builder(this)
-        .setTitle("提示")
-        .setMessage("你确认要关闭当前页的硬件加速吗 关闭后滑动可能会造成卡顿 如果当前页显示正常请不要关闭")
-        .setPositiveButton("关闭",{onClick=function(v)
-            数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.msrcroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
-            数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.reload()
-            提示("关闭成功")
-        end})
-        .setNeutralButton("取消",{onClick=function(v)
-        end})
-        .show()
-      end
-    },
-  }
-})
+      {
+        src=图标("build"),text="关闭硬件加速",onClick=function()
+          AlertDialog.Builder(this)
+          .setTitle("提示")
+          .setMessage("你确认要关闭当前页的硬件加速吗 关闭后滑动可能会造成卡顿 如果当前页显示正常请不要关闭")
+          .setPositiveButton("关闭",{onClick=function(v)
+              数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.msrcroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
+              数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.reload()
+              提示("关闭成功")
+          end})
+          .setNeutralButton("取消",{onClick=function(v)
+          end})
+          .show()
+        end
+      },
+    }
+  })
+end)
 
 if activity.getSharedData("回答提示0.03")==nil
   AlertDialog.Builder(this)

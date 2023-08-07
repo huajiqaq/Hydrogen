@@ -391,42 +391,43 @@ people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
 
 波纹({fh,_more},"圆主题")
 
-
-a=MUKPopu({
-  tittle="用户",
-  list={
-    {
-      src=图标("search"),text="在当前内容中搜索",onClick=function()
-        InputLayout={
-          LinearLayout;
-          orientation="vertical";
-          Focusable=true,
-          FocusableInTouchMode=true,
-          {
-            EditText;
-            hint="输入";
-            layout_marginTop="5dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            layout_width="match_parent";
-            layout_gravity="center",
-            id="edit";
+task(1,function()
+  a=MUKPopu({
+    tittle="用户",
+    list={
+      {
+        src=图标("search"),text="在当前内容中搜索",onClick=function()
+          InputLayout={
+            LinearLayout;
+            orientation="vertical";
+            Focusable=true,
+            FocusableInTouchMode=true,
+            {
+              EditText;
+              hint="输入";
+              layout_marginTop="5dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              layout_width="match_parent";
+              layout_gravity="center",
+              id="edit";
+            };
           };
-        };
 
-        AlertDialog.Builder(this)
-        .setTitle("请输入")
-        .setView(loadlayout(InputLayout))
-        .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
-        .setNegativeButton("取消", nil)
-        .show();
+          AlertDialog.Builder(this)
+          .setTitle("请输入")
+          .setView(loadlayout(InputLayout))
+          .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
+          .setNegativeButton("取消", nil)
+          .show();
 
-    end},
-    {src=图标("share"),text="分享",onClick=function()
-        分享文本("https://www.zhihu.com/people/"..用户id)
-    end},
-  }
-})
+      end},
+      {src=图标("share"),text="分享",onClick=function()
+          分享文本("https://www.zhihu.com/people/"..用户id)
+      end},
+    }
+  })
+end)
 
 function onActivityResult(a,b,c)
   if b==100 then

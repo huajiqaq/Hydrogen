@@ -90,7 +90,7 @@ function 刷新()
       comment_count=tointeger(require "cjson".decode(content).comment_count)
       保存历史记录(simpletitle,"想法分割"..result,50)
     end)
-     content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
+    content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
     --对应api是https://www.zhihu.com/api/v4/pins/ID，或者https://api.zhihu.com/pins/ID，均可以取得内容，后续再做
    elseif 类型=="视频" then
     content.loadUrl("https://www.zhihu.com/zvideo/"..result.."?utm_id=0")
@@ -259,192 +259,197 @@ end
 --pop
 
 if 类型=="文章" then
-  a=MUKPopu({
-    tittle="文章",
-    list={
-      {
-        src=图标("refresh"),text="刷新",onClick=function()
-          if _title.Text=="加载失败" then
-            刷新()
-           else
-            content.reload()
+  task(1,function()
+    a=MUKPopu({
+      tittle="文章",
+      list={
+        {
+          src=图标("refresh"),text="刷新",onClick=function()
+            if _title.Text=="加载失败" then
+              刷新()
+             else
+              content.reload()
+            end
+            提示("正在刷新中")
           end
-          提示("正在刷新中")
-        end
-      },
+        },
 
-      {
-        src=图标("share"),text="分享",onClick=function()
-          local url="https://zhuanlan.zhihu.com/p/"..result
-          local format="【%s】%s:… %s"
-          分享文本(string.format(format,_title.Text,mcolumn:getUsername(),url))
+        {
+          src=图标("share"),text="分享",onClick=function()
+            local url="https://zhuanlan.zhihu.com/p/"..result
+            local format="【%s】%s:… %s"
+            分享文本(string.format(format,_title.Text,mcolumn:getUsername(),url))
 
-        end
-      },
-      {
-        src=图标("chat_bubble"),text="查看评论",onClick=function()
-          activity.newActivity("comment",{result,comment_type,simpletitle,autoname})
-
-        end
-      },
-      {
-        src=图标("explore"),text="收藏文件夹",onClick=function()
-          加入收藏夹(result,"article")
-
-        end
-      },
-      {
-        src=图标("save"),text="保存在本地",onClick=function()
-
-          get_write_permissions()
-
-          if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
-            创建文件夹(内置存储文件("Download/".._title.Text))
           end
-          创建文件夹(内置存储文件("Download/".._title.Text.."/"..autoname))
-          content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..autoname.."/mht.mht"))
-          创建文件(内置存储文件("Download/".._title.Text.."/"..autoname.."/detail.txt"))
-
-          写入文件(内置存储文件("Download/".._title.Text.."/"..autoname.."/detail.txt"),'article_url="'..content.getUrl()..'"')
-
-          提示("保存成功")
-        end
-      }
-    }
-  })
-
- elseif 类型=="想法" then
-  a=MUKPopu({
-    tittle="一个想法",
-    list={
-      {
-        src=图标("refresh"),text="刷新",onClick=function()
-          if _title.Text=="加载失败" then
-            刷新()
-           else
-            content.reload()
-          end
-          提示("正在刷新中")
-        end
-      },
-
-      {
-        src=图标("chat_bubble"),text="查看评论",onClick=function()
-          activity.newActivity("comment",{result,comment_type,simpletitle,autoname,tostring(comment_count)})
-
-        end
-      },
-      {
-        src=图标("explore"),text="收藏文件夹",onClick=function()
-          加入收藏夹(result,"pin")
-
-        end
-      },
-      {
-        src=图标("save"),text="保存在本地",onClick=function()
-          创建文件夹(内置存储文件("Download/"..simpletitle))
-          创建文件夹(内置存储文件("Download/"..simpletitle.."/"..autoname))
-
-          创建文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"))
-
-          写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"),'pin_url="'..content.getUrl()..'"')
-
-          content.saveWebArchive(内置存储文件("Download/"..simpletitle.."/"..autoname.."/mht.mht"))
-          提示("保存成功")
-        end
-      },
-    }
-  })
- elseif 类型=="视频" then
-  a=MUKPopu({
-    tittle="视频",
-    list={
-      {
-        src=图标("refresh"),text="刷新",onClick=function()
-          if _title.Text=="加载失败" then
-            刷新()
-           else
-            content.reload()
-          end
-          提示("正在刷新中")
-        end
-      },
-
-      {
-        src=图标("chat_bubble"),text="查看评论",onClick=function()
-          activity.newActivity("comment",{result,comment_type,simpletitle,autoname,tostring(comment_count)})
-
-        end
-      },
-
-      {
-        src=图标("chat_bubble"),text="查看保存评论",onClick=function()
-          local 保存路径=内置存储文件("Download/"..simpletitle.."/"..autoname)
-          if getDirSize(保存路径.."/".."fold/")==0 then
-            --            提示("你还没有收藏评论")
-           else
-            activity.newActivity("comment",{result,"local",simpletitle,autoname})
-          end
-
-        end
-      },
-
-      {
-        src=图标("explore"),text="收藏文件夹",onClick=function()
-          加入收藏夹(result,"zvideo",simpletitle,autoname)
-
-        end
-      },
-      {
-        src=图标("save"),text="保存在本地",onClick=function()
-          创建文件夹(内置存储文件("Download/"..simpletitle))
-          创建文件夹(内置存储文件("Download/"..simpletitle.."/"..autoname))
-
-          创建文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"))
-
-          写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"),'video_url="'..content.getUrl()..'"')
-
-          写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/mht.mht"),'video_id="'..result..'"')
-
-          提示("保存成功")
-        end
-      }
-    }
-  })
-
- elseif 类型=="本地" then
-  a=MUKPopu({
-    tittle="本地",
-    list={
-      {
-        src=图标("refresh"),text="刷新",onClick=function()
-          if _title.Text=="加载失败" then
-            刷新()
-           else
-            content.reload()
-          end
-          提示("正在刷新中")
-        end
-      },
-
-      {
-        src=图标("chat_bubble"),text="查看评论",onClick=function()
-          local 保存路径=内置存储文件("Download/"..simpletitle.."/"..autoname)
-          if getDirSize(保存路径.."/".."fold/")==0 then
-            提示("你还没有收藏评论")
-           else
+        },
+        {
+          src=图标("chat_bubble"),text="查看评论",onClick=function()
             activity.newActivity("comment",{result,comment_type,simpletitle,autoname})
+
           end
-        end
-      },
+        },
+        {
+          src=图标("explore"),text="收藏文件夹",onClick=function()
+            加入收藏夹(result,"article")
 
-      {
-        src=图标("cloud"),text="使用网络打开",onClick=function()
-          activity.newActivity("column",{result,原类型})
-        end
-      },
+          end
+        },
+        {
+          src=图标("save"),text="保存在本地",onClick=function()
 
-    }
-  })
+            get_write_permissions()
 
+            if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
+              创建文件夹(内置存储文件("Download/".._title.Text))
+            end
+            创建文件夹(内置存储文件("Download/".._title.Text.."/"..autoname))
+            content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..autoname.."/mht.mht"))
+            创建文件(内置存储文件("Download/".._title.Text.."/"..autoname.."/detail.txt"))
+
+            写入文件(内置存储文件("Download/".._title.Text.."/"..autoname.."/detail.txt"),'article_url="'..content.getUrl()..'"')
+
+            提示("保存成功")
+          end
+        }
+      }
+    })
+  end)
+ elseif 类型=="想法" then
+  task(1,function()
+    a=MUKPopu({
+      tittle="一个想法",
+      list={
+        {
+          src=图标("refresh"),text="刷新",onClick=function()
+            if _title.Text=="加载失败" then
+              刷新()
+             else
+              content.reload()
+            end
+            提示("正在刷新中")
+          end
+        },
+
+        {
+          src=图标("chat_bubble"),text="查看评论",onClick=function()
+            activity.newActivity("comment",{result,comment_type,simpletitle,autoname,tostring(comment_count)})
+
+          end
+        },
+        {
+          src=图标("explore"),text="收藏文件夹",onClick=function()
+            加入收藏夹(result,"pin")
+
+          end
+        },
+        {
+          src=图标("save"),text="保存在本地",onClick=function()
+            创建文件夹(内置存储文件("Download/"..simpletitle))
+            创建文件夹(内置存储文件("Download/"..simpletitle.."/"..autoname))
+
+            创建文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"))
+
+            写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"),'pin_url="'..content.getUrl()..'"')
+
+            content.saveWebArchive(内置存储文件("Download/"..simpletitle.."/"..autoname.."/mht.mht"))
+            提示("保存成功")
+          end
+        },
+      }
+    })
+  end)
+ elseif 类型=="视频" then
+  task(1,function()
+    a=MUKPopu({
+      tittle="视频",
+      list={
+        {
+          src=图标("refresh"),text="刷新",onClick=function()
+            if _title.Text=="加载失败" then
+              刷新()
+             else
+              content.reload()
+            end
+            提示("正在刷新中")
+          end
+        },
+
+        {
+          src=图标("chat_bubble"),text="查看评论",onClick=function()
+            activity.newActivity("comment",{result,comment_type,simpletitle,autoname,tostring(comment_count)})
+
+          end
+        },
+
+        {
+          src=图标("chat_bubble"),text="查看保存评论",onClick=function()
+            local 保存路径=内置存储文件("Download/"..simpletitle.."/"..autoname)
+            if getDirSize(保存路径.."/".."fold/")==0 then
+              --            提示("你还没有收藏评论")
+             else
+              activity.newActivity("comment",{result,"local",simpletitle,autoname})
+            end
+
+          end
+        },
+
+        {
+          src=图标("explore"),text="收藏文件夹",onClick=function()
+            加入收藏夹(result,"zvideo",simpletitle,autoname)
+
+          end
+        },
+        {
+          src=图标("save"),text="保存在本地",onClick=function()
+            创建文件夹(内置存储文件("Download/"..simpletitle))
+            创建文件夹(内置存储文件("Download/"..simpletitle.."/"..autoname))
+
+            创建文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"))
+
+            写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"),'video_url="'..content.getUrl()..'"')
+
+            写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/mht.mht"),'video_id="'..result..'"')
+
+            提示("保存成功")
+          end
+        }
+      }
+    })
+  end)
+ elseif 类型=="本地" then
+  task(1,function()
+    a=MUKPopu({
+      tittle="本地",
+      list={
+        {
+          src=图标("refresh"),text="刷新",onClick=function()
+            if _title.Text=="加载失败" then
+              刷新()
+             else
+              content.reload()
+            end
+            提示("正在刷新中")
+          end
+        },
+
+        {
+          src=图标("chat_bubble"),text="查看评论",onClick=function()
+            local 保存路径=内置存储文件("Download/"..simpletitle.."/"..autoname)
+            if getDirSize(保存路径.."/".."fold/")==0 then
+              提示("你还没有收藏评论")
+             else
+              activity.newActivity("comment",{result,comment_type,simpletitle,autoname})
+            end
+          end
+        },
+
+        {
+          src=图标("cloud"),text="使用网络打开",onClick=function()
+            activity.newActivity("column",{result,原类型})
+          end
+        },
+
+      }
+    })
+  end)
 end

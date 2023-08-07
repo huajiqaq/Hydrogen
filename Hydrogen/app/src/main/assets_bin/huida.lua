@@ -250,34 +250,35 @@ liulan.setDownloadListener({
     webview下载文件(链接, UA, 相关信息, 类型, 大小)
 end})
 
-a=MUKPopu({
-  tittle="网页",
-  list={
-    {src=图标("refresh"),text="刷新",onClick=function()
-        liulan.reload()
-    end},--添加项目(菜单项)
-    {src=图标("redo"),text="前进",onClick=function()
-        liulan.goForward()
-    end},--添加项目(菜单项)
-    {src=图标("undo"),text="后退",onClick=function()
-        liulan.goBack()
-    end},--添加项目(菜单项)
-    {src=图标("close"),text="停止",onClick=function()
-        liulan.stopLoading()
-    end},--添加项目(菜单项)
+task(1,function()
+  a=MUKPopu({
+    tittle="网页",
+    list={
+      {src=图标("refresh"),text="刷新",onClick=function()
+          liulan.reload()
+      end},--添加项目(菜单项)
+      {src=图标("redo"),text="前进",onClick=function()
+          liulan.goForward()
+      end},--添加项目(菜单项)
+      {src=图标("undo"),text="后退",onClick=function()
+          liulan.goBack()
+      end},--添加项目(菜单项)
+      {src=图标("close"),text="停止",onClick=function()
+          liulan.stopLoading()
+      end},--添加项目(菜单项)
 
-    {src=图标("share"),text="分享",onClick=function()
-        if fxurl then
-          复制文本(fxurl)
-         else
-          复制文本(liulan.getUrl())
-        end
-        提示("已复制网页链接到剪切板")
-    end},
+      {src=图标("share"),text="分享",onClick=function()
+          if fxurl then
+            复制文本(fxurl)
+           else
+            复制文本(liulan.getUrl())
+          end
+          提示("已复制网页链接到剪切板")
+      end},
 
-  }
-})
-
+    }
+  })
+end)
 
 
 uploadMessageAboveL=0

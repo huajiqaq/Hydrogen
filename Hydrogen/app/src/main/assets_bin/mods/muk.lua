@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.17
+versionCode=16.18
 layout_dir="layout/item_layout/"
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
@@ -1807,8 +1807,8 @@ end
 
 
 function MUKPopu(t)
-  local tab={}
 
+  local tab={}
   local pop=PopupWindow(activity)
   --PopupWindow加载布局
   pop.setContentView(loadlayout({
@@ -1939,6 +1939,10 @@ function MUKPopu(t)
 
   tab.poplist.adapter.notifyDataSetChanged()
   return tab
+end
+
+function showpop(view,pop)
+  pop.showAsDropDown(view)
 end
 
 function 分享文本(t)
@@ -2664,7 +2668,7 @@ end
 
 
 function 清理内存()
-  task(function(dar)
+  task(1,function()
 
     import "androidx.core.content.ContextCompat"
     local datadir=tostring(ContextCompat.getDataDir(activity))
@@ -2703,8 +2707,7 @@ function 清理内存()
     LuaUtil.rmDir(File(dar))
     LuaUtil.rmDir(File(imagetmp))
 
-    return tmp[1]
-    end,APP_CACHEDIR,function(m)
+    m = tmp[1]
     if m == 0 then
       提示("没有可清理的缓存")
      else

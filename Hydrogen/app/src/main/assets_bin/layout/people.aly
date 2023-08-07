@@ -64,7 +64,8 @@
           tooltip="更多",
           layout_margin="8dp";
           onClick=function()
-            a.pop.showAsDropDown(_more_lay)
+            --a.pop.showAsDropDown(_more_lay)
+            showpop(_more_lay,a.pop)
           end;
         };
         {

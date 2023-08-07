@@ -50,7 +50,8 @@
             layout_width="-1",
             orientation="vertical";
             onClick=function()
-              a.pop.showAsDropDown(_more_lay)
+              --a.pop.showAsDropDown(_more_lay)
+              showpop(_more_lay,a.pop)
             end;
             {
               TextView;
