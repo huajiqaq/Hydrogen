@@ -8,7 +8,7 @@ debugActivity="com.jesse205.app.activity.RunActivity"--运行Lua的Activity
 key = "JXNB" --运行Lua时传入的key，用于校验
 
 include={"project:app","project:androlua","project:Jesse205Library"}--导入，第一个为主程序
-compileLua=true--编译Lua，nil为跟随全局
+compileLua=false--编译Lua，nil为跟随全局
 alignZip = nil --优化APK，nil为跟随全局
 
 ---图标
