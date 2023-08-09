@@ -721,7 +721,10 @@ task(1,function()
       {
         src=图标("get_app"),text="保存到本地",onClick=function()
 
-          get_write_permissions()
+          local result=get_write_permissions()
+          if result~=true then
+            return false
+          end
 
           local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
 

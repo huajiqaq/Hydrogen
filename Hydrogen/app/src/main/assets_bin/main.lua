@@ -16,7 +16,7 @@ function newLuaActivity(filedir,args)
   intent.addCategory(Intent.CATEGORY_LAUNCHER);
   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
   --设置启动的activity
-  componentName = ComponentName("com.zhihu.hydrogen", "com.jesse205.superlua.LuaActivity");
+  componentName = ComponentName(activity.getPackageName(), "com.jesse205.superlua.LuaActivity");
   intent.setComponent(componentName);
   --设置data
   uri = Uri.parse("file://"..filedir);
@@ -75,6 +75,20 @@ function zHttp.put(url,data,head,callback)
     zHttp.setcallback(code,content,callback)
   end)
 end
+
+import "android.webkit.CookieManager"
+
+function 获取Cookie(url)
+  local cookieManager = CookieManager.getInstance();
+  return cookieManager.getCookie(url);
+end
+
+apphead = {
+  ["x-api-version"] = "3.0.89";
+  ["x-app-za"] = "OS=Android";
+  ["x-app-version"] = "8.44.0";
+  ["cookie"] = 获取Cookie("https://www.zhihu.com/")
+}
 
 function 检查链接(url,b)
   local open=activity.getSharedData("内部浏览器查看回答")
@@ -164,11 +178,10 @@ end
 function 检查意图(url)
   local get=require "model.answer"
   local open=activity.getSharedData("内部浏览器查看回答")
-
-  local get=require "model.answer"
   if url and url:find("zhihu://") then
     if url:find "answers" then
       local id=url:match("answers/(.-)?")
+
       get:getAnswer(id,function(s)
         newLuaActivity(this.getLuaDir("answer.lua"),Object{tointeger(s.question.id),tointeger(id),nil,true})
       end)

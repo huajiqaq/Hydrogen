@@ -112,7 +112,10 @@ noteadp=LuaAdapter(activity,notedata,noteitem)
 notelist.setAdapter(noteadp)
 
 function 加载笔记()
-  get_write_permissions()
+  local result=get_write_permissions()
+  if result~=true then
+    return false
+  end
   notedata={}
   for i,v in ipairs(luajava.astable(File(内置存储文件("Note")).listFiles())) do
     local v=tostring(v)

@@ -61,6 +61,7 @@ data = {
 
   {__type=1,title="其他"},
   {__type=3,subtitle="关于",image=图标("")},
+  {__type=3,subtitle="管理/android/data存储",image=图标("")},
   {__type=4,subtitle="调式模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
   {__type=4,subtitle="允许加载代码",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
 
@@ -155,6 +156,24 @@ tab={
 
   关于=function()
     activity.newActivity("about")
+  end,
+
+  ["管理/android/data存储"]=function()
+    import "android.content.Intent"
+    import "android.net.Uri"
+    import "java.net.URLDecoder"
+    import "java.io.File"
+    import "android.provider.DocumentsContract"
+    import "android.content.ComponentName"
+    intent = Intent()
+    intent.setType("*/*");
+    uri=Uri.parse("content://com.android.externalstorage.documents/document/primary%3AAndroid%2Fdata%2F"..activity.getPackageName().."%2Ffiles");
+    intent.setData(uri);
+    intent.setAction(Intent.ACTION_VIEW);
+    componentName = ComponentName("com.android.documentsui", "com.android.documentsui.files.FilesActivity");
+    intent.setComponent(componentName);
+    activity.startActivityForResult(intent,1);
+    提示("已跳转"..tostring(activity.getExternalFilesDir(nil)).. "请自行管理")
   end,
 
   主题设置=function()

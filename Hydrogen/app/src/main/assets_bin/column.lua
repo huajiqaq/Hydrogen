@@ -297,7 +297,10 @@ if 类型=="文章" then
         {
           src=图标("save"),text="保存在本地",onClick=function()
 
-            get_write_permissions()
+            local result=get_write_permissions()
+            if result~=true then
+              return false
+            end
 
             if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
               创建文件夹(内置存储文件("Download/".._title.Text))

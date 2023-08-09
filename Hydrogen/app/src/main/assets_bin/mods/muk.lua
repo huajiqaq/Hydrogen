@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.18
+versionCode=16.19
 layout_dir="layout/item_layout/"
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
@@ -252,6 +252,9 @@ function 文件修改时间(path)
 end
 
 function 内置存储(t)
+  if Build.VERSION.SDK_INT >29 then
+    return activity.getExternalFilesDir(nil).toString() .. "/" ..t
+  end
   return Environment.getExternalStorageDirectory().toString().."/"..t
 end
 
@@ -1255,8 +1258,6 @@ end
 function 检查意图(url,b)
   local get=require "model.answer"
   local open=activity.getSharedData("内部浏览器查看回答")
-
-  local get=require "model.answer"
   if url and url:find("zhihu://") then
     if url:find "answers" then
       if b then return true end
@@ -1442,6 +1443,9 @@ function 下载文件对话框(title,url,path,ex)
   import "com.google.android.material.bottomsheet.*"
 
   local path=内置存储("Download/"..path)
+  if 文件夹是否存在(path) then
+    写入文件夹(path)
+  end
   appDownload(url,path)
   local gd2 = GradientDrawable()
   gd2.setColor(转0x(backgroundc))--填充
@@ -2728,7 +2732,9 @@ function get_write_permissions()
         permissions=write_permissions;
       },
     })
-    return
+    return false
+   else
+    return true
   end
 end
 
