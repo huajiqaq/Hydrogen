@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.19
+versionCode=16.20
 layout_dir="layout/item_layout/"
 导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
 状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
@@ -1444,7 +1444,7 @@ function 下载文件对话框(title,url,path,ex)
 
   local path=内置存储("Download/"..path)
   if 文件夹是否存在(path) then
-    写入文件夹(path)
+    创建文件夹(path)
   end
   appDownload(url,path)
   local gd2 = GradientDrawable()
@@ -2723,6 +2723,10 @@ end
 write_permissions={"android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_EXTERNAL_STORAGE"};
 
 function get_write_permissions()
+  if Build.VERSION.SDK_INT >29 then
+    --因为安卓10以上不使用/sdcard/了 使用android/data了
+    return true
+  end
   if PermissionUtil.check(write_permissions)~=true then
     PermissionUtil.askForRequestPermissions({
       {

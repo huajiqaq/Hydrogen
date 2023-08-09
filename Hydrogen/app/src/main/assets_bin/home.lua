@@ -1553,10 +1553,10 @@ if Build.VERSION.SDK_INT >29 then
     local 私有目录=activity.getExternalFilesDir(nil).toString()
     if 文件夹是否存在(默认文件夹) then
       if 文件夹是否存在(私有目录) then
-        写入文件夹(私有目录)
+        创建文件夹(私有目录)
       end
       if 文件夹是否存在(私有目录.."/Hydrogen") then
-        写入文件夹(私有目录.."/Hydrogen")
+        创建文件夹(私有目录.."/Hydrogen")
       end
       File(默认文件夹).renameTo(File(私有目录.."/Hydrogen"))
 
