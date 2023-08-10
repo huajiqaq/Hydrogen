@@ -16,13 +16,13 @@ local_item=获取适配器项目布局("local_item/local_item")
 if not 文件是否存在(内置存储文件()) then
   xpcall(function()
     创建文件夹(内置存储文件())
-  end,function()
+    end,function()
   end)
 end
 if not 文件是否存在(内置存储文件("Download")) then
   xpcall(function()
     创建文件夹(内置存储文件("Download"))
-  end,function()
+    end,function()
   end)
 end
 
@@ -317,86 +317,15 @@ task(1,function()
             return false
           end
 
-          import "android.widget.ArrayAdapter"
-          import "android.widget.LinearLayout"
-          import "android.widget.TextView"
-          import "java.io.File"
-          import "android.widget.ListView"
-          import "android.app.AlertDialog"
-          function ChoicePath(StartPath,callback)
-            --创建ListView作为文件列表
-            lv=ListView(activity).setFastScrollEnabled(true)
-            --创建路径标签
-            cp=TextView(activity)
-            lay=LinearLayout(activity).setOrientation(1).addView(cp).addView(lv)
-            ChoiceFile_dialog=AlertDialog.Builder(activity)--创建对话框
-            .setTitle("选择路径")
-            .setPositiveButton("确认",nil)
-            .setNegativeButton("取消",nil)
-            .setCancelable(false)
-            .setView(lay)
-            .show()
-            ChoiceFile_dialog.getButton(ChoiceFile_dialog.BUTTON_POSITIVE).onClick=function()
-              AlertDialog.Builder(activity)--创建对话框
-              .setTitle("确定吗 选择错误可能会导致软件过大 如选择错误后 请打开应用设置中的管理android/data目录自行删除多余文件")
-              .setPositiveButton("确认",{onClick=function() callback(tostring(cp.Text)) ChoiceFile_dialog.dismiss() end})
-              .setNegativeButton("取消",nil)
-              .setCancelable(false)
-              .show()
-            end
-            adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1)
-            lv.setAdapter(adp)
-            function SetItem(path)
-              path=tostring(path)
-              adp.clear()--清空适配器
-              cp.Text=tostring(path)--设置当前路径
-              if path~="/" then--不是根目录则加上../
-                adp.add("../")
-              end
-              ls=File(path).listFiles()
-              if ls~=nil then
-                ls=luajava.astable(File(path).listFiles()) --全局文件列表变量
-                table.sort(ls,function(a,b)
-                  return (a.isDirectory()~=b.isDirectory() and a.isDirectory()) or ((a.isDirectory()==b.isDirectory()) and a.Name<b.Name)
-                end)
-               else
-                ls={}
-              end
-              for index,c in ipairs(ls) do
-                if c.isDirectory() then--如果是文件夹则
-                  adp.add(c.Name.."/")
-                end
-              end
-            end
-            lv.onItemClick=function(l,v,p,s)--列表点击事件
-              项目=tostring(v.Text)
-              if tostring(cp.Text)=="/" then
-                路径=ls[p+1]
-               else
-                路径=ls[p]
-              end
-
-              if 项目=="../" then
-                SetItem(File(cp.Text).getParentFile())
-               elseif 路径.isDirectory() then
-                SetItem(路径)
-               elseif 路径.isFile() then
-                callback(tostring(路径))
-                ChoiceFile_dialog.hide()
-              end
-
-            end
-
-            SetItem(StartPath)
-          end
-
-
-          import "android.os.*"
-          ChoicePath(Environment.getExternalStorageDirectory().toString(),
-          function(path)
-            LuaUtil.copyDir(File(path),File(activity.getExternalFilesDir(nil).toString().."/Hydrogen"))
+          local sdcarddir=Environment.getExternalStorageDirectory().toString()
+          local filesdir=activity.getExternalFilesDir(nil).toString()
+          if 文件是否存在(sdcarddir.."/Hydrogen.zip") then
+            ZipUtil.unzip(sdcarddir.."/Hydrogen.zip",filesdir.."/Hydrogen")
+            删除文件(sdcarddir.."/Hydrogen.zip")
             提示("导入成功")
-          end)
+           else
+            return 提示("导入失败 请检查是否导出或误删文件")
+          end
 
       end},
       {src=图标("info"),text="导出",onClick=function()
@@ -409,8 +338,10 @@ task(1,function()
             return false
           end
 
-          LuaUtil.copyDir(File(activity.getExternalFilesDir(nil).toString().."/Hydrogen"),File(Environment.getExternalStorageDirectory().toString().."/Hydrogen"))
-          提示("导出成功,导出目录在"..Environment.getExternalStorageDirectory().toString().."/".."Hydrogen")
+          local sdcarddir=Environment.getExternalStorageDirectory().toString()
+          local filesdir=activity.getExternalFilesDir(nil).toString()
+          ZipUtil.zip(filesdir.."/Hydrogen",sdcarddir.."/Hydrogen.zip")
+          提示("导出成功,导出文件在"..sdcarddir.."/Hydrogen.zip")
       end},
       {src=图标("info"),text="问题",onClick=function()
           Snakebar("文件保存在"..内置存储("Hydrogen/download"))

@@ -165,12 +165,19 @@ tab={
     import "java.io.File"
     import "android.provider.DocumentsContract"
     import "android.content.ComponentName"
+
+    import "android.content.pm.PackageManager"
+    intent = Intent(Intent.ACTION_VIEW);
+    intent.setType(DocumentsContract.Document.MIME_TYPE_DIR);
+    info = this.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+    packageName = info.activityInfo.packageName;
+
     intent = Intent()
     intent.setType("*/*");
     uri=Uri.parse("content://com.android.externalstorage.documents/document/primary%3AAndroid%2Fdata%2F"..activity.getPackageName().."%2Ffiles");
     intent.setData(uri);
     intent.setAction(Intent.ACTION_VIEW);
-    componentName = ComponentName("com.android.documentsui", "com.android.documentsui.files.FilesActivity");
+    componentName = ComponentName(packageName, "com.android.documentsui.files.FilesActivity");
     intent.setComponent(componentName);
     activity.startActivityForResult(intent,1);
     提示("已跳转"..tostring(activity.getExternalFilesDir(nil)).. "请自行管理")
