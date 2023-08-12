@@ -187,14 +187,27 @@ function 主页刷新(isclear)
     return {点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等}
   end
 
-  function 主页推荐刷新(result)
+  function 主页推荐刷新(result,isprev)
 
-    local url= requrl[result] or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
+    local myrequrl
+
+    if requrl[result] then
+      if isprev then
+        myrequrl=requrl[result]["prev"]
+       else
+        myrequrl=requrl[result]["next"]
+      end
+    end
+
+    local url= myrequrl or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
     zHttp.get(url,access_token_head,function(code,content)
       if code==200 then
         decoded_content = require "cjson".decode(content)
         if decoded_content.paging.is_end==false then
-          requrl[result]=decoded_content.paging.next
+          requrl[result]={
+            ["next"] = decoded_content.paging.next,
+            ["prev"] = decoded_content.paging.previous,
+          }
           for k,v in ipairs(decoded_content.data) do
             table.insert(list2.adapter.getData(),resolve_feed(v))
           end
@@ -204,8 +217,19 @@ function 主页刷新(isclear)
     end)
   end
 
-  function 随机推荐 ()
-    local posturl = requrl[-1] or "https://api.zhihu.com/topstory?action=down"--"https://api.zhihu.com/feeds"
+  function 随机推荐 (isprev)
+
+    local myrequrl
+
+    if requrl[-1] then
+      if isprev then
+        myrequrl=requrl[-1]["prev"]
+       else
+        myrequrl=requrl[-1]["next"]
+      end
+    end
+
+    local posturl = myrequrl or "https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=2"
 
     zHttp.get(posturl,access_token_head,function(code,content)
       if code==200 then
@@ -214,7 +238,10 @@ function 主页刷新(isclear)
           table.insert(list2.adapter.getData(),resolve_feed(v))
         end
         task(1,function() list2.adapter.notifyDataSetChanged()end)
-        requrl[-1] = decoded_content.paging.next
+        requrl[-1] = {
+          ["next"] = decoded_content.paging.next,
+          ["prev"] = decoded_content.paging.previous,
+        }
        elseif code==401 then
         提示("请登录后访问推荐，http错误码401")
        else
@@ -285,7 +312,8 @@ sr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
 sr.setColorSchemeColors({转0x(primaryc)});
 sr.setOnRefreshListener({
   onRefresh=function()
-    主页刷新(true)
+    requrl[-1]="https://api.zhihu.com/topstory/recommend?action=pull&start_type=warm&refresh_scene=0&device=phone"
+    主页刷新(true,true)
     Handler().postDelayed(Runnable({
       run=function()
         sr.setRefreshing(false);

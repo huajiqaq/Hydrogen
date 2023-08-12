@@ -62,7 +62,7 @@ data = {
   {__type=1,title="其他"},
   {__type=3,subtitle="关于",image=图标("")},
   {__type=3,subtitle="管理/android/data存储",image=图标("")},
-  {__type=4,subtitle="调式模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
+  {__type=4,subtitle="显示报错信息",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
   {__type=4,subtitle="允许加载代码",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
 
 }
@@ -159,6 +159,17 @@ tab={
   end,
 
   ["管理/android/data存储"]=function()
+
+    if this.getSharedData("data提示0.01")~="true" then
+      AlertDialog.Builder(this)
+      .setTitle("建议将Hydrogen的/android/data添加到文件管理器中")
+      .setMessage("以下以MT管理器2.0举例".."\n".."点击MT管理器2.0右上角进入菜单 点击菜单内右上角三个点 点击添加本地存储 之后 点击右上角 进入菜单 往下找到Hydrogen 点击 进入后点击最下方的允许访问 之后 添加就成功了")
+      .setCancelable(false)
+      .setPositiveButton("我知道了",{onClick=function() this.setSharedData("data提示0.01","true") end})
+      .show()
+      return
+    end
+
     import "android.content.Intent"
     import "android.net.Uri"
     import "java.net.URLDecoder"
@@ -188,7 +199,7 @@ tab={
   end,
 
 
-  调式模式=function()
+  显示报错信息=function()
     if this.getSharedData("调式模式")~="false" then
       this.setSharedData("调式模式","false")
       sta=1
@@ -196,13 +207,13 @@ tab={
     if sta==1 then
       sta=0
       debugtip=AlertDialog.Builder(this)
-      .setTitle("是否要开启调式模式?")
+      .setTitle("是否要开启?")
       .setMessage("开启后会提示一些错误信息 在一定程度上会影响阅读")
       .setCancelable(false)
       .setPositiveButton("开启",{onClick=function()
           this.setSharedData("调式模式","true") 提示("成功！重启App生效")
       end})
-      .setNeutralButton("取消",{onClick=function() this.setSharedData("调式模式","false") data[#data].status["Checked"]=false adp.notifyDataSetChanged() end})
+      .setNeutralButton("取消",{onClick=function() this.setSharedData("调式模式","false") data[#data-1].status["Checked"]=false adp.notifyDataSetChanged() end})
       .show()
      else
       this.setSharedData("调式模式","false")
@@ -401,6 +412,7 @@ settab={
   ["夜间模式追随系统"]="Setting_Auto_Night_Mode",
   ["禁用大部分缓存"]="禁用缓存",
   ["暗色工具栏主题"]="theme_darkactionbar",
+  ["显示报错信息"]="调式模式",
 }--设置数据
 
 settings_list.setOnItemClickListener(AdapterView.OnItemClickListener{

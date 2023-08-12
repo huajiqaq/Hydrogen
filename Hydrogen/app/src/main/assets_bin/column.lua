@@ -30,7 +30,7 @@ if islocal then
 
   if 类型=="文章" then
     comment_type="articles"
-   elseif 文章=="想法"
+   elseif 类型=="想法"
     comment_type="pins"
    elseif 类型=="视频"
     comment_type="zvideos"

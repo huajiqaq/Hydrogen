@@ -14,20 +14,9 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.22
+versionCode=16.23
 layout_dir="layout/item_layout/"
-导航栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().navigation_bar_height)
-状态栏高度=activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
-型号 = Build.MODEL
-SDK版本 = tonumber(Build.VERSION.SDK)
-安卓版本 = Build.VERSION.RELEASE
-ROM类型 = string.upper(Build.MANUFACTURER)
-内部存储路径=Environment.getExternalStorageDirectory().toString().."/"
 
-应用版本名=activity.getPackageManager().getPackageInfo(activity.getPackageName(), PackageManager.GET_ACTIVITIES).versionName;
-应用版本=activity.getPackageManager().getPackageInfo(activity.getPackageName(), PackageManager.GET_ACTIVITIES).versionCode;
-
-APP_CACHEDIR="/data/data/"..activity.getPackageName().."/cache/webviewCache";
 
 if this.getSharedData("调式模式")=="true" then
   this.setDebug(true)
@@ -95,69 +84,6 @@ function 时间戳(t)
   return os.date("%Y-%m-%d",t)
 end
 
-
-function 状态栏颜色(n)
-  pcall(function()
-    local window=activity.getWindow()
-    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-    window.setStatusBarColor(n)
-    statusbarcolor=n
-    if SDK版本>=23 then
-      if n==0x3f000000 then
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-        window.setStatusBarColor(0xffffffff)
-       else
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE)
-        window.setStatusBarColor(n)
-      end
-    end
-  end)
-end
-
-function 导航栏颜色(n,n1)
-  pcall(function()
-    local window=activity.getWindow()
-    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-    window.setNavigationBarColor(n)
-    if SDK版本>=23 then
-      if n==0x3f000000 then
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-        window.setNavigationBarColor(0xffffffff)
-       else
-        if n1 then
-          window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-         else
-          window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE)
-        end
-        window.setNavigationBarColor(n)
-      end
-    end
-  end)
-end
-
-function 沉浸状态栏(n1,n2,n3)
-  pcall(function()
-    local window=activity.getWindow()
-    window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-    pcall(function()
-      window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-      window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-      window.setStatusBarColor(Color.TRANSPARENT)
-      window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
-    end)
-    if SDK版本>=23 then
-      if n1 then
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-       elseif n2 then
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-       elseif n3 then
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
-      end
-    end
-
-  end)
-end
-
 function dp2px(dpValue)
   local scale = activity.getResources().getDisplayMetrics().scaledDensity
   return dpValue * scale + 0.5
@@ -177,7 +103,6 @@ function sp2px(spValue)
   local scale = activity.getResources().getDisplayMetrics().scaledDensity
   return spValue * scale + 0.5
 end
-
 
 
 function 写入文件(路径,内容)
@@ -243,12 +168,6 @@ function 删除文件(file)
     end,function()
     提示("删除文件(夹) "..file.." 失败")
   end)
-end
-
-function 文件修改时间(path)
-  f = File(path);
-  time = f.lastModified()
-  return time
 end
 
 function 内置存储(t)
@@ -376,7 +295,7 @@ function 主题(str)
   全局主题值=str
   if 全局主题值=="Day" then
     if 获取主题夜间模式() == true then
-      if Boolean.valueOf(lsmactivity.getData("Setting_Auto_Night_Mode"))==true then
+      if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
        else
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -398,8 +317,6 @@ function 主题(str)
     cardedge=dec2hex(res.color.attr.colorSurface)
     oricardedge="#FFF6F6F6"
     --    cardedge="#FFF6F6F6"
-    状态栏颜色(0x3f000000)
-    导航栏颜色(0x3f000000)
     pcall(function()
       local _window = activity.getWindow();
       _window.setBackgroundDrawable(ColorDrawable(0xffffffff));
@@ -431,8 +348,6 @@ function 主题(str)
     cardedge=dec2hex(res.color.attr.colorSurface)
     oricardedge="#555555"
     --    cardedge="#555555"
-    状态栏颜色(0xff191919)
-    导航栏颜色(0xff191919)
     pcall(function()
       local _window = activity.getWindow();
       _window.setBackgroundDrawable(ColorDrawable(0xff222222));
@@ -447,47 +362,24 @@ function 主题(str)
 end
 
 
-lsmactivity={
-  setData=function(string_name,sth_value,string_mode)
-    activity.setSharedData(string_name,sth_value)
-  end,
-  setDataR=function(string_name,sth_value,string_mode)
-    if activity.getSharedData(string_name)==nil then
-      activity.setSharedData(string_name,sth_value)
-    end
-  end,
-  getData=function(string_name,string_mode,sth_notresult)
-    if activity.getSharedData(string_name) then
-      return activity.getSharedData(string_name)
-     elseif string_mode=="Custom string" then
-      return sth_notresult
-     else
-      return nil
-    end
-  end,
-  CUSTOM_STRING="Custom string",
-  CUSTOM_THINGS="Custom things",
-}
-
-
-if lsmactivity.getData("Setting_Auto_Night_Mode")==nil then
+if this.getSharedData("Setting_Auto_Night_Mode")==nil then
   activity.setSharedData("Setting_Auto_Night_Mode","true")
 end
 
 
 function 设置主题()
-  if Boolean.valueOf(lsmactivity.getData("Setting_Auto_Night_Mode"))==true then
+  if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then
     if 获取系统夜间模式() and 获取主题夜间模式()~=true then
       主题("Night")
      else --暂时这样写，后期修复
-      if Boolean.valueOf(lsmactivity.getData("Setting_Night_Mode"))==true then
+      if Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))==true then
         主题("Night")
        else
         主题("Day")
       end
     end
    else
-    if Boolean.valueOf(lsmactivity.getData("Setting_Night_Mode"))==true then
+    if Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))==true then
       主题("Night")
      else
       主题("Day")
@@ -585,15 +477,10 @@ function 颜色渐变(控件,左色,右色)
   --  控件.setBackgroundDrawable(ColorDrawable(左色))
 end
 
-function 随机数(最小值,最大值)
-  return math.random(最小值,最大值)
-end
 
 function 设置视图(t)
   activity.setContentView(loadlayout(t))
 end
-
-
 
 function 加载js(id,js)
   if js~=nil then
@@ -691,26 +578,8 @@ function 控件隐藏(a)
   a.setVisibility(View.GONE)
 end
 
-function 对话框按钮颜色(dialog,button,WidgetColor)
-  if button==1 then
-    dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(WidgetColor)
-   elseif button==2 then
-    dialog.getButton(dialog.BUTTON_NEGATIVE).setTextColor(WidgetColor)
-   elseif button==3 then
-    dialog.getButton(dialog.BUTTON_NEUTRAL).setTextColor(WidgetColor)
-  end
-end
-
 function 关闭对话框(an)
   an.dismiss()
-end
-
-function 控件圆角(view,radiu,InsideColor)
-  drawable = GradientDrawable()
-  drawable.setShape(GradientDrawable.RECTANGLE)
-  drawable.setColor(InsideColor)
-  drawable.setCornerRadii({radiu,radiu,radiu,radiu,radiu,radiu,radiu,radiu});
-  view.setBackgroundDrawable(drawable)
 end
 
 function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
@@ -1097,15 +966,6 @@ function 内置存储文件(u)
 end
 
 
-function 获取文件修改时间(path)
-  f = File(path);
-  cal = Calendar.getInstance();
-  time = f.lastModified()
-  cal.setTimeInMillis(time);
-  return cal.getTime().toLocaleString()
-end
-
-
 function 解压缩(压缩路径,解压缩路径)
   xpcall(function()
     ZipUtil.unzip(压缩路径,解压缩路径)
@@ -1343,71 +1203,22 @@ function 图标(n)
   return "res/twotone_"..n.."_black_24dp.png"
 end
 
-function 高斯模糊(id,tp,radius1,radius2)
-  function blur( context, bitmap, blurRadius)
-    renderScript = RenderScript.create(context);
-    blurScript = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
-    inAllocation = Allocation.createFromBitmap(renderScript, bitmap);
-    outputBitmap = bitmap;
-    outAllocation = Allocation.createTyped(renderScript, inAllocation.getType());
-    blurScript.setRadius(blurRadius);
-    blurScript.setInput(inAllocation);
-    blurScript.forEach(outAllocation);
-    outAllocation.copyTo(outputBitmap);
-    inAllocation.destroy();
-    outAllocation.destroy();
-    renderScript.destroy();
-    blurScript.destroy();
-    return outputBitmap;
-  end
-  bitmap=loadbitmap(tp)
-  function blurAndZoom(context,bitmap,blurRadius,scale)
-    return zoomBitmap(blur(context,zoomBitmap(bitmap, 1 / scale), blurRadius), scale);
-  end
-
-  function zoomBitmap(bitmap,scale)
-    w = bitmap.getWidth();
-    h = bitmap.getHeight();
-    matrix = Matrix();
-    matrix.postScale(scale, scale);
-    bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
-    return bitmap;
-  end
-
-
-  加深后的图片=blurAndZoom(activity,bitmap,radius1,radius2)
-  id.setImageBitmap(加深后的图片)
-end
-
-function 获取应用信息(archiveFilePath)
-  pm = activity.getPackageManager()
-  info = pm.getPackageInfo(archiveFilePath, PackageManager.GET_ACTIVITIES);
-  if info ~= nil then
-    appInfo = info.applicationInfo;
-    appName = tostring(pm.getApplicationLabel(appInfo))
-    packageName = appInfo.packageName; --安装包名称
-    version=info.versionName; --版本信息
-    icon = pm.getApplicationIcon(appInfo);--图标
-  end
-  return packageName,version,icon
-end
-
-function 下载文件(链接,文件名)
+function 下载文件(链接,文件名,配置)
   downloadManager=activity.getSystemService(Context.DOWNLOAD_SERVICE);
   url=Uri.parse(链接);
   request=DownloadManager.Request(url);
   request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
+  if type(配置)=="table" then
+    if 配置.Referer then
+      request.addRequestHeader("Referer",配置.Referer)
+    end
+  end
   request.setDestinationInExternalPublicDir("Download",文件名);
   request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
   downloadManager.enqueue(request);
   提示("正在下载，下载到："..内置存储("Download/"..文件名).."\n请查看通知栏以查看下载进度。")
 end
 
-function 获取文件MIME(name)
-  ExtensionName=tostring(name):match("%.(.+)")
-  Mime=MimeTypeMap.getSingleton().getMimeTypeFromExtension(ExtensionName)
-  return tostring(Mime)
-end
 
 function xdc(url,path)
   require "import"
@@ -1520,37 +1331,41 @@ function 下载文件对话框(title,url,path,ex)
         提示("安装包下载成功,大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
         双按钮对话框("安装APP",[===[您下载了安装包文件，要现在安装吗？ 取消后可前往]===]..path.."手动安装","立即安装","取消",function()
           --    关闭对话框(an)
-          安装apk(path)end,function()关闭对话框(an)end)
+          安装apk(path)
+          end,function()
+          关闭对话框(an)
+        end)
         myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).Text="立即安装"
         myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
           安装apk(path)
         end
-
        else
         提示("下载完成，大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
       end
     end
   end
-
 end
 
 function 安装apk(安装包路径)
   import "java.io.File"
   import "android.content.Intent"
   import "android.net.Uri"
-  import "android.content.FileProvider"
-  intent = Intent(Intent.ACTION_VIEW)
-  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-  intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+  import "androidx.core.content.FileProvider"
+  local apkType="application/vnd.android.package-archive"
+  local FileProviderStr=".FileProvider"
+  local 获取安装包=File(安装包路径)
   if Build.VERSION.SDK_INT >= 24 then
-    获取安装包=File(安装包路径)
-    authority=activity.getApplicationContext().getPackageName()
-    apkUri =FileProvider.getUriForFile(activity, authority, 获取安装包)
-    intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+    local apkUri = FileProvider.getUriForFile(this, this.getPackageName() .. FileProviderStr,获取安装包);
+    intent_apk = Intent(Intent.ACTION_INSTALL_PACKAGE);
+    intent_apk.setData(apkUri);
+    intent_apk.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
    else
-    intent.setDataAndType(Uri.parse("file://"..安装包路径), "application/vnd.android.package-archive")
+    local apkUri = Uri.fromFile(获取安装包);
+    intent_apk = Intent(Intent.ACTION_VIEW);
+    intent_apk.setDataAndType(apkUri, apkType);
+    intent_apk.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
   end
-  activity.startActivity(intent)
+  activity.startActivity(intent_apk)
 end
 
 function 浏览器打开(pageurl)
@@ -1560,24 +1375,9 @@ function 浏览器打开(pageurl)
   activity.startActivity(viewIntent)
 end
 
-function 设置图片(preview,url)
-  preview.setImageBitmap(loadbitmap(url))
-end
 
 function 字体(t)
   return Typeface.createFromFile(File(activity.getLuaDir().."/res/"..t..".ttf"))
-end
-
-function 开关颜色(id,color,color2)
-  id.ThumbDrawable.setColorFilter(PorterDuffColorFilter(转0x(color),PorterDuff.Mode.SRC_ATOP))
-  id.TrackDrawable.setColorFilter(PorterDuffColorFilter(转0x(color2),PorterDuff.Mode.SRC_ATOP))
-end
-
-
-function 颜色字体(t,c)
-  local sp = SpannableString(t)
-  sp.setSpan(ForegroundColorSpan(转0x(c)),0,#sp,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-  return sp
 end
 
 
@@ -1984,20 +1784,6 @@ function table.join(old,add)
   end
 end
 
-function 系统下载文件(a,b,c,d)
-  import "android.content.Context"
-  import "android.net.Uri"
-  downloadManager=activity.getSystemService(Context.DOWNLOAD_SERVICE);
-  url=Uri.parse(a);
-  request=DownloadManager.Request(url);
-  request.addRequestHeader("Referer",d)
-  request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
-  request.setDestinationInExternalPublicDir(b,c);
-  request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-  downloadManager.enqueue(request);
-end
-
-
 function 加入收藏夹(回答id,收藏类型)
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
@@ -2298,16 +2084,6 @@ end
 
 import "android.graphics.drawable.GradientDrawable"
 
-function CircleButton(view,InsideColor,radiu)
-  local drawable = GradientDrawable()
-  .setShape(GradientDrawable.RECTANGLE)
-  .setColor(InsideColor)
-  .setCornerRadii({radiu,radiu,radiu,radiu,radiu,radiu,radiu,radiu})
-  --可通过 GradientDrawable 的其他方法实现其他效果
-  pcall(function() view.setBackgroundDrawable(drawable) end)
-  return drawable
-end
-
 StringHelper = {}
 
 --[[
@@ -2446,6 +2222,10 @@ function matchtext(str,regex)
 end --返回table
 
 function webview下载文件(链接, UA, 相关信息, 类型, 大小)
+  local result=get_write_permissions()
+  if result~=true then
+    return false
+  end
   大小=string.format("%0.2f",大小/1024/1024).."MB"
   if 相关信息:match('filename="(.-)"') then
     文件名=urlDecode(相关信息:match('filename="(.-)"'))
@@ -2750,21 +2530,6 @@ function 替换文件字符串(路径,要替换的字符串,替换成的字符�
    else
     return false
   end
-end
-
-function getNetwork_connect()
-  import "android.content.Context"
-  import "android.net.NetworkInfo"
-  connectivityManager =this.getSystemService(Context.CONNECTIVITY_SERVICE);
-  networkInfo = connectivityManager.getActiveNetworkInfo();
-  if networkInfo~=nil and networkInfo.isConnected() then
-    if networkInfo.getState()== NetworkInfo.State.CONNECTED then
-      return true;
-     else
-      return false;
-    end
-  end
-  return false
 end
 
 function getApiurl()

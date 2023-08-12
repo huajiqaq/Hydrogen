@@ -112,6 +112,10 @@ picpage.setCurrentItem(now)
 
 
 ripple.onClick=function()
+  local result=get_write_permissions()
+  if result~=true then
+    return false
+  end
   local url=mls[""..picpage.getCurrentItem()]
   Http.download(url,"/sdcard/Pictures/Hydrogen/"..os.time()..".webp",function(code,msg)
     if code==200 then

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zhihu.hydrogen">
+    xmlns:tools="http://schemas.android.com/tools" package="com.zhihu.hydrogen">
 
     <!-- 查看 WLAN 状态 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -16,17 +16,23 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <!-- 读取存储卡中的内容 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+                     tools:ignore="ScopedStorage"/>
+
+    <!-- 所有文件访问权限 -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+                     tools:ignore="ScopedStorage"/>
+
 
     <application
-        android:name="com.androlua.LuaApplication"
-        android:resizeableActivity="true"
-        android:supportsPictureInPicture="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true"
-        android:theme="@style/Theme.Jesse205.Default">
+            android:name="com.androlua.LuaApplication"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:usesCleartextTraffic="true"
+            android:requestLegacyExternalStorage="true"
+            android:theme="@style/Theme.Jesse205.Default" tools:targetApi="n">
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -42,10 +48,10 @@
 
         <activity
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:name="com.jesse205.superlua.Main"
+            android:exported="true"
             android:theme="@style/Theme.Jesse205.Welcome">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -140,7 +146,6 @@
         <activity
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize|stateHidden"
-            android:label="@string/app_name"
             android:exported="true"
             android:name="com.jesse205.superlua.LuaActivity"/>
 
@@ -149,17 +154,37 @@
             android:documentLaunchMode="intoExisting"
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:excludeFromRecents="false"
-            android:label="@string/app_name"
             android:exported="true"
             android:name="com.jesse205.superlua.LuaActivityX"/>
 
         <activity
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|navigation|screenLayout|fontScale|smallestScreenSize|keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:exported="true"
             android:name="com.jesse205.superlua.Welcome"
             android:theme="@style/Theme.Jesse205.Welcome"/>
+
+
+        <provider
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="${applicationId}.FileProvider"
+                android:grantUriPermissions="true"
+                android:exported="false">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/file_paths" />
+        </provider>
+
+        <provider
+                android:name="com.hydrogen.provider.mDocumentsProvider"
+                android:authorities="${applicationId}.documents"
+                android:exported="true"
+                android:grantUriPermissions="true"
+                android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
 
 
     </application>
