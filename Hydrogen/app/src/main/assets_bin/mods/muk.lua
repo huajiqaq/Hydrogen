@@ -2537,7 +2537,6 @@ function get_write_permissions(checksdk)
           import "android.net.Uri"
           import "android.content.Intent"
           import "android.provider.Settings"
-          intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
           intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
           intent.setData(Uri.parse("package:" .. this.getPackageName()));
           this.startActivityForResult(intent, 1);
