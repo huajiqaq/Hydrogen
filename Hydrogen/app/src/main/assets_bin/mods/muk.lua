@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.25
+versionCode=16.26
 layout_dir="layout/item_layout/"
 
 
@@ -1347,6 +1347,13 @@ function 下载文件对话框(title,url,path,ex)
 end
 
 function 安装apk(安装包路径)
+
+  local result=get_installApp_permissions()
+  
+  if result~=true then
+    return false
+  end
+
   import "java.io.File"
   import "android.content.Intent"
   import "android.net.Uri"
@@ -2539,7 +2546,7 @@ function get_write_permissions(checksdk)
       end)
 
       local pm = this.getPackageManager()
-      if not(request_storage_intent) or pm.resolveActivity(request_storage_intent, 0) ~=true then
+      if not(request_storage_intent) or not pm.resolveActivity(request_storage_intent, 0) then
         local diatitle=getLocalLangObj("提示","Prompt")
         local diamessage=getLocalLangObj("你的设备无法直接打开「管理全部文件权限」的设置 请手动打开设置授权权限","Your device cannot directly open the <Manage All File Permissions> setting Please manually open Set Authorization Permissions")
         AlertDialog.Builder(this)
@@ -2558,6 +2565,50 @@ function get_write_permissions(checksdk)
       .setMessage(diamessage)
       .setPositiveButton(getLocalLangObj("确定","OK"),{onClick=function()
           this.startActivityForResult(request_storage_intent, 1);
+      end})
+      .setNegativeButton(getLocalLangObj("取消","Cancel"),nil)
+      .setCancelable(false)
+      .show()
+      return false
+     else
+      return true
+    end
+  end
+end
+
+function get_installApp_permissions()
+  import "android.Manifest"
+  import "android.net.Uri"
+  import "android.provider.Settings"
+  import "android.content.Intent"
+  if Build.VERSION.SDK_INT >= 26 then
+    local pm =this.getPackageManager()
+    if pm.canRequestPackageInstalls()~=true then
+
+      pcall(function()
+        local uri = Uri.parse("package:" .. activity.getPackageName())
+        request_installApp_intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, uri)
+      end)
+    
+      if not(request_installApp_intent) or not pm.resolveActivity(request_installApp_intent, 0) then
+        local diatitle=getLocalLangObj("提示","Prompt")
+        local diamessage=getLocalLangObj("你的设备无法直接打开「安装未知应用程序」的设置 请手动打开设置授权权限","Your device cannot directly open the <Install unknown applications> setting Please manually open Set Authorization Permissions")
+        AlertDialog.Builder(this)
+        .setTitle(diatitle)
+        .setMessage(diamessage)
+        .setPositiveButton(getLocalLangObj("我知道了","OK"),nil)
+        .setCancelable(false)
+        .show()
+        return false
+      end
+
+      local diatitle=getLocalLangObj("提示","Prompt")
+      local diamessage=getLocalLangObj("请点击确认跳转授权「安装未知应用程序」权限以使用本功能","Please click OK to authorize the <Install unknown applications> permission to use this feature")
+      AlertDialog.Builder(this)
+      .setTitle(diatitle)
+      .setMessage(diamessage)
+      .setPositiveButton(getLocalLangObj("确定","OK"),{onClick=function()
+          this.startActivityForResult(request_installApp_intent, 1);
       end})
       .setNegativeButton(getLocalLangObj("取消","Cancel"),nil)
       .setCancelable(false)
