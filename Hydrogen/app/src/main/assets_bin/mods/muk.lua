@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.26
+versionCode=16.27
 layout_dir="layout/item_layout/"
 
 
@@ -1254,8 +1254,9 @@ function 下载文件对话框(title,url,path,ex)
   import "com.google.android.material.bottomsheet.*"
 
   local path=内置存储("Download/"..path)
-  if 文件夹是否存在(path) then
-    创建文件夹(path)
+  local rootpath=内置存储("Download")
+  if not 文件夹是否存在(rootpath) then
+    创建文件夹(rootpath)
   end
   appDownload(url,path)
   local gd2 = GradientDrawable()

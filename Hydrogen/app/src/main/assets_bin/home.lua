@@ -1569,24 +1569,26 @@ if not(this.getSharedData("hometip0.01")) then
 end
 
 if Build.VERSION.SDK_INT >29 then
-  if activity.getSharedData("安卓11迁移文件夹")~="true" then
+  if activity.getSharedData("安卓11迁移文件夹0.01")~="true" then
     local 默认文件夹=Environment.getExternalStorageDirectory().toString().."/Hydrogen"
     local 私有目录=activity.getExternalFilesDir(nil).toString()
     if 文件夹是否存在(默认文件夹) then
-      if 文件夹是否存在(私有目录) then
+      if not 文件夹是否存在(私有目录) then
         创建文件夹(私有目录)
       end
-      if 文件夹是否存在(私有目录.."/Hydrogen") then
+      if not 文件夹是否存在(私有目录.."/Hydrogen") then
         创建文件夹(私有目录.."/Hydrogen")
       end
       File(默认文件夹).renameTo(File(私有目录.."/Hydrogen"))
     end
-    local tishi=AlertDialog.Builder(this)
-    .setTitle("提示")
-    .setMessage("检测到你的软件版本大于安卓10 由于安卓的限制 导致无法保存文件在带有特殊字符串的文件夹 但应用私有目录无限制 所以 软件已自动将文件夹迁移到软件的在android/data的目录内 但迁移后 卸载软件或清除软件数据也会删除对应保存的数据 为了应对 在本地列表的菜单的功能中支持导入/导出android/data的文件")
-    .setCancelable(false)
-    .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("安卓11迁移文件夹","true") end})
-    .show()
-    tishi.findViewById(android.R.id.message).TextIsSelectable=true
+    if activity.getSharedData("安卓11迁移文件夹")~="true" then
+      local tishi=AlertDialog.Builder(this)
+      .setTitle("提示")
+      .setMessage("检测到你的软件版本大于安卓10 由于安卓的限制 导致无法保存文件在带有特殊字符串的文件夹 但应用私有目录无限制 所以 软件已自动将文件夹迁移到软件的在android/data的目录内 但迁移后 卸载软件或清除软件数据也会删除对应保存的数据 为了应对 在本地列表的菜单的功能中支持导入/导出android/data的文件")
+      .setCancelable(false)
+      .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("安卓11迁移文件夹0.01","true") end})
+      .show()
+      tishi.findViewById(android.R.id.message).TextIsSelectable=true
+    end
   end
 end
