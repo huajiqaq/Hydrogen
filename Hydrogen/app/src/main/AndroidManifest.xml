@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" package="com.zhihu.hydrogen">
+        xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- 查看 WLAN 状态 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -13,13 +12,13 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- 修改或删除 SD 卡中的内容 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
-    <!-- 读取存储卡中的内容 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
                      tools:ignore="ScopedStorage"/>
 
-    <!-- 所有文件访问权限 -->
+    <!-- 读取存储卡中的内容 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!-- 安卓10.0以上 读取存储卡中的内容 -->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
                      tools:ignore="ScopedStorage"/>
 
@@ -163,7 +162,6 @@
             android:exported="true"
             android:name="com.jesse205.superlua.Welcome"
             android:theme="@style/Theme.Jesse205.Welcome"/>
-
 
         <provider
                 android:name="androidx.core.content.FileProvider"

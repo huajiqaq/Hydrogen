@@ -77,14 +77,6 @@ if this.getSharedData("全屏模式") then
   this.setSharedData("全屏模式","false")
 end
 
-MDC_R=luajava.bindClass"com.jesse205.R"
-
-array = activity.getTheme().obtainStyledAttributes(activity.getThemeResId(),{
-  MDC_R.attr.colorSurface
-})
-colorSurfaceVariant=array.getColor(0,0)
---ctl.BackgroundColor=tonumber(colorSurfaceVariant)
---toolbar.BackgroundColor=tonumber(colorSurfaceVariant)
 
 pagadp=SWKLuaPagerAdapter()
 
@@ -141,9 +133,10 @@ end
 
 
 page_home.setAdapter(pagadp)
-optmenu = {}
 
+optmenu = {}
 loadmenu(bnv.getMenu(), m, optmenu, 3)
+
 
 _title.setText("主页")
 

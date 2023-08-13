@@ -1,26 +1,25 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion "33.0.0"
+    compileSdk  33
 
     defaultConfig {
         //applicationId "com.androlua"
         minSdkVersion 14
-        targetSdkVersion 28
-        versionCode 1199
-        versionName "5.0.22(1.1)(armeabi-v7a,arm64-v8a)"
+        targetSdkVersion 33
     }
     buildTypes {
         release {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //noinspection ChromeOsAbiSupport
             ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
         }
         debug {
             minifyEnabled false
             shrinkResources false
+            //noinspection ChromeOsAbiSupport
             ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
         }
     }
@@ -33,6 +32,7 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
+    namespace 'com.androlua'
 }
 
 dependencies {

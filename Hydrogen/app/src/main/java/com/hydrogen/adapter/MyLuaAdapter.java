@@ -2,9 +2,7 @@ package com.hydrogen.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
@@ -12,58 +10,42 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.widget.AbsListView;
-import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.ImageView;
-import android.widget.TextView;
-import com.androlua.LoadingDrawable;
-import com.androlua.LuaBitmap;
+import android.widget.*;
 import com.androlua.LuaContext;
-import com.luajava.LuaException;
-import com.luajava.LuaFunction;
-import com.luajava.LuaJavaAPI;
-import com.luajava.LuaObject;
-import com.luajava.LuaState;
-import com.luajava.LuaTable;
 import com.bumptech.glide.Glide;
-import java.io.IOException;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.luajava.*;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 public class MyLuaAdapter extends BaseAdapter implements Filterable {
 
     private final LuaTable<Integer, LuaTable<String, Object>> mBaseData;
-    private BitmapDrawable mDraw;
-    private Resources mRes;
-    private LuaState L;
-    private LuaContext mContext;
+    private final LuaState L;
+    private final LuaContext mContext;
 
 
-    private final Object mLock = new Object();
-
-    private LuaTable mLayout;
+    private final LuaTable mLayout;
     private LuaTable<Integer, LuaTable<String, Object>> mData;
     private LuaTable<String, Object> mTheme;
 
     private CharSequence mPrefix;
 
-    private LuaFunction<View> loadlayout;
+    private final LuaFunction<View> loadlayout;
 
-    private LuaFunction insert;
+    private final LuaFunction insert;
 
-    private LuaFunction remove;
+    private final LuaFunction remove;
 
     private LuaFunction<Animation> mAnimationUtil;
 
-    private HashMap<View, Animation> mAnimCache = new HashMap<View, Animation>();
+    private final HashMap<View, Animation> mAnimCache = new HashMap<>();
 
-    private HashMap<View, Boolean> mStyleCache = new HashMap<View, Boolean>();
+    private final HashMap<View, Boolean> mStyleCache = new HashMap<>();
 
     private boolean mNotifyOnChange = true;
 
@@ -71,48 +53,42 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
 
     @SuppressLint("HandlerLeak")
 
-	private Handler mHandler = new Handler() {
+	private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == 0) {
                 notifyDataSetChanged();
             } else {
                 try {
-                    LuaTable<Integer, LuaTable<String, Object>> newValues = new LuaTable<Integer, LuaTable<String, Object>>(mData.getLuaState());
+                    LuaTable<Integer, LuaTable<String, Object>> newValues = new LuaTable<>(mData.getLuaState());
                     mLuaFilter.call(mBaseData, newValues, mPrefix);
                     mData = newValues;
                     notifyDataSetChanged();
-                } catch (Exception e) {
-					if (e instanceof LuaException) {
-						e.printStackTrace();
-						mContext.sendError("performFiltering", (LuaException) e);
-					} 
-				}
+                } catch (Exception ignored) {
+                }
             }
         }
 
     };
 
 
-    private HashMap<String, Boolean> loaded = new HashMap<String, Boolean>();
     private ArrayFilter mFilter;
     private LuaFunction mLuaFilter;
 
-    public MyLuaAdapter(LuaContext context, LuaTable layout) throws LuaException {
+    public MyLuaAdapter(LuaContext context, LuaTable layout) {
         this(context, null, layout);
     }
 
-    public MyLuaAdapter(LuaContext context, LuaTable<Integer, LuaTable<String, Object>> data, LuaTable layout) throws LuaException {
+    public MyLuaAdapter(LuaContext context, LuaTable<Integer, LuaTable<String, Object>> data, LuaTable layout) {
 
 
         mContext = context;
         mLayout = layout;
-        mRes = mContext.getContext().getResources();
 
 
         L = context.getLuaState();
         if (data == null)
-            data = new LuaTable<Integer, LuaTable<String, Object>>(L);
+            data = new LuaTable<>(L);
         mData = data;
         mBaseData = mData;
         loadlayout = (LuaFunction<View>) L.getLuaObject("loadlayout").getFunction();
@@ -160,19 +136,19 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
         if (mNotifyOnChange) notifyDataSetChanged();
     }
 
-    public void addAll(LuaTable<Integer, LuaTable<String, Object>> items) throws Exception {
+    public void addAll(LuaTable<Integer, LuaTable<String, Object>> items) {
         int len = items.length();
         for (int i = 1; i <= len; i++)
             insert.call(mBaseData, items.get(i));
         if (mNotifyOnChange) notifyDataSetChanged();
     }
 
-    public void insert(int position, LuaTable<String, Object> item) throws Exception {
+    public void insert(int position, LuaTable<String, Object> item) {
         insert.call(mBaseData, position + 1, item);
         if (mNotifyOnChange) notifyDataSetChanged();
     }
 
-    public void remove(int position) throws Exception {
+    public void remove(int position) {
         remove.call(mBaseData, position + 1);
         if (mNotifyOnChange) notifyDataSetChanged();
     }
@@ -191,15 +167,12 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
     public void notifyDataSetChanged() {
         // TODO: Implement this method
         super.notifyDataSetChanged();
-        if (updateing == false) {
+        if (!updateing) {
             updateing = true;
-            new Handler().postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						// TODO: Implement this method
-						updateing = false;
-					}
-				}, 500);
+            new Handler().postDelayed(() -> {
+                // TODO: Implement this method
+                updateing = false;
+            }, 500);
         }
     }
 
@@ -226,10 +199,7 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
                 L.pop(1);
                 view = loadlayout.call(mLayout, holder, AbsListView.class);
                 view.setTag(holder);
-            } catch (Exception e) {
-				if (e instanceof LuaException) {
-					return new View(mContext.getContext());
-				} 
+            } catch (Exception ignored) {
             }
         } else {
             view = convertView;
@@ -252,8 +222,11 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
             try {
                 String key = entry.getKey();
                 Object value = entry.getValue();
-                LuaObject obj = holder.getField(key);
-                if (obj.isJavaObject()) {
+                LuaObject obj = null;
+                if (holder != null) {
+                    obj = holder.getField(key);
+                }
+                if (obj != null && obj.isJavaObject()) {
                     if (mTheme != null && bool) {
                         setHelper((View) obj.getObject(), mTheme.get(key));
                     }
@@ -291,7 +264,7 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
         for (Map.Entry<String, Object> entry2 : sets) {
             String key2 = entry2.getKey();
             Object value2 = entry2.getValue();
-            if (key2.toLowerCase().equals("src"))
+            if (key2.equalsIgnoreCase("src"))
                 setHelper(view, value2);
             else
                 javaSetter(view, key2, value2);
@@ -327,15 +300,17 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
         }
     }
 
-    private int javaSetter(Object obj, String methodName, Object value) throws LuaException {
+    private void javaSetter(Object obj, String methodName, Object value) throws LuaException {
 
-        if (methodName.length() > 2 && methodName.substring(0, 2).equals("on") && value instanceof LuaFunction)
-            return javaSetListener(obj, methodName, value);
+        if (methodName.length() > 2 && methodName.startsWith("on") && value instanceof LuaFunction) {
+            javaSetListener(obj, methodName, value);
+            return;
+        }
 
-        return javaSetMethod(obj, methodName, value);
+        javaSetMethod(obj, methodName, value);
     }
 
-    private int javaSetListener(Object obj, String methodName, Object value) throws LuaException {
+    private void javaSetListener(Object obj, String methodName, Object value) throws LuaException {
         String name = "setOn" + methodName.substring(2) + "Listener";
         ArrayList<Method> methods = LuaJavaAPI.getMethod(obj.getClass(), name, false);
         for (Method m : methods) {
@@ -348,16 +323,15 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
                 try {
                     Object listener = L.getLuaObject(-1).createProxy(tp[0]);
                     m.invoke(obj, listener);
-                    return 1;
+                    return;
                 } catch (Exception e) {
                     throw new LuaException(e);
                 }
             }
         }
-        return 0;
     }
 
-    private int javaSetMethod(Object obj, String methodName, Object value) throws LuaException {
+    private void javaSetMethod(Object obj, String methodName, Object value) throws LuaException {
         if (Character.isLowerCase(methodName.charAt(0))) {
             methodName = Character.toUpperCase(methodName.charAt(0)) + methodName.substring(1);
         }
@@ -380,11 +354,11 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
                     } else if (value instanceof Long || value instanceof Integer) {
                         m.invoke(obj, LuaState.convertLuaNumber(((Number) value).longValue(), tp[0]));
                     } else if (value instanceof Boolean) {
-                        m.invoke(obj, (Boolean) value);
+                        m.invoke(obj, value);
                     } else {
                         continue;
                     }
-                    return 1;
+                    return;
                 } catch (Exception e) {
                     buf.append(e.getMessage());
                     buf.append("\n");
@@ -398,15 +372,14 @@ public class MyLuaAdapter extends BaseAdapter implements Filterable {
 
             try {
                 m.invoke(obj, value);
-                return 1;
+                return;
             } catch (Exception e) {
                 buf.append(e.getMessage());
                 buf.append("\n");
-                continue;
             }
         }
         if (buf.length() > 0)
-            throw new LuaException("Invalid setter " + methodName + ". Invalid Parameters.\n" + buf.toString() + type.toString());
+            throw new LuaException("Invalid setter " + methodName + ". Invalid Parameters.\n" + buf + type);
         else
             throw new LuaException("Invalid setter " + methodName + " is not a method.\n");
 

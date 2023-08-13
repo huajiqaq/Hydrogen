@@ -312,7 +312,7 @@ task(1,function()
             return 提示("该功能只提供安卓10以上版本使用")
           end
 
-          local result=get_write_permissions()
+          local result=get_write_permissions(true)
           if result~=true then
             return false
           end
@@ -333,14 +333,14 @@ task(1,function()
             return 提示("该功能只提供安卓10以上版本使用")
           end
 
-          local result=get_write_permissions()
+          local result=get_write_permissions(true)
           if result~=true then
             return false
           end
 
           local sdcarddir=Environment.getExternalStorageDirectory().toString()
           local filesdir=activity.getExternalFilesDir(nil).toString()
-          ZipUtil.zip(filesdir.."/Hydrogen",sdcarddir.."/Hydrogen.zip")
+          ZipUtil.zip(filesdir.."/Hydrogen",sdcarddir)
           提示("导出成功,导出文件在"..sdcarddir.."/Hydrogen.zip")
       end},
       {src=图标("info"),text="问题",onClick=function()

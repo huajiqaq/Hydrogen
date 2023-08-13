@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.23
+versionCode=16.24
 layout_dir="layout/item_layout/"
 
 
@@ -2222,7 +2222,7 @@ function matchtext(str,regex)
 end --返回table
 
 function webview下载文件(链接, UA, 相关信息, 类型, 大小)
-  local result=get_write_permissions()
+  local result=get_write_permissions(true)
   if result~=true then
     return false
   end
@@ -2502,23 +2502,53 @@ end
 
 write_permissions={"android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_EXTERNAL_STORAGE"};
 
-function get_write_permissions()
-  if Build.VERSION.SDK_INT >29 then
-    --因为安卓10以上不使用/sdcard/了 使用android/data了
-    return true
+function get_write_permissions(checksdk)
+
+  if checksdk~=true then
+    if Build.VERSION.SDK_INT >29 then
+      --因为安卓10以上不使用/sdcard/了 使用android/data了
+      return true
+    end
   end
-  if PermissionUtil.check(write_permissions)~=true then
-    PermissionUtil.askForRequestPermissions({
-      {
-        name=R.string.jesse205_permission_storage,
-        tool=R.string.app_name,
-        todo=getLocalLangObj("获取文件列表，读取文件和保存文件","Get file list, read file and save file"),
-        permissions=write_permissions;
-      },
-    })
-    return false
+
+  if Build.VERSION.SDK_INT <30 then
+
+    if PermissionUtil.check(write_permissions)~=true then
+      PermissionUtil.askForRequestPermissions({
+        {
+          name=R.string.jesse205_permission_storage,
+          tool=R.string.app_name,
+          todo=getLocalLangObj("获取文件列表，读取文件和保存文件","Get file list, read file and save file"),
+          permissions=write_permissions;
+        },
+      })
+      return false
+     else
+      return true
+    end
    else
-    return true
+    if (Environment.isExternalStorageManager()~=true)
+      local diatitle=getLocalLangObj("提示","Prompt")
+      local diamessage=getLocalLangObj("请点击确认跳转授权「管理全部文件权限」权限以使用本功能","Please click OK to authorize the <Manage All File Permissions> permission to use this feature")
+      AlertDialog.Builder(this)
+      .setTitle(diatitle)
+      .setMessage(diamessage)
+      .setPositiveButton("确定",{onClick=function()
+          import "android.net.Uri"
+          import "android.content.Intent"
+          import "android.provider.Settings"
+          intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+          intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+          intent.setData(Uri.parse("package:" .. this.getPackageName()));
+          this.startActivityForResult(intent, 1);
+      end})
+      .setNegativeButton("取消",nil)
+      .setCancelable(false)
+      .show()
+      return false
+     else
+      return true
+    end
   end
 end
 

@@ -112,7 +112,7 @@ picpage.setCurrentItem(now)
 
 
 ripple.onClick=function()
-  local result=get_write_permissions()
+  local result=get_write_permissions(true)
   if result~=true then
     return false
   end

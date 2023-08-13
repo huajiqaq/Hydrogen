@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion "33.0.0"
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.zhihu.hydrogen"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 33
         versionCode 16
         versionName "origin"
     }
@@ -16,11 +15,13 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //noinspection ChromeOsAbiSupport
             ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
         }
         debug {
             minifyEnabled false
             shrinkResources false
+            //noinspection ChromeOsAbiSupport
             ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
         }
     }
@@ -33,6 +34,7 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
+    namespace 'com.zhihu.hydrogen'
 }
 
 

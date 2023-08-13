@@ -1,28 +1,28 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion "32.0.0"
+    compileSdk 33
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 121199
-        versionName "12.1.1 (Pro)"
+        targetSdkVersion 33
     }
     buildTypes {
         release {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //noinspection ChromeOsAbiSupport
             ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
         }
         debug {
             minifyEnabled false
             shrinkResources false
+            //noinspection ChromeOsAbiSupport
             ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
         }
     }
@@ -30,6 +30,7 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
+    namespace 'com.jesse205'
 }
 
 dependencies {
