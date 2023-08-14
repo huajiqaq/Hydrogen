@@ -28,35 +28,19 @@ activity.setContentView(loadlayout("layout/home"))
 
 初始化历史记录数据(true)
 
-local function firsttip ()
-  activity.setSharedData("禁用缓存","true")
-  双按钮对话框("提示","软件默认开启「禁用缓存」和 想法功能 你可以在设置中手动设置此开关","我知道了","跳转设置",function()
-    关闭对话框(an) end,function()
-    关闭对话框(an) 跳转页面("settings")
-  end)
-end
-
-local ccc=activity.getSharedData("第一次提示")
-if ccc ==nil then
+if activity.getSharedData("第一次提示") ==nil then
   双按钮对话框("注意","该软件仅供交流学习，严禁用于商业用途，请于下载后的24小时内卸载","登录","知道了",function()
     activity.setSharedData("第一次提示","x")
     跳转页面("login")
     关闭对话框(an)
+    activity.finish()
     end,function()
     activity.setSharedData("第一次提示","x")
     关闭对话框(an)
-    firsttip ()
   end)
 end
 
-local lll=activity.getSharedData("禁用缓存")
-if lll==nil and ccc~=nil then
-  firsttip ()
-end
-
-local qqq=activity.getSharedData("开启想法")
-
-if ccc and lll and activity.getSharedData("开源提示")==nil then
+if activity.getSharedData("第一次提示") and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
   双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function()
     关闭对话框(an) end,function()
@@ -73,8 +57,12 @@ if this.getSharedData("标题简略化") == nil then
   this.setSharedData("标题简略化","false")
 end
 
-if this.getSharedData("全屏模式") then
+if this.getSharedData("全屏模式") == nil then
   this.setSharedData("全屏模式","false")
+end
+
+if this.getSharedData("开启想法") == nil then
+  this.setSharedData("开启想法","false")
 end
 
 
@@ -110,13 +98,10 @@ m = {
 
 }
 
-if qqq==nil or qqq~="false" then
-  activity.setSharedData("开启想法","true")
-  qqq=activity.getSharedData("开启想法")
+if this.getSharedData("开启想法")=="true" then
   home_list={["推荐"]=0,["想法"]=1,["热榜"]=2,["关注"]=3}
- elseif qqq=="false" then
+ elseif this.getSharedData("开启想法")=="false" then
   home_list={["推荐"]=0,["热榜"]=1,["关注"]=2}
-
   if this.getSharedData("starthome")=="想法" then
     this.setSharedData("starthome","推荐")
     提示("由于想法已关闭 主页为想法 为避免异常已调整主页为推荐")
@@ -345,6 +330,7 @@ zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code
     HometabLayout.setVisibility(8)
   end
 end)
+
 主页刷新()
 
 function bnv.onNavigationItemSelected(item)
@@ -1551,7 +1537,6 @@ function onCreate()
 end
 
 if not(this.getSharedData("hometip0.01")) then
-
   task(50,function()
     if _drawer.isDrawerOpen(Gravity.LEFT) then
       --如果左侧侧滑显示，关闭左侧侧滑并阻止返回键

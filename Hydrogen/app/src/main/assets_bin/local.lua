@@ -197,6 +197,10 @@ file:close()
 --在这里加载url会没载入webview设置 放到最后加载
 --webview.loadUrl(myuri)
 
+if this.getSharedData("关闭硬件加速")=="true" then
+  webview.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
+end
+
 username.text=xxx:match[[author="(.-)"]]
 userheadline.text=xxx:match[[headline="(.-)"]]
 thanks_count.text=xxx:match[[thanks_count="(.-)"]]
@@ -382,11 +386,11 @@ task(1,function()
   })
 end)
 
-if activity.getSharedData("异常提示0.01")==nil
+if activity.getSharedData("异常提示0.02")==nil
   AlertDialog.Builder(this)
   .setTitle("小提示")
   .setCancelable(false)
-  .setMessage("在最近的测试中 发现部分回答显示不完整 现确认为是开启硬件加速后出现的问题 如若出现了异常情况 请点击右上角「关闭硬件加速」 关闭动画会卡顿 如果流量没问题请不要点击")
-  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("异常提示0.01","true") end})
+  .setMessage("如果部分回答显示不完整 可以点击右上角「关闭硬件加速」 关闭动画会卡顿 如果没有问题请不要点击 出现其他异常情况都可以尝试关闭 另外 可以在设置中一键关闭之后所有的硬件加速")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("异常提示0.02","true") end})
   .show()
 end

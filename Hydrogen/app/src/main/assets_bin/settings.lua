@@ -28,6 +28,7 @@ data = {
   {__type=4,subtitle="回答预加载(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
   {__type=4,subtitle="标题简略化",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
   {__type=4,subtitle="全屏模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
+  {__type=4,subtitle="关闭硬件加速",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("关闭硬件加速"))}},
   {__type=5,subtitle="字体大小",image=图标(""),status={
       minValue=10,
       value=tonumber(activity.getSharedData("font_size")),
@@ -80,6 +81,14 @@ tab={
   夜间模式追随系统=function(self)
     self.夜间模式()
   end,
+  关闭硬件加速=function(self)
+    AlertDialog.Builder(this)
+    .setTitle("小提示")
+    .setMessage("开启后 可能会造成滑动卡顿 请酌情开启")
+    .setCancelable(false)
+    .setPositiveButton("我知道了",nil)
+    .show()
+  end,
   字体大小=function()
     activity.setResult(1200,nil)
   end,
@@ -87,10 +96,10 @@ tab={
     提示("为了更好的浏览体验 推荐重启App")
   end,
   热榜关闭图片=function()
-    提示("设置成功 重启软件生效")
+    提示("设置成功 刷新热榜生效")
   end,
   热榜关闭热度=function()
-    提示("设置成功 重启软件生效")
+    提示("设置成功 重刷新热榜生效")
   end,
   开启想法=function()
     提示("下次启动软件生效")

@@ -58,6 +58,9 @@ local base_people=require "model.people":new(people_id)
   end
 
   function sixin.onClick()
+    if not(getLogin()) then
+      return 提示("你需要登录使用本功能")
+    end
     activity.newActivity("huida",{"https://www.zhihu.com/messages/"..people_id,true,true})
   end
 

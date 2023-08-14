@@ -26,17 +26,17 @@ liulan.removeView(liulan.getChildAt(0))
 
 if ischeck then
   if liulanurl=="https://www.zhihu.com" or docode=="提问" then
-    加载js内容=true
+    是否加载js=true
    elseif liulanurl:find("zhihu") and liulanurl:find("answer") then
-    加载js内容=true
+    是否加载js=true
    elseif liulanurl:find("https://www.zhihu.com/messages") then
-    加载js内容=true
+    是否加载js=true
    elseif liulanurl:find("zhihu") and liulanurl:find("question") and liulanurl:find("write") then
-    加载js内容=true
+    是否加载js=true
   end
 end
 
-if 加载js内容 then
+if 是否加载js then
   liulan.setVisibility(8)
   progress.setVisibility(0)
 end
@@ -187,6 +187,8 @@ liulan.setWebViewClient{
       加载js内容=获取js("messages")
      elseif url:find("zhihu") and url:find("question") and url:find("write") or url:find("zhihu") and url:find("question") and url:find("edit") then
       加载js内容=获取js("answering")
+     else
+      加载js内容=nil
     end
 
 

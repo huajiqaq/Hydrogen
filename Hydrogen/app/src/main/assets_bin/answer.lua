@@ -101,8 +101,6 @@ function 数据添加(t,b)
   t.content.setHorizontalScrollBarEnabled(false);
   t.content.setVerticalScrollBarEnabled(false);
 
-  t.content.setVisibility(0)
-
   --[[
   if not(b) then return end
 
@@ -229,7 +227,12 @@ function 数据添加(t,b)
     已记录=true
   end
 
+  if this.getSharedData("关闭硬件加速")=="true" then
+    t.msrcroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
+  end
+
   t.content.removeView(t.content.getChildAt(0))
+  t.content.setVisibility(0)
   --t.content.setbackground(0x01000000)
 
   t.content.setWebViewClient{
@@ -242,16 +245,8 @@ function 数据添加(t,b)
     end,
     onPageStarted=function(view,url,favicon)
       等待doc(view)
-      if 全局主题值=="Night" then
-        黑暗页(view)
-        --   黑暗模式主题(view)
-      end
     end,
     onPageFinished=function(view,url,favicon)
-      if 全局主题值=="Night" then
-        黑暗页(view)
-        --   黑暗模式主题(view)
-      end
       加载js(view,[[
 	waitForKeyElements(' [class="AnswerReward"]', 	function() {
 		document.getElementsByClassName("AnswerReward")[0].style.display = "none"
@@ -302,6 +297,10 @@ function 数据添加(t,b)
 
   t.content.setWebChromeClient(luajava.override(WebChromeClient,{
     onProgressChanged=function(super,view,url,favicon)
+      if 全局主题值=="Night" then
+        黑暗页(view)
+        --   黑暗模式主题(view)
+      end
     end,
     onShowCustomView=function(z,a,b)
       v=a
@@ -805,12 +804,12 @@ if activity.getSharedData("回答提示0.03")==nil
   .show()
 end
 
-if activity.getSharedData("异常提示0.01")==nil
+if activity.getSharedData("异常提示0.02")==nil
   AlertDialog.Builder(this)
   .setTitle("小提示")
   .setCancelable(false)
-  .setMessage("在最近的测试中 发现部分回答显示不完整 现确认为是开启硬件加速后出现的问题 如若出现了异常情况 请点击右上角「关闭硬件加速」 关闭动画会卡顿 如果流量没问题请不要点击")
-  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("异常提示0.01","true") end})
+  .setMessage("如果部分回答显示不完整 可以点击右上角「关闭硬件加速」 关闭动画会卡顿 如果没有问题请不要点击 出现其他异常情况都可以尝试关闭 另外 可以在设置中一键关闭之后所有的硬件加速")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("异常提示0.02","true") end})
   .show()
 end
 

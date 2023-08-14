@@ -76,7 +76,6 @@
       layout_gravity="center",
       {
         LuaWebView;
-        BackgroundColor="0x01000000",
         id="login_web",
         layout_height="-1",
         layout_width="-1",
