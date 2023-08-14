@@ -194,7 +194,8 @@ end
 
 file:close()
 
-webview.loadUrl(myuri)
+--在这里加载url会没载入webview设置 放到最后加载
+--webview.loadUrl(myuri)
 
 username.text=xxx:match[[author="(.-)"]]
 userheadline.text=xxx:match[[headline="(.-)"]]
@@ -291,15 +292,8 @@ webview.setWebViewClient{
     view.goBack()
   end,
   onPageStarted=function(view,url,favicon)
-    if 全局主题值=="Night" then
-      黑暗页(view)
-    end
   end,
   onPageFinished=function(view,url,favicon)
-    view.evaluateJavascript([[alert("hhh")]],nil)
-    if 全局主题值=="Night" then
-      黑暗页(view)
-    end
   end,
   onLoadResource=function(view,url)
     view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
@@ -347,6 +341,9 @@ webview.setWebChromeClient(luajava.override(WebChromeClient,{
 
   end
 }))
+
+webview.loadUrl(myuri)
+
 task(1,function()
   a=MUKPopu({
     tittle="回答",

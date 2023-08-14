@@ -39,8 +39,6 @@ if islocal then
 end
 
 
-local hsn=this.getResources().getDimensionPixelSize( luajava.bindClass("com.android.internal.R$dimen")().status_bar_height )--获取状态栏高
-
 波纹({fh,_more},"圆主题")
 
 function setProgress(p)

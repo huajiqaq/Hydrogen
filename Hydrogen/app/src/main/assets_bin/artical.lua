@@ -135,7 +135,6 @@ notelist.setOnItemClickListener(AdapterView.OnItemClickListener{
     artical_page.setCurrentItem(0,false)
     动画出现(back_root)
     _star.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
-    print(tostring(转0x(primaryc)))
 end})
 
 
