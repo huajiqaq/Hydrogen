@@ -1,9 +1,7 @@
 # Hydrogen
 
 [![license](https://img.shields.io/github/license/huajiqaq/Hydrogen)](LICENSE)
-
 [![Gitee 仓库](https://img.shields.io/badge/Gitee-仓库-C71D23?logo=gitee)](https://gitee.com/huajicloud/Hydrogen)
-
 [![Github 仓库](https://img.shields.io/badge/Github-仓库-0969DA?logo=github)](https://github.com/huajiqaq/Hydrogen)
 
 ## 介绍
