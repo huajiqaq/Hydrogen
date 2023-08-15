@@ -6,7 +6,7 @@
 
 ## 介绍
 
-本项目是基于androlua+开发 推荐使用[Aide Lua](https://gitee.com/AideLua/AideLua)打包 当然 你也可以使用gradle打包 再将文件添加进安装包内
+本项目基于androlua+开发 推荐使用[Aide Lua](https://gitee.com/AideLua/AideLua)打包 当然 你也可以使用gradle打包 再将文件添加进安装包内
 
 本项目是由原Hydrogen项目的继续维护版 由于时间因素 本人可能不会及时维护 现将工程开源 供一些动手能力较强的人继续为Hydrogen添加/维护 功能
 
