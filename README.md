@@ -16,4 +16,4 @@
 
 **hydrogen-master.zip** 为原版Hydrogen最后一个版本final 7 的源码 **hydrogen目录内**为Hydrogen的后续维护版本的源码
 
-原版只需要androlua+就可以运行 预览或打包原版可能会报错 如若想解决 请下载本项目中的要插入的dex添加进androlua+或打包的apk
+原版只需要androlua+就可以运行 原版直接在androlua+运行或打包运行后在打开回答页面可能会报错 如若想解决 请下载本项目中的要插入的dex添加进androlua+或打包的apk
