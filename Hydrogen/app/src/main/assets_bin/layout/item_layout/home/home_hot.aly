@@ -38,6 +38,7 @@
         {
           LinearLayout;
           padding="16dp";
+          layout_weight=1;
           {
             TextView;
             textSize="16sp";
@@ -53,7 +54,6 @@
           };
           {
             LinearLayout;
-            layout_width="50%w",
             layout_marginLeft="10dp";
             orientation="vertical";
             {
@@ -158,7 +158,6 @@
             };
             {
               LinearLayout;
-              layout_width="60%w",
               layout_marginLeft="10dp";
               orientation="vertical";
               {

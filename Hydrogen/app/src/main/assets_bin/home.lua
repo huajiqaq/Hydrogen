@@ -130,7 +130,7 @@ itemc2=获取适配器项目布局("home/home_layout")
 requrl={}
 
 function 切换页面(z)--切换主页Page函数
-  if qqq~="true" and z>0 then
+  if this.getSharedData("开启想法")~="true" and z>0 then
     page_home.setCurrentItem(z-1)
    else
     page_home.setCurrentItem(z)
@@ -350,7 +350,7 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
 
   onPageSelected=function(position)
     local pos=position
-    if qqq ~="true" then
+    if this.getSharedData("开启想法") ~="true" then
       pos=pos+1
     end
     if position == 0 then
