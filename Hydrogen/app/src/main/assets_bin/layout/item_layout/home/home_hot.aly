@@ -4,94 +4,94 @@
   layout_height="-2",
   id="content",
   clickable="true";
-{
-  LinearLayout,
-  layout_width="-1",
-  -- layout_height='56dp';
-  --id="fpll",
-  background=backgroundc,
   {
-    MaterialCardView;
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    layout_gravity='center';
-    -- layout_marginLeft="0%w";
-    Elevation='0';
-    layout_width='fill';
-    layout_height='-2';
-    radius='8dp';
-    id="_root",
-    CardBackgroundColor=cardedge;
-    StrokeColor=cardedge;
-    StrokeWidth=dp2px(1),
+    LinearLayout,
+    layout_width="-1",
+    -- layout_height='56dp';
+    --id="fpll",
+    background=backgroundc,
     {
-      LinearLayout;
-      layout_height="fill";
-      id="hot_ripple",
-      layout_width="fill";
+      MaterialCardView;
+      layout_margin="16dp";
+      layout_marginTop="8dp";
+      layout_marginBottom="8dp";
+      layout_gravity='center';
+      -- layout_marginLeft="0%w";
+      Elevation='0';
+      layout_width='fill';
+      layout_height='-2';
+      radius='8dp';
+      id="_root",
+      CardBackgroundColor=cardedge;
+      StrokeColor=cardedge;
+      StrokeWidth=dp2px(1),
       {
         LinearLayout;
-        orientation="horizontal",
-        id="hot_background";
+        layout_height="fill";
+        id="hot_ripple",
         layout_width="fill";
         {
           LinearLayout;
-          padding="16dp";
-          layout_weight=1;
-          {
-            TextView;
-            textSize="16sp";
-            Typeface=字体("product");
-            id="排行";
-            textColor=primaryc;
-          };
-          {
-            TextView;
-            textSize="0sp";
-            id="导向链接",
-            Typeface=字体("product");
-          };
+          orientation="horizontal",
+          id="hot_background";
+          layout_width="fill";
           {
             LinearLayout;
-            layout_marginLeft="10dp";
-            orientation="vertical";
+            padding="16dp";
+            layout_weight=1;
             {
               TextView;
-              textColor=textc;
-              textSize="14sp";
-              Typeface=字体("product-Bold");
-              id="标题",
+              textSize="16sp";
+              Typeface=字体("product");
+              id="排行";
+              textColor=primaryc;
             };
             {
               TextView;
-              textColor=stextc;
-              textSize="13sp";
-              id="热度",
+              textSize="0sp";
+              id="导向链接",
               Typeface=字体("product");
             };
+            {
+              LinearLayout;
+              layout_marginLeft="10dp";
+              orientation="vertical";
+              {
+                TextView;
+                textColor=textc;
+                textSize="14sp";
+                Typeface=字体("product-Bold");
+                id="标题",
+              };
+              {
+                TextView;
+                textColor=stextc;
+                textSize="13sp";
+                id="热度",
+                Typeface=字体("product");
+              };
+            };
           };
-        };
-        {
-          CardView;
-          Elevation='0';
-          radius='4dp';
-          --  id="_root",
-          layout_gravity="center_vertical",
-          CardBackgroundColor=cardbackroundc,
           {
-            ImageView;
-            layout_width='96dp';
-            layout_gravity="center|right",
-            layout_height="56dp",
-            id="热图片",
-            ScaleType=ScaleType.CENTER_CROP,
+            CardView;
+            Elevation='0';
+            radius='4dp';
+            --  id="_root",
+            layout_gravity="center_vertical",
+            CardBackgroundColor=cardbackroundc,
+            {
+              ImageView;
+              layout_width='96dp';
+              layout_gravity="center|right",
+              layout_height="56dp",
+              id="热图片",
+              ScaleType=ScaleType.CENTER_CROP,
+            };
           };
         };
       };
     };
   };
-};
 };
 --老版本
 --[[
@@ -158,6 +158,7 @@
             };
             {
               LinearLayout;
+              layout_width="60%w",
               layout_marginLeft="10dp";
               orientation="vertical";
               {
