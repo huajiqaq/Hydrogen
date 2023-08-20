@@ -7,13 +7,25 @@
   id="page_daily";
 
   {
-    GridView;
-    nestedScrollingEnabled=true,
-    layout_height="-1";
-    layout_width="-1";
-    NumColumns=1;
-    id="list1";
-
+    SwipeRefreshLayout;
+    id="dailysr";
+    layout_height="fill";
+    layout_width="fill";
+    {
+      NestedScrollView;
+      fillViewport="true";
+      id="list1_r";
+      layout_height="fill";
+      layout_width="fill";
+      {
+        GridView;
+        nestedScrollingEnabled=true,
+        layout_height="-1";
+        layout_width="-1";
+        NumColumns=1;
+        id="list1";
+      };
+    };
   };
 
 }

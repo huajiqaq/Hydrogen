@@ -212,9 +212,12 @@ function 主页刷新(isclear)
     zHttp.get(posturl,access_token_head,function(code,content)
       if code==200 then
         decoded_content = require "cjson".decode(content)
+
         for k,v in ipairs(decoded_content.data) do
           table.insert(list2.adapter.getData(),resolve_feed(v))
         end
+
+        table.insert(list2.adapter.getData(),resolve_feed(decoded_content.data[1]))
         task(1,function() list2.adapter.notifyDataSetChanged()end)
         requrl[-1] = {
           ["next"] = decoded_content.paging.next,
@@ -263,21 +266,27 @@ function 主页刷新(isclear)
       end
     })
 
-    list2_r.setOnScrollChangeListener{
-      onScrollChange=function(view,scrollX,scrollY,oldScrollX,oldScrollY)
-        if scrollY == (view.getChildAt(0).getMeasuredHeight() - view.getMeasuredHeight())
-          sr.setRefreshing(true)
-          主页刷新()
-          System.gc()
-          Handler().postDelayed(Runnable({
-            run=function()
-              sr.setRefreshing(false);
-            end,
-          }),1000)
+    可以加载主页=true
 
+    list2.setOnScrollListener{
+      onScrollStateChanged=function(view,scrollState)
+        if scrollState == 0 then
+          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载主页 then
+            主页刷新()
+            System.gc()
+            homesr.setRefreshing(true)
+            可以加载主页=false
+            Handler().postDelayed(Runnable({
+              run=function()
+                可以加载主页=true
+                homesr.setRefreshing(false);
+              end,
+            }),1000)
+          end
         end
       end
     }
+
   end
   if choosebutton==nil then
     随机推荐()
@@ -286,9 +295,9 @@ function 主页刷新(isclear)
   end
 end
 
-sr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-sr.setColorSchemeColors({转0x(primaryc)});
-sr.setOnRefreshListener({
+homesr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+homesr.setColorSchemeColors({转0x(primaryc)});
+homesr.setOnRefreshListener({
   onRefresh=function()
     requrl[-1]="https://api.zhihu.com/topstory/recommend?action=pull&start_type=warm&refresh_scene=0&device=phone"
     主页刷新(true,true)
@@ -330,6 +339,7 @@ zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code
     HometabLayout.setVisibility(8)
   end
 end)
+
 
 主页刷新()
 
@@ -400,12 +410,36 @@ function 日报刷新(isclear)
 
     })
 
+    dailysr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+    dailysr.setColorSchemeColors({转0x(primaryc)});
+    dailysr.setOnRefreshListener({
+      onRefresh=function()
+        日报刷新(true)
+        Handler().postDelayed(Runnable({
+          run=function()
+            dailysr.setRefreshing(false);
+          end,
+        }),1000)
+
+      end,
+    });
+
+    可以加载日报=true
+
     list1.setOnScrollListener{
       onScrollStateChanged=function(view,scrollState)
         if scrollState == 0 then
-          if list1.getCount() >1 and list1.getLastVisiblePosition() == list1.getCount() - 1 then
+          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载日报 then
             日报刷新()
+            dailysr.setRefreshing(true)
             System.gc()
+            可以加载日报=false
+            Handler().postDelayed(Runnable({
+              run=function()
+                可以加载日报=true
+                dailysr.setRefreshing(false);
+              end,
+            }),1000)
           end
         end
       end
@@ -975,18 +1009,22 @@ function 关注刷新(isclear)
       end,
     });
 
-    list9_r.setOnScrollChangeListener{
-      onScrollChange=function(view,scrollX,scrollY,oldScrollX,oldScrollY)
-        if scrollY == (view.getChildAt(0).getMeasuredHeight() - view.getMeasuredHeight())
-          gsr.setRefreshing(true)
-          关注刷新(false)
-          System.gc()
-          Handler().postDelayed(Runnable({
-            run=function()
-              isadd=true
-              gsr.setRefreshing(false)
-            end,
-          }),1000)
+    可以加载关注=true
+    list9.setOnScrollListener{
+      onScrollStateChanged=function(view,scrollState)
+        if scrollState == 0 then
+          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载关注 then
+            关注刷新()
+            System.gc()
+            gsr.setRefreshing(true)
+            可以加载关注=false
+            Handler().postDelayed(Runnable({
+              run=function()
+                可以加载关注=true
+                gsr.setRefreshing(false);
+              end,
+            }),1000)
+          end
         end
       end
     }
@@ -1382,8 +1420,40 @@ function getuserinfo()
         activity.newActivity("people",{uid})
       end
       sign_out.setVisibility(View.VISIBLE)
+
+      zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code,content)
+        if code==200 then
+          local decoded_content = require "cjson".decode(content)
+          --    提示(require "cjson".decode(content).selected_sections[1].section_name)
+          for i=1, #decoded_content.selected_sections do
+            --提示(tostring(i))
+            if HometabLayout.getTabCount()==0 then
+              local tab=HometabLayout.newTab()
+              tab.setText("全站")
+              tab.view.onClick=function() pcall(function()list2.adapter.clear()end) choosebutton=nil 随机推荐() end
+              HometabLayout.addTab(tab)
+              homehome="ok"
+            end
+            if HometabLayout.getTabCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
+              local tab=HometabLayout.newTab()
+              tab.setText(decoded_content.selected_sections[i].section_name)
+              tab.view.onClick=function()
+                pcall(function()list2.adapter.clear()end)
+                choosebutton=decoded_content.selected_sections[i].section_id
+                主页推荐刷新(decoded_content.selected_sections[i].section_id)
+              end
+              HometabLayout.addTab(tab)
+            end
+          end
+         else
+          --          HometabLayout.setVisibility(8)
+        end
+      end)
+
+
      else
       --状态码不为200的事件
+      HometabLayout.setVisibility(8)
     end
   end)
 
@@ -1437,9 +1507,11 @@ if not(this.getSharedData("内部浏览器查看回答")) then
   activity.setSharedData("内部浏览器查看回答","false")
 end
 
-local update_api=getApiurl()
+local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
 Http.get(update_api,head,function(code,content)
   if code==200 then
+    local content_json=require("cjson").decode(content)
+    local content=base64dec(content_json.content)
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
     isstart=content:match("start%=(.+),start")
     this.setSharedData("解析zse开关",isstart)

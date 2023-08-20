@@ -165,6 +165,7 @@
         {
           ViewPager;
           id="page_home";
+              nestedScrollingEnabled=true,
           layout_width="fill";
           layout_height="fill";
 

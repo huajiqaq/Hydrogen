@@ -1,4 +1,5 @@
 {
+  --主页
   {
     FrameLayout;
     layout_width="fill";
@@ -19,17 +20,19 @@
       };
       {
         SwipeRefreshLayout;
-        id="sr";
+        id="homesr";
         layout_height="fill";
         layout_width="fill";
         {
           NestedScrollView;
+          fillViewport="true";
           id="list2_r";
           layout_height="fill";
           layout_width="fill";
           {
-            NoScrollListView;
+            ListView;
             id="list2";
+            nestedScrollingEnabled=true,
             layout_height="fill";
             layout_width="fill";
             DividerHeight=0
@@ -38,6 +41,7 @@
       };
     };
   };
+  --想法
   {
     FrameLayout;
     layout_width="fill";
@@ -69,7 +73,7 @@
       },
     };
   };
-
+  --热榜
   {
     FrameLayout;
     layout_width="fill";
@@ -101,7 +105,7 @@
       };
     };
   };
-
+  --关注
   {
     FrameLayout;
     layout_width="fill";
@@ -122,12 +126,14 @@
           id="list9_r";
           layout_height="fill";
           layout_width="fill";
+          fillViewport="true";
           {
-            NoScrollListView;
+            ListView;
             DividerHeight="0",
             layout_width="fill";
             id="list9",
             layout_height="fill";
+            nestedScrollingEnabled=true,
           };
         };
       };
