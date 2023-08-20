@@ -14,16 +14,14 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.32
+versionCode=16.325
 layout_dir="layout/item_layout/"
 
 
 if this.getSharedData("调式模式")=="true" then
   this.setDebug(true)
-end
-
-if activity.getSharedData("font_size")==nil then
-  activity.setSharedData("font_size","20")
+ else
+  this.setDebug(false)
 end
 
 onResume=function()
@@ -300,7 +298,8 @@ function 主题(str)
        else
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
       end
-      activity.recreate()
+      --      activity.recreate()
+      return
     end
     --    primaryc="#448aff"
     primaryc=dec2hex(res.color.attr.colorPrimary)
@@ -330,7 +329,8 @@ function 主题(str)
    elseif 全局主题值=="Night" then
     if 获取主题夜间模式() == false and 获取系统夜间模式() == false then
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-      activity.recreate()
+      --      activity.recreate()
+      return
     end
     --    primaryc="#FF88B0F8"
     primaryc=dec2hex(res.color.attr.colorPrimary)
@@ -359,11 +359,6 @@ function 主题(str)
       --      activity.setTheme(android.R.style.Theme_Material_NoActionBar)
     end)
   end
-end
-
-
-if this.getSharedData("Setting_Auto_Night_Mode")==nil then
-  activity.setSharedData("Setting_Auto_Night_Mode","true")
 end
 
 

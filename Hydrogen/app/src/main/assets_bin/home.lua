@@ -65,6 +65,13 @@ if this.getSharedData("开启想法") == nil then
   this.setSharedData("开启想法","false")
 end
 
+if this.getSharedData("font_size")==nil then
+  this.setSharedData("font_size","20")
+end
+
+if this.getSharedData("Setting_Auto_Night_Mode")==nil then
+  activity.setSharedData("Setting_Auto_Night_Mode","true")
+end
 
 pagadp=SWKLuaPagerAdapter()
 
@@ -303,13 +310,12 @@ homesr.setOnRefreshListener({
     主页刷新(true,true)
     Handler().postDelayed(Runnable({
       run=function()
-        sr.setRefreshing(false);
+        homesr.setRefreshing(false);
       end,
     }),1000)
 
   end,
 });
-
 
 主页刷新()
 
