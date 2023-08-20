@@ -311,36 +311,6 @@ homesr.setOnRefreshListener({
 });
 
 
-zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code,content)
-  if code==200 then
-    local decoded_content = require "cjson".decode(content)
-    --    提示(require "cjson".decode(content).selected_sections[1].section_name)
-    for i=1, #decoded_content.selected_sections do
-      --提示(tostring(i))
-      if HometabLayout.getTabCount()==0 then
-        local tab=HometabLayout.newTab()
-        tab.setText("全站")
-        tab.view.onClick=function() pcall(function()list2.adapter.clear()end) choosebutton=nil 随机推荐() end
-        HometabLayout.addTab(tab)
-        homehome="ok"
-      end
-      if HometabLayout.getTabCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
-        local tab=HometabLayout.newTab()
-        tab.setText(decoded_content.selected_sections[i].section_name)
-        tab.view.onClick=function()
-          pcall(function()list2.adapter.clear()end)
-          choosebutton=decoded_content.selected_sections[i].section_id
-          主页推荐刷新(decoded_content.selected_sections[i].section_id)
-        end
-        HometabLayout.addTab(tab)
-      end
-    end
-   else
-    HometabLayout.setVisibility(8)
-  end
-end)
-
-
 主页刷新()
 
 function bnv.onNavigationItemSelected(item)
@@ -1446,7 +1416,7 @@ function getuserinfo()
             end
           end
          else
-          --          HometabLayout.setVisibility(8)
+          --        HometabLayout.setVisibility(8)
         end
       end)
 
