@@ -480,14 +480,15 @@ _drawer.setDrawerListener(DrawerLayout.DrawerListener{
     _drawer.getChildAt(0).translationX=_drawer.getChildAt(1).getChildAt(0).width*z
 end})
 
-import "com.google.android.material.shape.*"
+ch_item_checked_background = GradientDrawable()
+.setShape(GradientDrawable.RECTANGLE)
+.setColor(转0x(primaryc)-0xde000000)
+.setCornerRadii({0,0,dp2px(24),dp2px(24),dp2px(24),dp2px(24),0,0});
 
-shapeAppearanceModel1 = ShapeAppearanceModel.builder()
-.setTopLeftCorner(CornerFamily.ROUNDED, 0)
-.setTopRightCorner(CornerFamily.ROUNDED, dp2px(24))
-.setBottomRightCorner(CornerFamily.ROUNDED, dp2px(24))
-.setBottomLeftCorner(CornerFamily.ROUNDED, 0)
-.build()
+ch_item_nochecked_background = GradientDrawable()
+.setShape(GradientDrawable.RECTANGLE)
+.setCornerRadii({0,0,dp2px(24),dp2px(24),dp2px(24),dp2px(24),0,0});
+
 
 --侧滑列表项目
 drawer_item={
@@ -521,7 +522,7 @@ drawer_item={
       layout_marginTop="1dp";
       layout_marginRight="8dp";
       StrokeWidth=0,
-      ShapeAppearanceModel=shapeAppearanceModel1,
+      Background=ch_item_nochecked_background;
       {
         LinearLayout;
         layout_width="-1";
@@ -556,12 +557,11 @@ drawer_item={
       MaterialCardView;
       layout_width="-1";
       layout_height="-1";
-      StrokeColor=cardedge;
       CardBackgroundColor=转0x(primaryc)-0xde000000;
       layout_marginTop="1dp";
       layout_marginRight="8dp";
-      StrokeWidth=dp2px(1),
-      ShapeAppearanceModel=shapeAppearanceModel1,
+      StrokeWidth=0,
+      Background=ch_item_checked_background;
       {
         LinearLayout;
         layout_width="-1";

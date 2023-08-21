@@ -211,11 +211,6 @@
       layout_width="-1";
       orientation="vertical";
       {
-        TextView;
-        layout_height=状态栏高度;
-        layout_width="-1";
-      };
-      {
         LinearLayout;
         layout_height="-2";
         layout_width="fill";

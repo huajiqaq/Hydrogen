@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.33
+versionCode=16.34
 layout_dir="layout/item_layout/"
 
 
@@ -1965,7 +1965,7 @@ if not isstart and this.getSharedData("解析zse开关") then
   isstart=this.getSharedData("解析zse开关")
 end
 
-cardback=cardedge
+cardback=oricardedge
 cardmargin="4px"
 
 --cardback=全局主题值=="Day" and cardedge or backgroundc
