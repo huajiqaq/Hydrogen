@@ -305,7 +305,8 @@ local adapterEvents={
     if viewType~=1 then
       local switchView=ids.switchView
       view.setFocusable(true)
-      view.setBackground(ThemeUtil.getRippleDrawable(theme.color.rippleColorPrimary,true))
+      view.setBackground(res.drawable.attr.listChoiceBackgroundIndicator)
+--      view.setBackground(ThemeUtil.getRippleDrawable(theme.color.rippleColorPrimary,true))
       view.setOnClickListener(onItemViewClickListener)
       view.setOnLongClickListener(onItemViewLongClickListener)
       if switchView then
