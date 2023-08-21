@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=16.325
+versionCode=16.33
 layout_dir="layout/item_layout/"
 
 
@@ -2191,6 +2191,8 @@ function zHttp.setcallback(code,content,callback)
       .setCancelable(false)
       .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
       .show()
+     else
+      callback(code,content)
     end
    else
     callback(code,content)
@@ -2425,7 +2427,4 @@ function base64dec(str)
   return mybase64.dec(str)
 end
 
-local mymd5=require("md5")
-function MD5(str)
-  return mymd5.md5enc(str)
-end
+MD5=require("md5")

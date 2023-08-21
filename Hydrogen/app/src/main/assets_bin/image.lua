@@ -12,6 +12,7 @@ import "androidx.viewpager2.widget.ViewPager2$OnPageChangeCallback"
 import "com.bumptech.glide.Glide"
 import "com.bumptech.glide.request.RequestOptions"
 import "com.bumptech.glide.request.RequestListener"
+import "com.bumptech.glide.load.engine.DiskCacheStrategy"
 activity.setContentView(loadlayout("layout/image"))
 
 
@@ -90,6 +91,7 @@ picpage.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，�
       .with(activity)
       .asDrawable()--强制gif支持
       .load(url)
+      .diskCacheStrategy(DiskCacheStrategy.NONE)
       .listener(RequestListener{
         onResourceReady=function(a,b,c,d)
           parent.pg.visibility=8

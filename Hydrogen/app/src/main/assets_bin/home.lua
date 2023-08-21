@@ -959,7 +959,7 @@ function 热榜刷新(isclear)
 end
 
 
-function 关注刷新(isclear)
+function 关注刷新(isclear,isprev)
   -- origin15.19 更改
   if isclear==nil and follow_itemc then
     return false
@@ -968,14 +968,14 @@ function 关注刷新(isclear)
     datas9={}
     --关注布局
     follow_itemc=获取适配器项目布局("home/home_following")
-    moments_nextUrl=nil
+    moments_prev,moments_nextUrl,moments_isend=nil
     moments_isend=false
 
     gsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
     gsr.setColorSchemeColors({转0x(primaryc)});
     gsr.setOnRefreshListener({
       onRefresh=function()
-        关注刷新(true)
+        关注刷新(true,true)
         Handler().postDelayed(Runnable({
           run=function()
             gsr.setRefreshing(false);
@@ -990,7 +990,7 @@ function 关注刷新(isclear)
       onScrollStateChanged=function(view,scrollState)
         if scrollState == 0 then
           if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载关注 then
-            关注刷新()
+            关注刷新(false)
             System.gc()
             gsr.setRefreshing(true)
             可以加载关注=false
@@ -1034,8 +1034,13 @@ function 关注刷新(isclear)
     return 提示("已经到底了")
   end
 
+  local posturl
+  if isprev and moments_prev then
+    posturl = moments_prev
+   else
+    posturl = moments_nextUrl or "https://www.zhihu.com/api/v3/moments?limit=10"
+  end
 
-  local posturl = moments_nextUrl or "https://www.zhihu.com/api/v3/moments?limit=10"
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
@@ -1045,6 +1050,7 @@ function 关注刷新(isclear)
     if code==200 then
       local data=json.decode(content)
       moments_isend=data.paging.is_end
+      moments_prev=data.paging.previous
       moments_nextUrl=data.paging.next
       for k,v in ipairs(data.data) do
         if v.type=="feed_group"
@@ -1130,9 +1136,6 @@ function 想法刷新(isclear)
         import "android.util.DisplayMetrics"
         dm=DisplayMetrics()
         activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-
-        import "com.bumptech.glide.load.engine.DiskCacheStrategy"
 
         loadglide(view.img,url)
 

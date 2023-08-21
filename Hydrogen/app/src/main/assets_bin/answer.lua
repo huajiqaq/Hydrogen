@@ -124,19 +124,12 @@ function 数据添加(t,b)
         local data=require "cjson".decode(content)
         t.userheadline.Text=data.headline
         t.username.Text=data.name
-        Glide.with(this).load(data.avatar_url).into(t.usericon)
-        Glide.get(this).clearMemory();
+        loadglide(t.usericon,data.avatar_url)
       end
     end)
    else
 
-    Glide
-    .with(this)
-    .load(b.author.avatar_url)
-    .into(t.usericon)
-
-    Glide.get(this).clearMemory();
-
+    loadglide(t.usericon,b.author.avatar_url)
 
     if b.author.headline=="" then
       t.userheadline.Text="Ta还没有签名哦~"
@@ -232,7 +225,6 @@ function 数据添加(t,b)
   end
 
   t.content.removeView(t.content.getChildAt(0))
-  t.content.setVisibility(0)
   --t.content.setbackground(0x01000000)
 
   t.content.setWebViewClient{
@@ -244,9 +236,17 @@ function 数据添加(t,b)
       end
     end,
     onPageStarted=function(view,url,favicon)
+      task(50,function()
+        t.content.setVisibility(8)
+        t.progress.setVisibility(0)
+      end)
       等待doc(view)
     end,
     onPageFinished=function(view,url,favicon)
+      task(50,function()
+        t.content.setVisibility(0)
+        t.progress.getParent().removeView(t.progress)
+      end)
       加载js(view,[[
 	waitForKeyElements(' [class="AnswerReward"]', 	function() {
 		document.getElementsByClassName("AnswerReward")[0].style.display = "none"
@@ -331,6 +331,8 @@ function 数据添加(t,b)
 
 
   t.content.loadUrl("https://www.zhihu.com/appview/answer/"..tointeger(b.id).."")
+  t.content.setVisibility(0)
+
 
   function onTouch(v,event)
     Log.e(TAG,"pull_to_refresh_view====>onTouch")

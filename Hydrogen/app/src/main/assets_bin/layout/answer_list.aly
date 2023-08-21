@@ -1,6 +1,8 @@
 {
   ScrollView,
   id="msrcroll",
+  layout_height="fill";
+  fillViewport="true";
   {
     LinearLayout;
     layout_width="-1";
@@ -68,7 +70,7 @@
     {
       LinearLayout,
       layout_width="-1";
-      layout_height="-2";
+      layout_height="-1";
       {
         LuaWebView,
         id="content",
@@ -79,6 +81,20 @@
         layout_marginLeft="8dp";
         layout_marginRight="8dp";
       };
-    },
-  };
-}
+      {
+        LinearLayout;
+        layout_width="-1";
+        id="progress";
+        Visibility=8,
+        layout_height="match_parent";
+        gravity="center";
+        {
+          ProgressBar;
+          Visibility=0,
+          layout_height="56dp",
+          layout_width="56dp",
+        };
+      }
+    };
+  },
+};
