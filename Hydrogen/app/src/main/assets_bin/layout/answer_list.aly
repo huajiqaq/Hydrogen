@@ -77,6 +77,15 @@
         layout_marginRight="8dp";
       };
       {
+        LinearProgressIndicator;
+        id="progress";
+        Visibility=8,
+        layout_width="match_parent";
+        layout_height="wrap_content";
+        indeterminate="true";
+      },
+      --[[
+      {
         LinearLayout;
         layout_width="-1";
         id="progress";
@@ -92,6 +101,7 @@
           layout_gravity="center";
         };
       }
+]]
     };
   },
 };

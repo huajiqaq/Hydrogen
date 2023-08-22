@@ -132,10 +132,22 @@ end
 liulan.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)--回调参数，v控件，url网址
     local res=false
-    if liulanurl:find("zhihu.com") and liulanurl:find("need_login=true") then
-      activity.setResult(100)
-      activity.finish()
-      提示("成功")
+    if liulanurl:find("zhihu.com") and liulanurl:find("https://www.zhihu.com/account/unhuman") then
+      提示("验证通过")
+      local function success_do()
+        activity.setResult(100)
+        activity.finish()
+      end
+      if liulanurl:find("need_login=true") then
+        AlertDialog.Builder(this)
+        .setTitle("提示")
+        .setMessage("登录可减少验证的出现 多次出现验证知乎可能会暂时封禁一些功能 如果长期使用推荐登录")
+        .setPositiveButton("我知道了",{onClick=function() success_do() end})
+        .setCancelable(false)
+        .show()
+        return
+      end
+      success_do()
       return
     end
     if url:sub(1,4)~="http" then

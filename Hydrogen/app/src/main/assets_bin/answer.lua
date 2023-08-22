@@ -13,6 +13,7 @@ import "android.webkit.WebChromeClient"
 import "android.content.pm.ActivityInfo"
 import "android.graphics.PathMeasure"
 import "android.webkit.ValueCallback"
+import "com.google.android.material.progressindicator.LinearProgressIndicator"
 问题id,回答id,问题对象,是否记录历史记录,在线页数=...
 
 activity.setContentView(loadlayout("layout/answer"))
@@ -236,17 +237,13 @@ function 数据添加(t,b)
       end
     end,
     onPageStarted=function(view,url,favicon)
-      task(50,function()
-        t.content.setVisibility(8)
-        t.progress.setVisibility(0)
-      end)
+      t.content.setVisibility(8)
+      t.progress.setVisibility(0)
       等待doc(view)
     end,
     onPageFinished=function(view,url,favicon)
-      task(50,function()
-        t.content.setVisibility(0)
-        t.progress.getParent().removeView(t.progress)
-      end)
+      t.content.setVisibility(0)
+      t.progress.getParent().removeView(t.progress)
       加载js(view,[[
 	waitForKeyElements(' [class="AnswerReward"]', 	function() {
 		document.getElementsByClassName("AnswerReward")[0].style.display = "none"
