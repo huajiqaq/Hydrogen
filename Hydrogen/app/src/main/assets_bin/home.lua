@@ -1499,7 +1499,7 @@ Http.get(update_api,head,function(code,content)
       updateversionname=content:match("updateversionname%=(.+),updateversionname")
       updateinfo=content:match("updateinfo%=(.+),updateinfo")
       updateurl=tostring(content:match("updateurl%=(.+),updateurl"))
-      if versionCode > support_version then
+      if versionCode >= support_version then
         myupdatedialog=AlertDialog.Builder(this)
         .setTitle("检测到最新版本")
         .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
