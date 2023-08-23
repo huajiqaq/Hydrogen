@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.1
+versionCode=0.101
 layout_dir="layout/item_layout/"
 
 
@@ -2386,6 +2386,8 @@ function get_installApp_permissions()
      else
       return true
     end
+   else
+    return true
   end
 end
 
