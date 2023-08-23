@@ -16,7 +16,7 @@
 
 原版Hydrogen的源码供下载 **hydrogen-master.zip** 为Hydrogen最后一个版本final 7 的源码 **hydrogen目录内**为Hydrogen的后续维护版本的源码 预览或打包可能会报错 如若想解决 请下载本项目中的**要插入的dex**添加进打包的apk 安装
 
-由于在AideLua打包可能会在安卓10以上设备无法安装 所以推荐将输出的apk使用mt管理器优化一下 使用AideLua二次打包的apk在 项目路径 /app/build/outputs/apk/release/app-release-unsigned.apk
+由于在AideLua打包可能会在安卓10以上设备无法安装 所以推荐将输出的apk使用mt管理器优化一下 使用AideLua二次打包的apk在 项目路径/app/build/bin
 
 **hydrogen.jks**为软件的签名文件 你可使用apksigner或其他签名程序签名  别名 hydrogen 密钥库密码 zhihu 私钥密码 android
 
