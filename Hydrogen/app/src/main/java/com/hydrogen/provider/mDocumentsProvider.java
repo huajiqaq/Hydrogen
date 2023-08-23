@@ -10,7 +10,7 @@ import android.provider.DocumentsContract.Root;
 import android.provider.DocumentsProvider;
 import android.webkit.MimeTypeMap;
 import androidx.annotation.Nullable;
-import com.zhihu.hydrogen.R;
+import com.zhihu.hydrogen.x.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;

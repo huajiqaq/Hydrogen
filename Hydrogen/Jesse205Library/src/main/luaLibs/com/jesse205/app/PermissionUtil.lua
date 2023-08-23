@@ -6,7 +6,14 @@ local context=jesse205.context--当前context
 --申请多个权限
 local function request(permissions,requestCode)
   if Build.VERSION.SDK_INT >29 then
-    if permissions=="android.permission.WRITE_EXTERNAL_STORAGE" or permissions=="android.permission.READ_EXTERNAL_STORAGE"
+    for i = #permissions, 1, -1 do
+      local v=permissions[i]
+      if v=="android.permission.WRITE_EXTERNAL_STORAGE" or v=="android.permission.READ_EXTERNAL_STORAGE" then
+        needtishi=true
+        table.remove(permissions,i)
+      end
+    end
+    if needtishi then
       local diatitle=getLocalLangObj("提示","Prompt")
       local diamessage=getLocalLangObj("软件在安卓10以上版本已基本不需要存储权限 当前 例如数据导出导入还是需要 之后如果使用到存储权限也会有开启指示","The software basically does not need storage permission in Android 10 or above, currently, for example, data export and import are still required, and if the storage permission is used, there will also be an indication to turn on")
       AlertDialog.Builder(this)
@@ -17,7 +24,9 @@ local function request(permissions,requestCode)
       .show()
     end
   end
-  ActivityCompat.requestPermissions(context,String(permissions),requestCode or 0)
+  if #permissions>0 then
+    ActivityCompat.requestPermissions(context,String(permissions),requestCode or 0)
+  end
 end
 PermissionUtil.request=request
 

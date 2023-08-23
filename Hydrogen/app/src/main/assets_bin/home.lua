@@ -1486,32 +1486,58 @@ if not(this.getSharedData("内部浏览器查看回答")) then
   activity.setSharedData("内部浏览器查看回答","false")
 end
 
-local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
+local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
 Http.get(update_api,head,function(code,content)
   if code==200 then
     local content_json=require("cjson").decode(content)
     local content=base64dec(content_json.content)
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
     isstart=content:match("start%=(.+),start")
+    support_version=tonumber(content:match("supportversion%=(.+),supportversion"))
     this.setSharedData("解析zse开关",isstart)
     if updateversioncode > versionCode and activity.getSharedData("version")~=updateversioncode then
       updateversionname=content:match("updateversionname%=(.+),updateversionname")
       updateinfo=content:match("updateinfo%=(.+),updateinfo")
       updateurl=tostring(content:match("updateurl%=(.+),updateurl"))
-      myupdatedialog=AlertDialog.Builder(this)
-      .setTitle("检测到最新版本")
-      .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
-      .setCancelable(false)
-      .setPositiveButton("立即更新",nil)
-      .setNeutralButton("暂不更新",{onClick=function() activity.setSharedData("version",updateversioncode) end})
-      .show()
-      myupdatedialog.create()
-      myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
-        local result=get_write_permissions()
-        if result~=true then
-          return false
+      if versionCode > support_version then
+        myupdatedialog=AlertDialog.Builder(this)
+        .setTitle("检测到最新版本")
+        .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
+        .setCancelable(false)
+        .setPositiveButton("立即更新",nil)
+        .setNeutralButton("暂不更新",{onClick=function() activity.setSharedData("version",updateversioncode) end})
+        .show()
+        myupdatedialog.create()
+        myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+          local result=get_write_permissions()
+          if result~=true then
+            return false
+          end
+          下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
         end
-        下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
+       else
+        下载方法=content:match("nosupportWay%=(.+),nosupportWay")
+        下载提示=content:match("nosupportTip%=(.+),nosupportTip")
+        myupdatedialog=AlertDialog.Builder(this)
+        .setTitle("检测到最新版本")
+        .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
+        .setCancelable(false)
+        .setPositiveButton("立即更新",nil)
+        .setNeutralButton("暂不更新",{onClick=function() 提示("本次更新为强制更新 下次打开软件会再次提示哦") end})
+        .show()
+        myupdatedialog.create()
+        myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+          if 下载方法=="native" then
+            local result=get_write_permissions()
+            if result~=true then
+              return false
+            end
+            下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
+           else
+            提示(下载提示)
+            浏览器打开(updateurl)
+          end
+        end
       end
     end
    else
@@ -1604,17 +1630,48 @@ if not(this.getSharedData("hometip0.01")) then
   end)
 end
 
+
 if Build.VERSION.SDK_INT >29 then
+
+  if this.getSharedData("从hydrogen导入数据")==nil then
+    this.setSharedData("从hydrogen导入数据","true")
+    双按钮对话框("提示","如果你安装了旧版hudrogen 可导入到本软件中 请问你是否需要导入 点击立即导入本软件将会自动跳转到原软件导出页面 点击跳转即可 不需要请点击我不需要","立即跳转","我不需要",function()
+      关闭对话框(an)
+      local pm = this.getPackageManager();
+      local orifile=pm.getApplicationInfo("com.zhihu.hydrogen",64).dataDir
+      local filedir=orifile.."/files/local_list.lua"
+      提示("跳转成功 请自行点击右上角选择导出")
+      intent = Intent();
+      intent.setAction(Intent.ACTION_MAIN);
+      intent.addCategory(Intent.CATEGORY_LAUNCHER);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      --设置启动的activity
+      componentName = ComponentName("com.zhihu.hydrogen", "com.jesse205.superlua.LuaActivity");
+      intent.setComponent(componentName);
+      intent.setData(uri);
+      --设置bundle
+      bundle = Bundle();
+      bundle.putString("luaPath", filedir);
+      --设置intent
+      if args then
+        bundle.putSerializable("arg", args)
+      end
+      intent.putExtras(bundle);
+      this.startActivityForResult(intent, 1);
+      end,function()
+      关闭对话框(an) end)
+  end
+
   if activity.getSharedData("安卓11迁移文件夹0.01")~="true" then
     local 默认文件夹=Environment.getExternalStorageDirectory().toString().."/Hydrogen"
     local 私有目录=activity.getExternalFilesDir(nil).toString()
-    if 文件夹是否存在(默认文件夹) then
-      if not 文件夹是否存在(私有目录) then
-        创建文件夹(私有目录)
-      end
-      if not 文件夹是否存在(私有目录.."/Hydrogen") then
-        创建文件夹(私有目录.."/Hydrogen")
-      end
+    if not 文件夹是否存在(私有目录) then
+      创建文件夹(私有目录)
+    end
+    if not 文件夹是否存在(私有目录.."/Hydrogen") then
+      创建文件夹(私有目录.."/Hydrogen")
+    end
+    if Environment.isExternalStorageManager()==true then
       File(默认文件夹).renameTo(File(私有目录.."/Hydrogen"))
     end
     if activity.getSharedData("安卓11迁移文件夹")~="true" then

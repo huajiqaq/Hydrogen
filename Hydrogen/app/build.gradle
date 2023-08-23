@@ -4,11 +4,11 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.zhihu.hydrogen"
+        applicationId "com.zhihu.hydrogen.x"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 16
-        versionName "origin"
+        versionCode 1
+        versionName "new"
     }
     buildTypes {
         release {
@@ -34,7 +34,7 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
-    namespace 'com.zhihu.hydrogen'
+    namespace 'com.zhihu.hydrogen.x'
 }
 
 

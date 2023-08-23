@@ -3,7 +3,7 @@ tool={
   version="1.1",
 }
 appName="Hydrogen"--应用名称
-packageName="com.zhihu.hydrogen"--应用包名
+packageName="com.zhihu.hydrogen.x"--应用包名
 debugActivity="com.jesse205.app.activity.RunActivity"--运行Lua的Activity
 key = "JXNB" --运行Lua时传入的key，用于校验
 

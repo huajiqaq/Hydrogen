@@ -160,7 +160,7 @@ function check_update()
   update_title.Text="检查更新"
   update_message.Text="正在检查更新"
   update_info.Text="正在检查更新"
-  local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
+  local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
 
   Http.get(update_api,function(code,content)
     if code==200 then
