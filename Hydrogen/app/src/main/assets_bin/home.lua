@@ -1634,32 +1634,36 @@ end
 if Build.VERSION.SDK_INT >29 then
 
   if this.getSharedData("从hydrogen导入数据")==nil then
-    this.setSharedData("从hydrogen导入数据","true")
-    双按钮对话框("提示","如果你安装了旧版hudrogen 可导入到本软件中 请问你是否需要导入 点击立即导入本软件将会自动跳转到原软件导出页面 点击跳转即可 不需要请点击我不需要","立即跳转","我不需要",function()
-      关闭对话框(an)
-      local pm = this.getPackageManager();
-      local orifile=pm.getApplicationInfo("com.zhihu.hydrogen",64).dataDir
-      local filedir=orifile.."/files/local_list.lua"
-      提示("跳转成功 请自行点击右上角选择导出")
-      intent = Intent();
-      intent.setAction(Intent.ACTION_MAIN);
-      intent.addCategory(Intent.CATEGORY_LAUNCHER);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      --设置启动的activity
-      componentName = ComponentName("com.zhihu.hydrogen", "com.jesse205.superlua.LuaActivity");
-      intent.setComponent(componentName);
-      intent.setData(uri);
-      --设置bundle
-      bundle = Bundle();
-      bundle.putString("luaPath", filedir);
-      --设置intent
-      if args then
-        bundle.putSerializable("arg", args)
-      end
-      intent.putExtras(bundle);
-      this.startActivityForResult(intent, 1);
-      end,function()
-      关闭对话框(an) end)
+    AlertDialog.Builder(this)
+    .setTitle("提示")
+    .setMessage("如果你安装了旧版hudrogen 可导入到本软件中 请问你是否需要导入 点击立即导入本软件将会自动跳转到原软件导出页面 点击跳转即可 不需要请点击我不需要 如果你还没有卸载原软件 你也可以手动打开主页侧滑 选择本地 之后导出数据")
+    .setCancelable(false)
+    .setPositiveButton("立即跳转",{onClick=function()
+        this.setSharedData("从hydrogen导入数据","true")
+        local pm = this.getPackageManager();
+        local orifile=pm.getApplicationInfo("com.zhihu.hydrogen",64).dataDir
+        local filedir=orifile.."/files/local_list.lua"
+        提示("跳转成功 请自行点击右上角选择导出")
+        intent = Intent();
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        --设置启动的activity
+        componentName = ComponentName("com.zhihu.hydrogen", "com.jesse205.superlua.LuaActivity");
+        intent.setComponent(componentName);
+        intent.setData(uri);
+        --设置bundle
+        bundle = Bundle();
+        bundle.putString("luaPath", filedir);
+        --设置intent
+        if args then
+          bundle.putSerializable("arg", args)
+        end
+        intent.putExtras(bundle);
+        this.startActivityForResult(intent, 1);
+    end})
+    .setNeutralButton("我不需要",{onClick=function() this.setSharedData("从hydrogen导入数据","true") end})
+    .show()
   end
 
   if activity.getSharedData("安卓11迁移文件夹0.01")~="true" then
