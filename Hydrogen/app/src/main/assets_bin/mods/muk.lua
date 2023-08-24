@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.1101
+versionCode=0.1102
 layout_dir="layout/item_layout/"
 
 
@@ -2147,37 +2147,41 @@ function getLogin()
   end
 end
 
-head = {
-  ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-}
+function setHead()
+  head = {
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+  }
 
-posthead = {
-  ["Content-Type"] = "application/json; charset=UTF-8";
-  ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-}
-
-apphead = {
-  ["x-api-version"] = "3.0.89";
-  ["x-app-za"] = "OS=Android";
-  ["x-app-version"] = "8.44.0";
-  ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-}
-
-if activity.getSharedData("signdata")~=nil and getLogin() then
-  login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
-  post_access_token_head={
+  posthead = {
     ["Content-Type"] = "application/json; charset=UTF-8";
-    ["authorization"] = login_access_token;
     ["cookie"] = 获取Cookie("https://www.zhihu.com/");
   }
-  access_token_head={
-    ["authorization"] = login_access_token;
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+
+  apphead = {
+    ["x-api-version"] = "3.0.89";
+    ["x-app-za"] = "OS=Android";
+    ["x-app-version"] = "8.44.0";
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
   }
- else
-  post_access_token_head= posthead
-  access_token_head = head
+
+  if activity.getSharedData("signdata")~=nil and getLogin() then
+    login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
+    post_access_token_head={
+      ["Content-Type"] = "application/json; charset=UTF-8";
+      ["authorization"] = login_access_token;
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    }
+    access_token_head={
+      ["authorization"] = login_access_token;
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    }
+   else
+    post_access_token_head= posthead
+    access_token_head = head
+  end
 end
+
+setHead()
 
 zHttp = {}
 
@@ -2461,7 +2465,7 @@ function ChoicePath(StartPath,callback)
           edit_dialog.dismiss()
           SetItem(path)
           提示("跳转成功")
-          else
+         else
           提示("无法读取文件夹 请检查输入是否正确或是否可读")
         end
     end})

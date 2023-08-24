@@ -91,7 +91,6 @@ login_web.setWebViewClient{
   onPageFinished=function(view,url)
     if login_web.getUrl():find("https://www.zhihu.com/%?utm_id") or login_web.getUrl()=="https://www.zhihu.com" then
       activity.setResult(100)
-      activity.newActivity("home")
       activity.finish()
       提示("登录成功")
      else
@@ -105,7 +104,6 @@ function onKeyDown(keyCode,event)
 
   if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
     activity.setResult(100)
-    activity.newActivity("home")
     activity.finish()
     return true;
   end

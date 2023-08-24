@@ -33,14 +33,28 @@ comment.onClick=function()
   end)
 end;
 
+--new 0.1102 精准测量高度
+task(1,function()
+  local location,底栏高度,悬浮按钮高度
+  location = int[2];
+  ll.getLocationOnScreen(location)
+  底栏高度=location[1]
+  location = int[2];
+  comment.getLocationOnScreen(location)
+  悬浮按钮高度=location[1]
+  悬浮按钮高度差=底栏高度-悬浮按钮高度
+end)
 
 local function 设置滑动跟随(t)
   t.onScrollChange=function(view,x,y,lx,ly)
-
     if y<=2 then--解决滑到顶了还是没有到顶的bug
       llb.y=0
       comment_parent.y=0
       return
+    end
+    if t.canScrollVertically(1)~=true then--解决滑倒底了还是没到底的bug new 0.1102
+      llb.y=dp2px(56)+悬浮按钮高度差
+      comment_parent.y=dp2px(56)+悬浮按钮高度差
     end
     if ly>y then --上次滑动y大于这次y就是向上滑
       if llb.y<=0 or math.abs(y-ly)>=dp2px(56) then --这个or为了防止快速大滑动
@@ -51,7 +65,8 @@ local function 设置滑动跟随(t)
         comment_parent.y=comment_parent.y-math.abs(y-ly)
       end
      else
-      if llb.y<=dp2px(56)+dp2px(26) then --没到底就向底移动(上滑)，+26dp是悬浮球高
+      if llb.y<=dp2px(56)+悬浮按钮高度差 then --精准测量高度差 防止无法隐藏全部的bug new 0.1102
+        --if llb.y<=dp2px(56)+dp2px(26) then --没到底就向底移动(上滑)，+26dp是悬浮球高
         llb.y=llb.y+math.abs(y-ly)
         comment_parent.y=comment_parent.y+math.abs(y-ly)
       end
@@ -238,12 +253,17 @@ function 数据添加(t,b)
     end,
     onPageStarted=function(view,url,favicon)
       t.content.setVisibility(8)
-      t.progress.setVisibility(0)
+      if type(t.progress)~="nil" then
+        t.progress.setVisibility(0)
+      end
       等待doc(view)
     end,
     onPageFinished=function(view,url,favicon)
       t.content.setVisibility(0)
-      t.progress.getParent().removeView(t.progress)
+      if type(t.progress)~="nil" then
+        t.progress.getParent().removeView(t.progress)
+        t.progress=nil
+      end
       加载js(view,[[
 	waitForKeyElements(' [class="AnswerReward"]', 	function() {
 		document.getElementsByClassName("AnswerReward")[0].style.display = "none"

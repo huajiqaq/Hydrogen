@@ -165,7 +165,7 @@
         {
           ViewPager;
           id="page_home";
-              nestedScrollingEnabled=true,
+          nestedScrollingEnabled=true,
           layout_width="fill";
           layout_height="fill";
 
@@ -216,7 +216,7 @@
         layout_width="fill";
         orientation="vertical";
         id="侧滑头",
-        onClick=function()activity.newActivity("login",{"https://www.zhihu.com/signin?next=www.zhihu.com","登录"}) activity.finish() end;
+        onClick=function()activity.newActivity("login",{"https://www.zhihu.com/signin?next=www.zhihu.com","登录"}) end;
         {
           LinearLayout;
           layout_height="-1";
