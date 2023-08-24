@@ -307,6 +307,36 @@ task(1,function()
       {src=图标("email"),text="反馈",onClick=function()
           activity.newActivity("feedback")
       end},
+      {src=图标("info"),text="自定义目录",onClick=function()
+          if Build.VERSION.SDK_INT <30 then
+            return 提示("该功能只提供安卓10以上版本使用")
+          end
+
+          local result=get_write_permissions(true)
+          if result~=true then
+            return false
+          end
+
+          local sdcarddir=Environment.getExternalStorageDirectory().toString()
+          local filesdir=activity.getExternalFilesDir(nil).toString()
+          local path=activity.getSharedData("savepath") or sdcarddir
+          local path=path.."/Hydrogen.zip"
+
+          ChoicePath(activity.getSharedData("savepath") or sdcarddir,
+          function(path)
+            local savepath
+            local last_char = string.sub(path, -1)
+            -- 判断最后一部分是否为斜杠
+            if last_char == '/' then
+              savepath = string.sub(path, 1, -2)
+             else
+              savepath=path
+            end
+            activity.setSharedData("savepath",savepath)
+            提示("自定义路径成功")
+          end)
+
+      end},
       {src=图标("info"),text="导入",onClick=function()
           if Build.VERSION.SDK_INT <30 then
             return 提示("该功能只提供安卓10以上版本使用")
@@ -319,9 +349,11 @@ task(1,function()
 
           local sdcarddir=Environment.getExternalStorageDirectory().toString()
           local filesdir=activity.getExternalFilesDir(nil).toString()
-          if 文件是否存在(sdcarddir.."/Hydrogen.zip") then
-            ZipUtil.unzip(sdcarddir.."/Hydrogen.zip",filesdir.."/Hydrogen")
-            删除文件(sdcarddir.."/Hydrogen.zip")
+          local path=activity.getSharedData("savepath") or sdcarddir
+          local path=path.."/Hydrogen.zip"
+          if 文件是否存在(path) then
+            ZipUtil.unzip(path,filesdir.."/Hydrogen")
+            删除文件(path)
             提示("导入成功")
            else
             return 提示("导入失败 请检查是否导出或误删文件")
@@ -340,8 +372,13 @@ task(1,function()
 
           local sdcarddir=Environment.getExternalStorageDirectory().toString()
           local filesdir=activity.getExternalFilesDir(nil).toString()
-          ZipUtil.zip(filesdir.."/Hydrogen",sdcarddir)
-          提示("导出成功,导出文件在"..sdcarddir.."/Hydrogen.zip")
+          local path=activity.getSharedData("savepath") or sdcarddir
+          if 文件夹是否存在(path)~=true then
+            创建文件夹(path)
+          end
+
+          ZipUtil.zip(filesdir.."/Hydrogen",path)
+          提示("导出成功,导出文件在"..path.."/Hydrogen.zip")
       end},
       {src=图标("info"),text="问题",onClick=function()
           Snakebar("文件保存在"..内置存储("Hydrogen/download"))

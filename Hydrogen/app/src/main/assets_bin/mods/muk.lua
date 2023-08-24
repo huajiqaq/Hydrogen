@@ -14,7 +14,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.11
+versionCode=0.1101
 layout_dir="layout/item_layout/"
 
 
@@ -169,7 +169,7 @@ function 删除文件(file)
 end
 
 function 内置存储(t)
-  if Build.VERSION.SDK_INT >29 then
+  if Build.VERSION.SDK_INT >=30 then
     return activity.getExternalFilesDir(nil).toString() .. "/" ..t
   end
   return Environment.getExternalStorageDirectory().toString().."/"..t
@@ -2143,7 +2143,7 @@ function getLogin()
   if activity.getSharedData("idx") then
     return true
    else
-    return fasle
+    return false
   end
 end
 
@@ -2281,7 +2281,7 @@ write_permissions={"android.permission.WRITE_EXTERNAL_STORAGE","android.permissi
 function get_write_permissions(checksdk)
 
   if checksdk~=true then
-    if Build.VERSION.SDK_INT >29 then
+    if Build.VERSION.SDK_INT >=30 then
       --因为安卓10以上不使用/sdcard/了 使用android/data了
       return true
     end
@@ -2430,3 +2430,86 @@ function base64dec(str)
 end
 
 MD5=require("md5")
+
+function ChoicePath(StartPath,callback)
+  local lv,cp,lay,ChoiceFile_dialog,adp,path,ls,SetItem,项目,路径,edit_dialog
+  --创建ListView作为文件列表
+  lv=ListView(activity).setFastScrollEnabled(true)
+  --创建路径标签
+  cp=TextView(activity)
+  cp.TextIsSelectable=true
+  lay=LinearLayout(activity).setOrientation(1).addView(cp).addView(lv)
+  ChoiceFile_dialog=AlertDialog.Builder(activity)--创建对话框
+  .setTitle("选择路径")
+  .setPositiveButton("确认",{
+    onClick=function()
+      callback(tostring(cp.Text))
+  end})
+  .setNeutralButton("填写路径",nil)
+  .setNegativeButton("取消",nil)
+  .setView(lay)
+  .show()
+  ChoiceFile_dialog.getButton(ChoiceFile_dialog.BUTTON_NEUTRAL).onClick=function()
+    import "android.widget.EditText"
+    edit=EditText(this)
+    edit_dialog=AlertDialog.Builder(this)
+    .setTitle("请输入")
+    .setView(edit)
+    .setPositiveButton("确定", {onClick=function()
+        local path=edit.Text
+        if File(path).canRead() then
+          edit_dialog.dismiss()
+          SetItem(path)
+          提示("跳转成功")
+          else
+          提示("无法读取文件夹 请检查输入是否正确或是否可读")
+        end
+    end})
+    .setNegativeButton("取消", nil)
+    .show();
+  end
+  adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1)
+  lv.setAdapter(adp)
+  function SetItem(path)
+    path=tostring(path)
+    adp.clear()--清空适配器
+    cp.Text=tostring(path)--设置当前路径
+    if path~="/" then--不是根目录则加上../
+      adp.add("../")
+    end
+    ls=File(path).listFiles()
+    if ls~=nil then
+      ls=luajava.astable(File(path).listFiles()) --全局文件列表变量
+      table.sort(ls,function(a,b)
+        return (a.isDirectory()~=b.isDirectory() and a.isDirectory()) or ((a.isDirectory()==b.isDirectory()) and a.Name<b.Name)
+      end)
+     else
+      ls={}
+    end
+    for index,c in ipairs(ls) do
+      if c.isDirectory() then--如果是文件夹则
+        adp.add(c.Name.."/")
+      end
+    end
+  end
+  lv.onItemClick=function(l,v,p,s)--列表点击事件
+    项目=tostring(v.Text)
+    if tostring(cp.Text)=="/" then
+      路径=ls[p+1]
+     else
+      路径=ls[p]
+    end
+
+    if 项目=="../" then
+      SetItem(File(cp.Text).getParentFile())
+     elseif 路径.isDirectory() then
+      SetItem(路径)
+     elseif 路径.isFile() then
+      callback(tostring(路径))
+      ChoiceFile_dialog.hide()
+    end
+
+  end
+
+  SetItem(StartPath)
+end

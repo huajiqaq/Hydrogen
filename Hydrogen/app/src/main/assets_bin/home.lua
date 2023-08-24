@@ -1631,7 +1631,7 @@ if not(this.getSharedData("hometip0.01")) then
 end
 
 
-if Build.VERSION.SDK_INT >29 then
+if Build.VERSION.SDK_INT >=30 then
 
   if this.getSharedData("从hydrogen导入数据")==nil then
     AlertDialog.Builder(this)
