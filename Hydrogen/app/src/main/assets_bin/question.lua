@@ -87,7 +87,6 @@ task(1,function()
                 layout_marginTop="8dp";
                 id="show",
                 layout_width="-1";
-
                 layout_height="wrap_content",
               };
             };
@@ -337,6 +336,10 @@ end)
     --//开启 数据库 存储功能
     .setDatabaseEnabled(true)
     .setCacheMode(2)
+  end
+
+  show.onTouch=function()
+    return false
   end
 
   show.setDownloadListener({

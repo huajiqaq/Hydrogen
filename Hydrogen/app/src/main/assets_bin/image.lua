@@ -86,6 +86,13 @@ picpage.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，�
     if parent.ph.getDrawable()==nil then
 
       local url=mls[tostring(i)]
+      if url:find("zhimg.com") then
+        if url:find("%.webp?") then
+          url=url:gsub("%.webp%?", ".jpg?")
+         elseif url:find("%.png?") then
+          url=url:gsub("%.png%?", ".jpg?")
+        end
+      end
 
       Glide
       .with(activity)
@@ -119,7 +126,7 @@ ripple.onClick=function()
     return false
   end
   local url=mls[""..picpage.getCurrentItem()]
-  Http.download(url,"/sdcard/Pictures/Hydrogen/"..os.time()..".webp",function(code,msg)
+  Http.download(url,Environment.getExternalStorageDirectory().toString().."/Pictures/Hydrogen/"..os.time()..".jpg",function(code,msg)
     if code==200 then
       提示("已保存到"..msg)
      else
