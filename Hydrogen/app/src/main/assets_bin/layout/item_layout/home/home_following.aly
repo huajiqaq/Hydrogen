@@ -2,6 +2,9 @@
   LinearLayout;
   layout_width="-1";
   orientation="horizontal";
+  --new 0.1103新增 防止滑动条不贴边
+  paddingLeft="8dp";
+  paddingRight="8dp";
   BackgroundColor=backgroundc;
   {
     MaterialCardView;
@@ -19,11 +22,9 @@
     {
       LinearLayout;
       ripple="圆自适应",
-
       layout_height="fill";
       id="background";
       layout_width="fill";
-
       {
         LinearLayout;
         orientation="horizontal";

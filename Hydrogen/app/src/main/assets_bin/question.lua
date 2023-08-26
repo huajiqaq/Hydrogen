@@ -4,12 +4,12 @@ import "android.view.*"
 import "mods.muk"
 import "android.text.Html$TagHandler"
 import "android.text.Html$ImageGetter"
+import "androidx.core.widget.NestedScrollView"
+
 question_id,是否记录历史记录=...
 
 设置视图("layout/question")
 
-波纹({fh,_more},"圆主题")
-波纹({discussion,view,description},"方自适应")
 
 --卡片布局
 question_itemc=获取适配器项目布局("question/question")
@@ -17,6 +17,176 @@ question_itemc=获取适配器项目布局("question/question")
 question_adp=MyLuaAdapter(activity,question_datas,question_itemc)
 
 task(1,function()
+  question_list.addHeaderView(loadlayout({
+    LinearLayout;
+    layout_width="-1";
+    --        padding="8dp";
+    orientation="vertical";
+    layout_height="-1";
+    background=backgroundc,
+    --          layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING),
+    {
+      MyTab
+      {
+        id="tags",
+        type=2
+      },
+      visibility=8,
+      background=backgroundc,
+      layout_marginLeft="10dp",
+    },
+    {
+      CardView;
+      CardBackgroundColor=cardedge,
+      Elevation="0";
+      radius="0dp";
+      layout_margin="0dp",
+      layout_marginTop="0dp",
+      layout_marginBottom="0dp",
+      layout_width="-1";
+      layout_height="-2";
+      {
+        CardView;
+        CardElevation="0dp";
+        CardBackgroundColor=backgroundc;
+        Radius="0dp";
+        --              layout_margin="4px";
+        layout_margin=cardmargin;
+        layout_width="-1";
+        layout_height="-1";
+        {
+          LinearLayout;
+          layout_width="-1";
+          orientation="vertical";
+          padding="24dp";
+          paddingTop="16dp";
+          paddingBottom="16dp";
+          layout_height="-1";
+          {
+            LinearLayout;
+            orientation="vertical";
+            layout_height="-2",
+            {
+              TextView;
+              textSize="19.5sp";
+              Typeface=字体("product-Bold");
+              textColor=textc,
+              letterSpacing="0.02";
+              id="title",
+              text="加载中";
+              layout_width="-1";
+              layout_marginTop="8dp";
+            };
+            {
+              RelativeLayout;
+              id="letgo";
+              layout_width="-1";
+              layout_height="wrap_content";
+              {
+                LuaWebView;
+                layout_marginTop="8dp";
+                id="show",
+                layout_width="-1";
+
+                layout_height="wrap_content",
+              };
+            };
+
+            {
+              TextView;
+              typeface=字体("product");
+              textSize="12sp";
+              letterSpacing="0.02";
+              textColor=textc,
+              MaxLines=3;
+              layout_width="-1";
+              ellipsize="end",
+              id="description",
+              text="加载中";
+              layout_marginTop="8dp";
+              Visibility=0,
+            };
+          };
+          {
+            LinearLayout;
+            layout_width="-1";
+            layout_height="-1";
+            padding="4dp";
+            layout_marginTop="8dp";
+            {
+              CardView;
+              layout_width="-2";
+              layout_height="-2";
+              radius="4dp";
+              CardBackgroundColor=backgroundc;
+              Elevation="0";
+              {
+                LinearLayout;
+                id="view",
+                onClick=function()end;
+                padding="4dp",
+                orientation="horizontal";
+                {
+                  ImageView;
+                  colorFilter=textc,
+                  layout_width="18dp";
+                  layout_height="18dp";
+                  src=图标("star");
+                };
+                {
+                  TextView;
+                  id="_star",
+                  layout_marginLeft="4dp",
+                  layout_width="-1";
+                  layout_height="-1";
+                  gravity="center";
+                  Typeface=字体("product");
+                  textColor=textc,
+                  text="0";
+                };
+              };
+            };
+            {
+              CardView;
+              layout_width="-2";
+              layout_height="-2";
+              radius="4dp";
+              cardBackgroundColor=backgroundc;
+              Elevation="0";
+              layout_marginLeft="32dp";
+              {
+                LinearLayout;
+                onClick=function()
+                  activity.newActivity("comment",{question_id,"questions"})
+                end;
+                id="discussion",
+                padding="4dp",
+                orientation="horizontal";
+                {
+                  ImageView;
+                  colorFilter=textc,
+                  layout_width="18dp";
+                  layout_height="18dp";
+                  src=图标("message");
+                };
+                {
+                  TextView;
+                  id="_comment",
+                  layout_marginLeft="4dp",
+                  layout_width="-1";
+                  layout_height="-1";
+                  gravity="center";
+                  Typeface=字体("product");
+                  textColor=textc,
+                  text="0";
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+  },nil),nil,false)
   question_list.addFooterView(loadlayout({
     LinearLayout,
     layout_width="fill",
@@ -42,6 +212,8 @@ task(1,function()
     },
   },nil),nil,false)
   resultbar.Visibility=8
+  波纹({fh,_more},"圆主题")
+  波纹({discussion,view,description},"方自适应")
 end)
 
 question_list.adapter=question_adp
@@ -59,18 +231,39 @@ function 刷新()
   end)
 end
 
+add=true
 
-function bit.onScrollChange(a,b,j,y,u)
-  if (bit.getChildAt(0).getMeasuredHeight()==bit.getScrollY()+bit.getHeight() and question_base.is_end==false) then
-    resultbar.Visibility=0
-    刷新()
-    System.gc()
+question_list.setOnScrollListener{
+  onScrollStateChanged=function(view,scrollState)
+    if scrollState == 0 then
+      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and add then
+        add=false
+        刷新()
+        resultbar.Visibility=0
+        System.gc()
+        add=false
+        Handler().postDelayed(Runnable({
+          run=function()
+            add=true
+          end,
+        }),1000)
+      end
+    end
   end
-end
+}
+
+
 
 
 question_base=require "model.question":new(question_id)
 :setresultfunc(function(tab)
+  if tab.excerpt == nil or tab.excerpt=="" then
+    if tab.media_detail and tab.media_detail.videos
+      if #tab.media_detail.videos>0 then
+        tab.excerpt="[视频]"
+      end
+    end
+  end
   question_adp.add{
     question_author=tab.author.name,
     question_voteup=tointeger(tab.voteup_count).."",
@@ -106,8 +299,10 @@ end)
   end
   description.onClick=function()
     description.setVisibility(8)
-    show.setVisibility(0)
     show.loadUrl("")
+    show.setHorizontalScrollBarEnabled(false);
+    show.setVerticalScrollBarEnabled(false);
+    show.setVisibility(0)
   end
 
   function imgReset()
@@ -155,7 +350,7 @@ end)
       检查链接(url)
     end,
     onPageFinished=function(view,url)
-      show.setFocusable(false)
+      --   show.setFocusable(false)
 
       if 全局主题值=="Night" then
         黑暗页(view)

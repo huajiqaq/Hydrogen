@@ -170,7 +170,7 @@
             id="webview",
             layout_width="-1";
             layout_height="-2";
-            Visibility=0,
+            Visibility=8,
             layout_marginTop="2dp";
             layout_marginLeft="8dp";
             layout_marginRight="8dp";

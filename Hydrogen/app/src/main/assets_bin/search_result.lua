@@ -47,14 +47,15 @@ function 刷新()
       local 头像=v.object.author.avatar_url
       if v.object.type=="answer" then
         活动="回答了问题"
-        问题id=tointeger(v.object.question.id or 1).."分割"..tointeger(v.object.id)
+        问题id=tointeger(v.object.question.id) or "null"
+        问题id=问题id.."分割"..tointeger(v.object.id)
         标题=v.object.question.name
        elseif v.object.type=="topic" then
         history_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
         return
        elseif v.object.type=="question" then
         活动="发布了问题"
-        问题id=tointeger(v.object.id or 1).."问题分割"
+        问题id=tointeger(v.object.id).."问题分割"
         标题=v.object.title
        elseif v.object.type=="column" then
         活动="发表了专栏"

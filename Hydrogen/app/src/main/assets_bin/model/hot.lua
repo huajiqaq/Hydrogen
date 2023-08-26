@@ -4,7 +4,6 @@ import "android.view.*"
 
 local hotdata={
   partition={},
-  cjson=require "cjson"
 }
 
 function hotdata:new()
@@ -42,7 +41,7 @@ function hotdata:getPartitionFromApi(func)
 
   zHttp.get("https://www.zhihu.com/api/v3/feed/topstory/hot-lists",head,function(code,body)
     if code==200 then
-      local tab=self.cjson.decode(body)
+      local tab=luajson.decode(body)
       if #tab.data>0 then
         for k,v in pairs(tab.data) do
           local z=v.name

@@ -13,10 +13,10 @@ function base_question:new(id)
 end
 
 function base_question:getTag(callback)
-  zHttp.get( "https://api.zhihu.com/questions/"..self.id.."/topics?&limit=20&platform=android",head,function(code,body)
+  zHttp.get( "https://api.zhihu.com/questions/"..self.id.."/topics?limit=20&platform=android",head,function(code,body)
 
     if code==200 then
-      for k,v in pairs(require "cjson".decode(body).data) do
+      for k,v in pairs(luajson.decode(body).data) do
         callback(v.name,v.url)
       end
     end
@@ -59,8 +59,8 @@ function base_question:getChild(id) --获取传输类
     child.data=table.clone(self.data)
     child.now=index
   end
-  --  print(dump(require "cjson".encode(child)))
-  return require "cjson".encode(child)
+  --  print(dump(luajson.encode(child)))
+  return luajson.encode(child)
 end
 
 function base_question:setresultfunc(tab)
@@ -71,7 +71,7 @@ end
 function base_question:getData(callback)
   --[[  zHttp.get("https://www.zhihu.com/api/v4/questions/"..self.id.."?include=data%5B*%5D.answer_count,comment_count,follower_count,detail,excerpt",head,function(code,content)
     if code==200 then
-      local data=require "cjson".decode(content)
+      local data=luajson.decode(content)
       callback(data)
     end
   end)
@@ -80,7 +80,7 @@ function base_question:getData(callback)
   zHttp.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,excerpt",apphead
   ,function(code,content)
     if code==200 then
-      local data=require "cjson".decode(content)
+      local data=luajson.decode(content)
       callback(data)
     end
   end)
@@ -92,12 +92,12 @@ function base_question:next(callback)
 
   if self.is_end~=true then
 
-    zHttp.get(self.nextUrl or "https://api.zhihu.com/questions/"..self.id.."/answers?&include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count&limit=20".."&sort_by="..(self.sortby or "default"),head,function(code,body)
+    zHttp.get(self.nextUrl or "https://api.zhihu.com/questions/"..self.id.."/answers?include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count,media_detail&limit=20".."&sort_by="..(self.sortby or "default"),head,function(code,body)
 
       if code==200 then
-        self.nextUrl=require "cjson".decode(body).paging.next
-        self.is_end=require "cjson".decode(body).paging.is_end
-        for k,v in pairs(require "cjson".decode(body).data) do
+        self.nextUrl=luajson.decode(body).paging.next
+        self.is_end=luajson.decode(body).paging.is_end
+        for k,v in pairs(luajson.decode(body).data) do
           if self.mdata[v.id] then
            else
             self.mdata[v.id]=v --(概率需要(如果以后需要扩张功能的话))

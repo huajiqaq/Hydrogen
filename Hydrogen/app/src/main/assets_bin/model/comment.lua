@@ -58,7 +58,7 @@ function base:next(callback)
     zHttp.get(self.nextUrl or self:getUrlByType(self.id,self.type),head ,function(code,body)
 
       if code==200 then
-        decoded_content=require "cjson".decode(body)
+        decoded_content=luajson.decode(body)
         self.nextUrl=decoded_content.paging.next
         self.is_end=decoded_content.paging.is_end
         self.common_counts=tointeger(decoded_content.counts.total_counts)

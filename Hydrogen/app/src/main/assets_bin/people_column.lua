@@ -39,19 +39,19 @@ function 刷新()
   geturl=myurl or "https://api.zhihu.com/columns/"..id.."/items"
   zHttp.get(geturl,head,function(code,content)
     if code==200 then
-      if require "cjson".decode(content).paging.next then
-        testurl=require "cjson".decode(content).paging.next
+      if luajson.decode(content).paging.next then
+        testurl=luajson.decode(content).paging.next
         if testurl:find("http://") then
           testurl=string.gsub(testurl,"http://","https://",1)
         end
         myurl=testurl
       end
-      if require "cjson".decode(content).paging.is_end and isclear~="clear" then
+      if luajson.decode(content).paging.is_end and isclear~="clear" then
         提示("已经没有更多内容了")
        else
         提示("加载中")
       end
-      for i,v in ipairs(require "cjson".decode(content).data) do
+      for i,v in ipairs(luajson.decode(content).data) do
         --  local 预览内容=v.excerpt_new
         local 头像=v.author.avatar_url
         local 预览内容=v.excerpt
@@ -59,14 +59,15 @@ function 刷新()
         local 评论数=tointeger(v.comment_count)
         if v.type=="answer" then
           活动="回答了问题"
-          问题id=tointeger(v.question.id or 1).."分割"..tointeger(v.id)
+          问题id=tointeger(v.question.id) or "null"
+          问题id=问题id.."分割"..tointeger(v.id)
           标题=v.question.title
          elseif v.type=="topic" then
           people_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.id,people_title=v.name,people_image=头像}
           return
          elseif v.type=="question" then
           活动="发布了问题"
-          问题id=tointeger(v.id or 1).."问题分割"
+          问题id=tointeger(v.id).."问题分割"
           标题=v.title
          elseif v.type=="column" then
           活动="发表了专栏"

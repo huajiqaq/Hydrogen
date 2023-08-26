@@ -46,16 +46,41 @@
         };
         {
           TextView;
-          padding="2dp",
+          id="_title",
           textColor=primaryc;
           textSize="20sp";
-          id="_title";
+          text="加载中",
           SingleLine=true;
+          layout_width="-1",
+          paddingLeft="16dp";
           ellipsize='marquee',
           Selected=true,
           gravity="center|left";
-          paddingLeft="12dp";
+          -- paddingLeft="16dp";
+          layout_weight="1",
           Typeface=字体("product-Bold");
+        };
+        {
+          ImageView;
+          src=图标("more_vert");
+          ColorFilter=primaryc;
+          layout_width="32dp",
+          layout_height="32dp",
+          padding="4dp";
+          id="_more";
+          layout_margin="8dp";
+          tooltip="更多",
+          onClick=function()
+            --a.pop.showAsDropDown(_more_lay)
+            showpop(_more_lay,a.pop)
+          end;
+        };
+        {
+          TextView;
+          id="_more_lay";
+          layout_width="0",
+          layout_height="0",
+          layout_gravity="top";
         };
       };
     };
@@ -64,15 +89,15 @@
       layout_width="-1";
       layout_height="48dp";
       background="#00000000";
-  {
-    TabLayout,
-    layout_width="fill",
-    id="TopictabLayout",
-    elevation ="2dp",
-    tabMode=TabLayout.MODE_FIXED;
-    tabGravity=TabLayout.GRAVITY_FILL,
-    layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)
-  };
+      {
+        TabLayout,
+        layout_width="fill",
+        id="TopictabLayout",
+        elevation ="2dp",
+        tabMode=TabLayout.MODE_FIXED;
+        tabGravity=TabLayout.GRAVITY_FILL,
+        layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)
+      };
 
       {
         LinearLayout;
@@ -111,7 +136,7 @@
             layout_height="-1",
             layout_width="-1",
             {
-              CardView;
+              MaterialCardView;
               layout_height="-2";
               CardBackgroundColor=cardedge,
               Elevation="0";
@@ -120,48 +145,56 @@
               layout_marginTop="8dp";
               layout_marginBottom="8dp";
               radius="8dp";
-              {
-                CardView;
-                CardElevation="0dp";
-                CardBackgroundColor=backgroundc;
-                Radius=dp2px(8)-2;
-                layout_margin="2px";
-                layout_width="-1";
-                layout_height="-1";
+              StrokeColor=cardedge;
+              StrokeWidth=dp2px(1),
 
+              {
+                LinearLayout;
+                layout_width="-1",
+                orientation="vertical";
                 {
-                  LinearLayout;
-                  layout_width="-1",
-                  orientation="vertical";
-                  {
-                    CircleImageView;
-                    layout_gravity="center";
-                    layout_marginTop="16dp",
-                    layout_height="72dp",
-                    layout_width="72dp",
-                    id="_bigimage"
-                  };
-                  {
-                    TextView;
-                    id="_excerpt",
-                    textColor=textc,
-                    textSize="14sp",
-                    Typeface=字体("product");
-                    textIsSelectable=true;
-                    layout_margin="16dp",
-                    layout_marginBottom="8dp",
-                  };
+                  CircleImageView;
+                  layout_gravity="center";
+                  layout_marginTop="16dp",
+                  layout_height="72dp",
+                  layout_width="72dp",
+                  id="_bigimage"
+                };
+                {
+                  TextView;
+                  id="_excerpt",
+                  textColor=textc,
+                  textSize="14sp",
+                  Typeface=字体("product");
+                  textIsSelectable=true;
+                  layout_margin="16dp",
+                  layout_marginBottom="8dp",
                 };
               };
             };
           };
+
           {
             GridView;
             layout_width="-1";
             layout_height="-1";
             id="best_list";
-
           };
+
+          {
+            GridView;
+            layout_width="-1";
+            layout_height="-1";
+            id="think_list";
+          };
+
+          {
+            GridView;
+            layout_width="-1";
+            layout_height="-1";
+            id="video_list";
+          };
+
           {
             GridView;
             layout_width="-1";

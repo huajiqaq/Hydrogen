@@ -49,7 +49,7 @@ function 获取每日一文()
   Http.get(api,head,function(code,content)
     if code==200 then
       一文模式="每日"
-      data=require "cjson".decode(content)
+      data=luajson.decode(content)
       atitle.text=data.data.title
       atext.text=Html.fromHtml(data.data.content)
       backtitle=atitle.text
@@ -63,7 +63,7 @@ function 获取随机一文()
   Http.get(api,head,function(code,content)
     if code==200 then
       一文模式="随机"
-      data=require "cjson".decode(content)
+      data=luajson.decode(content)
       atitle.text=data.data.title
       atext.text=Html.fromHtml(data.data.content)
       backtitle=atitle.text

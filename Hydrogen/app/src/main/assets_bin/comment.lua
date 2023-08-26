@@ -132,13 +132,20 @@ function 刷新()
       end
   end})
 
+  add=true
 
   comment_list.setOnScrollListener{
     onScrollStateChanged=function(view,scrollState)
       if scrollState == 0 then
-        if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
+        if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and add then
           评论刷新()
+          add=false
           System.gc()
+          Handler().postDelayed(Runnable({
+            run=function()
+              add=true
+            end,
+          }),1000)
         end
       end
     end
@@ -264,7 +271,7 @@ if comment_type=="comments" then
   sadapter=LuaAdapter(activity,comment_itemc)
   local_comment_list.setAdapter(sadapter)
 
-  local data=require "cjson".decode(comment_id)
+  local data=luajson.decode(comment_id)
 
   for k,v in ipairs(data.data) do
 

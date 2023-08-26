@@ -164,7 +164,7 @@ function check_update()
 
   Http.get(update_api,function(code,content)
     if code==200 then
-      local content_json=require("cjson").decode(content)
+      local content_json=luajson.decode(content)
       local content=base64dec(content_json.content)
       updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
       if updateversioncode > versionCode

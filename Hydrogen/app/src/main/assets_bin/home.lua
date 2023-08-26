@@ -151,14 +151,20 @@ function 主页刷新(isclear)
     local 评论数=tointeger(v.target.comment_count)
     local 标题,问题id等;
     local 作者=v.target.author.name
-    --          local 预览内容=作者.." : "..v.target.excerpt_new
+    if type(v.target.excerpt)=="nil" or v.target.excerpt=="" then
+      if v.target.thumbnail_extra_info then
+        v.target.excerpt="[视频]"
+      end
+    end
+    --local 预览内容=作者.." : "..v.target.excerpt_new
     local 预览内容=作者.." : "..v.target.excerpt
-    --     print(dump(v))
+    --print(dump(v))
     if v.target.type=="pin" then
       问题id等="想法分割"..v.target.url:match("(%d+)")--由于想法的id长达18位，而cJSON无法解析这么长的数字，所以暂时用截取url结尾的数字字符串来获取id
       标题=作者.."发表了想法"
      elseif v.target.type=="answer" then
-      问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
+      问题id等=tointeger(v.target.question.id) or "null"
+      问题id等=问题id等.."分割"..tointeger(v.target.id)
       标题=v.target.question.title
      elseif v.target.type=="article" then--????????没有测到这个推荐流
       问题id等="文章分割"..tointeger(v.target.id)
@@ -187,7 +193,7 @@ function 主页刷新(isclear)
     local url= myrequrl or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
     zHttp.get(url,access_token_head,function(code,content)
       if code==200 then
-        decoded_content = require "cjson".decode(content)
+        decoded_content = luajson.decode(content)
         if decoded_content.paging.is_end==false then
           requrl[result]={
             ["next"] = decoded_content.paging.next,
@@ -218,7 +224,7 @@ function 主页刷新(isclear)
 
     zHttp.get(posturl,access_token_head,function(code,content)
       if code==200 then
-        decoded_content = require "cjson".decode(content)
+        decoded_content = luajson.decode(content)
 
         for k,v in ipairs(decoded_content.data) do
           table.insert(list2.adapter.getData(),resolve_feed(v))
@@ -441,7 +447,7 @@ function 日报刷新(isclear)
       end
     end
 
-    for k,v in ipairs(require "cjson".decode(content).data.stories) do
+    for k,v in ipairs(luajson.decode(content).data.stories) do
       table.insert(yuxun_adpqy.getData(),{标题3=v.title,导向链接3=v.url})
       task(1,function() yuxun_adpqy.notifyDataSetChanged()end)
     end
@@ -938,7 +944,7 @@ function 热榜刷新(isclear)
       run=function()
         zHttp.get(hotdata:getValue(nil,true),head,function(code,content)
           if code==200 then--判断网站状态
-            local tab=require "cjson".decode(content).data
+            local tab=luajson.decode(content).data
 
             for i=1,#tab do
               local 标题,热度,排行,导向链接=tab[i].target.title,tab[i].detail_text,i,tointeger(tab[i].target.id)..""
@@ -959,45 +965,100 @@ function 热榜刷新(isclear)
 end
 
 
-function 关注刷新(isclear,isprev)
+function 关注刷新(isclear,isprev,num)
   -- origin15.19 更改
   if isclear==nil and follow_itemc then
     return false
   end
-  if isclear or not(follow_itemc) then
-    datas9={}
+  if num==nil then
+    num=1
+  end
+  local alltype={"recommend","timeline","pin"}
+  local allsr={gsr_j,gsr_t,gsr_p}
+  local allpage={list9,list10,list11}
+  local thispage=allpage[num]
+  local thissr=allsr[num]
+  可以加载关注={true,true,true}
+  if followpos then
+    num=followpos
+  end
+  if isclear or not(follow_itemc) or moments_tab[num]==nil then
+
+
+    if followTab.getTabCount()==0 then
+      followTab.setupWithViewPager(fpage)
+      local followTable={"精选","最新","想法"}
+
+      --setupWithViewPager设置的必须手动设置text
+      for i=1, #followTable do
+        local itemnum=i-1
+        local tab=followTab.getTabAt(itemnum)
+        tab.setText(followTable[i]);
+      end
+
+      followTab.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
+        onTabSelected=function(tab)
+          --选择时触发
+          local pos=tab.getPosition()+1
+          followpos=pos
+          关注刷新(false,false,pos)
+        end,
+
+        onTabUnselected=function(tab)
+          --未选择时触发
+        end,
+
+        onTabReselected=function(tab)
+          --选中之后再次点击即复选时触发
+          local pos=tab.getPosition()+1
+          followpos=pos
+          关注刷新(true,false,pos)
+        end,
+      });
+
+
+    end
+
+
     --关注布局
     follow_itemc=获取适配器项目布局("home/home_following")
-    moments_prev,moments_nextUrl,moments_isend=nil
-    moments_isend=false
+    if moments_tab==nil then
+      moments_tab={}
+    end
 
-    gsr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-    gsr.setColorSchemeColors({转0x(primaryc)});
-    gsr.setOnRefreshListener({
+    moments_tab[num]={
+      prev=false,
+      nexturl=false,
+      isend=false
+    }
+
+    thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
+    thissr.setColorSchemeColors({转0x(primaryc)});
+    thissr.setOnRefreshListener({
       onRefresh=function()
-        关注刷新(true,true)
+        关注刷新(true,true,num)
         Handler().postDelayed(Runnable({
           run=function()
-            gsr.setRefreshing(false);
+            thissr.setRefreshing(false);
           end,
         }),1000)
 
       end,
     });
 
-    可以加载关注=true
-    list9.setOnScrollListener{
+    可以加载关注[num]=true
+    thispage.setOnScrollListener{
       onScrollStateChanged=function(view,scrollState)
         if scrollState == 0 then
-          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载关注 then
-            关注刷新(false)
+          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载关注[num] then
+            关注刷新(false,false,num)
             System.gc()
-            gsr.setRefreshing(true)
-            可以加载关注=false
+            thissr.setRefreshing(true)
+            可以加载关注[num]=false
             Handler().postDelayed(Runnable({
               run=function()
-                可以加载关注=true
-                gsr.setRefreshing(false);
+                可以加载关注[num]=true
+                thissr.setRefreshing(false);
               end,
             }),1000)
           end
@@ -1005,15 +1066,19 @@ function 关注刷新(isclear,isprev)
       end
     }
 
-    list9.setOnItemClickListener(AdapterView.OnItemClickListener{
+    thispage.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(parent,v,pos,id)
         local open=activity.getSharedData("内部浏览器查看回答")
-        if tostring(v.Tag.follow_id.text):find("文章分割") then
-          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-         elseif tostring(v.Tag.follow_id.text):find("想法分割") then
-          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("想法分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)"),"想法"})
-         elseif tostring(v.Tag.follow_id.text):find("问题分割") then
+        if tostring(v.Tag.follow_id.text):find("问题分割") then
           activity.newActivity("question",{tostring(v.Tag.follow_id.Text):match("问题分割(.+)"),true})
+         elseif tostring(v.Tag.follow_id.text):find("文章分割") then
+          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+         elseif tostring(v.Tag.follow_id.text):find("视频分割") then
+          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("视频分割(.+)"),"视频"})
+         elseif tostring(v.Tag.follow_id.text):find("想法分割") then
+          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("想法分割(.+)"),"想法"})
+
+
          else
           保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
 
@@ -1026,68 +1091,52 @@ function 关注刷新(isclear,isprev)
       end
     })
 
-    local qqadpqy=MyLuaAdapter(activity,datas9,follow_itemc)
-    list9.Adapter=qqadpqy
+    local qqadpqy=MyLuaAdapter(activity,follow_itemc)
+    thispage.Adapter=qqadpqy
   end
 
-  if moments_isend then
+  if moments_tab[num].isend then
     return 提示("已经到底了")
   end
 
   local posturl
-  if isprev and moments_prev then
-    posturl = moments_prev
+  if isprev and moments_tab[num].prev then
+    posturl = moments_tab[num].prev
    else
-    posturl = moments_nextUrl or "https://www.zhihu.com/api/v3/moments?limit=10"
+    posturl = moments_tab[num].nexturl or "https://api.zhihu.com/moments_v3?feed_type="..alltype[num]
   end
 
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
-  提示("加载中")
-  local json=require "cjson"
-  zHttp.get(posturl,head,function(code,content)
-    if code==200 then
-      local data=json.decode(content)
-      moments_isend=data.paging.is_end
-      moments_prev=data.paging.previous
-      moments_nextUrl=data.paging.next
-      for k,v in ipairs(data.data) do
-        if v.type=="feed_group"
-          for d,e in ipairs(v.list) do
-            local 关注作者头像=e.actors[1].avatar_url
-            local 点赞数=tointeger(e.target.voteup_count)
-            local 评论数=tointeger(e.target.comment_count)
-            local 标题=e.target.title or e.target.question.title
-            local 关注名字=e.action_text
-            local 时间=时间戳(e.created_time)
-            local 预览内容=e.target.excerpt
-            if e.target.type=="answer" then
-              问题id等=tointeger(e.target.question.id or 1).."分割"..tointeger(e.target.id)
-              标题=e.target.question.title
-             elseif e.target.type=="question" then
-              问题id等="问题分割"..tointeger(e.target.id)
-              标题=e.target.title
-             elseif e.target.type=="article"
-              问题id等="文章分割"..tointeger(e.target.id)
-              标题=e.target.title
-             elseif e.target.type=="pin"
-              问题id等="想法分割"..tointeger(e.target.id)
-              标题=e.target.title
-            end
-            list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
 
-          end
-         elseif v.type=="feed" then
-          local 关注作者头像=v.actors[1].avatar_url
+  local mapphead = {
+    ["x-api-version"] = "3.0.89";
+    ["x-app-za"] = "OS=Android";
+    ["x-app-version"] = "8.44.0";
+    ["x-moments-ab-param"] = "follow_tab=1";
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
+  }
+
+  zHttp.get(posturl,mapphead,function(code,content)
+    if code==200 then
+      local data=luajson.decode(content)
+      moments_tab[num].isend=data.paging.is_end
+      moments_tab[num].prev=data.paging.previous
+      moments_tab[num].nexturl=data.paging.next
+      for k,v in ipairs(data.data) do
+        if v.type=="moments_feed" then
+          local 关注作者头像=v.target.author.avatar_url
           local 点赞数=tointeger(v.target.voteup_count)
           local 评论数=tointeger(v.target.comment_count)
           local 标题=v.target.title
-          local 关注名字=v.action_text
-          local 时间=时间戳(v.created_time)
+          local 作者名称=v.source.actor.name
+          local 动作=作者名称..v.source.action_text
+          local 时间=时间戳(v.source.action_time)
           local 预览内容=v.target.excerpt
           if v.target.type=="answer" then
-            问题id等=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
+            问题id等=tointeger(v.target.question.id) or "null"
+            问题id等=问题id等.."分割"..tointeger(v.target.id)
             标题=v.target.question.title
            elseif v.target.type=="question" then
             问题id等="问题分割"..tointeger(v.target.id)
@@ -1098,8 +1147,93 @@ function 关注刷新(isclear,isprev)
            elseif v.target.type=="pin"
             问题id等="想法分割"..tointeger(v.target.id)
             标题=v.target.title
+           elseif v.target.type=="moments_pin"
+            if 标题==nil or 标题=="" then
+              标题="一个想法"
+            end
+            问题id等="想法分割"..tointeger(v.target.id)
+            点赞数=tointeger(v.target.reaction_count)
+            预览内容=v.target.content[1].content
+           elseif v.target.type=="zvideo"
+            问题id等="视频分割"..tointeger(v.target.id)
+            标题=v.target.title
+            if 预览内容==nil or 预览内容=="" then
+              预览内容="[视频]"
+            end
           end
-          list9.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=关注名字,follow_time=时间,follow_image=关注作者头像}
+          thispage.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+
+         elseif v.type=="feed_item_index_group" then
+
+          local 关注作者头像=v.actors[1].avatar_url
+          -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
+          local 数据=get_number_and_following(v.target.desc)
+          local 点赞数=tointeger(数据[1])
+          local 评论数=tointeger(数据[3])
+          local 标题=v.target.title
+          local 作者名称=v.target.author
+          local 动作=作者名称..v.action_text
+          local 时间=时间戳(v.action_time)
+          local 预览内容=v.target.digest
+          if v.target.type=="answer" then
+            问题id等=tointeger(questonid) or "null"
+            问题id等=问题id等.."分割"..tointeger(v.target.id)
+            标题=v.target.title
+           elseif v.target.type=="question" then
+            问题id等="问题分割"..tointeger(v.target.id)
+            标题=v.target.title
+           elseif v.target.type=="article"
+            问题id等="文章分割"..tointeger(v.target.id)
+            标题=v.target.title
+           elseif v.target.type=="pin"
+            问题id等="想法分割"..tointeger(v.target.id)
+            标题=v.target.title
+           elseif v.target.type=="zvideo"
+            问题id等="视频分割"..tointeger(v.target.id)
+            标题=v.target.title
+            if 预览内容==nil or 预览内容=="" then
+              预览内容="[视频]"
+            end
+          end
+          thispage.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+         elseif v.type=="item_group_card" then
+          for e,q in ipairs(v.data) do
+
+            local 关注作者头像=v.actor.avatar_url
+            -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
+            local 数据=get_number_and_following(q.desc)
+            local 点赞数=tointeger(数据[1])
+            local 评论数=tointeger(数据[3])
+            local 标题=q.title
+            local 作者名称=v.actor.name
+            local 动作=作者名称..v.action_text
+            local 时间=时间戳(v.action_time)
+            local 预览内容=q.digest
+            if q.type=="answer" then
+              问题id等=tointeger(questonid) or "null"
+              问题id等=问题id等.."分割"..tointeger(q.id)
+              标题=q.title
+             elseif q.type=="question" then
+              问题id等="问题分割"..tointeger(q.id)
+              标题=q.title
+             elseif q.type=="article"
+              问题id等="文章分割"..tointeger(q.id)
+              标题=q.title
+             elseif q.type=="pin"
+              问题id等="想法分割"..tointeger(q.id)
+              标题=q.title
+             elseif q.type=="zvideo"
+              问题id等="视频分割"..tointeger(q.id)
+              标题=q.title
+              if 预览内容==nil or 预览内容=="" then
+                预览内容="[视频]"
+              end
+            end
+            thispage.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+          end
+
+         elseif v.type=="recommend_user_card_list" then
+          --推荐关注用户
         end
       end
     end
@@ -1190,8 +1324,8 @@ function 想法刷新(isclear)
   local geturl=thisurl or "https://api.zhihu.com/prague/feed?offset=0&limit=10"
   zHttp.get(geturl,head,function(code,content)
     if code==200 then--判断网站状态
-      thisurl=require "cjson".decode(content).paging.next
-      for i,v in ipairs(require "cjson".decode(content).data) do
+      thisurl=luajson.decode(content).paging.next
+      for i,v in ipairs(luajson.decode(content).data) do
         local url
         xpcall(function()
           url=v.target.images[1].url
@@ -1215,27 +1349,16 @@ function 收藏刷新(isclear)
 
   if not(itemc4) or isclear then
 
-    CollectiontabLayout.setupWithViewPager(page)
-
-    local CollectionTable={"我的","关注"}
 
     if CollectiontabLayout.getTabCount()==0 then
+      CollectiontabLayout.setupWithViewPager(page)
+      local CollectionTable={"我的","关注"}
+      --setupWithViewPager设置的必须手动设置text
       for i=1, #CollectionTable do
-        local tab=CollectiontabLayout.newTab()
-        local pagenum=i-1
-        tab.view.onClick=function() changepage(pagenum) end
-        CollectiontabLayout.addTab(tab)
+        local itemnum=i-1
+        local tab=CollectiontabLayout.getTabAt(itemnum)
+        tab.setText(CollectionTable[i]);
       end
-    end
-
-    --setupWithViewPager设置的必须手动设置text
-    for i=1, #CollectionTable do
-      local itemnum=i-1
-      CollectiontabLayout.getTabAt(itemnum).setText(CollectionTable[i]);
-    end
-
-    function changepage(z)
-      page.setCurrentItem(z,false)
     end
 
     datas4={}
@@ -1294,7 +1417,7 @@ function 收藏刷新(isclear)
 
     zHttp.get(collections_url,head,function(code,content)
       if code==200 then
-        for k,v in ipairs(require "cjson".decode(content).data) do
+        for k,v in ipairs(luajson.decode(content).data) do
           list4.adapter.add{
             collections_title={
               text=v.title,
@@ -1327,7 +1450,7 @@ function 收藏刷新(isclear)
     zHttp.get(mc_url,head,function(c,ct)
       if c==200 then
 
-        for k,v in ipairs(require "cjson".decode(ct).data) do
+        for k,v in ipairs(luajson.decode(ct).data) do
 
           list8.adapter.add{
             mc_image=v.creator.avatar_url,
@@ -1381,7 +1504,7 @@ function getuserinfo()
   zHttp.get(myurl,head,function(code,content)
 
     if code==200 then--判断网站状态
-      local data=require "cjson".decode(content)
+      local data=luajson.decode(content)
       local 名字=data.name
       local 头像=data.avatar_url
       local 签名=data.headline
@@ -1403,8 +1526,8 @@ function getuserinfo()
       zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code,content)
         if code==200 then
           HometabLayout.setVisibility(0)
-          local decoded_content = require "cjson".decode(content)
-          --    提示(require "cjson".decode(content).selected_sections[1].section_name)
+          local decoded_content = luajson.decode(content)
+          --    提示(luajson.decode(content).selected_sections[1].section_name)
           for i=1, #decoded_content.selected_sections do
             --提示(tostring(i))
             if HometabLayout.getTabCount()==0 then
@@ -1489,7 +1612,7 @@ end
 local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
 Http.get(update_api,head,function(code,content)
   if code==200 then
-    local content_json=require("cjson").decode(content)
+    local content_json=luajson.decode(content)
     local content=base64dec(content_json.content)
     updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
     isstart=content:match("start%=(.+),start")

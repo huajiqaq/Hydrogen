@@ -126,7 +126,7 @@ local function 页面设置()
   id数据表={}
   for i=1,2 do
     if i==2 then
-      local 最终处理数据=require "cjson".encode({["section_ids"]=id数据表})
+      local 最终处理数据=luajson.encode({["section_ids"]=id数据表})
       --转为json中会生成\"转义 替换掉
       local 最终处理数据=string.gsub(最终处理数据,[[\"]],"")
       zHttp.post("https://api.zhihu.com/feed-root/sections/submit/v2",最终处理数据,post_access_token_head,function(code,content)
@@ -148,31 +148,31 @@ function 开始加载推荐()
     if code==200 then
       for i=1, 3 do
         if i==1 then
-          alldata=#require "cjson".decode(content).selected_sections+#require "cjson".decode(content).guess_like_sections+#require "cjson".decode(content).more_sections-1
+          alldata=#luajson.decode(content).selected_sections+#luajson.decode(content).guess_like_sections+#luajson.decode(content).more_sections-1
 
           table.insert(data,{myt="提示：你可点击标签来添加/删除 可长按拖动排序 可拖动其他来快速添加".."\n"})
           table.insert(data,{myt="我的"})
-          for i=1, #require "cjson".decode(content).selected_sections do
+          for i=1, #luajson.decode(content).selected_sections do
             adapter.notifyDataSetChanged()
-            if i<#require "cjson".decode(content).selected_sections+1 and require "cjson".decode(content).selected_sections[i].section_name~="圈子" then
-              table.insert(data,{title=require "cjson".decode(content).selected_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).selected_sections[i].section_id))})
+            if i<#luajson.decode(content).selected_sections+1 and luajson.decode(content).selected_sections[i].section_name~="圈子" then
+              table.insert(data,{title=luajson.decode(content).selected_sections[i].section_name,text=tostring(tointeger(luajson.decode(content).selected_sections[i].section_id))})
 
             end
           end
         end
         if i==2 then
           table.insert(data,{myt="其他"})
-          for i=1, #require "cjson".decode(content).guess_like_sections do
+          for i=1, #luajson.decode(content).guess_like_sections do
             --提示(tostring(i))
-            if require "cjson".decode(content).guess_like_sections[i].section_name~="圈子" then
-              table.insert(data,{title=require "cjson".decode(content).guess_like_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).guess_like_sections[i].section_id))})
+            if luajson.decode(content).guess_like_sections[i].section_name~="圈子" then
+              table.insert(data,{title=luajson.decode(content).guess_like_sections[i].section_name,text=tostring(tointeger(luajson.decode(content).guess_like_sections[i].section_id))})
 
             end
           end
-          for i=1, #require "cjson".decode(content).more_sections do
-            if require "cjson".decode(content).more_sections[i].section_name~="圈子" then
+          for i=1, #luajson.decode(content).more_sections do
+            if luajson.decode(content).more_sections[i].section_name~="圈子" then
 
-              table.insert(data,{title=require "cjson".decode(content).more_sections[i].section_name,text=tostring(tointeger(require "cjson".decode(content).more_sections[i].section_id))})
+              table.insert(data,{title=luajson.decode(content).more_sections[i].section_name,text=tostring(tointeger(luajson.decode(content).more_sections[i].section_id))})
 
             end
           end

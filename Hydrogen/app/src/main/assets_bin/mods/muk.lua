@@ -1,5 +1,6 @@
 require "import"
 import "mods.imports"
+luajson=require "json"
 
 initApp=true
 useCustomAppToolbar=true
@@ -14,7 +15,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.1102
+versionCode=0.1103
 layout_dir="layout/item_layout/"
 
 
@@ -1064,7 +1065,7 @@ function 检查链接(url,b)
     local videoid= url:match("video/(.+)")
     zHttp.get("https://lens.zhihu.com/api/v4/videos/"..videoid,head,function(code,content)
       if code==200 then
-        local v=require "cjson".decode(content)
+        local v=luajson.decode(content)
         xpcall(function()
           视频链接=v.playlist.SD.play_url
           end,function()
@@ -1111,21 +1112,16 @@ function 检查链接(url,b)
 end
 
 function 检查意图(url,b)
-  local get=require "model.answer"
   local open=activity.getSharedData("内部浏览器查看回答")
   if url and url:find("zhihu://") then
     if url:find "answers" then
       if b then return true end
       local id=url:match("answers/(.-)?")
-      get:getAnswer(id,function(s)
-        activity.newActivity("answer",{tointeger(s.question.id),tointeger(id),nil,true})
-      end)
+      activity.newActivity("answer",{"null",tointeger(id),nil,true})
      elseif url:find "answer" then
       if b then return true end
       local id=url:match("answer/(.-)/") or url:match("answer/(.+)")
-      get:getAnswer(id,function(s)
-        activity.newActivity("answer",{tointeger(s.question.id),tointeger(id),nil,true})
-      end)
+      activity.newActivity("answer",{"null",tointeger(id),nil,true})
      elseif url:find "questions" then
       if b then return true end
       activity.newActivity("question",{url:match("questions/(.-)?"),true})
@@ -1675,7 +1671,7 @@ function 加入收藏夹(回答id,收藏类型)
   zHttp.get(collections_url,head,function(code,content)
     if code==200 then
       adp.setNotifyOnChange(true)
-      for k,v in ipairs(require "cjson".decode(content).data) do
+      for k,v in ipairs(luajson.decode(content).data) do
         adp.add({
           mytext=v.title,
           myid=tostring(tointeger(v.id))
@@ -1814,8 +1810,8 @@ function 新建收藏夹(callback)
 
   zHttp.get("https://api.zhihu.com/people/"..activity.getSharedData("idx").."/profile?profile_new_version=1",head,function(code,content)
     if code==200 then
-      if require "cjson".decode(content).url_token then
-        collection_webview.loadUrl("https://www.zhihu.com/people/"..require "cjson".decode(content).url_token.."/collections/")
+      if luajson.decode(content).url_token then
+        collection_webview.loadUrl("https://www.zhihu.com/people/"..luajson.decode(content).url_token.."/collections/")
        else
         提示("出错 请联系作者")
         collection_dialog.dismiss()
@@ -1953,9 +1949,10 @@ end
 
 function urlEncode(s)
   s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
-  return string.gsub(s, "", " ")
+  return string.gsub(s, " ", "+")
 end
-
+ 
+ 
 function urlDecode(s)
   s = string.gsub(s, '%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
   return s
@@ -2165,7 +2162,7 @@ function setHead()
   }
 
   if activity.getSharedData("signdata")~=nil and getLogin() then
-    login_access_token="Bearer"..require "cjson".decode(activity.getSharedData("signdata")).access_token;
+    login_access_token="Bearer"..luajson.decode(activity.getSharedData("signdata")).access_token;
     post_access_token_head={
       ["Content-Type"] = "application/json; charset=UTF-8";
       ["authorization"] = login_access_token;
@@ -2187,7 +2184,7 @@ zHttp = {}
 
 function zHttp.setcallback(code,content,callback)
   if code==403 then
-    decoded_content = require "cjson".decode(content)
+    decoded_content = luajson.decode(content)
     if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
       AlertDialog.Builder(this)
       .setTitle("提示")
@@ -2516,4 +2513,17 @@ function ChoicePath(StartPath,callback)
   end
 
   SetItem(StartPath)
+end
+
+-- 定义一个函数，用于从字符串中获取数字和后续内容
+function get_number_and_following(str)
+  -- 定义一个空的table，用于存放结果
+  local result = {}
+  -- 使用正则表达式匹配数字和后续内容，直到遇到空格或字符串结束
+  for s in string.gmatch(str, "%-?%d+%.?%d?[^%s]*") do
+    -- 将匹配到的内容插入到table中
+    table.insert(result, s)
+  end
+  -- 返回table
+  return result
 end

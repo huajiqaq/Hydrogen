@@ -40,7 +40,7 @@ search_list.Adapter=yuxuan_adpqy
 local url = "https://api.zhihu.com/search/top_search"
 zHttp.get(url,head,function(code,content)
   if code==200 then
-    local data=require "cjson".decode(content)
+    local data=luajson.decode(content)
     for k,v in ipairs(data.top_search.words) do
       task(50,function()yuxuan_adpqy.add{hotsearch_key=v.query,hotsearch_title=v.display_query}end)
     end

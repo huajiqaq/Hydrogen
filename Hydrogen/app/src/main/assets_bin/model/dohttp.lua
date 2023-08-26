@@ -225,7 +225,7 @@ end
 
 function base:setgetcallback(code,content)
   if code==200 then
-    local data=require "cjson".decode(content)
+    local data=luajson.decode(content)
     if data.paging.is_end then
       提示("已经到底啦")
       --            end
@@ -234,7 +234,7 @@ function base:setgetcallback(code,content)
       self.resultfunc(data)
     end
    else
-    local data=require "cjson".decode(content)
+    local data=luajson.decode(content)
     if data and data.error and data.error.message then
       提示("报错了 错误原因："..data.error.message)
      else
@@ -245,10 +245,10 @@ end
 
 function base:setothercallback(code,content)
   if code==200 then
-    local data=require "cjson".decode(content)
+    local data=luajson.decode(content)
     self.resultfunc(data)
    else
-    local data=require "cjson".decode(content)
+    local data=luajson.decode(content)
     if data and data.error and data.error.message then
       提示("报错了 错误原因："..data.error.message)
      else

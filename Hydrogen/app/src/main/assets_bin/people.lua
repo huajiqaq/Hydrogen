@@ -16,12 +16,201 @@ people_itemc=获取适配器项目布局("people/people")
 
 local people_adp=MyLuaAdapter(activity,people_datas,people_itemc)
 
+
+task(1,function()
+  people_list.addHeaderView(loadlayout({
+    LinearLayout;
+    layout_height="-1";
+    orientation="vertical";
+    layout_width="-1";
+    {
+      MaterialCardView;
+      --    layout_marginBottom="0dp";
+      layout_width="-1";
+      radius="8dp";
+      layout_height="-2";
+      layout_marginTop="0dp";
+      layout_margin="16dp";
+      Elevation="0";
+      StrokeColor=cardedge;
+      StrokeWidth=dp2px(1),
+      {
+        LinearLayout;
+        layout_height="-1";
+        orientation="vertical";
+        padding="16dp";
+        layout_width="-1";
+        {
+          LinearLayout;
+          layout_height="-1";
+          orientation="vertical";
+          layout_width="-1";
+          {
+            CircleImageView;
+            layout_height="64dp";
+            layout_width="64dp";
+            layout_gravity="center";
+            src="logo",
+            id="people_image",
+          };
+          {
+            TextView;
+            gravity="center";
+            id="people_name",
+            textSize="20sp";
+            textColor=textc,
+            Typeface=字体("product-Bold");
+            layout_gravity="center";
+            layout_marginTop="10dp";
+          };
+          {
+            TextView;
+            layout_marginTop="5dp";
+            textColor=textc,
+            id="people_sign",
+            Typeface=字体("product");
+            layout_gravity="center";
+            --                    singleLine=true;
+          };
+          {
+            LinearLayout;
+            id="people_o";
+            layout_marginTop="10dp",
+            layout_width="-1";
+            layout_height="-1",
+            gravity="center",
+            Visibility=View.GONE;
+            {
+              CardView;
+              layout_marginRight="10dp";
+              id="following";
+              layout_width="-2";
+              layout_height="-2";
+              radius="4dp";
+              layout_gravity="center",
+              --background=primaryc;
+              CardBackgroundColor=primaryc;
+              {
+                TextView;
+                id="followtext",
+                layout_width="-1";
+                layout_height="-1";
+                textSize="14sp";
+                paddingRight="12dp";
+                paddingLeft="12dp";
+                paddingTop="8dp";
+                paddingBottom="8dp";
+                Text="关注";
+                textColor=backgroundc;
+                gravity="center";
+                Typeface=字体("product-Bold");
+              };
+            };
+            {
+              CardView;
+              id="sixin";
+              layout_width="-2";
+              layout_height="-2";
+              radius="4dp";
+              layout_gravity="center",
+              --background=primaryc;
+              CardBackgroundColor=primaryc;
+              {
+                TextView;
+                id="sixintext",
+                layout_width="-1";
+                layout_height="-1";
+                textSize="14sp";
+                paddingRight="12dp";
+                paddingLeft="12dp";
+                paddingTop="8dp";
+                paddingBottom="8dp";
+                Text="私信";
+                textColor=backgroundc;
+                gravity="center";
+                Typeface=字体("product-Bold");
+              };
+            };
+          };
+        };
+      };
+    };
+    {
+      MyTab
+      {
+        id="peotab",
+      },
+      contentDescription="关注标签",
+    };
+    {
+      LinearLayout;
+      layout_width="fill";
+      orientation="horizontal";
+      layout_height="fill";
+      id="_sortvis";
+      Visibility=8;
+      {
+        TextView;
+        id="_num";
+      };
+      {
+        LinearLayout;
+        layout_gravity="end";
+        gravity="end";
+        layout_width="match_parent";
+        {
+          LinearLayout;
+          layout_gravity="center";
+          gravity="center";
+          id="_sort";
+          layout_width="wrap_content";
+          {
+            TextView;
+            id="_sortt";
+            text="按时间排序";
+          };
+          {
+            ImageView;
+            ColorFilter=textc;
+            src=图标("keyboard_arrow_down");
+          };
+        };
+      };
+    };
+  },nil),nil,false)
+  function _sort.onClick(view)
+    if chobu=="answer" then
+      pop=PopupMenu(activity,view)
+      menu=pop.Menu
+      menu.add("按时间排序").onMenuItemClick=function(a)
+        if _sortt.text=="按时间排序" then
+          return
+        end
+        _sortt.text="按时间排序"
+        pcall(function()people_adp.clear()end)
+        其他("clear")
+        people_adp.notifyDataSetChanged()
+      end
+      menu.add("按赞数排序").onMenuItemClick=function(a)
+        if _sortt.text=="按赞数排序" then
+          return
+        end
+        _sortt.text="按赞数排序"
+        pcall(function()people_adp.clear()end)
+        其他("clear")
+        people_adp.notifyDataSetChanged()
+      end
+      pop.show()--显示
+     else
+    end
+  end
+end)
+
 people_list.adapter=people_adp
 
 local base_people=require "model.people":new(people_id)
 :getData(function(data)
   local 名字=data.name
-  头像=data.avatar_url
   local 大头像=data.avatar_url_template
   local 签名=data.headline
   用户id=data.id
@@ -72,40 +261,44 @@ local base_people=require "model.people":new(people_id)
 end)
 
 :setresultfunc(function(v)
-  local 活动=v.action_text
+  local 活动=v.source.action_text
   --  local 预览内容=v.target.excerpt_new
   local 预览内容=v.target.excerpt
   local 点赞数=tointeger(v.target.voteup_count)
   local 评论数=tointeger(v.target.comment_count)
+  local 头像=v.source.actor.avatar_url
   if v.target.type=="answer" then
-    问题id=tointeger(v.target.question.id or 1).."分割"..tointeger(v.target.id)
+    问题id=tointeger(v.target.question.id) or "null"
+    问题id=问题id.."分割"..tointeger(v.target.id)
     标题=v.target.question.title
    elseif v.target.type=="topic" then
-    people_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.target.id,people_title=v.target.name,people_image=头像}
+    people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.target.id,people_title=v.target.name,people_image=头像}
     return
    elseif v.target.type=="question" then
-    问题id=tointeger(v.target.id or 1).."问题分割"
+    问题id=tointeger(v.target.id).."问题分割"
     标题=v.target.title
    elseif v.target.type=="column" then
     return
    elseif v.target.type=="collection" then
     return
-   elseif v.target.type=="pin" then
+   elseif v.target.type=="moments_pin" then
     标题=v.target.author.name.."发表了想法"
-    问题id="想法分割"..v.target.id
+    问题id="想法分割"..tostring(v.target.id)
     预览内容=v.target.content[1].content
    else
     问题id="文章分割"..tointeger(v.target.id)
     标题=v.target.title
   end
-  people_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+  people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
 
 end)
 
 chobu="all"
 
 function 全部()
-  _sort.setVisibility(8)
+  if _sortvis then
+    _sortvis.setVisibility(8)
+  end
   base_people:next(function(r,a)
     if r==false and base_people.is_end==false then
       提示("获取个人动态列表出错 "..a or "")
@@ -134,11 +327,11 @@ function 其他(isclear)
     end
   end
   geturl=myurl[chobu] or "https://api.zhihu.com/people/"..people_id.."/"..chobu.."s?order_by=created&offset=0&limit=20"
-  _sort.setVisibility(8)
+  _sortvis.setVisibility(8)
   if chobu=="zvideo" then
     geturl=myurl[chobu] or "https://api.zhihu.com/members/"..people_id.."/"..chobu.."s?order_by=created&offset=0&limit=20"
    elseif chobu=="answer"
-    _sort.setVisibility(0)
+    _sortvis.setVisibility(0)
     if _sortt.text=="按赞数排序" then
       geturl=myurl[chobu] or "https://api.zhihu.com/people/"..people_id.."/answers?order_by=votenum&offset=0&limit=20"
     end
@@ -146,30 +339,31 @@ function 其他(isclear)
 
   zHttp.get(geturl,apphead,function(code,content)
     if code==200 then
-      if require "cjson".decode(content).paging.next then
-        testurl=require "cjson".decode(content).paging.next
+      if luajson.decode(content).paging.next then
+        testurl=luajson.decode(content).paging.next
         if testurl:find("http://") then
           testurl=string.gsub(testurl,"http://","https://",1)
         end
         myurl[chobu]=testurl
       end
-      if require "cjson".decode(content).paging.is_end and isclear~="clear" then
+      if luajson.decode(content).paging.is_end and isclear~="clear" then
         提示("已经没有更多内容了")
       end
-      for i,v in ipairs(require "cjson".decode(content).data) do
+      for i,v in ipairs(luajson.decode(content).data) do
         local 预览内容=v.excerpt
         local 点赞数=tointeger(v.voteup_count)
         local 评论数=tointeger(v.comment_count)
         if v.type=="answer" then
           活动="回答了问题"
-          问题id=tointeger(v.question.id or 1).."分割"..tointeger(v.id)
+          问题id=tointeger(v.question.id) or "null"
+          问题id=问题id.."分割"..tointeger(v.id)
           标题=v.question.title
          elseif v.type=="topic" then
-          people_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.id,people_title=v.name,people_image=头像}
+          people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.id,people_title=v.name,people_image=头像}
           return
          elseif v.type=="question" then
           活动="发布了问题"
-          问题id=tointeger(v.id or 1).."问题分割"
+          问题id=tointeger(v.id).."问题分割"
           标题=v.title
          elseif v.type=="column" then
           活动="发表了专栏"
@@ -200,7 +394,7 @@ function 其他(isclear)
           问题id="文章分割"..tointeger(v.id)
           标题=v.title
         end
-        people_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+        people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
       end
     end
   end)
@@ -208,14 +402,14 @@ end
 
 zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab",apphead,function(code,content)
   if code==200 then
-    for i,v in ipairs(require "cjson".decode(content).tabs_v3[1].sub_tab) do
+    for i,v in ipairs(luajson.decode(content).tabs_v3[1].sub_tab) do
       if v.name~="更多" then
         if v.number>0 then
           num=" "..tostring(tointeger(v.number))
          else
           num=""
         end
-        peotab:addTab(v.name..num,function() pcall(function()people_list.adapter.clear()end) chobu=v.key 其他("clear") people_list.adapter.notifyDataSetChanged() end,3)
+        peotab:addTab(v.name..num,function() pcall(function()people_adp.clear()end) chobu=v.key 其他("clear") people_adp.notifyDataSetChanged() end,3)
       end
       peotab:showTab(1)
     end
@@ -231,53 +425,33 @@ end
 
 add=true
 
-function bit.onScrollChange(a,b,j,y,u)
-  if (add and bit.getChildAt(0).getMeasuredHeight()==bit.getScrollY()+bit.getHeight() and base_people.is_end==false and chobu~="no搜索") then
-    add=false
-    task(2000,function()add=true
-    end)
-    --sr.setRefreshing(true)
-    刷新()
-    System.gc()
-
-  end
-end
-
-function _sort.onClick(view)
-  if chobu=="answer" then
-    pop=PopupMenu(activity,view)
-    menu=pop.Menu
-    menu.add("按时间排序").onMenuItemClick=function(a)
-      if _sortt.text=="按时间排序" then
-        return
+people_list.setOnScrollListener{
+  onScrollStateChanged=function(view,scrollState)
+    if scrollState == 0 then
+      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and add then
+        add=false
+        刷新()
+        System.gc()
+        add=false
+        Handler().postDelayed(Runnable({
+          run=function()
+            add=true
+          end,
+        }),1000)
       end
-      _sortt.text="按时间排序"
-      pcall(function()people_list.adapter.clear()end)
-      其他("clear")
-      people_list.adapter.notifyDataSetChanged()
     end
-    menu.add("按赞数排序").onMenuItemClick=function(a)
-      if _sortt.text=="按赞数排序" then
-        return
-      end
-      _sortt.text="按赞数排序"
-      pcall(function()people_list.adapter.clear()end)
-      其他("clear")
-      people_list.adapter.notifyDataSetChanged()
-    end
-    pop.show()--显示
-   else
   end
-end
+}
+
 
 function nochecktitle(str)
   chobu="no搜索"
-  local oridata=people_list.adapter.getData()
+  local oridata=people_adp.getData()
 
   for b=1,2 do
     if b==2 then
-      提示("搜索完毕 共搜索到"..#people_list.adapter.getData().."条数据")
-      if #people_list.adapter.getData()==0 then
+      提示("搜索完毕 共搜索到"..#people_adp.getData().."条数据")
+      if #people_adp.getData()==0 then
         chobu="all"
         其他("clear")
       end
@@ -285,7 +459,7 @@ function nochecktitle(str)
     for i=#oridata,1,-1 do
       if not oridata[i].people_title:find(str) then
         table.remove(oridata, i)
-        people_list.adapter.notifyDataSetChanged()
+        people_adp.notifyDataSetChanged()
       end
     end
   end
@@ -297,8 +471,8 @@ function checktitle(str)
       if isstart=="true" then--开启
         local 请求链接="https://www.zhihu.com/api/v4/search_v3?correction=1&t=general&q="..urlEncode(str).."&restricted_scene=member&restricted_field=member_hash_id&restricted_value="..people_id
         chobu="搜索"
-        --        提示("搜索中 请耐心等待")
-        pcall(function()people_list.Adapter.clear()end)
+        --提示("搜索中 请耐心等待")
+        pcall(function()people_adp.clear()end)
         search_base=require "model.dohttp"
         :new(请求链接)
         :setresultfunc(function(data)
@@ -313,14 +487,15 @@ function checktitle(str)
             local 评论数=tointeger(v.object.comment_count)
             if v.object.type=="answer" then
               活动="回答了问题"
-              问题id=tointeger(v.object.question.id or 1).."分割"..tointeger(v.object.id)
+              问题id=tointeger(v.object.question.id) or "null"
+              问题id=问题id.."分割"..tointeger(v.object.id)
               标题=v.object.question.name
              elseif v.object.type=="topic" then
-              people_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
+              people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
               return
              elseif v.object.type=="question" then
               活动="发布了问题"
-              问题id=tointeger(v.object.id or 1).."问题分割"
+              问题id=tointeger(v.object.id).."问题分割"
               标题=v.object.title
              elseif v.object.type=="column" then
               活动="发表了专栏"
@@ -351,8 +526,8 @@ function checktitle(str)
               问题id="文章分割"..tointeger(v.object.id)
               标题=v.object.title
             end
-            people_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
-            people_list.adapter.notifyDataSetChanged()
+            people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+            people_adp.notifyDataSetChanged()
           end
         end)
         search_base:getData()

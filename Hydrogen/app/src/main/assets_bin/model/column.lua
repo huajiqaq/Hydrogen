@@ -26,7 +26,7 @@ function basecolumn:getDataAsyc(callback)--异步获取数据
 
   zHttp.get("https://api.zhihu.com/articles/"..self.id,head,function(code,body)--拼接并get Data
     if code==200 then
-      self.data=require "cjson".decode(body)
+      self.data=luajson.decode(body)
       callback(self.data)--直接回答data
      else
       callback(false)--不成功

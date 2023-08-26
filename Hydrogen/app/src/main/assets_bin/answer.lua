@@ -21,8 +21,6 @@ activity.setContentView(loadlayout("layout/answer"))
 波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 波纹({all_root},"方自适应")
 
-
-import "model.question"
 import "model.answer"
 
 comment.onClick=function()
@@ -35,14 +33,15 @@ end;
 
 --new 0.1102 精准测量高度
 task(1,function()
-  local location,底栏高度,悬浮按钮高度
+  local location,底栏坐标,悬浮按钮坐标
   location = int[2];
   ll.getLocationOnScreen(location)
-  底栏高度=location[1]
+  底栏坐标=location[1]
   location = int[2];
   comment.getLocationOnScreen(location)
-  悬浮按钮高度=location[1]
-  悬浮按钮高度差=底栏高度-悬浮按钮高度
+  悬浮按钮坐标=location[1]
+  底栏高度=ll.height
+  悬浮按钮高度差=底栏坐标-悬浮按钮坐标
 end)
 
 local function 设置滑动跟随(t)
@@ -53,11 +52,12 @@ local function 设置滑动跟随(t)
       return
     end
     if t.canScrollVertically(1)~=true then--解决滑倒底了还是没到底的bug new 0.1102
-      llb.y=dp2px(56)+悬浮按钮高度差
-      comment_parent.y=dp2px(56)+悬浮按钮高度差
+      llb.y=底栏高度+悬浮按钮高度差
+      comment_parent.y=底栏高度+悬浮按钮高度差
     end
     if ly>y then --上次滑动y大于这次y就是向上滑
-      if llb.y<=0 or math.abs(y-ly)>=dp2px(56) then --这个or为了防止快速大滑动
+      if llb.y<=0 or math.abs(y-ly)>=底栏高度 then --这个or为了防止快速大滑动 new 0.1103更改 精准测量
+        --if llb.y<=0 or math.abs(y-ly)>=dp2px(56) then --这个or为了防止快速大滑动
         llb.y=0
         comment_parent.y=0
        else
@@ -65,7 +65,7 @@ local function 设置滑动跟随(t)
         comment_parent.y=comment_parent.y-math.abs(y-ly)
       end
      else
-      if llb.y<=dp2px(56)+悬浮按钮高度差 then --精准测量高度差 防止无法隐藏全部的bug new 0.1102
+      if llb.y<=底栏高度+悬浮按钮高度差 then --精准测量高度差 防止无法隐藏全部的bug new 0.1102
         --if llb.y<=dp2px(56)+dp2px(26) then --没到底就向底移动(上滑)，+26dp是悬浮球高
         llb.y=llb.y+math.abs(y-ly)
         comment_parent.y=comment_parent.y+math.abs(y-ly)
@@ -104,6 +104,9 @@ function 数据添加(t,b)
     if not isDoubleTap then
       task(timeOut,function()
         if not isDoubleTap then
+          if 问题id==nil or 问题id=="null" then
+            return 提示("加载中")
+          end
           activity.newActivity("question",{问题id})
         end
       end)
@@ -137,7 +140,7 @@ function 数据添加(t,b)
   if b.author.name=="知乎用户" then
     zHttp.get("https://api.zhihu.com/people/"..b.author.id.."/profile?profile_new_version=1",head,function(code,content)
       if code==200 then
-        local data=require "cjson".decode(content)
+        local data=luajson.decode(content)
         t.userheadline.Text=data.headline
         t.username.Text=data.name
         loadglide(t.usericon,data.avatar_url)
@@ -253,14 +256,14 @@ function 数据添加(t,b)
     end,
     onPageStarted=function(view,url,favicon)
       t.content.setVisibility(8)
-      if type(t.progress)~="nil" then
+      if t.progress~=nil then
         t.progress.setVisibility(0)
       end
       等待doc(view)
     end,
     onPageFinished=function(view,url,favicon)
       t.content.setVisibility(0)
-      if type(t.progress)~="nil" then
+      if t.progress~=nil then
         t.progress.getParent().removeView(t.progress)
         t.progress=nil
       end
@@ -450,9 +453,10 @@ function 加载页(mviews,pos,isleftadd,isload)
 end
 
 function 首次设置()
-  defer local question_base=require "model.question":new(问题id)
-  :getData(function(tab)
+  defer local question_base=answer
+  :getinfo(回答id,function(tab)
     all_answer.Text="点击查看全部"..tointeger(tab.answer_count).."个回答 >"
+    问题id=tab.id
     if tab.answer_count==1 then
       回答容器.isleft=true
     end
@@ -558,7 +562,7 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
               local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
               zHttp.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
                 if a==200 then
-                  mviews.data=require "cjson".decode(b).data[1]
+                  mviews.data=luajson.decode(b).data[1]
                   vote_count.Text=tointeger(mviews.data.voteup_count)..""
                   thanks_count.Text=tointeger(mviews.data.thanks_count)..""
                   comment_count.Text=tointeger(mviews.data.comment_count)..""
@@ -624,7 +628,7 @@ voteup.onClick=function()
       if code==200 then
         提示("点赞成功")
         点赞状态[回答id]=true
-        local data=require "cjson".decode(content)
+        local data=luajson.decode(content)
         vote_count.text=tostring(tointeger(data.voteup_count))
         mviews.data.voteup_count=vote_count.text
        elseif code==401 then
@@ -636,7 +640,7 @@ voteup.onClick=function()
       if code==200 then
         提示("取消点赞成功")
         点赞状态[回答id]=false
-        local data=require "cjson".decode(content)
+        local data=luajson.decode(content)
         vote_count.text=tostring(tointeger(data.voteup_count))
         mviews.data.voteup_count=vote_count.text
        elseif code==401 then
@@ -654,7 +658,7 @@ thank.onClick=function()
       if code==200 then
         提示("表达感谢成功")
         感谢状态[回答id]=true
-        local data=require "cjson".decode(content)
+        local data=luajson.decode(content)
         thanks_count.text=tostring(tointeger(data.red_heart_count))
         mviews.data.thanks_count=thanks_count.text
        elseif code==401 then
@@ -666,7 +670,7 @@ thank.onClick=function()
       if code==200 then
         提示("取消感谢成功")
         感谢状态[回答id]=false
-        local data=require "cjson".decode(content)
+        local data=luajson.decode(content)
         thanks_count.text=tostring(tointeger(data.red_heart_count))
         mviews.data.thanks_count=thanks_count.text
        elseif code==401 then

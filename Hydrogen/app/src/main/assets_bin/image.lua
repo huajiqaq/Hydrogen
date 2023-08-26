@@ -25,7 +25,7 @@ activity.setContentView(loadlayout("layout/image"))
 local ls=...
 local views={}
 
-mls=require "cjson".decode(ls)
+mls=luajson.decode(ls)
 
 
 local now=mls[tostring(table.size(mls)-1)]

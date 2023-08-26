@@ -36,7 +36,7 @@ zHttp = {}
 
 function zHttp.setcallback(code,content,callback)
   if code==403 then
-    decoded_content = require "cjson".decode(content)
+    decoded_content = luajson.decode(content)
     if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
       AlertDialog.Builder(this)
       .setTitle("提示")
@@ -136,7 +136,7 @@ function 检查链接(url,b)
     local videoid= url:match("video/(.+)")
     zHttp.get("https://lens.zhihu.com/api/v4/videos/"..videoid,head,function(code,content)
       if code==200 then
-        local v=require "cjson".decode(content)
+        local v=luajson.decode(content)
         xpcall(function()
           视频链接=v.playlist.SD.play_url
           end,function()

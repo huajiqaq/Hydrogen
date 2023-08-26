@@ -83,9 +83,9 @@ function 刷新()
 
     _title.Text="查看想法"
     zHttp.get("https://www.zhihu.com/api/v4/pins/"..result,head,function(code,content)
-      simpletitle=require "cjson".decode(content).excerpt_title
-      autoname=require "cjson".decode(content).author.name
-      comment_count=tointeger(require "cjson".decode(content).comment_count)
+      simpletitle=luajson.decode(content).excerpt_title
+      autoname=luajson.decode(content).author.name
+      comment_count=tointeger(luajson.decode(content).comment_count)
       保存历史记录(simpletitle,"想法分割"..result,50)
     end)
     content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
@@ -94,8 +94,8 @@ function 刷新()
     content.loadUrl("https://www.zhihu.com/zvideo/"..result.."?utm_id=0")
     _title.Text="视频"
     zHttp.get("https://www.zhihu.com/api/v4/zvideos/"..result,head,function(code,content)
-      simpletitle=require "cjson".decode(content).title
-      autoname=require "cjson".decode(content).author.name
+      simpletitle=luajson.decode(content).title
+      autoname=luajson.decode(content).author.name
       保存历史记录(simpletitle,"视频分割"..result,50)
     end)
     if activity.getSharedData("视频提示0.01")==nil
