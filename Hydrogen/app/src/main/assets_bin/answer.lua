@@ -44,7 +44,12 @@ task(1,function()
   悬浮按钮高度差=底栏坐标-悬浮按钮坐标
 end)
 
+local 是否加载滑动跟随=this.getSharedData("回答底栏不设置滑动跟随")
+
 local function 设置滑动跟随(t)
+  if 是否加载滑动跟随=="true" then
+    return false
+  end
   t.onScrollChange=function(view,x,y,lx,ly)
     if y<=2 then--解决滑到顶了还是没有到顶的bug
       llb.y=0

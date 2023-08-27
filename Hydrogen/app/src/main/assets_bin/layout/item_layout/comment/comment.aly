@@ -2,6 +2,7 @@
   LinearLayout;
   layout_width="-1";
   BackgroundColor=backgroundc;
+  descendantFocusability=ViewGroup.FOCUS_BLOCK_DESCENDANTS,
   {
     MaterialCardView;
     Elevation="0";

@@ -26,6 +26,7 @@ data = {
   {__type=4,subtitle="夜间模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
 
   {__type=4,subtitle="回答预加载(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
+  {__type=4,subtitle="回答底栏不设置滑动跟随",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答底栏不设置滑动跟随"))}},
   {__type=4,subtitle="标题简略化",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
   {__type=4,subtitle="全屏模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=4,subtitle="关闭硬件加速",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("关闭硬件加速"))}},
@@ -73,6 +74,9 @@ tab={
 
   ["回答预加载(beta)"]=function()
     提示("此功能可能还有隐性bug,仅供体验，若影响体验请关闭")
+  end,
+  回答底栏不设置滑动跟随=function()
+    提示("开启后可能会有部分内容被底栏遮盖 若影响体验请关闭")
   end,
   夜间模式=function()
     提示("返回主页面生效")

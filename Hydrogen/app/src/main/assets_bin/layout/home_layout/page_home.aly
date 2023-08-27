@@ -24,19 +24,12 @@
         layout_height="fill";
         layout_width="fill";
         {
-          NestedScrollView;
-          fillViewport="true";
-          id="list2_r";
+          ListView;
+          id="list2";
+          nestedScrollingEnabled=true,
           layout_height="fill";
           layout_width="fill";
-          {
-            ListView;
-            id="list2";
-            nestedScrollingEnabled=true,
-            layout_height="fill";
-            layout_width="fill";
-            DividerHeight=0
-          };
+          DividerHeight=0
         };
       };
     };
@@ -58,20 +51,14 @@
         layout_height="fill",
         layout_width="fill",
         {
-          NestedScrollView;
-          id="recy_r";
-          layout_height="fill";
-          layout_width="fill";
-          {
-            RecyclerView,
-            nestedScrollingEnabled=false,
-            layout_height="fill",
-            layout_width="fill",
-            id="recy",
-          },
+          RecyclerView,
+          nestedScrollingEnabled=true,
+          layout_height="fill",
+          layout_width="fill",
+          id="recy",
         },
       },
-    };
+    },
   };
   --热榜
   {
@@ -90,17 +77,11 @@
         layout_height="fill";
         layout_width="fill";
         {
-          NestedScrollView;
-          id="list3_r";
-          layout_height="fill";
-          layout_width="fill";
-          {
-            RecyclerView;
-            nestedScrollingEnabled=false,
-            layout_height="fill",
-            layout_width="fill",
-            id="list3",
-          };
+          RecyclerView;
+          nestedScrollingEnabled=true,
+          layout_height="fill",
+          layout_width="fill",
+          id="list3",
         };
       };
     };
@@ -140,18 +121,12 @@
             layout_height="fill";
             layout_width="fill";
             {
-              NestedScrollView;
-              layout_height="fill";
+              ListView;
+              DividerHeight="0",
               layout_width="fill";
-              fillViewport="true";
-              {
-                ListView;
-                DividerHeight="0",
-                layout_width="fill";
-                id="list9",
-                layout_height="fill";
-                nestedScrollingEnabled=true,
-              };
+              id="list9",
+              layout_height="fill";
+              nestedScrollingEnabled=true,
             };
           };
 
@@ -161,18 +136,12 @@
             layout_height="fill";
             layout_width="fill";
             {
-              NestedScrollView;
-              layout_height="fill";
+              ListView;
+              DividerHeight="0",
               layout_width="fill";
-              fillViewport="true";
-              {
-                ListView;
-                DividerHeight="0",
-                layout_width="fill";
-                id="list10",
-                layout_height="fill";
-                nestedScrollingEnabled=true,
-              };
+              id="list10",
+              layout_height="fill";
+              nestedScrollingEnabled=true,
             };
           };
 
@@ -182,18 +151,12 @@
             layout_height="fill";
             layout_width="fill";
             {
-              NestedScrollView;
-              layout_height="fill";
+              ListView;
+              DividerHeight="0",
               layout_width="fill";
-              fillViewport="true";
-              {
-                ListView;
-                DividerHeight="0",
-                layout_width="fill";
-                id="list11",
-                layout_height="fill";
-                nestedScrollingEnabled=true,
-              };
+              id="list11",
+              layout_height="fill";
+              nestedScrollingEnabled=true,
             };
           };
 

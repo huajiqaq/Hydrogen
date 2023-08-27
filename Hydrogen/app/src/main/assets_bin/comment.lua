@@ -53,7 +53,7 @@ end
 function 刷新()
   comment_itemc=获取适配器项目布局("comment/comment")
 
-  comment_adp=LuaAdapter(activity,comment_datas,comment_itemc)
+  comment_adp=MyLuaAdapter(activity,comment_itemc)
   comment_list.Adapter=comment_adp
 
   comment_base=require "model.comment"
@@ -88,10 +88,11 @@ function 刷新()
       comment_art={
         text=myspan,
         MovementMethod=LinkMovementMethod.getInstance(),
-        Focusable=false,
         onClick= function(view)
           提示("点击文字不可以触发相关事件哦 你可长按文字复制 点击其余地方去打开楼中楼(如果有的话)")
-      end},
+        end,
+        Focusable=false,
+      },
 
       comment_author=名字,
       comment_image=头像,

@@ -967,7 +967,7 @@ end
 
 function 关注刷新(isclear,isprev,num)
   -- origin15.19 更改
-  if isclear==nil and follow_itemc then
+  if isclear==nil and moments_tab and moments_tab[num] then
     return false
   end
   if num==nil then
@@ -1001,7 +1001,7 @@ function 关注刷新(isclear,isprev,num)
           --选择时触发
           local pos=tab.getPosition()+1
           followpos=pos
-          关注刷新(false,false,pos)
+          关注刷新(nil,false,pos)
         end,
 
         onTabUnselected=function(tab)
@@ -1299,10 +1299,23 @@ function 想法刷新(isclear)
       end,
     });
 
-
-    recy_r.setOnScrollChangeListener{
-      onScrollChange=function(view,scrollX,scrollY,oldScrollX,oldScrollY)
-        if scrollY == (view.getChildAt(0).getMeasuredHeight() - view.getMeasuredHeight())
+    recy.addOnScrollListener(RecyclerView.OnScrollListener{
+      onScrollStateChanged=function(recyclerView,newState)
+      end,
+      onScrolled=function(recyclerView,dx,dy)
+        local lastChildView,lastChildBottom,recyclerBottom,lastPosition
+        --得到当前显示的最后一个item的view
+        lastChildView = recyclerView.getLayoutManager().getChildAt(recyclerView.getLayoutManager().getChildCount()-1);
+        --得到lastChildView的bottom坐标值
+        lastChildBottom = lastChildView.getBottom();
+        --得到Recyclerview的底部坐标减去底部padding值，也就是显示内容最底部的坐标
+        recyclerBottom = recyclerView.getBottom()-recyclerView.getPaddingBottom();
+        --通过这个lastChildView得到这个view当前的position值
+        lastPosition = recyclerView.getLayoutManager().getPosition(lastChildView);
+        --判断lastChildView的bottom值跟recyclerBottom
+        --判断lastPosition是不是最后一个position
+        --如果两个条件都满足则说明是真正的滑动到了底部
+        if(lastChildBottom == recyclerBottom and lastPosition == recyclerView.getLayoutManager().getItemCount()-1 )
           thinksr.setRefreshing(true)
           想法刷新()
           System.gc()
@@ -1311,10 +1324,10 @@ function 想法刷新(isclear)
               thinksr.setRefreshing(false);
             end,
           }),1000)
-
         end
       end
-    }
+    });
+
 
     mytab={}
     recy.setAdapter(adapter)
