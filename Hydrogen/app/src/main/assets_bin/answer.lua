@@ -125,6 +125,11 @@ function 数据添加(t,b)
   t.content.setHorizontalScrollBarEnabled(false);
   t.content.setVerticalScrollBarEnabled(false);
 
+  zHttp.post("https://api.zhihu.com/usertask-core/action/read_content",'{"content_id":"'..b.id..'","content_type":"ANSWER","action_time":'..os.time()..'}',apphead,function(code,content)
+    if code==200 then
+    end
+  end)
+
   --[[
   if not(b) then return end
 

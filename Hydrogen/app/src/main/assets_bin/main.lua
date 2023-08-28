@@ -85,12 +85,10 @@ function 获取Cookie(url)
   return cookieManager.getCookie(url);
 end
 
-apphead = {
-  ["x-api-version"] = "3.0.89";
-  ["x-app-za"] = "OS=Android";
-  ["x-app-version"] = "8.44.0";
+head = {
   ["cookie"] = 获取Cookie("https://www.zhihu.com/")
 }
+
 
 function 检查链接(url,b)
   local open=activity.getSharedData("内部浏览器查看回答")
@@ -183,15 +181,10 @@ function 检查意图(url)
   if url and url:find("zhihu://") then
     if url:find "answers" then
       local id=url:match("answers/(.-)?")
-
-      get:getAnswer(id,function(s)
-        newLuaActivity(this.getLuaDir("answer.lua"),Object{tointeger(s.question.id),tointeger(id),nil,true})
-      end)
+      newLuaActivity(this.getLuaDir("answer.lua"),Object{"null",tointeger(id),nil,true})
      elseif url:find "answer" then
       local id=url:match("answer/(.-)/") or url:match("answer/(.+)")
-      get:getAnswer(id,function(s)
-        newLuaActivity(this.getLuaDir("answer.lua"),Object{tointeger(s.question.id),tointeger(id),nil,true})
-      end)
+      newLuaActivity(this.getLuaDir("answer.lua"),Object{"null",tointeger(id),nil,true})
      elseif url:find "questions" then
       newLuaActivity(this.getLuaDir("question.lua"),Object{url:match("questions/(.-)?"),true})
      elseif url:find "question" then

@@ -15,7 +15,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.1105
+versionCode=0.1106
 layout_dir="layout/item_layout/"
 
 
@@ -1949,10 +1949,10 @@ end
 
 function urlEncode(s)
   s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
-  return string.gsub(s, " ", "+")
+  return string.gsub(s, " ", "")
 end
- 
- 
+
+
 function urlDecode(s)
   s = string.gsub(s, '%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
   return s
@@ -2155,9 +2155,9 @@ function setHead()
   }
 
   apphead = {
-    ["x-api-version"] = "3.0.89";
-    ["x-app-za"] = "OS=Android";
-    ["x-app-version"] = "8.44.0";
+    ["x-api-version"] = "3.1.8";
+    ["x-app-za"] = "OS=Android&VersionName=9.13.0&VersionCode=16816";
+    ["x-app-version"] = "9.13.0";
     ["cookie"] = 获取Cookie("https://www.zhihu.com/")
   }
 
@@ -2184,7 +2184,12 @@ zHttp = {}
 
 function zHttp.setcallback(code,content,callback)
   if code==403 then
-    decoded_content = luajson.decode(content)
+    local _ = pcall(function()
+      decoded_content=luajson.decode(content)
+    end)
+    if _==false then
+      return callback(code,content)
+    end
     if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
       AlertDialog.Builder(this)
       .setTitle("提示")

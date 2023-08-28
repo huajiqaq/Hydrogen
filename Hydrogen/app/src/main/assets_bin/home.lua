@@ -146,36 +146,63 @@ end
 
 function 主页刷新(isclear)
 
+
   function resolve_feed(v)
-    local 点赞数=tointeger(v.target.voteup_count)
-    local 评论数=tointeger(v.target.comment_count)
+    --    local 点赞数=tointeger(v.target.voteup_count)
+    --    local 评论数=tointeger(v.target.comment_count)
+    if #v.common_card.footline.elements==1 then
+      底部内容=v.common_card.footline.elements[1].text.panel_text
+     elseif #v.common_card.footline.elements==2
+      底部内容=v.common_card.footline.elements[2].text.panel_text
+     elseif #v.common_card.footline.elements==3
+      local 底部tab={}
+      for e, c in pairs(v.common_card.footline.elements) do
+        if c.interactive_button then
+          table.insert(底部tab,c.interactive_button.interactive_button.text.panel_text)
+         else
+          table.insert(底部tab,c.button.text.panel_text)
+        end
+      end
+      底部内容=底部tab[1].." 赞同 · "..底部tab[1].." 收藏 · "..底部tab[3].." 评论"
+     else
+      底部内容="未知"
+    end
+    底部内容=底部内容:gsub("等","")
     local 标题,问题id等;
-    local 作者=v.target.author.name
+    local 作者=v.common_card.feed_content.source_line.elements[2].text.panel_text
+    --[[
     if type(v.target.excerpt)=="nil" or v.target.excerpt=="" then
       if v.target.thumbnail_extra_info then
         v.target.excerpt="[视频]"
       end
     end
-    --local 预览内容=作者.." : "..v.target.excerpt_new
-    local 预览内容=作者.." : "..v.target.excerpt
+  ]]
+    local 预览内容
     --print(dump(v))
-    if v.target.type=="pin" then
-      问题id等="想法分割"..v.target.url:match("(%d+)")--由于想法的id长达18位，而cJSON无法解析这么长的数字，所以暂时用截取url结尾的数字字符串来获取id
+    if v.extra.type=="pin" then
+      问题id等="想法分割"..v.extra.id--由于想法的id长达18位，而cJSON无法解析这么长的数字，所以暂时用截取url结尾的数字字符串来获取id
       标题=作者.."发表了想法"
-     elseif v.target.type=="answer" then
-      问题id等=tointeger(v.target.question.id) or "null"
-      问题id等=问题id等.."分割"..tointeger(v.target.id)
-      标题=v.target.question.title
-     elseif v.target.type=="article" then--????????没有测到这个推荐流
-      问题id等="文章分割"..tointeger(v.target.id)
-      标题=v.target.title
-     elseif v.target.type=="zvideo" then
-      问题id等="视频分割"..v.target.id
-      标题=v.target.title
+      预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
+     elseif v.extra.type=="answer" then
+      问题id等="null"
+      问题id等=问题id等.."分割"..tointeger(v.extra.id)
+      预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
+      标题=v.common_card.feed_content.title.panel_text
+     elseif v.extra.type=="article" then--????????没有测到这个推荐流
+      问题id等="文章分割"..tointeger(v.extra.id)
+      标题=v.common_card.feed_content.title.panel_text
+      预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
+     elseif v.extra.type=="zvideo" then
+      问题id等="视频分割"..v.extra.id
+      标题=v.common_card.feed_content.title.panel_text
+      预览内容=作者.." : ".."[视频]"
      else
-      提示("未知类型"..v.target.type or "无法获取type".." id"..v.target.id or "无法获取id")
+      提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
     end
-    return {点赞2=点赞数,标题2=标题,文章2=预览内容,评论2=评论数,链接2=问题id等}
+    testy=luajson.encode(v.brief)
+    testy=urlEncode('[["r",'..testy..']]')
+    testy="targets="..testy
+    return {底部内容=底部内容,标题2=标题,文章2=预览内容,链接2=问题id等,testy=testy}
   end
 
   function 主页推荐刷新(result,isprev)
@@ -191,7 +218,7 @@ function 主页刷新(isclear)
     end
 
     local url= myrequrl or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
-    zHttp.get(url,access_token_head,function(code,content)
+    zHttp.get(url,apphead,function(code,content)
       if code==200 then
         decoded_content = luajson.decode(content)
         if decoded_content.paging.is_end==false then
@@ -222,7 +249,7 @@ function 主页刷新(isclear)
 
     local posturl = myrequrl or "https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=2"
 
-    zHttp.get(posturl,access_token_head,function(code,content)
+    zHttp.get(posturl,apphead,function(code,content)
       if code==200 then
         decoded_content = luajson.decode(content)
 
@@ -230,7 +257,7 @@ function 主页刷新(isclear)
           table.insert(list2.adapter.getData(),resolve_feed(v))
         end
 
-        table.insert(list2.adapter.getData(),resolve_feed(decoded_content.data[1]))
+        --        table.insert(list2.adapter.getData(),resolve_feed(decoded_content.data[1]))
         task(1,function() list2.adapter.notifyDataSetChanged()end)
         requrl[-1] = {
           ["next"] = decoded_content.paging.next,
@@ -253,6 +280,12 @@ function 主页刷新(isclear)
 
     list2.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(parent,v,pos,id)
+
+        zHttp.post("https://api.zhihu.com/lastread/touch/v2",v.Tag.testy.Text,apphead,function(code,content)
+          if code==200 then
+          end
+        end)
+
 
         local open=activity.getSharedData("内部浏览器查看回答")
         if tostring(v.Tag.链接2.text):find("文章分割") then
@@ -968,6 +1001,9 @@ end
 function 关注刷新(isclear,isprev,num)
   -- origin15.19 更改
   if isclear==nil and moments_tab and moments_tab[num] then
+    if moments_tab[num].isend then
+      return 提示("没有新内容了")
+    end
     return false
   end
   if num==nil then
@@ -1025,7 +1061,6 @@ function 关注刷新(isclear,isprev,num)
     if moments_tab==nil then
       moments_tab={}
     end
-
     moments_tab[num]={
       prev=false,
       nexturl=false,
@@ -1111,9 +1146,9 @@ function 关注刷新(isclear,isprev,num)
   end
 
   local mapphead = {
-    ["x-api-version"] = "3.0.89";
-    ["x-app-za"] = "OS=Android";
-    ["x-app-version"] = "8.44.0";
+    ["x-api-version"] = "3.1.8";
+    ["x-app-za"] = "OS=Android&VersionName=9.13.0&VersionCode=16816";
+    ["x-app-version"] = "9.13.0";
     ["x-moments-ab-param"] = "follow_tab=1";
     ["cookie"] = 获取Cookie("https://www.zhihu.com/")
   }
@@ -1210,7 +1245,7 @@ function 关注刷新(isclear,isprev,num)
             local 时间=时间戳(v.action_time)
             local 预览内容=q.digest
             if q.type=="answer" then
-              问题id等=tointeger(questonid) or "null"
+              问题id等="null"
               问题id等=问题id等.."分割"..tointeger(q.id)
               标题=q.title
              elseif q.type=="question" then
@@ -1234,7 +1269,12 @@ function 关注刷新(isclear,isprev,num)
 
          elseif v.type=="recommend_user_card_list" then
           --推荐关注用户
+         elseif v.type=="moments_recommend_followed_group"
+          --用户推荐卡片
         end
+      end
+      if moments_tab[num].isend then
+        return 提示("没有新内容了")
       end
     end
   end)

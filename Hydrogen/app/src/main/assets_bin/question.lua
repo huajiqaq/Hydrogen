@@ -20,11 +20,11 @@ task(1,function()
   question_list.addHeaderView(loadlayout({
     LinearLayout;
     layout_width="-1";
-    --        padding="8dp";
+    --padding="8dp";
     orientation="vertical";
     layout_height="-1";
     background=backgroundc,
-    --          layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING),
+    --layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING),
     {
       MyTab
       {
@@ -338,10 +338,6 @@ end)
     .setCacheMode(2)
   end
 
-  show.onTouch=function()
-    return false
-  end
-
   show.setDownloadListener({
     onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
       webview下载文件(链接, UA, 相关信息, 类型, 大小)
@@ -374,6 +370,7 @@ end)
       view.addJSInterface(z,"androlua")
 
       if isLoaded == 1 then
+        show.setFocusable(false)
        else
         isLoaded = 1
         show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);
