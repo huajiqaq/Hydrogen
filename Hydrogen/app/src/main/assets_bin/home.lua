@@ -144,136 +144,175 @@ function 切换页面(z)--切换主页Page函数
   end
 end
 
-function 主页刷新(isclear)
+homeapphead=table.clone(apphead)
+homeapphead["x-close-recommend"]="0"
+homeapphead["x-feed-prefetch"]="1"
 
+homeapphead1=table.clone(apphead)
+homeapphead1["scroll"]="down"
 
-  function resolve_feed(v)
-    --    local 点赞数=tointeger(v.target.voteup_count)
-    --    local 评论数=tointeger(v.target.comment_count)
-    if #v.common_card.footline.elements==1 then
-      底部内容=v.common_card.footline.elements[1].text.panel_text
-     elseif #v.common_card.footline.elements==2
-      底部内容=v.common_card.footline.elements[2].text.panel_text
-     elseif #v.common_card.footline.elements==3
-      local 底部tab={}
-      for e, c in pairs(v.common_card.footline.elements) do
-        if c.interactive_button then
-          table.insert(底部tab,c.interactive_button.interactive_button.text.panel_text)
-         else
-          table.insert(底部tab,c.button.text.panel_text)
-        end
+function resolve_feed(v)
+
+  --    local 点赞数=tointeger(v.target.voteup_count)
+  --    local 评论数=tointeger(v.target.comment_count)
+  if v.type~="common_card" then
+    return false
+  end
+  if #v.common_card.footline.elements==1 then
+    底部内容=v.common_card.footline.elements[1].text.panel_text
+   elseif #v.common_card.footline.elements==2
+    底部内容=v.common_card.footline.elements[2].text.panel_text
+   elseif #v.common_card.footline.elements==3
+    local 底部tab={}
+    for e, c in pairs(v.common_card.footline.elements) do
+      if c.interactive_button then
+        table.insert(底部tab,c.interactive_button.interactive_button.text.panel_text)
+       else
+        table.insert(底部tab,c.button.text.panel_text)
       end
-      底部内容=底部tab[1].." 赞同 · "..底部tab[1].." 收藏 · "..底部tab[3].." 评论"
-     else
-      底部内容="未知"
     end
-    底部内容=底部内容:gsub("等","")
-    local 标题,问题id等;
-    local 作者=v.common_card.feed_content.source_line.elements[2].text.panel_text
-    --[[
+    底部内容=底部tab[1].." 赞同 · "..底部tab[1].." 收藏 · "..底部tab[3].." 评论"
+  end
+  if 底部内容==nil then
+    底部内容="未知"
+  end
+  底部内容=底部内容:gsub("等 ","")
+  local 标题,问题id等;
+  local 作者=v.common_card.feed_content.source_line.elements[2].text.panel_text
+  --[[
     if type(v.target.excerpt)=="nil" or v.target.excerpt=="" then
       if v.target.thumbnail_extra_info then
         v.target.excerpt="[视频]"
       end
     end
   ]]
-    local 预览内容
-    --print(dump(v))
-    if v.extra.type=="pin" then
-      问题id等="想法分割"..v.extra.id--由于想法的id长达18位，而cJSON无法解析这么长的数字，所以暂时用截取url结尾的数字字符串来获取id
-      标题=作者.."发表了想法"
+  local 预览内容
+  --print(dump(v))
+  if v.extra.type=="pin" then
+    问题id等="想法分割"..v.extra.id--由于想法的id长达18位，而cJSON无法解析这么长的数字，所以暂时用截取url结尾的数字字符串来获取id
+    标题=作者.."发表了想法"
+    if v.common_card.feed_content.content then
       预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
-     elseif v.extra.type=="answer" then
-      问题id等="null"
-      问题id等=问题id等.."分割"..tointeger(v.extra.id)
-      预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
-      标题=v.common_card.feed_content.title.panel_text
-     elseif v.extra.type=="article" then--????????没有测到这个推荐流
-      问题id等="文章分割"..tointeger(v.extra.id)
-      标题=v.common_card.feed_content.title.panel_text
-      预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
-     elseif v.extra.type=="zvideo" then
-      问题id等="视频分割"..v.extra.id
-      标题=v.common_card.feed_content.title.panel_text
+     elseif v.common_card.feed_content.video
       预览内容=作者.." : ".."[视频]"
+    end
+   elseif v.extra.type=="answer" then
+    问题id等="null"
+    问题id等=问题id等.."分割"..tointeger(v.extra.id)
+    标题=v.common_card.feed_content.title.panel_text
+    if v.common_card.feed_content.content then
+      预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
+     elseif v.common_card.feed_content.video
+      预览内容=作者.." : ".."[视频]"
+    end
+   elseif v.extra.type=="article" then--????????没有测到这个推荐流
+    问题id等="文章分割"..tointeger(v.extra.id)
+    标题=v.common_card.feed_content.title.panel_text
+    if v.common_card.feed_content.content then
+      预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
+     elseif v.common_card.feed_content.video
+      预览内容=作者.." : ".."[视频]"
+    end
+   elseif v.extra.type=="zvideo" then
+    问题id等="视频分割"..v.extra.id
+    标题=v.common_card.feed_content.title.panel_text
+    预览内容=作者.." : ".."[视频]"
+   elseif v.extra.type=="drama" then
+    --直播
+    return false
+   elseif v.extra.type=="training" then
+    return false
+   else
+    提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
+    return false
+  end
+  local testy=v.brief
+  local testk='"t"'
+  return {底部内容=底部内容,标题2=标题,文章2=预览内容,链接2=问题id等,testy=testy,testk=testk}
+end
+
+function 主页推荐刷新(result,isprev)
+
+  local myrequrl
+
+  if requrl[result] then
+    if isprev then
+      myrequrl=requrl[result]["prev"]
      else
-      提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
+      myrequrl=requrl[result]["next"]
     end
-    testy=luajson.encode(v.brief)
-    testy=urlEncode('[["r",'..testy..']]')
-    testy="targets="..testy
-    return {底部内容=底部内容,标题2=标题,文章2=预览内容,链接2=问题id等,testy=testy}
   end
 
-  function 主页推荐刷新(result,isprev)
-
-    local myrequrl
-
-    if requrl[result] then
-      if isprev then
-        myrequrl=requrl[result]["prev"]
-       else
-        myrequrl=requrl[result]["next"]
-      end
-    end
-
-    local url= myrequrl or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
-    zHttp.get(url,apphead,function(code,content)
-      if code==200 then
-        decoded_content = luajson.decode(content)
-        if decoded_content.paging.is_end==false then
-          requrl[result]={
-            ["next"] = decoded_content.paging.next,
-            ["prev"] = decoded_content.paging.previous,
-          }
-          for k,v in ipairs(decoded_content.data) do
-            table.insert(list2.adapter.getData(),resolve_feed(v))
-          end
-          task(1,function() list2.adapter.notifyDataSetChanged()end)
-        end
-      end
-    end)
-  end
-
-  function 随机推荐 (isprev)
-
-    local myrequrl
-
-    if requrl[-1] then
-      if isprev then
-        myrequrl=requrl[-1]["prev"]
-       else
-        myrequrl=requrl[-1]["next"]
-      end
-    end
-
-    local posturl = myrequrl or "https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=2"
-
-    zHttp.get(posturl,apphead,function(code,content)
-      if code==200 then
-        decoded_content = luajson.decode(content)
-
-        for k,v in ipairs(decoded_content.data) do
-          table.insert(list2.adapter.getData(),resolve_feed(v))
-        end
-
-        --        table.insert(list2.adapter.getData(),resolve_feed(decoded_content.data[1]))
-        task(1,function() list2.adapter.notifyDataSetChanged()end)
-        requrl[-1] = {
+  local url= myrequrl or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
+  zHttp.get(url,homeapphead1,function(code,content)
+    if code==200 then
+      homeapphead1["x-close-recommend"]="0"
+      decoded_content = luajson.decode(content)
+      if decoded_content.paging.is_end==false then
+        requrl[result]={
           ["next"] = decoded_content.paging.next,
           ["prev"] = decoded_content.paging.previous,
         }
-       elseif code==401 then
-        提示("请登录后访问推荐，http错误码401")
-       else
-        提示("获取数据失败，请检查网络是否正常，http错误码"..code)
+        主页加载数据长度=0
+        for k,v in ipairs(decoded_content.data) do
+          local 添加数据=resolve_feed(v)
+          if 添加数据 then
+            主页加载数据长度=主页加载数据长度+1
+            table.insert(list2.adapter.getData(),添加数据)
+          end
+        end
+        task(1,function() list2.adapter.notifyDataSetChanged()end)
       end
+    end
+  end)
+end
 
-    end)
+function 主页随机推荐 (isprev)
+
+  local myrequrl
+
+  if requrl[-1] then
+    if isprev then
+      myrequrl=requrl[-1]["prev"]
+     else
+      myrequrl=requrl[-1]["next"]
+    end
   end
+  local posturl = myrequrl or "https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=2"
 
+  zHttp.get(posturl,homeapphead,function(code,content)
+    if code==200 then
+      homeapphead["x-feed-prefetch"]="0"
+      decoded_content = luajson.decode(content)
+      主页加载数据长度=0
+      for k,v in ipairs(decoded_content.data) do
+        local 添加数据=resolve_feed(v)
+        if 添加数据 then
+          主页加载数据长度=主页加载数据长度+1
+          table.insert(list2.adapter.getData(),添加数据)
+        end
+      end
+      task(1,function() list2.adapter.notifyDataSetChanged()end)
+      requrl[-1] = {
+        ["next"] = decoded_content.paging.next,
+        ["prev"] = decoded_content.paging.previous,
+      }
+     elseif code==401 then
+      提示("请登录后访问推荐，http错误码401")
+     else
+      提示("获取数据失败，请检查网络是否正常，http错误码"..code)
+    end
+
+  end)
+end
+
+
+function 主页刷新(isclear)
 
   if not requrl[-1] or isclear then
+
+    homeapphead["x-feed-prefetch"]="1"
+    homeapphead1["x-close-recommend"]=nil
 
     local yxuan_adpqy=LuaAdapter(activity,itemc2)
     list2.adapter=yxuan_adpqy
@@ -281,7 +320,14 @@ function 主页刷新(isclear)
     list2.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(parent,v,pos,id)
 
-        zHttp.post("https://api.zhihu.com/lastread/touch/v2",v.Tag.testy.Text,apphead,function(code,content)
+        v.Tag.testk.Text='"r"'
+        list2.adapter.getData()[list2.getPositionForView(v)+1].testk='"r"'
+
+        local postdata=luajson.encode(v.Tag.testy.Text)
+        postdata=urlEncode('[['..v.Tag.testk.Text..','..postdata..']]')
+        postdata="targets="..postdata
+
+        zHttp.post("https://api.zhihu.com/lastread/touch/v2",postdata,apphead,function(code,content)
           if code==200 then
           end
         end)
@@ -312,12 +358,76 @@ function 主页刷新(isclear)
       end
     })
 
+    list2.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
+      onItemLongClick=function(parent, v, pos,id)
+        local mytype
+        local myid
+        if tostring(v.Tag.链接2.text):find("文章分割") then
+          mytype="artuc"
+          myid=tostring(v.Tag.链接2.Text):match("文章分割(.+)")
+         elseif tostring(v.Tag.链接2.text):find("想法分割") then
+          mytype="pin"
+          myid=tostring(v.Tag.链接2.Text):match("想法分割(.+)")
+         elseif tostring(v.Tag.链接2.text):find("视频分割") then
+          mytype="zvideo"
+          myid=tostring(v.Tag.链接2.Text):match("视频分割(.+)")
+         else
+          mytype="answer"
+          myid=tostring(v.Tag.链接2.Text):match("分割(.+)")
+        end
+        zHttp.get("https://api.zhihu.com/negative-feedback/panel?scene_code=RECOMMEND&content_type="..mytype.."&content_token="..myid,apphead,function(code,content)
+          if code==200 then
+            local pop=PopupMenu(activity,v)
+            menu=pop.Menu
+            local data=luajson.decode(content).data.items
+            for k,v in ipairs(data) do
+              local mbutton=v.raw_button
+              local method=string.lower(mbutton.action.method)
+              menu.add(mbutton.text.panel_text).onMenuItemClick=function()
+                if mbutton.action.backend_url then
+                  zHttp.request(mbutton.action.backend_url,method,"",apphead,function(code,content)
+                    if code==200 then
+                      提示(mbutton.text.toast_text)
+                    end
+                  end)
+                 elseif mbutton.action.intent_url then
+                  activity.newActivity("huida",{mbutton.action.intent_url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
+                end
+              end
+              pop.show()--显示
+            end
+          end
+        end)
+        return true
+      end
+    })
+
     可以加载主页=true
 
     list2.setOnScrollListener{
       onScrollStateChanged=function(view,scrollState)
         if scrollState == 0 then
           if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载主页 then
+            local num=#list2.adapter.getData()-tonumber(主页加载数据长度)+1
+            local postdata=""
+            for i=num,#list2.adapter.getData() do
+              local local_postdata=luajson.encode(list2.adapter.getData()[i].testy)
+              local addstr
+              if i~=#list2.adapter.getData() then
+                addstr=","
+               else
+                addstr=""
+              end
+              local_postdata='['..list2.adapter.getData()[i].testk..','..local_postdata..']'..addstr
+              postdata=postdata..local_postdata
+            end
+            postdata="targets="..urlEncode("["..postdata.."]")
+
+            zHttp.post("https://api.zhihu.com/lastread/touch/v2",postdata,apphead,function(code,content)
+              if code==200 then
+              end
+            end)
+
             主页刷新()
             System.gc()
             homesr.setRefreshing(true)
@@ -335,7 +445,7 @@ function 主页刷新(isclear)
 
   end
   if choosebutton==nil then
-    随机推荐()
+    主页随机推荐()
    elseif choosebutton then
     主页推荐刷新(choosebutton)
   end
@@ -997,6 +1107,9 @@ function 热榜刷新(isclear)
   end
 end
 
+followapphead = table.clone(apphead)
+followapphead["x-moments-ab-param"] = "follow_tab=1";
+
 
 function 关注刷新(isclear,isprev,num)
   -- origin15.19 更改
@@ -1145,15 +1258,7 @@ function 关注刷新(isclear,isprev,num)
     return 提示("请登录后使用本功能")
   end
 
-  local mapphead = {
-    ["x-api-version"] = "3.1.8";
-    ["x-app-za"] = "OS=Android&VersionName=9.13.0&VersionCode=16816";
-    ["x-app-version"] = "9.13.0";
-    ["x-moments-ab-param"] = "follow_tab=1";
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-  }
-
-  zHttp.get(posturl,mapphead,function(code,content)
+  zHttp.get(posturl,followapphead,function(code,content)
     if code==200 then
       local data=luajson.decode(content)
       moments_tab[num].isend=data.paging.is_end
@@ -1586,7 +1691,7 @@ function getuserinfo()
             if HometabLayout.getTabCount()==0 then
               local tab=HometabLayout.newTab()
               tab.setText("全站")
-              tab.view.onClick=function() pcall(function()list2.adapter.clear()end) choosebutton=nil 随机推荐() end
+              tab.view.onClick=function() pcall(function()list2.adapter.clear()end) choosebutton=nil 主页随机推荐() end
               HometabLayout.addTab(tab)
               homehome="ok"
             end
@@ -1602,7 +1707,7 @@ function getuserinfo()
             end
           end
          else
-          --        HometabLayout.setVisibility(8)
+          --HometabLayout.setVisibility(8)
         end
       end)
 

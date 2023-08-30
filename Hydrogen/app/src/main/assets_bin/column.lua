@@ -59,7 +59,7 @@ _title.Text="加载中"
 
 mcolumn=column:new(result)
 
-zHttp.post("https://api.zhihu.com/usertask-core/action/read_content",'{"content_id":"'..result..'","content_type":"ANSWER","action_time":'..os.time()..'}',apphead,function(code,content)
+zHttp.post("https://api.zhihu.com/usertask-core/action/read_content",'{"content_id":"'..result..'","content_type":"ANSWER","action_time":'..os.time()..'}',postapphead,function(code,content)
   if code==200 then
   end
 end)

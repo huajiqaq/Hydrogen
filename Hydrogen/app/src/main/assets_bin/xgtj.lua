@@ -131,7 +131,7 @@ local function 页面设置()
       local 最终处理数据=string.gsub(最终处理数据,[[\"]],"")
       zHttp.post("https://api.zhihu.com/feed-root/sections/submit/v2",最终处理数据,post_access_token_head,function(code,content)
         if code==200 then
-          activity.setResult(1200,nil)
+          activity.setResult(100,nil)
           提示("修改成功 返回主页生效")
         end
       end)
@@ -144,7 +144,7 @@ local function 页面设置()
 end
 
 function 开始加载推荐()
-  zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",post_access_token_head,function(code,content)
+  zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
     if code==200 then
       for i=1, 3 do
         if i==1 then

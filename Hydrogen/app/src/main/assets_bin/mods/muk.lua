@@ -15,7 +15,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.1106
+versionCode=0.1110
 layout_dir="layout/item_layout/"
 
 
@@ -1502,7 +1502,14 @@ function MUKPopu(t)
         .show()
 
         dialog.getButton(dialog.BUTTON_POSITIVE).onClick=function()
-          load(edit.Text)()
+          local _,merror=pcall(function()
+            load(edit.Text)()
+          end)
+          if _==false then
+            提示(merror)
+           else
+            提示("执行成功")
+          end
         end
     end})
   end
@@ -1949,7 +1956,7 @@ end
 
 function urlEncode(s)
   s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
-  return string.gsub(s, " ", "")
+  return string.gsub(s, " ", " ")
 end
 
 
@@ -2154,28 +2161,44 @@ function setHead()
     ["cookie"] = 获取Cookie("https://www.zhihu.com/");
   }
 
-  apphead = {
-    ["x-api-version"] = "3.1.8";
-    ["x-app-za"] = "OS=Android&VersionName=9.13.0&VersionCode=16816";
-    ["x-app-version"] = "9.13.0";
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-  }
-
   if activity.getSharedData("signdata")~=nil and getLogin() then
     login_access_token="Bearer"..luajson.decode(activity.getSharedData("signdata")).access_token;
-    post_access_token_head={
-      ["Content-Type"] = "application/json; charset=UTF-8";
-      ["authorization"] = login_access_token;
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    }
-    access_token_head={
-      ["authorization"] = login_access_token;
-      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    }
    else
-    post_access_token_head= posthead
-    access_token_head = head
+    login_access_token=nil
   end
+
+  access_token_head={
+    ["authorization"] = login_access_token;
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+  }
+  post_access_token_head=table.clone(access_token_head)
+  post_access_token_head["content-type"]="application/json; charset=UTF-8"
+
+  apphead = {
+    ["x-api-version"] = "3.1.8";
+    ["x-app-za"] = "OS=Android&Release=10&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
+    ["x-app-version"] = "9.13.0";
+    ["x-app-bundleid"] = "com.zhihu.android";
+    ["x-app-flavor"] = "myapp";
+    ["x-app-build"] = "release";
+    ["x-network-type"] = "WiFi";
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    ["authorization"] = login_access_token;
+  }
+
+  postapphead=table.clone(apphead)
+  postapphead["content-type"]="application/json; charset=UTF-8"
+
+  --对应home.lua的主页推荐函数
+  if homeapphead and homeapphead1 then
+    homeapphead["cookie"]=获取Cookie("https://www.zhihu.com")
+    homeapphead1["cookie"]=获取Cookie("https://www.zhihu.com")
+  end
+
+  if followapphead then
+    followapphead["cookie"] = 获取Cookie("https://www.zhihu.com/")
+  end
+
 end
 
 setHead()
@@ -2205,6 +2228,18 @@ function zHttp.setcallback(code,content,callback)
   end
 end
 
+function zHttp.request(url,method,data,head,callback)
+  local method=string.lower(method)
+  if method=="get" then
+    zHttp.get(url,head,callback)
+   elseif method=="delete" then
+    zHttp.delete(url,head,callback)
+   elseif method=="post" then
+    zHttp.post(url,data,head,callback)
+   elseif method=="put" then
+    zHttp.put(url,data,head,callback)
+  end
+end
 
 function zHttp.get(url,head,callback)
   Http.get(url,head,function(code,content)

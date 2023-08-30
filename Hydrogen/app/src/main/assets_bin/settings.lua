@@ -461,5 +461,7 @@ function onActivityResult(a,b,c)
       activity.recreate()
     end
     activity.setResult(1200,nil)
+    else
+    activity.setResult(b,nil)
   end
 end

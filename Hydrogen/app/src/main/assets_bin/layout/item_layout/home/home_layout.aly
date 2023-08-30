@@ -34,6 +34,11 @@
         textSize="0sp";
       };
       {
+        TextView;
+        id="testk";
+        textSize="0sp";
+      };
+      {
         LinearLayout;
         orientation="vertical";
         {

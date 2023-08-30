@@ -160,7 +160,7 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
       import "android.content.*"
       activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(v.Text)
       提示("复制文本成功")
-      return false
+      return true
     end
 
     if type(answer_title)~="string" then
@@ -169,7 +169,7 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
 
     local result=get_write_permissions()
     if result~=true then
-      return false
+      return true
     end
 
     local commenttype

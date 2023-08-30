@@ -7,7 +7,7 @@ client = import "com.lua.LuaWebViewclient";
 callback = import "com.androlua.LuaWebView$LuaWebViewClient";
 
 
-liulanurl,docode,ischeck,fxurl=...
+liulanurl,docode,ischeck,fxurl,mtype=...
 
 activity.setContentView(loadlayout("layout/huida"))
 
@@ -98,6 +98,9 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
      elseif consoleMessage.message():find("重新加载") then
       liulan.setVisibility(8)
       progress.setVisibility(0)
+     elseif consoleMessage.message():find("举报提交成功") then
+      提示(consoleMessage.message())
+      activity.finish()
     end
   end,
 
@@ -191,7 +194,9 @@ liulan.setWebViewClient{
       黑暗模式主题(view)
     end
 
-    if url=="https://www.zhihu.com" or docode=="提问" then
+    if mtype=="举报" then
+      加载js内容=获取js("report")
+     elseif url=="https://www.zhihu.com" or docode=="提问" then
       加载js内容=获取js("ask")
      elseif url:find("zhihu") and url:find("answer") then
       加载js内容=获取js("answer")
