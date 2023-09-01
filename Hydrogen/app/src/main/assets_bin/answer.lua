@@ -296,7 +296,7 @@ function 数据添加(t,b)
           .show()
         end
 
-        加载js(view,"document.cookie="..获取Cookie("https://www.zhihu.com/"))
+        加载js(view,"document.cookie='"..获取Cookie("https://www.zhihu.com/").."'")
         加载js(view,获取js("videoload"))
 
        elseif b.attachment then
@@ -317,7 +317,6 @@ function 数据添加(t,b)
           .setCancelable(false)
           .setPositiveButton("我知道了",nil)
           .show()
-          return
         end
       end
     end,
