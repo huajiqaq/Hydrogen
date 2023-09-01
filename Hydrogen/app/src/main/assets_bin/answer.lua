@@ -278,11 +278,13 @@ function 数据添加(t,b)
         t.progress.getParent().removeView(t.progress)
         t.progress=nil
       end
-      加载js(view,[[
-	waitForKeyElements(' [class="AnswerReward"]', 	function() {
-		document.getElementsByClassName("AnswerReward")[0].style.display = "none"
-	});
-   ]])
+      加载js(view,[[waitForKeyElements(' [class="AnswerReward"]', function() {document.getElementsByClassName("AnswerReward")[0].style.display = "none"});]])
+      if 问题id then
+        zHttp.get("https://api.zhihu.com/api/v1/blue_page/blue_box?scene=QA&behavior=LOOK&keyword=&token="..回答id.."&parentToken="..问题id,apphead,function(code,content)
+          if code==200 then
+          end
+        end)
+      end
 
       if b.content:find("video%-box") then
         if not(getLogin()) then
@@ -294,7 +296,7 @@ function 数据添加(t,b)
           .show()
         end
 
-        加载js(view,[["document.cookie="..获取Cookie("https://www.zhihu.com/")]])
+        加载js(view,"document.cookie="..获取Cookie("https://www.zhihu.com/"))
         加载js(view,获取js("videoload"))
 
        elseif b.attachment then
@@ -305,8 +307,18 @@ function 数据添加(t,b)
           end,function()
           视频链接=b.attachment.video.video_info.playlist.hd.url
         end)
-        加载js(view,'var myvideourl="'..视频链接..'"')
-        加载js(view,获取js('videoanswer'))
+        if 视频链接 then
+          加载js(view,'var myvideourl="'..视频链接..'"')
+          加载js(view,获取js('videoanswer'))
+         else
+          AlertDialog.Builder(this)
+          .setTitle("提示")
+          .setMessage("该回答为视频回答 不登录无法显示视频 如想查看本视频回答中的视频请登录")
+          .setCancelable(false)
+          .setPositiveButton("我知道了",nil)
+          .show()
+          return
+        end
       end
     end,
     onLoadResource=function(view,url)

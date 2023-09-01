@@ -217,6 +217,11 @@ end)
 
 question_list.adapter=question_adp
 
+zHttp.post("https://api.zhihu.com/usertask-core/action/read_content",'{"content_id":"'..question_id..'","content_type":"QUESTION","action_time":'..os.time()..'}',postapphead,function(code,content)
+  if code==200 then
+  end
+end)
+
 
 function 刷新()
 

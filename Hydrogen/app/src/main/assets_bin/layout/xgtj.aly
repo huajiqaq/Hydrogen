@@ -134,6 +134,32 @@
             Typeface=字体("product-Bold");
           };
         };
+        {
+          CardView;
+          layout_width="-2";
+          layout_height="-2";
+          layout_marginTop="10dp";
+          radius="4dp";
+          layout_gravity="center",
+          --background=primaryc;
+          CardBackgroundColor=primaryc;
+          onClick=function()提示("加载中 请耐心等待") end;
+          {
+            TextView;
+            id="xgdd",
+            layout_width="-1";
+            layout_height="-1";
+            textSize="14sp";
+            paddingRight="12dp";
+            paddingLeft="12dp";
+            paddingTop="8dp";
+            paddingBottom="8dp";
+            Text="修改地点";
+            textColor=backgroundc;
+            gravity="center";
+            Typeface=字体("product-Bold");
+          };
+        };
       };
     };
   };

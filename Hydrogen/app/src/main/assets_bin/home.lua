@@ -155,6 +155,7 @@ function resolve_feed(v)
 
   --    local 点赞数=tointeger(v.target.voteup_count)
   --    local 评论数=tointeger(v.target.comment_count)
+  v.extra.type=string.lower(v.extra.type)
   if v.type~="common_card" then
     return false
   end
@@ -217,13 +218,11 @@ function resolve_feed(v)
     问题id等="视频分割"..v.extra.id
     标题=v.common_card.feed_content.title.panel_text
     预览内容=作者.." : ".."[视频]"
-   elseif v.extra.type=="drama" then
-    --直播
-    return false
-   elseif v.extra.type=="training" then
-    return false
    else
-    提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
+    if this.getSharedData("调式模式")=="true" then
+      提示(old_string .. "在文件中没有找到")
+      提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
+    end
     return false
   end
   local testy=v.brief
@@ -231,19 +230,27 @@ function resolve_feed(v)
   return {底部内容=底部内容,标题2=标题,文章2=预览内容,链接2=问题id等,testy=testy,testk=testk}
 end
 
-function 主页推荐刷新(result,isprev)
+function 主页推荐刷新(isprev)
+
+  local result=tointeger(choosebutton)
 
   local myrequrl
+  local addargs="&start_type=warm&tsp_ad_cardredesign=0&v_serial=1"
 
   if requrl[result] then
     if isprev then
-      myrequrl=requrl[result]["prev"]
+      myrequrl=requrl[result]["prev"]..addargs
      else
-      myrequrl=requrl[result]["next"]
+      myrequrl=requrl[result]["next"]..addargs
     end
   end
-
-  local url= myrequrl or "https://api.zhihu.com/feed-root/section/"..tointeger(result).."?channelStyle=0"
+  local murl
+  if choose_sub then
+    murl="https://api.zhihu.com/feed-root/section/"..result.."?sub_page_id="..tointeger(choose_sub).."&channelStyle=0"
+   else
+    murl="https://api.zhihu.com/feed-root/section/"..result.."?channelStyle=0"
+  end
+  local url= myrequrl or murl
   zHttp.get(url,homeapphead1,function(code,content)
     if code==200 then
       homeapphead1["x-close-recommend"]="0"
@@ -270,16 +277,16 @@ end
 function 主页随机推荐 (isprev)
 
   local myrequrl
+  local addargs="&start_type=warm&refresh_scene=0&device=phone&short_container_setting_value=1"
 
   if requrl[-1] then
     if isprev then
-      myrequrl=requrl[-1]["prev"]
+      myrequrl=requrl[-1]["prev"]..addargs
      else
-      myrequrl=requrl[-1]["next"]
+      myrequrl=requrl[-1]["next"]..addargs
     end
   end
   local posturl = myrequrl or "https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=2"
-
   zHttp.get(posturl,homeapphead,function(code,content)
     if code==200 then
       homeapphead["x-feed-prefetch"]="0"
@@ -307,7 +314,7 @@ function 主页随机推荐 (isprev)
 end
 
 
-function 主页刷新(isclear)
+function 主页刷新(isclear,isprev)
 
   if not requrl[-1] or isclear then
 
@@ -363,7 +370,7 @@ function 主页刷新(isclear)
         local mytype
         local myid
         if tostring(v.Tag.链接2.text):find("文章分割") then
-          mytype="artuc"
+          mytype="article"
           myid=tostring(v.Tag.链接2.Text):match("文章分割(.+)")
          elseif tostring(v.Tag.链接2.text):find("想法分割") then
           mytype="pin"
@@ -445,9 +452,9 @@ function 主页刷新(isclear)
 
   end
   if choosebutton==nil then
-    主页随机推荐()
+    主页随机推荐(isprev)
    elseif choosebutton then
-    主页推荐刷新(choosebutton)
+    主页推荐刷新(isprev)
   end
 end
 
@@ -455,7 +462,6 @@ homesr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
 homesr.setColorSchemeColors({转0x(primaryc)});
 homesr.setOnRefreshListener({
   onRefresh=function()
-    requrl[-1]="https://api.zhihu.com/topstory/recommend?action=pull&start_type=warm&refresh_scene=0&device=phone"
     主页刷新(true,true)
     Handler().postDelayed(Runnable({
       run=function()
@@ -1686,22 +1692,28 @@ function getuserinfo()
           HometabLayout.setVisibility(0)
           local decoded_content = luajson.decode(content)
           --    提示(luajson.decode(content).selected_sections[1].section_name)
+          table.insert(decoded_content.selected_sections, 1, {
+            section_name="全站",
+            section_id=nil,
+            sub_page_id=nil,
+          })
+
+          if HometabLayout.getTabCount()>0 then
+            for i = HometabLayout.getTabCount(), 1, -1 do
+              local itemnum=i-1
+              HometabLayout.removeTabAt(itemnum)
+            end
+          end
+
           for i=1, #decoded_content.selected_sections do
             --提示(tostring(i))
-            if HometabLayout.getTabCount()==0 then
-              local tab=HometabLayout.newTab()
-              tab.setText("全站")
-              tab.view.onClick=function() pcall(function()list2.adapter.clear()end) choosebutton=nil 主页随机推荐() end
-              HometabLayout.addTab(tab)
-              homehome="ok"
-            end
             if HometabLayout.getTabCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
               local tab=HometabLayout.newTab()
               tab.setText(decoded_content.selected_sections[i].section_name)
               tab.view.onClick=function()
-                pcall(function()list2.adapter.clear()end)
+                choose_sub=decoded_content.selected_sections[i].sub_page_id
                 choosebutton=decoded_content.selected_sections[i].section_id
-                主页推荐刷新(decoded_content.selected_sections[i].section_id)
+                主页刷新(true,true)
               end
               HometabLayout.addTab(tab)
             end

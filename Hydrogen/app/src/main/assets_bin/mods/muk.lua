@@ -15,7 +15,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.1110
+versionCode=0.1111
 layout_dir="layout/item_layout/"
 
 
@@ -177,7 +177,18 @@ function 内置存储(t)
 end
 
 
-function 获取Cookie(url)
+function 获取Cookie(url,isckeck)
+  if isckeck and url=="https://www.zhihu.com/" then
+    if activity.getSharedData("signdata")~=nil and getLogin() then
+      local data=luajson.decode(activity.getSharedData("signdata")).cookie
+      local mdata={}
+      for k,v pairs(data)
+        table.insert(mdata,k.."="..v)
+      end
+      mdata=table.concat(mdata,"; ")
+      return mdata;
+    end
+  end
   local cookieManager = CookieManager.getInstance();
   return cookieManager.getCookie(url);
 end
@@ -2152,51 +2163,65 @@ function getLogin()
 end
 
 function setHead()
-  head = {
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-  }
+  if this.getSharedData("signdata") then
+    local jsondata=luajson.decode(this.getSharedData("signdata"))
+    access_token="Bearer "..jsondata.access_token
+    head = {
+      ["authorization"] = access_token
+    }
 
-  posthead = {
-    ["Content-Type"] = "application/json; charset=UTF-8";
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-  }
+    posthead=table.clone(head)
+    posthead["content-type"]="application/json; charset=UTF-8"
 
-  if activity.getSharedData("signdata")~=nil and getLogin() then
-    login_access_token="Bearer"..luajson.decode(activity.getSharedData("signdata")).access_token;
+
+    apphead = {
+      ["x-api-version"] = "3.1.8";
+      ["x-app-za"] = "OS=Android&Release=10&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
+      ["x-app-version"] = "9.13.0";
+      ["x-app-bundleid"] = "com.zhihu.android";
+      ["x-app-flavor"] = "myapp";
+      ["x-app-build"] = "release";
+      ["x-network-type"] = "WiFi";
+      ["authorization"] = access_token;
+    }
+
+    postapphead=table.clone(apphead)
+    postapphead["content-type"]="application/json; charset=UTF-8"
+
    else
-    login_access_token=nil
+    head = {
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    }
+
+    posthead=table.clone(head)
+    posthead["content-type"]="application/json; charset=UTF-8"
+
+    apphead = {
+      ["x-api-version"] = "3.1.8";
+      ["x-app-za"] = "OS=Android&Release=10&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
+      ["x-app-version"] = "9.13.0";
+      ["x-app-bundleid"] = "com.zhihu.android";
+      ["x-app-flavor"] = "myapp";
+      ["x-app-build"] = "release";
+      ["x-network-type"] = "WiFi";
+      ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    }
+
+    postapphead=table.clone(apphead)
+    postapphead["content-type"]="application/json; charset=UTF-8"
   end
 
-  access_token_head={
-    ["authorization"] = login_access_token;
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-  }
-  post_access_token_head=table.clone(access_token_head)
-  post_access_token_head["content-type"]="application/json; charset=UTF-8"
-
-  apphead = {
-    ["x-api-version"] = "3.1.8";
-    ["x-app-za"] = "OS=Android&Release=10&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
-    ["x-app-version"] = "9.13.0";
-    ["x-app-bundleid"] = "com.zhihu.android";
-    ["x-app-flavor"] = "myapp";
-    ["x-app-build"] = "release";
-    ["x-network-type"] = "WiFi";
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
-    ["authorization"] = login_access_token;
-  }
-
-  postapphead=table.clone(apphead)
-  postapphead["content-type"]="application/json; charset=UTF-8"
-
-  --对应home.lua的主页推荐函数
   if homeapphead and homeapphead1 then
-    homeapphead["cookie"]=获取Cookie("https://www.zhihu.com")
-    homeapphead1["cookie"]=获取Cookie("https://www.zhihu.com")
+    homeapphead=table.clone(apphead)
+    homeapphead["x-close-recommend"]="0"
+    homeapphead["x-feed-prefetch"]="1"
+    homeapphead1=table.clone(apphead)
+    homeapphead1["scroll"]="down"
   end
 
   if followapphead then
-    followapphead["cookie"] = 获取Cookie("https://www.zhihu.com/")
+    followapphead = table.clone(apphead)
+    followapphead["x-moments-ab-param"] = "follow_tab=1";
   end
 
 end
@@ -2451,13 +2476,15 @@ function getApiurl()
   return location
 end
 
+local glid_manage=Glide.with(this)
+local glid_manager=Glide.get(this)
 function loadglide(view,url)
   import "com.bumptech.glide.load.engine.DiskCacheStrategy"
-  Glide.with(this)
+  glid_manage
   .load(url)
   .diskCacheStrategy(DiskCacheStrategy.NONE)
   .into(view)
-  Glide.get(this).clearMemory();
+  glid_manager.clearMemory();
 end
 
 local mybase64=require("base64")

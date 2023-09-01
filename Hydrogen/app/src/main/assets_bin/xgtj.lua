@@ -129,7 +129,7 @@ local function 页面设置()
       local 最终处理数据=luajson.encode({["section_ids"]=id数据表})
       --转为json中会生成\"转义 替换掉
       local 最终处理数据=string.gsub(最终处理数据,[[\"]],"")
-      zHttp.post("https://api.zhihu.com/feed-root/sections/submit/v2",最终处理数据,post_access_token_head,function(code,content)
+      zHttp.post("https://api.zhihu.com/feed-root/sections/submit/v2",最终处理数据,posthead,function(code,content)
         if code==200 then
           activity.setResult(100,nil)
           提示("修改成功 返回主页生效")
@@ -144,7 +144,7 @@ local function 页面设置()
 end
 
 function 开始加载推荐()
-  zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",access_token_head,function(code,content)
+  zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code,content)
     if code==200 then
       for i=1, 3 do
         if i==1 then
@@ -188,3 +188,93 @@ function 开始加载推荐()
   end)
 end
 开始加载推荐()
+
+function 修改地点()
+  zHttp.get("https://api.zhihu.com/feed-root/sections/cityList",head,function(code,content)
+    if code==200 then
+      local mstr=""
+      tab=luajson.decode(content).result_info
+      for k,v pairs(tab)
+        local mtab=v.city_info_list
+        local mkey=v.city_key
+        for key,value pairs(mtab)
+          if key==1 then
+            if k>1 then
+              mstr=mstr..'\n'..mkey..'\n'
+             else
+              mstr=mstr..mkey..'\n'
+            end
+            mstr=mstr..value.city_name
+           else
+            mstr=mstr.." "..value.city_name
+          end
+          --    print(mstr)
+        end
+        --  print(mstr)
+      end
+
+      local dialog=AlertDialog.Builder(this)
+      .setTitle("修改城市")
+      .setView(loadlayout({
+        LinearLayout;
+        orientation="vertical";
+        Focusable=true,
+        FocusableInTouchMode=true,
+        {
+          EditText;
+          hint="输入";
+          layout_marginTop="5dp";
+          layout_marginLeft="10dp",
+          layout_marginRight="10dp",
+          layout_width="match_parent";
+          layout_gravity="center",
+          Typeface=字体("product");
+          id="edit";
+        };
+        {
+          ScrollView;
+          layout_height="fill";
+          fillViewport="true";
+          {
+            LinearLayout;
+            orientation="vertical";
+            {
+              TextView;
+              id="Prompt",
+              textSize="15sp",
+              layout_marginTop="10dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              layout_width="match_parent";
+              layout_height="match_parent";
+              TextIsSelectable=true,
+              Typeface=字体("product");
+              text=mstr;
+            };
+          };
+        };
+      }))
+      .setPositiveButton("确定",nil)
+      .setNegativeButton("取消",nil)
+      .show()
+
+      dialog.getButton(dialog.BUTTON_POSITIVE).onClick=function()
+        local checkstr=string.gsub(edit.Text, "%s", "")
+        if mstr:find(checkstr) and checkstr~="" then
+          zHttp.post("https://api.zhihu.com/feed-root/sections/saveUserCity",'{"city":"'..checkstr..'"}',posthead,function(code,content)
+            if code==200 then
+              activity.setResult(100,nil)
+              提示("修改成功 你可能需要刷新页面才能看到更改")
+             else
+              提示("失败 请检查输入内容或联系作者修复")
+            end
+          end)
+         else
+          提示("你输入了一个不支持的城市")
+        end
+      end
+
+    end
+  end)
+end
+xgdd.onClick=function() 修改地点() end

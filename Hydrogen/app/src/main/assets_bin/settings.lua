@@ -51,6 +51,7 @@ data = {
   {__type=3,subtitle="设置默认主页",image=图标("")},
   {__type=3,subtitle="修改主页排序",image=图标("")},
 
+
   {__type=1,title="缓存设置",image=图标("")},
 
   {__type=4,subtitle="自动清理缓存",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("自动清理缓存"))}},
@@ -64,6 +65,7 @@ data = {
   {__type=1,title="其他"},
   {__type=3,subtitle="关于",image=图标("")},
   {__type=3,subtitle="管理/android/data存储",image=图标("")},
+  {__type=3,subtitle="手动填写token",image=图标("")},
   {__type=4,subtitle="显示报错信息",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
   {__type=4,subtitle="允许加载代码",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
 
@@ -169,6 +171,97 @@ tab={
 
   关于=function()
     activity.newActivity("about")
+  end,
+
+  手动填写token=function()
+    local example_data='{"uid":"xx","user_id":xz,"old_id":xx,"token_type":"xx","access_token":"xx","refresh_token":"xx","expires_in":xx,"cookie":{"q_c0":"xx","z_c0":"xx"},"unlock_ticket":null,"lock_in":null,"verification":null,"expires_at":xx}'
+    local editDialog=AlertDialog.Builder(this)
+    .setTitle("填写token")
+    .setView(loadlayout({
+      LinearLayout;
+      layout_height="fill";
+      layout_width="fill";
+      orientation="vertical";
+      {
+        TextView;
+        TextIsSelectable=true;
+        layout_marginTop="10dp";
+        layout_marginLeft="10dp",
+        layout_marginRight="10dp",
+        Text='请在下方输入你账号的数据 获取方式 使用抓包软件(例如HttpCanary) 安装https证书后 尝试抓取https://www.baidu.com 查看是否抓取成功 成功后退出知乎登录 抓取数据 登录成功后停止抓取数据 搜索 account/prod/sign_in 找到响应内容复制粘贴在这里 \n示例数据结构 注意 实际数据可能有出入\n'..example_data..'\n提示:请勿随意填写 填写错误可能会导致无法使用知乎 如填写无法使用请点击还原\n长按可复制内容';
+        Typeface=字体("product-Medium");
+      },
+      {
+        EditText;
+        layout_width="match";
+        layout_height="match";
+        layout_marginTop="5dp";
+        layout_marginLeft="10dp",
+        layout_marginRight="10dp",
+        id="edit";
+        Typeface=字体("product");
+      }
+    }))
+    .setPositiveButton("确定", nil)
+    .setNeutralButton("还原",{onClick=function()
+        local oridata=this.getSharedData("usersign")
+        local oridata1=this.getSharedData("signdata")
+        if oridata==nil then
+          提示"你似乎还没有手动设置token"
+         else
+          this.setSharedData("signdata",oridata)
+          this.setSharedData("userdata",oridata1)
+          提示("还原成功")
+        end
+    end})
+    .setNegativeButton("取消", nil)
+    .create()
+
+    local istrue=this.getSharedData("signdata")
+    local 状态
+    if istrue then
+      状态="存在"
+     else
+      状态="不存在"
+    end
+    AlertDialog.Builder(this)
+    .setTitle("提示")
+    .setMessage("当登录时软件默认会自动获取并存储token 如果没有 你也可以手动填写 如果存在 就不推荐手动填写 可能会造成访问报错\n现阶段 软件还不会使用token 所以即使状态为不存在 也可以暂不填写".."\n".."当前状态："..状态)
+    .setPositiveButton("我知道了",{onClick=function()
+        editDialog.show()
+        editDialog.getButton(editDialog.BUTTON_POSITIVE).onClick=function()
+          local _check
+          pcall(function()
+            _check=luajson.decode(edit.Text)
+            if _check.access_token then
+              _check=_check.access_token
+            end
+          end)
+          if _check then
+            local myurl= 'https://www.zhihu.com/api/v4/me'
+            local head = {
+              ["authorization"] = _check
+            }
+
+            zHttp.get(myurl,head,function(code,content)
+
+              if code==200 then--判断网站状态
+                local oridata=this.getShatedData("signdata")
+                this.setSharedData("usersign",oridata)
+                this.setSharedData("signdata",edit.Text)
+                提示("保存成功")
+                editDialog.dismiss()
+               else
+                提示("获取个人信息失败 请检查输入内容是否正确")
+              end
+            end)
+           else
+            提示("获取access_token失败 请检查输入内容是否正确")
+          end
+        end
+    end})
+    .setNegativeButton("取消", nil)
+    .show()
   end,
 
   ["管理/android/data存储"]=function()
@@ -461,7 +554,7 @@ function onActivityResult(a,b,c)
       activity.recreate()
     end
     activity.setResult(1200,nil)
-    else
+   else
     activity.setResult(b,nil)
   end
 end
