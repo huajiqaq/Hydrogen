@@ -15,7 +15,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.1111
+versionCode=0.1113
 layout_dir="layout/item_layout/"
 
 
@@ -273,10 +273,16 @@ function 清除历史记录()
 end
 
 
-function 获取系统夜间模式()
+function 获取系统夜间模式(isApplicationContext)
+  local mactivity
+  if isApplicationContext==true then
+    mactivity=activity.getApplicationContext()
+   else
+    mactivity=activity
+  end
   _,Re=xpcall(function()
     import "android.content.res.Configuration"
-    currentNightMode = activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK
+    currentNightMode = mactivity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK
     return currentNightMode == Configuration.UI_MODE_NIGHT_YES--夜间模式启用
     end,function()
     return false
@@ -304,15 +310,6 @@ end
 function 主题(str)
   全局主题值=str
   if 全局主题值=="Day" then
-    if 获取主题夜间模式() == true then
-      if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-       else
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-      end
-      --      activity.recreate()
-      return
-    end
     --    primaryc="#448aff"
     primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#fdd835"
@@ -338,12 +335,19 @@ function 主题(str)
       _window.setAttributes(_wlp);
       --      activity.setTheme(android.R.style.Theme_Material_Light_NoActionBar)
     end)
-   elseif 全局主题值=="Night" then
-    if 获取主题夜间模式() == false and 获取系统夜间模式() == false then
-      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-      --      activity.recreate()
+    if 获取主题夜间模式() == true then
+      if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+       else
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+      end
+      return
+     else
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+      --   activity.recreate()
       return
     end
+   elseif 全局主题值=="Night" then
     --    primaryc="#FF88B0F8"
     primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#ffbfa328"
@@ -370,13 +374,17 @@ function 主题(str)
       _window.setAttributes(_wlp);
       --      activity.setTheme(android.R.style.Theme_Material_NoActionBar)
     end)
+    if 获取主题夜间模式() == false and 获取系统夜间模式() == false then
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+      --     activity.recreate()
+      return
+    end
   end
 end
 
-
 function 设置主题()
   if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then
-    if 获取系统夜间模式() and 获取主题夜间模式()~=true then
+    if 获取系统夜间模式(true) then
       主题("Night")
      else --暂时这样写，后期修复
       if Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))==true then
@@ -462,16 +470,6 @@ function 提示(t)
   Toast.makeText(activity,t,Toast.LENGTH_SHORT).setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0).setView(loadlayout(tsbj)).show()
 end
 
-function 获取系统夜间模式()
-  _,Re=xpcall(function()
-    import "android.content.res.Configuration"
-    currentNightMode = activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK
-    return currentNightMode == Configuration.UI_MODE_NIGHT_YES--夜间模式启用
-    end,function()
-    return false
-  end)
-  return Re
-end
 
 function Snakebar(fill)
   提示(fill)

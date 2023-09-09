@@ -188,7 +188,7 @@ tab={
         layout_marginTop="10dp";
         layout_marginLeft="10dp",
         layout_marginRight="10dp",
-        Text='请在下方输入你账号的数据 获取方式 使用抓包软件(例如HttpCanary) 安装https证书后 尝试抓取https://www.baidu.com 查看是否抓取成功 成功后退出知乎登录 抓取数据 登录成功后停止抓取数据 搜索 account/prod/sign_in 找到响应内容复制粘贴在这里 \n示例数据结构 注意 实际数据可能有出入\n'..example_data..'\n提示:请勿随意填写 填写错误可能会导致无法使用知乎 如填写无法使用请点击还原\n长按可复制内容';
+        Text='请在下方输入你账号的数据 获取方式 使用抓包软件(例如HttpCanary) 安装https证书后 尝试抓取https://www.baidu.com 查看是否抓取成功 成功后退出知乎登录 抓取数据 登录成功后停止抓取数据 搜索 account/prod/sign_in 找到响应内容复制粘贴在这里 \n示例数据结构 注意 实际数据可能有出入\n'..example_data..'\n提示:请勿随意填写 填写错误可能会导致无法使用本软件 如填写无法使用请点击还原\n长按可复制内容';
         Typeface=字体("product-Medium");
       },
       {

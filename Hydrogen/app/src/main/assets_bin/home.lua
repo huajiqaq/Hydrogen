@@ -516,7 +516,7 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
     end
 
     if pos == 3 then
-      关注刷新()
+      关注刷新(nil,false)
     end
   end;
 
@@ -1119,14 +1119,14 @@ followapphead["x-moments-ab-param"] = "follow_tab=1";
 
 function 关注刷新(isclear,isprev,num)
   -- origin15.19 更改
+  if num==nil then
+    num=1
+  end
   if isclear==nil and moments_tab and moments_tab[num] then
     if moments_tab[num].isend then
       return 提示("没有新内容了")
     end
     return false
-  end
-  if num==nil then
-    num=1
   end
   local alltype={"recommend","timeline","pin"}
   local allsr={gsr_j,gsr_t,gsr_p}
