@@ -63,7 +63,6 @@
               ellipsize='marquee',
               Selected=true,
               gravity="center|left";
-              -- paddingLeft="16dp";
               Typeface=字体("product-Bold");
             };
           };
@@ -79,8 +78,6 @@
           tooltip="更多",
           layout_margin="8dp";
           onClick=function()
-            --pop.showAsDropDown(_more_lay,dp2px(-8-192),dp2px(8))
-            --a.pop.showAsDropDown(_more_lay)
             showpop(_more_lay,a.pop)
           end;
         };
@@ -121,43 +118,41 @@
             layout_width="-1";
             layout_height="-1";
             {
-              CircleImageView,--圆形图片控件
-              layout_width="60dp",--布局宽度
-              layout_height="40dp",--布局高度
-              layout_gravity="left|center",--顶：top｜中：center｜左：left｜右：right｜底：bottom
-              src="logo.png",--视图路径
+              CircleImageView,
+              layout_width="60dp",
+              layout_height="40dp",
+              layout_gravity="left|center",
+              src="logo.png",
               id="usericon",
             },
             {
               View,
-              layout_height="75dp",--布局高度
+              layout_height="75dp",
               id="ripple",
             },
             {
-              TextView,--文本框控件
-              text="",--文本内容
-              textSize="16sp",--文本大小
+              TextView,
+              text="",
+              textSize="16sp",
               id="username",
               Typeface=字体("product-Bold");
               layout_marginTop="15dp",
-              layout_marginLeft="60dp",--布局左距
-              gravity="left|center",--顶：top｜中：center｜左：left｜右：right｜底：bottom
-              textColor=textc,--文本颜色
-              --singleLine=true,--禁止换行输入
+              layout_marginLeft="60dp",
+              gravity="left|center",
+              textColor=textc,
             },
             {
-              TextView,--文本框控件
-              text="",--文本内容
+              TextView,
+              text="",
               id="userheadline",
               Typeface=字体("product");
-              textSize="14sp",--文本大小
-              layout_marginLeft="60dp",--布局左距
+              textSize="14sp",
+              layout_marginLeft="60dp",
               layout_marginRight="5dp",
-              layout_marginTop="40dp",--布局底距  
+              layout_marginTop="40dp",  
               layout_marginBottom="10dp",
-              gravity="left|bottom",--顶：top｜中：center｜左：left｜右：right｜底：bottom
-              textColor="#FF767676",--文本颜色
-              --singleLine=true,--禁止换行输入
+              gravity="left|bottom",
+              textColor="#FF767676",
             },
           };
         };
@@ -305,7 +300,6 @@
             LinearLayout;
             layout_height="-1";
             layout_width="-2";
-            -- background=backgroundc;
             layout_weight="1";
           };
         };

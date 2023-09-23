@@ -34,8 +34,8 @@
         CircleImageView;
         layout_gravity="left|center",
         id="mc_image",
-        layout_width="60dp",--布局宽度
-        layout_height="40dp",--布局高度
+        layout_width="60dp",
+        layout_height="40dp",
         layout_marginLeft="5dp",
       };
       {
@@ -61,7 +61,6 @@
           textSize="12sp",
           layout_gravity="left|bottom",
           gravity="left|bottom",
-          --      layout_marginBottom="-1dp",
           id="mc_name",
           y="17dp",
         };

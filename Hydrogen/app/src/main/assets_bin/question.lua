@@ -211,6 +211,16 @@ task(1,function()
     },
   },nil),nil,false)
   resultbar.Visibility=8
+  add=true
+
+  question_list.setOnScrollListener{
+    onScroll=function(view,a,b,c)
+      if a+b==c and add then
+        刷新()
+        System.gc()
+      end
+    end
+  }
   波纹({fh,_more},"圆主题")
   波纹({discussion,view,description},"方自适应")
 end)
@@ -224,38 +234,20 @@ end)
 
 
 function 刷新()
-
+  resultbar.Visibility=0
+  add=false
   question_base:next(function(r,a)
     if r==false and question_base.is_end==false then
       提示("获取回答列表出错 "..a or "")
       --  刷新()
      else
+      if question_base.is_end==false
+        add=true
+      end
       resultbar.Visibility=8
     end
   end)
 end
-
-add=true
-
-question_list.setOnScrollListener{
-  onScrollStateChanged=function(view,scrollState)
-    if scrollState == 0 then
-      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and add then
-        add=false
-        刷新()
-        resultbar.Visibility=0
-        System.gc()
-        add=false
-        Handler().postDelayed(Runnable({
-          run=function()
-            add=true
-          end,
-        }),1000)
-      end
-    end
-  end
-}
-
 
 
 
@@ -391,8 +383,6 @@ end)
 
 end)
 
-刷新()
-
 question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
     local open=activity.getSharedData("内部浏览器查看回答")
@@ -404,6 +394,7 @@ question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
 
   end
 })
+
 
 task(1,function()
   a=MUKPopu({

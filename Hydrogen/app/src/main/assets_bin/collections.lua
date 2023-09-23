@@ -2,20 +2,72 @@ require "import"
 import "mods.muk"
 import "com.lua.*"
 
-collections_url,collections_title=...
-
-if collections_url~="local" then
-  collections_id=collections_url:match("collections/(.+)/")
- else
-  collections_id=nil
-end
+collections_id,isfollow=...
 
 activity.setContentView(loadlayout("layout/collections"))
+
+if collections_id=="local" then
+  collections_url=collections_id
+  collections_id=nil
+  _title.Text="本地收藏"
+ else
+  collections_url="https://api.zhihu.com/collections/"..collections_id.."/contents?with_deleted=1&offset=0"
+
+  zHttp.get("https://api.zhihu.com/collections/"..collections_id.."?with_deleted=1&censor=1",head,function(code,content)
+    if code==200 then--判断网站状态
+      data=luajson.decode(content).collection
+      _title.Text=data.title
+      if isfollow then
+        local mview=mpop.list[3]
+        mview.onClick=function()
+          if 已关注 then
+            zHttp.delete("https://api.zhihu.com/collections/"..collections_id.."/followers/"..activity.getSharedData("idx"),head,function(code,json)
+              if code==200 then
+                提示("已取关")
+                mview.src=图标("add")
+                mview.text="关注"
+                已关注=false
+                a=MUKPopu(mpop)
+                activity.setResult(1600,nil)
+              end
+            end)
+           else
+
+            zHttp.post("https://api.zhihu.com/collections/"..collections_id.."/followers","",posthead,function(code,json)
+              if code==200 then
+                mview.src=图标("close")
+                mview.text="取关"
+                提示("已关注")
+                已关注=true
+                a=MUKPopu(mpop)
+                activity.setResult(1600,nil)
+              end
+            end)
+          end
+        end
+        if data.is_following then
+          mview.src=图标("close")
+          mview.text="取关"
+          已关注=true
+         else
+          mview.src=图标("add")
+          mview.text="关注"
+          已关注=false
+        end
+        a=MUKPopu(mpop)
+
+      end
+     else
+      --错误时的操作
+    end
+  end)
+
+end
 
 初始化历史记录数据(true)
 
 波纹({fh,_more},"圆主题")
-_title.Text=collections_title
+
 itemc5=获取适配器项目布局("collections/collections")
 
 local_item=获取适配器项目布局("collections/local")
@@ -40,6 +92,10 @@ if collections_url=="local" then
   function 加载笔记()
     -- xpcall(function()
     notedata={}
+    if #luajava.astable(File(内置存储文件("Collection/")))==0 then
+      提示("你没有在本地收藏任何内容")
+      activity.finish()
+    end
     for i,v in ipairs(luajava.astable(File(内置存储文件("Collection/")).listFiles())) do
       local v=tostring(v)
       local _,name=v:match("(.+)/(.+)")
@@ -289,19 +345,20 @@ if collections_url=="local" then
     collections_base:next(function(r,a)
       if not(r) and collections_base.is_end==false then
         提示("获取收藏列表出错 "..a or "")
+       else
         --刷新
+        isadd=true
       end
     end)
   end
 
-
+  isadd=true
   list5.setOnScrollListener{
-    onScrollStateChanged=function(view,scrollState)
-      if scrollState == 0 then
-        if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
-          刷新()
-          System.gc()
-        end
+    onScroll=function(view,a,b,c)
+      if a+b==c and isadd then
+        isadd=false
+        刷新()
+        System.gc()
       end
     end
   }
@@ -355,7 +412,6 @@ if collections_url=="local" then
       return true
   end})
 
-  刷新()
 
 end
 
@@ -388,7 +444,7 @@ function checktitle(str)
 end
 
 task(1,function()
-  a=MUKPopu({
+  mpop={
     tittle="收藏",
     list={
       {
@@ -433,7 +489,6 @@ task(1,function()
                 if code==200 then
                   提示("已删除")
                   activity.setResult(1600,nil)
-                  activity.finish()
                 end
               end)
             end,function()an.dismiss()end)
@@ -441,7 +496,8 @@ task(1,function()
       end},
 
     }
-  })
+  }
+  a=MUKPopu(mpop)
 end)
 
 function onActivityResult(a,b,c)

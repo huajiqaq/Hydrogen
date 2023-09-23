@@ -58,7 +58,7 @@
             TextView;
             textSize="12sp";
             id="question_art";
-            MaxLines=3;--设置最大输入行数
+            MaxLines=3;
             ellipsize="end",
             textColor=stextc;
             layout_marginTop="2dp";

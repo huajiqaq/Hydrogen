@@ -83,7 +83,6 @@
   };
   {
     CardView;
-    --  layout_width="56dp",
     layout_height="56dp",
     radius="28dp";
     layout_margin="16dp";
@@ -91,7 +90,6 @@
     layout_alignParentRight="true";
     layout_alignParentBottom="true";
     layout_marginBottom="32dp";
-    --background=primaryc;
     CardBackgroundColor=primaryc;
     elevation="0";
     translationZ="4dp";

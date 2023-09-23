@@ -17,46 +17,45 @@
     CardBackgroundColor=cardedge;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
+    {
+      LinearLayout;
+      layout_height="fill";
+      id="background";
+      ripple="圆自适应",
+
+      layout_width="fill";
       {
         LinearLayout;
-        layout_height="fill";
-        id="background";
-        ripple="圆自适应",
-
-        layout_width="fill";
+        layout_width="-1";
+        layout_height="-1";
+        orientation="vertical";
+        padding="16dp";
         {
-          LinearLayout;
-          layout_width="-1";
-          layout_height="-1";
-          orientation="vertical";
-          padding="16dp";
-          {
-            TextView;
-            textColor=textc;
-            textSize="14sp";
-            gravity="center|left";
-            Typeface=字体("product-Bold");
-            id="title";
-          };
-          {
-            TextView;
-            textColor=stextc;
-            textSize="12sp";
-            gravity="center|left";
-            Typeface=字体("product");
-            layout_marginTop="12dp";
-            MaxLines=2;
-            ellipsize="end";
-            id="preview";
-          };
-          {
-            TextView;
-            id="text";
-            --maxLines=3;
-            layout_width="0";
-            layout_height="0";
-          };
+          TextView;
+          textColor=textc;
+          textSize="14sp";
+          gravity="center|left";
+          Typeface=字体("product-Bold");
+          id="title";
+        };
+        {
+          TextView;
+          textColor=stextc;
+          textSize="12sp";
+          gravity="center|left";
+          Typeface=字体("product");
+          layout_marginTop="12dp";
+          MaxLines=2;
+          ellipsize="end";
+          id="preview";
+        };
+        {
+          TextView;
+          id="text";
+          layout_width="0";
+          layout_height="0";
         };
       };
     };
   };
+};

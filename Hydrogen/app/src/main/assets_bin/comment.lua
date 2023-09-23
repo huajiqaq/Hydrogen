@@ -103,55 +103,50 @@ function 刷新()
 
   end)
 
-
-  function 评论刷新()
-    comment_base:next(function(r,a)
-      if r==false and comment_base.is_end==false then
-        提示("获取评论列表出错 "..a or "")
-        --      评论刷新()
-       else
-        if _title.text=="评论" then
-          if comment_type~="pins" then
-            _title.text=string.format("共%s条评论",comment_base.common_counts )
-           else
-            _title.text=string.format("共%s条评论",comment_count)
-          end
-        end
-      end
-    end)
-  end
-
-
-  评论刷新()
-
-  comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
-    onItemClick=function(id,v,zero,one)
-      if _title.text~="对话列表" and v.Tag.comment_toast.getVisibility()==0 then
-        activity.newActivity("comment",{v.Tag.comment_id.text,"comments",answer_title,answer_author,nil,comment_id,comment_type})
-       else
-        当前回复人=v.Tag.comment_id.Text
-      end
-  end})
-
   add=true
 
   comment_list.setOnScrollListener{
-    onScrollStateChanged=function(view,scrollState)
-      if scrollState == 0 then
-        if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and add then
-          评论刷新()
-          add=false
-          System.gc()
-          Handler().postDelayed(Runnable({
-            run=function()
-              add=true
-            end,
-          }),1000)
-        end
+    onScroll=function(view,a,b,c)
+      if a+b==c and add then
+        add=false
+        评论刷新()
+        System.gc()
       end
     end
   }
+
 end
+
+
+function 评论刷新()
+  comment_base:next(function(r,a)
+    if r==false and comment_base.is_end==false then
+      提示("获取评论列表出错 "..a or "")
+      --      评论刷新()
+     else
+      if comment_base.is_end==false
+        add=true
+      end
+      if _title.text=="评论" then
+        if comment_type~="pins" then
+          _title.text=string.format("共%s条评论",comment_base.common_counts )
+         else
+          _title.text=string.format("共%s条评论",comment_count)
+        end
+      end
+    end
+  end)
+end
+
+
+comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
+  onItemClick=function(id,v,zero,one)
+    if _title.text~="对话列表" and v.Tag.comment_toast.getVisibility()==0 then
+      activity.newActivity("comment",{v.Tag.comment_id.text,"comments",answer_title,answer_author,nil,comment_id,comment_type})
+     else
+      当前回复人=v.Tag.comment_id.Text
+    end
+end})
 
 
 comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{

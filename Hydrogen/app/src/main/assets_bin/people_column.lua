@@ -23,18 +23,6 @@ history_list.setDividerHeight(0)
 adp=LuaAdapter(activity,itemc)
 history_list.Adapter=adp
 
-history_list.setOnScrollListener{
-  onScrollStateChanged=function(view,scrollState)
-    if scrollState == 0 then
-      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
-        提示("搜索中 请耐心等待")
-        刷新()
-        System.gc()
-      end
-    end
-  end
-}
-
 function 刷新()
   geturl=myurl or "https://api.zhihu.com/columns/"..id.."/items"
   zHttp.get(geturl,head,function(code,content)
@@ -49,7 +37,7 @@ function 刷新()
       if luajson.decode(content).paging.is_end and isclear~="clear" then
         提示("已经没有更多内容了")
        else
-        提示("加载中")
+        add=true
       end
       for i,v in ipairs(luajson.decode(content).data) do
         --  local 预览内容=v.excerpt_new
@@ -94,12 +82,9 @@ function 刷新()
         end
         history_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
       end
-      isaddd=true
     end
   end)
 end
-
-刷新()
 
 history_list.onItemClick=function(l,v,c,b)
   local open=activity.getSharedData("内部浏览器查看回答")
@@ -126,3 +111,16 @@ history_list.onItemClick=function(l,v,c,b)
 end
 
 保存历史记录(title,"专栏分割"..id,50)
+
+add=true
+
+history_list.setOnScrollListener{
+  onScroll=function(view,a,b,c)
+    if a+b==c and add then
+      提示("加载中")
+      add=false
+      刷新()
+      System.gc()
+    end
+  end
+}

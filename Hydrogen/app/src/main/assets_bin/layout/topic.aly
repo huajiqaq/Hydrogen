@@ -56,7 +56,6 @@
           ellipsize='marquee',
           Selected=true,
           gravity="center|left";
-          -- paddingLeft="16dp";
           layout_weight="1",
           Typeface=字体("product-Bold");
         };
@@ -71,7 +70,6 @@
           layout_margin="8dp";
           tooltip="更多",
           onClick=function()
-            --a.pop.showAsDropDown(_more_lay)
             showpop(_more_lay,a.pop)
           end;
         };
@@ -106,10 +104,8 @@
         id="page_scroll";
         layout_alignParentBottom="true";
         Gravity="center";
-        --background=textc;
         {
           CardView;
-          --background=primaryc;
           CardBackgroundColor=primaryc;
           elevation="0";
           radius="4dp";

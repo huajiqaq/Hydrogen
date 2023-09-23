@@ -2,7 +2,6 @@
   LinearLayout;
   layout_width="fill";
   orientation="horizontal";
-  --background=backgroundc,
   BackgroundColor=backgroundc;
   {
     MaterialCardView;
@@ -43,58 +42,6 @@
             layout_marginTop="2dp";
             Typeface=字体("product-Bold");
           };
-          {
-            ListView;
-            id="ListView",
-          },
-          --[[            {
-              TextView;
-              textSize="12sp";
-              id="caart";
-              MaxLines=3,--设置最大输入行数
-              ellipsize="end",--设置内容超出控件大小时显示...
-              textColor=stextc;
-              layout_marginTop="2dp";
-              Typeface=字体("product-Medium");
-            };]]
-          --[[      {
-              LinearLayout;
-              layout_marginTop="2dp";
-              orientation="horizontal";
-              {
-                ImageView;
-                src=图标("vote_up"),
-                layout_height="16dp",
-                layout_width="16dp",
-                ColorFilter=textc;
-                layout_gravity="center",
-              };
-              {
-                TextView;
-                id="cavoteup";
-                layout_marginLeft="6dp",
-                textColor=textc;
-                textSize="12sp";
-                Typeface=字体("product");
-              };
-              {
-                ImageView;
-                layout_marginLeft="24dp",
-                src=图标("message"),
-                layout_height="16dp",
-                layout_width="16dp",
-                ColorFilter=textc;
-                layout_gravity="center",
-              };
-              {
-                TextView;
-                layout_marginLeft="6dp",
-                id="cacomment";
-                textColor=textc;
-                textSize="12sp";
-                Typeface=字体("product");
-              };
-            };]]
         };
       };
     };

@@ -43,7 +43,7 @@ end
 if activity.getSharedData("第一次提示") and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
   双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function()
-    关闭对话框(an) end,function()
+  关闭对话框(an) end,function()
     关闭对话框(an) 浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
   end)
 end
@@ -220,7 +220,6 @@ function resolve_feed(v)
     预览内容=作者.." : ".."[视频]"
    else
     if this.getSharedData("调式模式")=="true" then
-      提示(old_string .. "在文件中没有找到")
       提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
     end
     return false
@@ -305,6 +304,8 @@ function 主页随机推荐 (isprev)
         ["prev"] = decoded_content.paging.previous,
       }
      elseif code==401 then
+      activity.setSharedData("signdata",nil)
+      清除所有cookie()
       提示("请登录后访问推荐，http错误码401")
      else
       提示("获取数据失败，请检查网络是否正常，http错误码"..code)
@@ -316,7 +317,7 @@ end
 
 function 主页刷新(isclear,isprev)
 
-  if not requrl[-1] or isclear then
+  if not list2.adapter or isclear then
 
     homeapphead["x-feed-prefetch"]="1"
     homeapphead1["x-close-recommend"]=nil
@@ -411,10 +412,12 @@ function 主页刷新(isclear,isprev)
 
     可以加载主页=true
 
+
     list2.setOnScrollListener{
-      onScrollStateChanged=function(view,scrollState)
-        if scrollState == 0 then
-          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载主页 then
+      onScroll=function(view,a,b,c)
+        if a+b==c and 可以加载主页 then
+
+          if 主页加载数据长度 then
             local num=#list2.adapter.getData()-tonumber(主页加载数据长度)+1
             local postdata=""
             for i=num,#list2.adapter.getData() do
@@ -434,21 +437,23 @@ function 主页刷新(isclear,isprev)
               if code==200 then
               end
             end)
-
-            主页刷新()
-            System.gc()
-            homesr.setRefreshing(true)
-            可以加载主页=false
-            Handler().postDelayed(Runnable({
-              run=function()
-                可以加载主页=true
-                homesr.setRefreshing(false);
-              end,
-            }),1000)
           end
+
+          主页刷新()
+          System.gc()
+          homesr.setRefreshing(true)
+          可以加载主页=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              可以加载主页=true
+              homesr.setRefreshing(false);
+            end,
+          }),1000)
         end
       end
     }
+
+    return
 
   end
   if choosebutton==nil then
@@ -558,23 +563,23 @@ function 日报刷新(isclear)
     可以加载日报=true
 
     list1.setOnScrollListener{
-      onScrollStateChanged=function(view,scrollState)
-        if scrollState == 0 then
-          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载日报 then
-            日报刷新()
-            dailysr.setRefreshing(true)
-            System.gc()
-            可以加载日报=false
-            Handler().postDelayed(Runnable({
-              run=function()
-                可以加载日报=true
-                dailysr.setRefreshing(false);
-              end,
-            }),1000)
-          end
+      onScroll=function(view,a,b,c)
+        if a+b==c and 可以加载日报 and view.adapter.getCount()>0 then
+          日报刷新()
+          dailysr.setRefreshing(true)
+          System.gc()
+          可以加载日报=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              可以加载日报=true
+              dailysr.setRefreshing(false);
+            end,
+          }),1000)
         end
       end
     }
+
+
   end
 
   --链接='http://www.zhihudaily.me/'
@@ -588,6 +593,10 @@ function 日报刷新(isclear)
   链接 = 'https://kanzhihu.pro/api/news/'..tostring(ZUOTIAN)
   Http.get(链接,head,function(code,content)
     --  news[tostring(ZUOTIAN)]=content
+    if code==200 then
+     else
+      return
+    end
     if thisdata==0 then
       newnews=content
      elseif thisdata==-1 then
@@ -893,7 +902,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
               text="0"
             },
             collections_id={
-              text="https://api.zhihu.com/collections/"..tointeger(myid).."/answers?offset=0"
+              text=tostring(myid)
 
             },
           }
@@ -1201,24 +1210,6 @@ function 关注刷新(isclear,isprev,num)
     });
 
     可以加载关注[num]=true
-    thispage.setOnScrollListener{
-      onScrollStateChanged=function(view,scrollState)
-        if scrollState == 0 then
-          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and 可以加载关注[num] then
-            关注刷新(false,false,num)
-            System.gc()
-            thissr.setRefreshing(true)
-            可以加载关注[num]=false
-            Handler().postDelayed(Runnable({
-              run=function()
-                可以加载关注[num]=true
-                thissr.setRefreshing(false);
-              end,
-            }),1000)
-          end
-        end
-      end
-    }
 
     thispage.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(parent,v,pos,id)
@@ -1247,6 +1238,23 @@ function 关注刷新(isclear,isprev,num)
 
     local qqadpqy=MyLuaAdapter(activity,follow_itemc)
     thispage.Adapter=qqadpqy
+
+    thispage.setOnScrollListener{
+      onScroll=function(view,a,b,c)
+        if a+b==c and 可以加载关注[num] and view.adapter.getCount()>0 then
+          关注刷新(false,false,num)
+          System.gc()
+          thissr.setRefreshing(true)
+          可以加载关注[num]=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              thissr.setRefreshing(false);
+            end,
+          }),1000)
+        end
+      end
+    }
+
   end
 
   if moments_tab[num].isend then
@@ -1267,9 +1275,17 @@ function 关注刷新(isclear,isprev,num)
   zHttp.get(posturl,followapphead,function(code,content)
     if code==200 then
       local data=luajson.decode(content)
+
       moments_tab[num].isend=data.paging.is_end
       moments_tab[num].prev=data.paging.previous
       moments_tab[num].nexturl=data.paging.next
+
+      if moments_tab[num].isend==false then
+        可以加载关注[num]=true
+       elseif moments_tab[num].isend then
+        提示("没有新内容了")
+      end
+
       for k,v in ipairs(data.data) do
         if v.type=="moments_feed" then
           local 关注作者头像=v.target.author.avatar_url
@@ -1383,9 +1399,6 @@ function 关注刷新(isclear,isprev,num)
          elseif v.type=="moments_recommend_followed_group"
           --用户推荐卡片
         end
-      end
-      if moments_tab[num].isend then
-        return 提示("没有新内容了")
       end
     end
   end)
@@ -1509,79 +1522,161 @@ function 想法刷新(isclear)
 
 end
 
+可以加载收藏={}
+collection_isend={}
+collection_nexturl={}
+
+
 function 收藏刷新(isclear)
-
-  if not(itemc4) or isclear then
-
-
-    if CollectiontabLayout.getTabCount()==0 then
-      CollectiontabLayout.setupWithViewPager(page)
-      local CollectionTable={"我的","关注"}
-      --setupWithViewPager设置的必须手动设置text
-      for i=1, #CollectionTable do
-        local itemnum=i-1
-        local tab=CollectiontabLayout.getTabAt(itemnum)
-        tab.setText(CollectionTable[i]);
-      end
+  if CollectiontabLayout.getTabCount()==0 then
+    CollectiontabLayout.setupWithViewPager(page)
+    local CollectionTable={"我的","关注"}
+    --setupWithViewPager设置的必须手动设置text
+    for i=1, #CollectionTable do
+      local itemnum=i-1
+      local tab=CollectiontabLayout.getTabAt(itemnum)
+      tab.setText(CollectionTable[i]);
     end
-
-    datas4={}
-
-    page.addOnPageChangeListener(ViewPager.OnPageChangeListener {
-      onPageScrolled=function(a,b,c)
+    CollectiontabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
+      onTabSelected=function(tab)
+        --选择时触发
+        local pos=tab.getPosition()+1
+        followpos=pos
+        收藏刷新(false)
       end,
-      onPageSelected=function(v)
-      end
-    })
 
-    itemc4=获取适配器项目布局("home/home_collections")
-    list4.setOnItemClickListener(AdapterView.OnItemClickListener{
-      onItemClick=function(parent,v,pos,id)
-        activity.newActivity("collections",{v.Tag.collections_id.Text,v.Tag.collections_title.Text})
-      end
-    })
-    itemc8=获取适配器项目布局("home/home_shared_collections")
-    list8.setOnItemClickListener(AdapterView.OnItemClickListener{
-      onItemClick=function(parent,v,pos,id)
-        activity.newActivity("collections",{v.Tag.mc_id.Text,v.Tag.mc_title.Text})
-      end
-    })
+      onTabUnselected=function(tab)
+        --未选择时触发
+      end,
+
+      onTabReselected=function(tab)
+        --选中之后再次点击即复选时触发
+        收藏刷新(true)
+      end,
+    });
+
   end
 
-  xpcall(function()
-    local yuxun_ay=LuaAdapter(activity,datas4,itemc4)
+  local allsr={csr,dsr}
+  local allpage={list4,list8}
+  local pos=CollectiontabLayout.getSelectedTabPosition()+1;
+  local thispage=allpage[pos]
+  local thissr=allsr[pos]
+  if thispage.adapter and isclear==false
+    return
+  end
+  if not(thispage.adapter) or isclear then
 
-    list4.adapter=yuxun_ay
-    list4.adapter.add{
-      collections_title={
-        text="本地收藏",
+    local allitemc={获取适配器项目布局("home/home_collections"),获取适配器项目布局("home/home_shared_collections")}
+    local allonclick={
+      AdapterView.OnItemClickListener{
+        onItemClick=function(parent,v,pos,id)
+          activity.newActivity("collections",{v.Tag.collections_id.Text})
+        end
       },
-      collections_art={
-        text="你猜有几个内容？",
+      AdapterView.OnItemClickListener{
+        onItemClick=function(parent,v,pos,id)
+          if v.Tag.mc_title.text=="推荐关注收藏夹" then
+            activity.newActivity("collections_tj")
+            return
+          end
+          activity.newActivity("collections",{v.Tag.mc_id.Text,true})
+        end
       },
-      is_lock=图标("https"),
-
-      collections_item={
-        text="0",
-      },
-      collections_follower={
-        text="0",
-      },
-      collections_id={
-        text="local"
-      },
-
     }
 
-    local yuxuuun_ay=MyLuaAdapter(activity,datas8,itemc8)
-    list8.Adapter=yuxuuun_ay
+    local alladd={
+      {
+        collections_title={
+          text="本地收藏",
+        },
+        collections_art={
+          text="你猜有几个内容？",
+        },
+        is_lock=图标("https"),
+        collections_item={
+          text="0",
+        },
+        collections_follower={
+          text="0",
+        },
+        collections_id={
+          text="local"
+        },
+      },
+      {
+        mc_image="https://picx.zhimg.com/50/v2-abed1a8c04700ba7d72b45195223e0ff_xl.jpg",
+        mc_name={
+          text="为你推荐"
+        },
+        mc_title={
+          text="推荐关注收藏夹"
+        },
+        mc_follower={
+          text=""
+        },
+        mc_id={
+          text="",
+        },
+        background={foreground=Ripple(nil,转0x(ripplec),"方")},
+      },
+    }
 
-    local collections_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20"
 
+    thispage.setOnItemClickListener(allonclick[pos])
 
+    thissr.setColorSchemeColors({转0x(primaryc)});
+    thissr.setOnRefreshListener({
+      onRefresh=function()
+        收藏刷新(true)
+        Handler().postDelayed(Runnable({
+          run=function()
+            thissr.setRefreshing(false);
+          end,
+        }),1000)
+
+      end,
+    });
+
+    thispage.adapter=MyLuaAdapter(activity,allitemc[pos])
+
+    table.insert(thispage.adapter.getData(),alladd[pos])
+
+    可以加载收藏[pos]=true
+    collection_isend[pos]=false
+    collection_nexturl[pos]=false
+
+    thispage.setOnScrollListener{
+      onScroll=function(view,a,b,c)
+        if a+b==c and 可以加载收藏[pos] then
+          可以加载收藏[pos]=false
+          收藏刷新()
+          thissr.setRefreshing(true)
+          System.gc()
+          Handler().postDelayed(Runnable({
+            run=function()
+              thissr.setRefreshing(false);
+            end,
+          }),1000)
+        end
+      end
+    }
+
+    return
+  end
+  if pos==1 then
+    local collections_url= collection_nexturl[1] or "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20"
     zHttp.get(collections_url,head,function(code,content)
       if code==200 then
-        for k,v in ipairs(luajson.decode(content).data) do
+        local data=luajson.decode(content)
+        collection_isend[1]=data.paging.is_end
+        collection_nexturl[1]=data.paging.next
+        if collection_isend[1]==false then
+          可以加载收藏[1]=true
+         elseif collection_isend[1] then
+          提示("没有新内容了")
+        end
+        for k,v in ipairs(data.data) do
           list4.adapter.add{
             collections_title={
               text=v.title,
@@ -1598,7 +1693,7 @@ function 收藏刷新(isclear)
               text=tointeger(v.follower_count)..""
             },
             collections_id={
-              text="https://api.zhihu.com/collections/"..tointeger(v.id).."/answers?offset=0"
+              text=tostring(v.id)
 
             },
           }
@@ -1608,13 +1703,26 @@ function 收藏刷新(isclear)
         提示("获取收藏列表失败")
       end
     end)
+    return
+  end
 
-    local mc_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/following_collections?offset=0"
+  if pos==2 then
+    local mc_url=collection_nexturl[2] or "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/following_collections?offset=0"
 
     zHttp.get(mc_url,head,function(c,ct)
       if c==200 then
 
-        for k,v in ipairs(luajson.decode(ct).data) do
+        local data=luajson.decode(ct)
+
+        collection_isend[2]=data.paging.is_end
+        collection_nexturl[2]=data.paging.next
+        if collection_isend[2]==false then
+          可以加载收藏[2]=true
+         elseif collection_isend[2] then
+          提示("没有新内容了")
+        end
+
+        for k,v in ipairs(data.data) do
 
           list8.adapter.add{
             mc_image=v.creator.avatar_url,
@@ -1628,7 +1736,7 @@ function 收藏刷新(isclear)
               text=math.floor(v.follower_count).."人关注"
             },
             mc_id={
-              text="https://api.zhihu.com/collections/"..tointeger(v.id).."/answers?offset=0",
+              text=tostring(v.id),
             },
             background={foreground=Ripple(nil,转0x(ripplec),"方")},
           }
@@ -1638,9 +1746,9 @@ function 收藏刷新(isclear)
         提示("获取收藏列表失败")
       end
     end)
-    end,function()
-    提示("你可能需要登录哦")
-  end)
+    return
+  end
+
 end
 
 --设置波纹（部分机型不显示，因为不支持setColor）（19 6-6发现及修复因为不支持setColor而导致的报错问题)

@@ -82,7 +82,7 @@
             textSize="12sp";
             id="follow_art";
             textColor=stextc;
-            MaxLines=3,--设置最大输入行数
+            MaxLines=3,
             ellipsize="end",--设置内容超出控件大小时显示...
             layout_marginTop="5dp";
             Typeface=字体("product-Medium");

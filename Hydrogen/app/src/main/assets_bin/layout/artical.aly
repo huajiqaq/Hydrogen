@@ -50,7 +50,6 @@
             layout_width="-1",
             orientation="vertical";
             onClick=function()
-              --a.pop.showAsDropDown(_more_lay)
               showpop(_more_lay,a.pop)
             end;
             {
@@ -64,7 +63,6 @@
               ellipsize='marquee',
               Selected=true,
               gravity="center|left";
-              -- paddingLeft="16dp";
               Typeface=字体("product-Bold");
             };
           };
@@ -152,6 +150,17 @@
                     text="加载中..",
                     textColor=textc;
                     textSize="16sp";
+                    textIsSelectable=true,
+                  };
+                  {
+                    TextView;
+                    layout_marginTop="4dp";
+                    layout_gravity="center";
+                    id="aauthor";
+                    Typeface=字体("product-Medium");
+                    text="加载中..",
+                    textColor=textc;
+                    textSize="15sp";
                     textIsSelectable=true,
                   };
                   {

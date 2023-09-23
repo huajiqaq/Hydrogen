@@ -223,7 +223,7 @@ function base:setresultfunc(tab)
 end
 
 
-function base:setgetcallback(code,content)
+function base:setgetcallback(code,content,callback)
   if code==200 then
     local data=luajson.decode(content)
     if data.paging.is_end then
@@ -232,6 +232,10 @@ function base:setgetcallback(code,content)
      else
       初始化(data.paging.next,self)
       self.resultfunc(data)
+      if callback then
+        callback(content)
+      end
+      self.is_end=data.paging.is_end
     end
    else
     local data=luajson.decode(content)
@@ -243,10 +247,14 @@ function base:setgetcallback(code,content)
   end
 end
 
-function base:setothercallback(code,content)
+function base:setothercallback(code,content,callback)
   if code==200 then
     local data=luajson.decode(content)
     self.resultfunc(data)
+    if callback then
+      callback(content)
+    end
+    self.is_end=data.paging.is_end
    else
     local data=luajson.decode(content)
     if data and data.error and data.error.message then
@@ -257,7 +265,7 @@ function base:setothercallback(code,content)
   end
 end
 
-function base:getData(method,data)
+function base:getData(method,data,callback)
   local myhead = {
     ["cookie"] = 获取Cookie("https://www.zhihu.com/");
     ["x-api-version"] = "3.0.91";
@@ -277,20 +285,20 @@ function base:getData(method,data)
 
   if not(method) or method=="get" then
     zHttp.get(self.url,myhead,function(code,content)
-      self:setgetcallback(code,content)
+      self:setgetcallback(code,content,callback)
     end)
    elseif method == "delete" then
     zHttp.delete(self.url,myhead,function(code,content)
-      self:setothercallback(code,content)
+      self:setothercallback(code,content,callback)
     end)
    else
     if method == "post" then
       zHttp.post(self.url,data,myjshead,function(code,content)
-        self:setothercallback(code,content)
+        self:setothercallback(code,content,callback)
       end)
      elseif method == "put" then
       zHttp.put(self.url,data,myjshead,function(code,content)
-        self:setothercallback(code,content)
+        self:setothercallback(code,content,callback)
       end)
     end
   end

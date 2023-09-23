@@ -23,44 +23,42 @@
       StrokeWidth=dp2px(1),
       id="userinfo",
       {
-        CircleImageView,--圆形图片控件
+        CircleImageView,
         layout_marginLeft="8dp";
-        layout_width="45dp",--布局宽度
-        layout_height="45dp",--布局高度
-        layout_gravity="left|center",--顶：top｜中：center｜左：left｜右：right｜底：bottom
-        src="icon.png",--视图路径
+        layout_width="45dp",
+        layout_height="45dp",
+        layout_gravity="left|center",
+        src="icon.png",
         id="usericon",
       },
       {
         View,
-        layout_height="75dp",--布局高度
+        layout_height="75dp",
         id="ripple",
       },
       {
-        TextView,--文本框控件
-        text="",--文本内容
-        textSize="16sp",--文本大小
+        TextView,
+        text="",
+        textSize="16sp",
         id="username",
         Typeface=字体("product-Bold");
         layout_marginTop="15dp",
-        layout_marginLeft="60dp",--布局左距
-        gravity="left|center",--顶：top｜中：center｜左：left｜右：right｜底：bottom
-        textColor=textc,--文本颜色
-        --singleLine=true,--禁止换行输入
+        layout_marginLeft="60dp",
+        gravity="left|center",
+        textColor=textc,
       },
       {
-        TextView,--文本框控件
-        text="",--文本内容
+        TextView,
+        text="",
         id="userheadline",
         Typeface=字体("product");
-        textSize="14sp",--文本大小
-        layout_marginLeft="60dp",--布局左距
+        textSize="14sp",
+        layout_marginLeft="60dp",
         layout_marginRight="5dp",
-        layout_marginTop="40dp",--布局底距
+        layout_marginTop="40dp",
         layout_marginBottom="10dp",
-        gravity="left|bottom",--顶：top｜中：center｜左：left｜右：right｜底：bottom
-        textColor="#FF767676",--文本颜色
-        --singleLine=true,--禁止换行输入
+        gravity="left|bottom",
+        textColor="#FF767676",
       },
     };
     {
@@ -85,24 +83,6 @@
         layout_height="wrap_content";
         indeterminate="true";
       },
-      --[[
-      {
-        LinearLayout;
-        layout_width="-1";
-        id="progress";
-        Visibility=8,
-        layout_height="match_parent";
-        gravity="center_horizontal";
-        {
-          ProgressBar;
-          Visibility=0,
-          layout_height="56dp",
-          layout_width="56dp",
-          layout_marginBottom="56dp";
-          layout_gravity="center";
-        };
-      }
-]]
     };
   },
 };

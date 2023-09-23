@@ -61,7 +61,6 @@
           tooltip="更多",
           layout_margin="8dp";
           onClick=function()
-            --a.pop.showAsDropDown(_more_lay)
             showpop(_more_lay,a.pop)
           end;
         };
@@ -92,34 +91,30 @@
 
       {
         MaterialCardView;
-        --layout_gravity="bottom";
         layout_width="fill";
         StrokeColor=oricardedge;
         StrokeWidth=dp2px(1),
         radius="8dp";
         CardBackgroundColor=barbackgroundc;
         id="inputLay";
+        --开启动画可能造成卡顿
         --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-
         {
           LinearLayout;
           layout_width="fill";
           layout_height="fill";
           gravity="center";
-          --minimumHeight="56dp";
           Focusable=true;
           FocusableInTouchMode=true;
+          --开启动画可能造成卡顿
           --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
           {
             EditText;
             id="edit";
-            --layout_gravity="center";
             layout_weight=1;
             layout_marginLeft="16dp";
             layout_margin="8dp";
-            --layout_marginRight="8dp";
             maxLines=10;
-            --tag="编辑框";
             hint="输入评论";
           };
 
@@ -131,7 +126,6 @@
             radius="4dp";
             layout_marginRight="6dp";
             layout_gravity="center",
-            --background=primaryc;
             CardBackgroundColor=primaryc;
             Visibility=View.GONE;
             {

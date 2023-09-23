@@ -42,32 +42,25 @@ back.onClick=function()
   end
   atitle.Text=backtitle
   atext.Text=backtext
-end
-
-function 获取每日一文()
-  local api="https://interface.meiriyiwen.com/article/today?dev=1"
-  Http.get(api,head,function(code,content)
-    if code==200 then
-      一文模式="每日"
-      data=luajson.decode(content)
-      atitle.text=data.data.title
-      atext.text=Html.fromHtml(data.data.content)
-      backtitle=atitle.text
-      backtext=atext.text
-    end
-  end)
+  aauthor.text=backauthor
 end
 
 function 获取随机一文()
-  local api="https://interface.meiriyiwen.com/article/random?dev=1"
-  Http.get(api,head,function(code,content)
-    if code==200 then
-      一文模式="随机"
-      data=luajson.decode(content)
-      atitle.text=data.data.title
-      atext.text=Html.fromHtml(data.data.content)
+  local api="http://htwinkle.cn/article"
+  Http.get(api, function(code, content)
+    if code == 200 and content then
+      local title,author,art
+      title = content:match("<h2 class=\"title\">(.-)</h2>")
+      author = content:match("<h3 class=\"author\">作者&nbsp;&nbsp;(.-)</h3>")
+      art = content:match("1.0rem\">(.-)</p></div>")
+      art = art:gsub("<p>", "   ")
+      art = art:gsub("</p>", "")
+      atitle.text=title
+      aauthor.text=author
+      atext.text=art
       backtitle=atitle.text
       backtext=atext.text
+      backauthor=aauthor.text
     end
   end)
 end
@@ -83,7 +76,7 @@ _star.onClick=function()
   if click==1 then
     _star.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
     创建文件(内置存储文件("Note/"..atitle.text))
-    写入文件(内置存储文件("Note/"..atitle.text),atext.text)
+    写入文件(内置存储文件("Note/"..atitle.text),"文章作者:"..aauthor.text.."\n"..atext.text)
     if _title.Text=="每日一文"then
       is_star=true
     end
@@ -99,11 +92,11 @@ _star.onClick=function()
 end
 
 _refre.onClick=function()
-  if 一文模式=="每日" then
-    获取每日一文()
-   else
-    获取随机一文()
+  if back_root.Visibility==0 then
+    back_root.Visibility=8
+    _star.setColorFilter(PorterDuffColorFilter(转0x(textc),PorterDuff.Mode.SRC_ATOP));
   end
+  获取随机一文()
 end
 
 noteitem=获取适配器项目布局("note/note")
@@ -120,7 +113,17 @@ function 加载笔记()
   for i,v in ipairs(luajava.astable(File(内置存储文件("Note")).listFiles())) do
     local v=tostring(v)
     local _,name=v:match("(.+)/(.+)")
-    notedata[#notedata+1]={title=name,text=(v),preview=读取文件(v)}
+    local content=读取文件(v)
+    local first_line=content:sub(1, content:find("\n") - 1)
+    local author=first_line:match("文章作者:(.+)")
+    local preview
+    if author then
+      preview=content:match("\n(.+)")
+      name=name.." (作者:"..author..")"
+     else
+      preview=content
+    end
+    notedata[#notedata+1]={title=name,text=(v),preview=preview}
   end
   noteadp=LuaAdapter(activity,notedata,noteitem)
   notelist.setAdapter(noteadp)
@@ -130,8 +133,17 @@ end
 
 notelist.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(id,v,zero,one)
-    atitle.Text=v.Tag.title.Text
+    local mtext=v.Tag.title.Text
+    local author
+    if mtext:find("作者:") then
+      author=mtext:match("作者:(.-)%)")
+      mtext=mtext:match("(.+) %(")
+     else
+      author="未知"
+    end
+    atitle.Text=mtext
     atext.Text=v.Tag.preview.Text
+    aauthor.text=author
     artical_page.setCurrentItem(0,false)
     动画出现(back_root)
     _star.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
@@ -164,17 +176,6 @@ task(1,function()
   a=MUKPopu({
     tittle="一文",
     list={
-      {src=图标("share"),text="每日一文",onClick=function()
-          _title.Text="每日一文"
-          atitle.text="加载中.."
-          atext.text=""
-          获取每日一文()
-          if is_star==true then
-            _star.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
-           else
-            _star.setColorFilter(PorterDuffColorFilter(转0x(textc),PorterDuff.Mode.SRC_ATOP));
-          end
-      end},
       {src=图标("share"),text="随机一文",onClick=function()
           _title.Text="随机一文"
           atitle.text="加载中.."

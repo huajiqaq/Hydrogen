@@ -73,41 +73,6 @@
             padding="10dp"
           };
         };
-        --[[
-        {
-          CardView;
-          layout_width="-2";
-          layout_height="-2";
-          radius="4dp";
-          layout_gravity="center",
-          --background=primaryc;
-          CardBackgroundColor=primaryc;
-          onClick=function()
-            双按钮对话框("提示","是否要恢复默认？","好的","取消",function()
-              关闭对话框(an)
-              data={}
-              开始加载推荐()
-              end,function()
-              关闭对话框(an)
-            end)
-          end;
-          {
-            TextView;
-            id="moren",
-            layout_width="-1";
-            layout_height="-1";
-            textSize="14sp";
-            paddingRight="12dp";
-            paddingLeft="12dp";
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text="恢复默认";
-            textColor=backgroundc;
-            gravity="center";
-            Typeface=字体("product-Bold");
-          };
-        };
-        ]]
         {
           CardView;
           layout_width="-2";
@@ -115,7 +80,6 @@
           layout_marginTop="10dp";
           radius="4dp";
           layout_gravity="center",
-          --background=primaryc;
           CardBackgroundColor=primaryc;
           onClick=function()提示("加载中 请耐心等待") end;
           {
@@ -141,7 +105,6 @@
           layout_marginTop="10dp";
           radius="4dp";
           layout_gravity="center",
-          --background=primaryc;
           CardBackgroundColor=primaryc;
           onClick=function()提示("加载中 请耐心等待") end;
           {

@@ -19,24 +19,11 @@ history_list.setDividerHeight(0)
 adp=MyLuaAdapter(activity,itemc)
 history_list.Adapter=adp
 
-history_list.setOnScrollListener{
-  onScrollStateChanged=function(view,scrollState)
-    if scrollState == 0 then
-      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
-        提示("搜索中 请耐心等待")
-        刷新()
-        System.gc()
-      end
-    end
-  end
-}
-
 
 function 刷新()
   local 请求链接="https://www.zhihu.com/api/v4/search_v3?gk_version=gz-gaokao&q="..urlEncode(str).."&t=favlist&lc_idx=0&correction=1&offset=0&advertCount=0&limit=20&is_real_time=0&show_all_topics=0&search_source=History&filter_fields=&city=&pin_flow=false&ruid=undefined&recq=undefined&is_merger=1&raw_query=page_source%3Dmy_collection"
-  pcall(function()history_list.Adapter.clear()end)
   search_base=require "model.dohttp"
-  :new(请求链接)
+  :new(下一页数据 or 请求链接)
   :setresultfunc(function(data)
     -- local 搜索结果数量=tointeger(data.search_action_info.lc_idx)
     下一页数据=data.paging.next
@@ -90,10 +77,16 @@ function 刷新()
       history_list.Adapter.notifyDataSetChanged()
     end
   end)
-  search_base:getData()
+  search_base:getData(nil,nil,function(content)
+    local data=luajson.decode(content)
+    if data.paging.is_end==false then
+      add=true
+     else
+      提示("没有新内容了")
+    end
+  end)
 end
 
-刷新()
 
 history_list.onItemClick=function(l,v,c,b)
   local open=activity.getSharedData("内部浏览器查看回答")
@@ -118,3 +111,16 @@ history_list.onItemClick=function(l,v,c,b)
     end
   end
 end
+
+add=true
+
+history_list.setOnScrollListener{
+  onScroll=function(view,a,b,c)
+    if a+b==c and add then
+      add=false
+      提示("搜索中 请耐心等待")
+      刷新()
+      System.gc()
+    end
+  end
+}

@@ -43,7 +43,6 @@
         paddingLeft="72dp";
         padding="24dp";
         paddingBottom="48dp";
-        --layout_weight="1",
         Typeface=字体("product-Bold");
       };
       {
@@ -69,7 +68,6 @@
         layout_width="56dp";
         layout_height="56dp";
         radius=(56/2).."dp";
-        --background=backgroundc;
         CardBackgroundColor=backgroundc;
         elevation="2dp";
         layout_gravity="center",
@@ -96,9 +94,6 @@
         gravity="center|left";
         paddingLeft="28dp";
         paddingTop="8dp",
-        --     padding="24dp";
-        --    paddingBottom="48dp";
-        --layout_weight="1",
         Typeface=字体("product-Bold");
       };
 

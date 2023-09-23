@@ -15,7 +15,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.1113
+versionCode=0.11131
 layout_dir="layout/item_layout/"
 
 
@@ -1482,45 +1482,47 @@ function MUKPopu(t)
   tab.pop=pop
 
   if this.getSharedData("允许加载代码")=="true" then
-    table.insert(t.list,{src=图标("build"),text="执行代码",onClick=function()
-        local InputLayout={
-          LinearLayout;
-          orientation="vertical";
-          Focusable=true,
-          FocusableInTouchMode=true,
-          {
-            EditText;
-            hint="输入";
-            layout_marginTop="5dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            layout_width="match_parent";
-            layout_gravity="center",
-            lines="1",
-            ellipsize="end",
-            id="edit";
+    if t.list[#t.list].text~="执行代码" and t.list[#t.list].src~=图标("build")  then
+      table.insert(t.list,{src=图标("build"),text="执行代码",onClick=function()
+          local InputLayout={
+            LinearLayout;
+            orientation="vertical";
+            Focusable=true,
+            FocusableInTouchMode=true,
+            {
+              EditText;
+              hint="输入";
+              layout_marginTop="5dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              layout_width="match_parent";
+              layout_gravity="center",
+              lines="1",
+              ellipsize="end",
+              id="edit";
+            };
           };
-        };
 
-        local dialog=AlertDialog.Builder(this)
-        .setTitle("输入要执行的代码")
-        .setView(loadlayout(InputLayout))
-        .setPositiveButton("确定",nil)
-        .setNegativeButton("取消",nil)
-        .setCancelable(false)
-        .show()
+          local dialog=AlertDialog.Builder(this)
+          .setTitle("输入要执行的代码")
+          .setView(loadlayout(InputLayout))
+          .setPositiveButton("确定",nil)
+          .setNegativeButton("取消",nil)
+          .setCancelable(false)
+          .show()
 
-        dialog.getButton(dialog.BUTTON_POSITIVE).onClick=function()
-          local _,merror=pcall(function()
-            load(edit.Text)()
-          end)
-          if _==false then
-            提示(merror)
-           else
-            提示("执行成功")
+          dialog.getButton(dialog.BUTTON_POSITIVE).onClick=function()
+            local _,merror=pcall(function()
+              load(edit.Text)()
+            end)
+            if _==false then
+              提示(merror)
+             else
+              提示("执行成功")
+            end
           end
-        end
-    end})
+      end})
+    end
   end
 
   for k,v in ipairs(t.list) do
@@ -2160,12 +2162,27 @@ function getLogin()
   end
 end
 
+if not this.getSharedData("udid") then
+  local length = 35 -- 指定生成字符串的长度
+  local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_" -- 指定可用字符集
+  local udid = ""
+
+  for i = 1, length do
+    local index = math.random(1, #chars) -- 生成随机索引
+    udid = udid .. chars:sub(index, index) -- 在udid后面添加随机字符
+  end
+
+  activity.setSharedData("udid",udid.."=")
+
+end
+
 function setHead()
   if this.getSharedData("signdata") then
     local jsondata=luajson.decode(this.getSharedData("signdata"))
     access_token="Bearer "..jsondata.access_token
     head = {
-      ["authorization"] = access_token
+      ["authorization"] = access_token,
+      ["x-udid"] = this.getSharedData("udid"),
     }
 
     posthead=table.clone(head)
@@ -2181,6 +2198,7 @@ function setHead()
       ["x-app-build"] = "release";
       ["x-network-type"] = "WiFi";
       ["authorization"] = access_token;
+      ["x-udid"] = this.getSharedData("udid");
     }
 
     postapphead=table.clone(apphead)
@@ -2189,6 +2207,7 @@ function setHead()
    else
     head = {
       ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+      ["x-udid"] = this.getSharedData("udid");
     }
 
     posthead=table.clone(head)
@@ -2203,6 +2222,7 @@ function setHead()
       ["x-app-build"] = "release";
       ["x-network-type"] = "WiFi";
       ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+      ["x-udid"] = this.getSharedData("udid");
     }
 
     postapphead=table.clone(apphead)

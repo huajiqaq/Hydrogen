@@ -2,7 +2,6 @@
   LinearLayout;
   layout_width="-1";
   orientation="horizontal";
-  --background=backgroundc,
   BackgroundColor=backgroundc;
   {
     MaterialCardView;
@@ -75,7 +74,7 @@
             textSize="12sp";
             id="people_art";
             textColor=stextc;
-            MaxLines=3;--设置最大输入行数
+            MaxLines=3;
             ellipsize="end",
             layout_marginTop="2dp";
             Typeface=字体("product-Medium");

@@ -30,7 +30,12 @@
         paddingBottom="18dp";
         {
           TextView;
-          id="people_url";
+          id="mc_id";
+          textSize="0sp";
+        };
+        {
+          TextView;
+          id="isfollow";
           textSize="0sp";
         };
         {
@@ -43,27 +48,22 @@
               CircleImageView;
               layout_width="20dp",
               layout_height="20dp",
-              id="people_image",
+              id="mc_image",
             };
             {
               TextView;
-              id="people_action";
+              id="mc_action";
               layout_marginLeft="6dp",
               textColor=textc;
               layout_gravity="center_vertical",
               Typeface=字体("product");
               textSize="12sp";
             };
-            {
-              TextView;
-              id="people_question";
-              textSize="0sp";
-            };
           };
           {
             TextView;
             textSize="14sp";
-            id="people_title";
+            id="mc_title";
             textColor=textc;
             letterSpacing="0.02";
             layout_marginTop="8dp";
@@ -72,7 +72,7 @@
           {
             TextView;
             textSize="12sp";
-            id="people_art";
+            id="mc_art";
             textColor=textc;
             MaxLines=3;
             letterSpacing="0.02";
@@ -84,37 +84,14 @@
             LinearLayout;
             layout_marginTop="8dp";
             orientation="horizontal";
-            id="people_palne",
-            {
-              ImageView;
-              src=图标("vote_up"),
-              ColorFilter=textc;
-              layout_height="16dp",
-              layout_width="16dp",
-            };
+            id="mc_palne",
+            layout_width="fill";
             {
               TextView;
-              id="people_vote";
-              layout_marginLeft="6dp",
+              id="底部内容";
               textColor=textc;
-              textSize="12sp";
-              Typeface=字体("product");
-            };
-            {
-              ImageView;
-              layout_marginLeft="24dp",
-              src=图标("message"),
-              ColorFilter=textc;
-              layout_height="16dp",
-              layout_width="16dp",
-            };
-            {
-              TextView;
-              layout_marginLeft="6dp",
-              textSize="12sp";
-              id="people_comment";
-              textColor=textc;
-              Typeface=字体("product");
+              textSize="12sp",
+              Typeface=字体("product-Medium");
             };
           };
         };

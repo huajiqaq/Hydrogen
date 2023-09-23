@@ -86,21 +86,25 @@ function 精华刷新(istab)
       end
     })
 
+
+    local best_adp=LuaAdapter(activity,datas,best_itemc)
+    mallpager[pos].Adapter=best_adp
+
     isadd[pos]=true
 
+
     mallpager[pos].setOnScrollListener{
-      onScrollStateChanged=function(view,scrollState)
-        if scrollState == 0 then
-          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
-            精华刷新()
-            System.gc()
-          end
+      onScroll=function(view,a,b,c)
+        if a+b==c and isadd[pos] then
+          isadd[pos]=false
+          精华刷新()
+          System.gc()
         end
       end
     }
-    local best_adp=LuaAdapter(activity,datas,best_itemc)
-    mallpager[pos].Adapter=best_adp
+    return
   end
+
 
   zHttp.get(posturl,head,function(code,content)
     --print(content)
@@ -190,11 +194,34 @@ function 精华刷新(istab)
       local data=luajson.decode(content)
       isend[pos]=data.paging.is_end
       nexturl[pos]=data.paging.next
+
+      if isend[pos]==false then
+        isadd[pos]=true
+       else
+        提示("没有新内容了")
+      end
+
     end
   end)
 end
 
-精华刷新()
+精华刷新(true)
+
+-- 定义一个函数，接受一个URL字符串作为参数
+local function replace_domain (url,replace_str)
+  -- 使用string.match函数，从URL中提取域名
+  local domain = string.match (url, "https?://([^/]+)")
+  -- 如果域名不是replace_str，就用string.gsub函数，将域名替换
+  if domain ~= replace_str then
+    if domain then
+      url = string.gsub (url, domain, replace_str)
+     else
+      return 提示(url.."不是一个有效的http链接")
+    end
+  end
+  -- 返回替换后的URL字符串
+  return url
+end
 
 all_type="top_question"
 
@@ -208,19 +235,10 @@ function 所有刷新(istab)
 
   if all_list.Adapter==nil then
     all_itemc=获取适配器项目布局("topic/topic_all")
-    all_nexturl=""
+    all_nexturl=false
     all_isend=false
-    all_list.setOnScrollListener{
-      onScrollStateChanged=function(view,scrollState)
-        if scrollState == 0 then
-          if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 then
-            all_nexturl=replace_domain (all_nexturl,"api.zhihu.com")
-            所有刷新()
-            System.gc()
-          end
-        end
-      end
-    }
+    all_add=true
+
 
     all_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(parent,v,pos,id)
@@ -243,6 +261,19 @@ function 所有刷新(istab)
 
     local all_adp=LuaAdapter(activity,all_datas,all_itemc)
     all_list.Adapter=all_adp
+    all_list.setOnScrollListener{
+      onScroll=function(view,a,b,c)
+        if a+b==c and all_add then
+          all_add=false
+          if all_nexturl then
+            all_nexturl=replace_domain (all_nexturl,"api.zhihu.com")
+          end
+          所有刷新()
+          System.gc()
+        end
+      end
+    }
+    return
   end
 
   zHttp.get(posturl,head,function(code,content)
@@ -259,25 +290,17 @@ function 所有刷新(istab)
       all_isend=data.paging.is_end
       all_nexturl=data.paging.next
 
+      if all_isend==false then
+        all_add=true
+       else
+        提示("没有新内容了")
+      end
+
     end
   end)
 end
 
--- 定义一个函数，接受一个URL字符串作为参数
-local function replace_domain (url,replace_str)
-  -- 使用string.match函数，从URL中提取域名
-  local domain = string.match (url, "https?://([^/]+)")
-  -- 如果域名不是replace_str，就用string.gsub函数，将域名替换
-  if domain ~= replace_str then
-    if domain then
-      url = string.gsub (url, domain, replace_str)
-     else
-      return 提示(url.."不是一个有效的http链接")
-    end
-  end
-  -- 返回替换后的URL字符串
-  return url
-end
+
 
 TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
   onTabSelected=function(tab)
@@ -361,12 +384,14 @@ TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
             {src=图标("format_align_left"),text="按时间顺序",onClick=function()
                 all_list.Adapter.clear()
                 all_nexturl,all_isend=false
+                all_add=true
                 all_type="new_question"
                 所有刷新()
             end},
             {src=图标("notes"),text="按热度顺序",onClick=function()
                 all_list.Adapter.clear()
                 all_nexturl,all_isend=false
+                all_add=true
                 all_type="top_question"
                 所有刷新()
             end},

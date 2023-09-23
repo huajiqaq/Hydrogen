@@ -51,7 +51,7 @@
         {
           TextView;
           textSize="12sp";
-          MaxLines=3;--设置最大输入行数
+          MaxLines=3;
           ellipsize="end",
           id="文章2";
           textColor=stextc;

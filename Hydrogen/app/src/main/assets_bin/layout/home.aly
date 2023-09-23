@@ -76,7 +76,6 @@
           ellipsize='marquee',
           Selected=true,
           gravity="center|left";
-          -- paddingLeft="16dp";
           Typeface=字体("product-Bold");
         };
 
@@ -131,9 +130,6 @@
             tooltip="更多",
             layout_margin="8dp";
             onClick=function()
-              --pop.showAsDropDown(_more_lay,dp2px(-8-192),dp2px(8))
-              --a.pop.showAsDropDown(_more_lay)
-              --   print(a.pop.isShowing())
               showpop(_more_lay,a.pop)
             end;
           };
@@ -142,7 +138,6 @@
             id="_more_lay";
             layout_width="0",
             layout_height="0",
-            --            layout_gravity="top";
             layout_gravity="end";
           };
         };
@@ -221,7 +216,6 @@
           LinearLayout;
           layout_height="-1";
           layout_width="-1";
-          --padding="16dp";
           orientation="vertical";
 
           {
@@ -253,11 +247,9 @@
                 layout_width="-1";
                 {
                   ImageView;
-                  -- layout_marginLeft="100dp";
                   ColorFilter=textc;
                   src=图标("exit");
                   id="注销",
-                  --  layout_gravity="right",
                   layout_width="25dp";
                   layout_height="25dp",
                   onClick=function()
@@ -265,6 +257,7 @@
                       清除所有cookie()
                       activity.setSharedData("signdata",nil)
                       activity.setSharedData("idx",nil)
+                      activity.setSharedData("udid",nil)
                       关闭对话框(an)
                       渐变跳转页面("home")
                       activity.finish()
@@ -294,7 +287,6 @@
             };
             {
               TextView;
-              --layout_height="56dp";
               layout_width="-2";
               Text="获取失败";
               textColor=primaryc;
@@ -319,7 +311,6 @@
         layout_height="-1";
         layout_width="-1";
         DividerHeight=0;
-        --layout_marginTop="8dp";
       };
     };
   }

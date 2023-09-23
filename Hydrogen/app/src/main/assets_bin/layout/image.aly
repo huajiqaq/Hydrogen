@@ -52,7 +52,6 @@
     layout_alignParentRight="true";
     layout_alignParentBottom="true";
     layout_marginBottom="32dp";
-    --background="#448aff";
     CardBackgroundColor="#448aff";
     elevation="0";
     translationZ="4dp";

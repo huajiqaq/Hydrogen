@@ -188,7 +188,7 @@ task(1,function()
         end
         _sortt.text="按时间排序"
         pcall(function()people_adp.clear()end)
-        其他("clear")
+        其他("clear",false)
         people_adp.notifyDataSetChanged()
       end
       menu.add("按赞数排序").onMenuItemClick=function(a)
@@ -197,7 +197,7 @@ task(1,function()
         end
         _sortt.text="按赞数排序"
         pcall(function()people_adp.clear()end)
-        其他("clear")
+        其他("clear",false)
         people_adp.notifyDataSetChanged()
       end
       pop.show()--显示
@@ -303,28 +303,65 @@ function 全部()
     if r==false and base_people.is_end==false then
       提示("获取个人动态列表出错 "..a or "")
       --  刷新()
+     elseif base_people.is_end==false then
+      add=true
     end
   end)
 end
 
 local myurl={}
 
-function 其他(isclear)
+function 其他(isclear,isload)
+  add=false
   if chobu=="all" then
     if isclear=="clear" then
+      add=true
       base_people:clear()
+    end
+    if isload==false
+      return
     end
     return 全部()
   end
   if isclear=="clear" then
+    add=true
     myurl[chobu]=nil
   end
+  if isload==false
+    return
+  end
   if chobu=="搜索" then
-    return search_base:getData()
-   else
-    if search_base then
+    if isclear=="clear" then
+      add=true
+      下一页数据=false
       search_base:clear()
     end
+    if isload==false
+      return
+    end
+    return search_base:getData(nil,nil,function()
+      add=true
+    end)
+  end
+  if chobu=="no搜索" then
+    local oridata=people_adp.getData()
+
+    for b=1,2 do
+      if b==2 then
+        提示("搜索完毕 共搜索到"..#people_adp.getData().."条数据")
+        if #people_adp.getData()==0 then
+          chobu="all"
+          其他("clear",false)
+        end
+      end
+      for i=#oridata,1,-1 do
+        if not oridata[i].people_title:find(搜索内容) then
+          table.remove(oridata, i)
+          people_adp.notifyDataSetChanged()
+        end
+      end
+    end
+    return
   end
   geturl=myurl[chobu] or "https://api.zhihu.com/people/"..people_id.."/"..chobu.."s?order_by=created&offset=0&limit=20"
   _sortvis.setVisibility(8)
@@ -348,11 +385,16 @@ function 其他(isclear)
       end
       if luajson.decode(content).paging.is_end and isclear~="clear" then
         提示("已经没有更多内容了")
+       else
+        add=true
       end
       for i,v in ipairs(luajson.decode(content).data) do
         local 预览内容=v.excerpt
         local 点赞数=tointeger(v.voteup_count)
         local 评论数=tointeger(v.comment_count)
+        pcall(function()
+          local 头像=v.author.avatar_url
+        end)
         if v.type=="answer" then
           活动="回答了问题"
           问题id=tointeger(v.question.id) or "null"
@@ -409,7 +451,7 @@ zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab",apphead,fun
          else
           num=""
         end
-        peotab:addTab(v.name..num,function() pcall(function()people_adp.clear()end) chobu=v.key 其他("clear") people_adp.notifyDataSetChanged() end,3)
+        peotab:addTab(v.name..num,function() pcall(function()people_adp.clear()end) chobu=v.key 其他("clear",false) people_adp.notifyDataSetChanged() end,3)
       end
       peotab:showTab(1)
     end
@@ -421,124 +463,115 @@ function 刷新()
   其他()
 end
 
-刷新()
 
 add=true
 
+
 people_list.setOnScrollListener{
-  onScrollStateChanged=function(view,scrollState)
-    if scrollState == 0 then
-      if view.getCount() >1 and view.getLastVisiblePosition() == view.getCount() - 1 and add then
-        add=false
-        刷新()
-        System.gc()
-        add=false
-        Handler().postDelayed(Runnable({
-          run=function()
-            add=true
-          end,
-        }),1000)
-      end
+  onScroll=function(view,a,b,c)
+    --[[
+    if chobu=="搜索" then
+    if search_base.is_end then
+    print("hhh")
+    return
+    end
+   elseif base_people.is_end then
+   print("jsjsje")
+   return
+   end
+]]
+
+    if a+b==c and add then
+      刷新()
+      System.gc()
     end
   end
 }
 
-
 function nochecktitle(str)
   chobu="no搜索"
-  local oridata=people_adp.getData()
-
-  for b=1,2 do
-    if b==2 then
-      提示("搜索完毕 共搜索到"..#people_adp.getData().."条数据")
-      if #people_adp.getData()==0 then
-        chobu="all"
-        其他("clear")
-      end
-    end
-    for i=#oridata,1,-1 do
-      if not oridata[i].people_title:find(str) then
-        table.remove(oridata, i)
-        people_adp.notifyDataSetChanged()
-      end
-    end
-  end
+  add=false
+  刷新()
 end
 
 function checktitle(str)
+
+  搜索内容=str
 
   if not(getLogin()) then
     return nochecktitle(str)
   end
 
-  zHttp.get("https://www.zhihu.com/api/v4/me",head,function(code,content)
-    if isstart=="true" then--开启
-      local 请求链接="https://www.zhihu.com/api/v4/search_v3?correction=1&t=general&q="..urlEncode(str).."&restricted_scene=member&restricted_field=member_hash_id&restricted_value="..people_id
-      chobu="搜索"
-      --提示("搜索中 请耐心等待")
-      pcall(function()people_adp.clear()end)
-      search_base=require "model.dohttp"
-      :new(请求链接)
-      :setresultfunc(function(data)
-        -- local 搜索结果数量=tointeger(data.search_action_info.lc_idx)
-        提示("搜索完毕")
-        下一页数据=data.paging.next
-        peotab:showTab(1)
-        _sort.setVisibility(8)
-        for i,v in ipairs(data.data) do
-          local 预览内容=v.object.excerpt
-          local 点赞数=tointeger(v.object.voteup_count)
-          local 评论数=tointeger(v.object.comment_count)
-          if v.object.type=="answer" then
-            活动="回答了问题"
-            问题id=tointeger(v.object.question.id) or "null"
-            问题id=问题id.."分割"..tointeger(v.object.id)
-            标题=v.object.question.name
-           elseif v.object.type=="topic" then
-            people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
-            return
-           elseif v.object.type=="question" then
-            活动="发布了问题"
-            问题id=tointeger(v.object.id).."问题分割"
-            标题=v.object.title
-           elseif v.object.type=="column" then
-            活动="发表了专栏"
-            问题id="专栏分割"..v.object.id.."专栏标题"..v.object.title
-            评论数=tointeger(v.object.items_count)
-            标题=v.object.title
+  if isstart=="true" then--开启
+    add=true
+    chobu="搜索"
+    --提示("搜索中 请耐心等待")
+    local 请求链接="https://www.zhihu.com/api/v4/search_v3?correction=1&t=general&q="..urlEncode(str).."&restricted_scene=member&restricted_field=member_hash_id&restricted_value="..people_id
 
-           elseif v.object.type=="collection" then
-            return
-           elseif v.object.type=="pin" then
-            活动="发布了想法"
-            标题=v.object.author.name.."发布了想法"
-            问题id="想法分割"..v.object.id
-            预览内容=v.object.content[1].content
-           elseif v.object.type=="zvideo" then
-            活动="发布了视频"
-            xpcall(function()
-              videourl=v.object.video.playlist.sd.url
-              end,function()
-              videourl=v.object.video.playlist.ld.url
-              end,function()
-              videourl=v.object.video.playlist.hd.url
-            end)
-            问题id="视频分割"..videourl
-            标题=v.object.title
-           else
-            活动="发表了文章"
-            问题id="文章分割"..tointeger(v.object.id)
-            标题=v.object.title
-          end
-          people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
-          people_adp.notifyDataSetChanged()
+    pcall(function()people_adp.clear()end)
+    search_base=require "model.dohttp"
+    :new(下一页数据 or 请求链接)
+    :setresultfunc(function(data)
+      -- local 搜索结果数量=tointeger(data.search_action_info.lc_idx)
+      提示("搜索完毕")
+      下一页数据=data.paging.next
+      peotab:showTab(1)
+      _sort.setVisibility(8)
+      for i,v in ipairs(data.data) do
+        local 预览内容=v.object.excerpt
+        local 点赞数=tointeger(v.object.voteup_count)
+        local 评论数=tointeger(v.object.comment_count)
+        pcall(function()
+          头像=v.object.author.avatar_url
+        end)
+        if v.object.type=="answer" then
+          活动="回答了问题"
+          问题id=tointeger(v.object.question.id) or "null"
+          问题id=问题id.."分割"..tointeger(v.object.id)
+          标题=v.object.question.name
+         elseif v.object.type=="topic" then
+          people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
+          return
+         elseif v.object.type=="question" then
+          活动="发布了问题"
+          问题id=tointeger(v.object.id).."问题分割"
+          标题=v.object.title
+         elseif v.object.type=="column" then
+          活动="发表了专栏"
+          问题id="专栏分割"..v.object.id.."专栏标题"..v.object.title
+          评论数=tointeger(v.object.items_count)
+          标题=v.object.title
+
+         elseif v.object.type=="collection" then
+          return
+         elseif v.object.type=="pin" then
+          活动="发布了想法"
+          标题=v.object.author.name.."发布了想法"
+          问题id="想法分割"..v.object.id
+          预览内容=v.object.content[1].content
+         elseif v.object.type=="zvideo" then
+          活动="发布了视频"
+          xpcall(function()
+            videourl=v.object.video.playlist.sd.url
+            end,function()
+            videourl=v.object.video.playlist.ld.url
+            end,function()
+            videourl=v.object.video.playlist.hd.url
+          end)
+          问题id="视频分割"..videourl
+          标题=v.object.title
+         else
+          活动="发表了文章"
+          问题id="文章分割"..tointeger(v.object.id)
+          标题=v.object.title
         end
-      end)
-      search_base:getData()
-     else
-      nochecktitle(str)
-    end
-  end)
+        people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+        people_adp.notifyDataSetChanged()
+      end
+    end)
+   else
+    nochecktitle(str)
+  end
 
 end
 
@@ -559,8 +592,7 @@ people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       activity.newActivity("people_column",{tostring(v.Tag.people_question.Text):match("专栏分割(.+)专栏标题"),tostring(v.Tag.people_question.Text):match("专栏标题(.+)")})
      else
       if open=="false" then
-        保存历史记录(v.Tag.people_title.Text,v.Tag.people_url.Text,50)
-        activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
+        activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)"),nil,true})
        else
         activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
       end
@@ -596,7 +628,7 @@ task(1,function()
           AlertDialog.Builder(this)
           .setTitle("请输入")
           .setView(loadlayout(InputLayout))
-          .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
+          .setPositiveButton("确定", {onClick=function() 其他("clear",false) checktitle(edit.text) end})
           .setNegativeButton("取消", nil)
           .show();
 
@@ -610,6 +642,6 @@ end)
 
 function onActivityResult(a,b,c)
   if b==100 then
-    其他("clear")
+    其他("clear",false)
   end
 end

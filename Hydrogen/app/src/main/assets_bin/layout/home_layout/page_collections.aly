@@ -26,7 +26,6 @@
         layout_width="fill",
         layout_height="fill",
         background=backgroundc,
-        --        id="page_collections";
         {
           SwipeRefreshLayout,
           id="csr",
@@ -34,9 +33,9 @@
             GridView;
             layout_height="-1";
             layout_width="-1";
-
-            NumColumns=1;
+            nestedScrollingEnabled=true,
             id="list4";
+            NumColumns=1;
           };
         }
       };
@@ -48,13 +47,17 @@
         background=backgroundc,
         id="page_mc";
         {
-          GridView;
-          layout_height="-1";
-          layout_width="-1";
-          NumColumns=1;
-          id="list8";
+          SwipeRefreshLayout,
+          id="dsr",
+          {
+            GridView;
+            layout_height="-1";
+            layout_width="-1";
+            id="list8";
+            nestedScrollingEnabled=true,
+            NumColumns=1;
+          };
         };
-
       };
     };
   };

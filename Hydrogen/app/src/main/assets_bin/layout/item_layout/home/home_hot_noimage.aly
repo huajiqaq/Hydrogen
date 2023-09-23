@@ -7,8 +7,6 @@
   {
     LinearLayout,
     layout_width="-1",
-    -- layout_height='56dp';
-    --id="fpll",
     background=backgroundc,
     {
       MaterialCardView;
@@ -16,7 +14,6 @@
       layout_marginTop="8dp";
       layout_marginBottom="8dp";
       layout_gravity='center';
-      -- layout_marginLeft="0%w";
       Elevation='0';
       layout_width='fill';
       layout_height='-2';
