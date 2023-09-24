@@ -49,7 +49,6 @@
           ellipsize='marquee',
           Selected=true,
           gravity="center|left";
-          -- paddingLeft="16dp";
           layout_weight="1",
           Typeface=字体("product-Bold");
         };

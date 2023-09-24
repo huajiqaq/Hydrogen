@@ -19,8 +19,6 @@ import "com.google.android.material.tabs.TabLayout"
 
 import "com.bumptech.glide.Glide"
 
---import "com.daimajia.androidanimations.library.Techniques"
---import "com.daimajia.androidanimations.library.YoYo"
 import "com.getkeepsafe.taptargetview.*"
 
 activity.setSupportActionBar(toolbar)
@@ -29,12 +27,12 @@ activity.setContentView(loadlayout("layout/home"))
 初始化历史记录数据(true)
 
 if activity.getSharedData("第一次提示") ==nil then
-  双按钮对话框("注意","该软件仅供交流学习，严禁用于商业用途，请于下载后的24小时内卸载","登录","知道了",function()
+  双按钮对话框("注意","该软件仅供交流学习，严禁用于商业用途，请于下载后的24小时内卸载","登录","知道了",function(an)
     activity.setSharedData("第一次提示","x")
     跳转页面("login")
     关闭对话框(an)
     activity.finish()
-    end,function()
+    end,function(an)
     activity.setSharedData("第一次提示","x")
     关闭对话框(an)
   end)
@@ -42,8 +40,8 @@ end
 
 if activity.getSharedData("第一次提示") and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
-  双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function()
-  关闭对话框(an) end,function()
+  双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function(an)
+  关闭对话框(an) end,function(an)
     关闭对话框(an) 浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
   end)
 end
@@ -153,8 +151,6 @@ homeapphead1["scroll"]="down"
 
 function resolve_feed(v)
 
-  --    local 点赞数=tointeger(v.target.voteup_count)
-  --    local 评论数=tointeger(v.target.comment_count)
   v.extra.type=string.lower(v.extra.type)
   if v.type~="common_card" then
     return false
@@ -180,17 +176,12 @@ function resolve_feed(v)
   底部内容=底部内容:gsub("等 ","")
   local 标题,问题id等;
   local 作者=v.common_card.feed_content.source_line.elements[2].text.panel_text
-  --[[
-    if type(v.target.excerpt)=="nil" or v.target.excerpt=="" then
-      if v.target.thumbnail_extra_info then
-        v.target.excerpt="[视频]"
-      end
-    end
-  ]]
+
   local 预览内容
   --print(dump(v))
   if v.extra.type=="pin" then
     问题id等="想法分割"..v.extra.id--由于想法的id长达18位，而cJSON无法解析这么长的数字，所以暂时用截取url结尾的数字字符串来获取id
+    --已由cjson转用json.lua 已解决
     标题=作者.."发表了想法"
     if v.common_card.feed_content.content then
       预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
@@ -540,7 +531,6 @@ function 日报刷新(isclear)
     news={}
     list1.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(parent,v,pos,id)
-        --    activity.newActivity("huida",{"https://daily.zhihu.com/story/"..v.Tag.导向链接3.Text})
         activity.newActivity("huida",{v.Tag.导向链接3.Text})
       end
 
@@ -564,7 +554,7 @@ function 日报刷新(isclear)
 
     list1.setOnScrollListener{
       onScroll=function(view,a,b,c)
-        if a+b==c and 可以加载日报 and view.adapter.getCount()>0 then
+        if a+b==c and 可以加载日报 then
           日报刷新()
           dailysr.setRefreshing(true)
           System.gc()
@@ -579,6 +569,7 @@ function 日报刷新(isclear)
       end
     }
 
+    return
 
   end
 
@@ -592,7 +583,6 @@ function 日报刷新(isclear)
   ZUOTIAN=sp.format(d);
   链接 = 'https://kanzhihu.pro/api/news/'..tostring(ZUOTIAN)
   Http.get(链接,head,function(code,content)
-    --  news[tostring(ZUOTIAN)]=content
     if code==200 then
      else
       return
@@ -762,7 +752,6 @@ drawer_item={
       TextView;
       layout_width="-1";
       layout_height="3px";
-      --     background=cardedge,
       background=cardback,
       layout_marginTop="8dp";
       layout_marginBottom="8dp";
@@ -968,7 +957,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
      elseif s=="一文" then
       task(300,function()activity.newActivity("artical")end)
      elseif s=="Cookie" then
-      双按钮对话框("查看Cookie", 获取Cookie("https://www.zhihu.com/"),"复制","关闭",function()复制文本(获取Cookie("https://www.zhihu.com/"))提示("已复制到剪切板")关闭对话框(an)end,function()关闭对话框(an)end)
+      双按钮对话框("查看Cookie", 获取Cookie("https://www.zhihu.com/"),"复制","关闭",function(an)复制文本(获取Cookie("https://www.zhihu.com/"))提示("已复制到剪切板")关闭对话框(an)end,function(an)关闭对话框(an)end)
      elseif s=="历史" then
       task(300,function()activity.newActivity("history")end)
      elseif s=="消息" then
@@ -1241,7 +1230,7 @@ function 关注刷新(isclear,isprev,num)
 
     thispage.setOnScrollListener{
       onScroll=function(view,a,b,c)
-        if a+b==c and 可以加载关注[num] and view.adapter.getCount()>0 then
+        if a+b==c and 可以加载关注[num] then
           关注刷新(false,false,num)
           System.gc()
           thissr.setRefreshing(true)
@@ -1254,6 +1243,8 @@ function 关注刷新(isclear,isprev,num)
         end
       end
     }
+
+    return
 
   end
 
@@ -1782,7 +1773,6 @@ function getuserinfo()
       local 签名=data.headline
       local uid=data.id--用tointeger不行数值太大了会
       activity.setSharedData("idx",uid)
-      ---      activity.setSharedData("name",名字)
       loadglide(头像id,头像)
       名字id.Text=名字
       if #签名:gsub(" ","")<1 then
@@ -1799,7 +1789,6 @@ function getuserinfo()
         if code==200 then
           HometabLayout.setVisibility(0)
           local decoded_content = luajson.decode(content)
-          --    提示(luajson.decode(content).selected_sections[1].section_name)
           table.insert(decoded_content.selected_sections, 1, {
             section_name="全站",
             section_id=nil,
@@ -1814,7 +1803,6 @@ function getuserinfo()
           end
 
           for i=1, #decoded_content.selected_sections do
-            --提示(tostring(i))
             if HometabLayout.getTabCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
               local tab=HometabLayout.newTab()
               tab.setText(decoded_content.selected_sections[i].section_name)
@@ -1860,18 +1848,21 @@ end
 
 local opentab={}
 function check()
-  if activity.getSharedData("自动打开剪贴板上的知乎链接")~="true" then return end
-  import "android.content.*"
-  --导入包
-  local url=activity.getSystemService(Context.CLIPBOARD_SERVICE).getText()
+if activity.getSharedData("自动打开剪贴板上的知乎链接")~="true" then return end
+import "android.content.*"
+--导入包
+local url=activity.getSystemService(Context.CLIPBOARD_SERVICE).getText()
 
-  url=tostring(url)
+url=tostring(url)
 
-  if opentab[url]~=true then
-    if url:find("zhihu.com") and 检查链接(url,true) then
-      双按钮对话框("提示","检测到剪贴板里含有知乎链接，是否打开？","打开","",function()关闭对话框(an)
-        opentab[url]=true
-        检查链接(url)
+if opentab[url]~=true then
+  if url:find("zhihu.com") and 检查链接(url,true) then
+    双按钮对话框("提示","检测到剪贴板里含有知乎链接，是否打开？","打开","取消",function(an)关闭对话框(an)
+      opentab[url]=true
+      检查链接(url)
+      end
+      ,function(an)
+        关闭对话框(an)
       end)
     end
   end

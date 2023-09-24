@@ -84,7 +84,6 @@ function 加载笔记(str)
         notedata[#notedata+1]={
           timestamp=vv.lastModified(),
           catitle=name,
-          --    cid=name,
           file=(v),
         }
       end
@@ -127,10 +126,10 @@ end})
 
 local_listview.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
   onItemLongClick=function(id,v,zero,one)
-    双按钮对话框("删除","删除该内容？该操作不可撤消！","是的","点错了",function()删除文件(内置存储文件("Download/"..v.Tag.catitle.Text))
+    双按钮对话框("删除","删除该内容？该操作不可撤消！","是的","点错了",function(an)删除文件(内置存储文件("Download/"..v.Tag.catitle.Text))
       an.dismiss()
       加载笔记(mystr)
-      提示("已删除")end,function()an.dismiss()end)
+      提示("已删除")end,function(an)an.dismiss()end)
     return true
 end})
 
@@ -261,12 +260,10 @@ function 本地列表(path)
     table.insert(datas,s.Name)
   end
   array_adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1,String(datas))
-  --设置适配器
   listview.setAdapter(array_adp)
 
   listview.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
-      --    print(path,v.Text)
       activity.newActivity("local",{path,v.Text})
       an.dismiss()
   end})

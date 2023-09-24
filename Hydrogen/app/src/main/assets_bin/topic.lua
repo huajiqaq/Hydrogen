@@ -19,7 +19,6 @@ for i=1, #TopicTable do
 end
 
 
---local api="https://api.zhihu.com/topics/"..topic_id
 local api="https://api.zhihu.com/v5.1/topics/"..topic_id.."?include=meta%2Cmeta.casts%2Cmeta.medias%2Cmeta.playlist%2Cmeta.awards%2Cmeta.pubinfo%2Cmeta.parameters%2Cvote%2Crank_list_info%2Cmeta.review_question%2Crelated_topics%2Crelated_topics.vote%2Cmeta.game_medias%2Cmeta.game_parameters%2Cmeta.team_parameters%2Cmeta.sports_parameters%2Cclub%2Ctimeline%2Cuniversity%2Cheader_video%2Cactivity%2Cpin_template"
 zHttp.get(api,head,function(code,content)
   if code==200 then
@@ -107,12 +106,9 @@ function 精华刷新(istab)
 
 
   zHttp.get(posturl,head,function(code,content)
-    --print(content)
     if code==200 then
 
       for k,v in ipairs(luajson.decode(content).data) do
-        --        local name=v.target.author.name
-        --local excerpt=name.." : "..v.target.excerpt:gsub("<b>",""):gsub("</b>","")
 
         xpcall(function()
           name=v.target.author.name

@@ -14,7 +14,6 @@ if activity.getSharedData("标题简略化")~="true" then
   _title.text="专栏"
 end
 
-_more.setVisibility(8)
 tabv.setVisibility(8)
 itemc=获取适配器项目布局("people_column/people_column")
 
@@ -40,7 +39,6 @@ function 刷新()
         add=true
       end
       for i,v in ipairs(luajson.decode(content).data) do
-        --  local 预览内容=v.excerpt_new
         local 头像=v.author.avatar_url
         local 预览内容=v.excerpt
         local 点赞数=tointeger(v.voteup_count)
@@ -124,3 +122,12 @@ history_list.setOnScrollListener{
     end
   end
 }
+
+task(1,function()
+  a=MUKPopu({
+    tittle=_title.text,
+    list={
+
+    }
+  })
+end)

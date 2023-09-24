@@ -17,9 +17,8 @@ liulan.loadUrl(liulanurl)
 
 if docode~=nil then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
-  -- else
  elseif liulanurl:find("zhihu") and not liulanurl:find("zvideo") then
-  liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")--设置UA
+  liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")
 end
 
 liulan.removeView(liulan.getChildAt(0))
@@ -59,7 +58,6 @@ _title.text="加载中"
 
 liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onReceivedTitle=function(view, title)
-    --_title.text=(liulan.getTitle())
     if type(docode)=="string" then
       title=docode.." - 知乎"
     end
@@ -160,7 +158,7 @@ liulan.setWebViewClient{
         activity.finish()
        else
         双按钮对话框("提示","是否用第三方软件打开本链接？","是","否",
-        function()
+        function(an)
           xpcall(function()
             intent=Intent("android.intent.action.VIEW")
             intent.setData(Uri.parse(url))
@@ -168,12 +166,12 @@ liulan.setWebViewClient{
             this.startActivity(intent)
             an.dismiss()
           end,
-          function(v)
+          function()
             提示("尝试打开第三方app出错")
             an.dismiss()
           end)
         end,
-        function()
+        function(an)
           an.dismiss()
         end)
       end
@@ -231,13 +229,13 @@ liulan.getSettings()
 .setLoadsImagesAutomatically(true)
 .setAllowFileAccess(false)
 .setDatabasePath(APP_CACHEDIR)
---//设置 应用 缓存目录
+--设置 应用 缓存目录
 .setAppCachePath(APP_CACHEDIR)
---//开启 DOM 存储功能
+--开启 DOM 存储功能
 .setDomStorageEnabled(true)
---//开启 数据库 存储功能
+--开启 数据库 存储功能
 .setDatabaseEnabled(true)
---//开启 应用缓存 功能
+--开启 应用缓存 功能
 
 .setUseWideViewPort(true)
 .setBuiltInZoomControls(true)
@@ -248,18 +246,18 @@ if activity.getSharedData("禁用缓存")=="true"
   liulan
   .getSettings()
   .setAppCacheEnabled(false)
-  --//开启 DOM 存储功能
+  --开启 DOM 存储功能
   .setDomStorageEnabled(true)
-  --//开启 数据库 存储功能
+  --开启 数据库 存储功能
   .setDatabaseEnabled(true)
   .setCacheMode(WebSettings.LOAD_NO_CACHE);
  else
   liulan
   .getSettings()
   .setAppCacheEnabled(true)
-  --//开启 DOM 存储功能
+  --开启 DOM 存储功能
   .setDomStorageEnabled(true)
-  --//开启 数据库 存储功能
+  --开启 数据库 存储功能
   .setDatabaseEnabled(true)
   .setCacheMode(2)
 end
@@ -275,16 +273,16 @@ task(1,function()
     list={
       {src=图标("refresh"),text="刷新",onClick=function()
           liulan.reload()
-      end},--添加项目(菜单项)
+      end},
       {src=图标("redo"),text="前进",onClick=function()
           liulan.goForward()
-      end},--添加项目(菜单项)
+      end},
       {src=图标("undo"),text="后退",onClick=function()
           liulan.goBack()
-      end},--添加项目(菜单项)
+      end},
       {src=图标("close"),text="停止",onClick=function()
           liulan.stopLoading()
-      end},--添加项目(菜单项)
+      end},
 
       {src=图标("share"),text="分享",onClick=function()
           if fxurl then

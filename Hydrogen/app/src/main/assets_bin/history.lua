@@ -111,7 +111,7 @@ function checktitle(str)
 end
 
 history_list.onItemLongClick=function(l,v,c,b)
-  双按钮对话框("删除","删除该历史记录？该操作不可撤消！","是的","点错了",function()
+  双按钮对话框("删除","删除该历史记录？该操作不可撤消！","是的","点错了",function(an)
 
     adp.clear()
     清除历史记录()
@@ -141,7 +141,7 @@ history_list.onItemLongClick=function(l,v,c,b)
     提示("已删除")
 
   end
-  ,function()an.dismiss()end)
+  ,function(an)an.dismiss()end)
   return true
 end
 history_list.onItemClick=function(l,v,c,b)
@@ -159,7 +159,6 @@ history_list.onItemClick=function(l,v,c,b)
     activity.newActivity("people",{(recordii[clicknum]):match("用户分割(.+)")})
    elseif (recordii[clicknum]):find("专栏分割") then
     activity.newActivity("people_column",{(recordii[clicknum]):match("专栏分割(.+)"),recordtt[clicknum]})
-    --TOOD 对于回答记录的点击
    elseif (recordii[clicknum]):find("分割") then
     if open=="false" then
       activity.newActivity("answer",{(recordii[clicknum]):match("(.+)分割"),(recordii[clicknum]):match("分割(.+)")})
@@ -212,7 +211,7 @@ task(1,function()
       end},
       {
         src=图标("list_alt"),text="清理历史记录",onClick=function()
-          双按钮对话框("提示","确定要清理历史记录吗 清除将会重启应用","我知道了","暂不清理",function()
+          双按钮对话框("提示","确定要清理历史记录吗 清除将会重启应用","我知道了","暂不清理",function(an)
             关闭对话框(an)
             清除历史记录()
             提示("已清除,即将重启")
@@ -223,7 +222,7 @@ task(1,function()
               activity.startActivity(intent);
               Process.killProcess(Process.myPid());
             end)
-            end,function()
+            end,function(an)
             关闭对话框(an)
           end)
 

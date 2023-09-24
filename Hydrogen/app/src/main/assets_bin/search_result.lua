@@ -11,7 +11,6 @@ str=...
 
 
 _title.text="收藏搜索结果"
-_more.setVisibility(8)
 tabv.setVisibility(8)
 itemc=获取适配器项目布局("search_result/search_result")
 
@@ -25,7 +24,6 @@ function 刷新()
   search_base=require "model.dohttp"
   :new(下一页数据 or 请求链接)
   :setresultfunc(function(data)
-    -- local 搜索结果数量=tointeger(data.search_action_info.lc_idx)
     下一页数据=data.paging.next
     for i,v in ipairs(data.data) do
       local 预览内容=v.object.excerpt
@@ -124,3 +122,12 @@ history_list.setOnScrollListener{
     end
   end
 }
+
+task(1,function()
+  a=MUKPopu({
+    tittle=_title.text,
+    list={
+
+    }
+  })
+end)

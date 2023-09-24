@@ -10,7 +10,6 @@ activity.setContentView(loadlayout("layout/history"))
 _title.text="推荐关注收藏夹"
 
 
-_more.setVisibility(8)
 tabv.setVisibility(8)
 itemc=获取适配器项目布局("collection_tj/collection_tj")
 
@@ -80,3 +79,12 @@ history_list.setOnScrollListener{
 function onActivityResult(a,b,c)
   activity.setResult(b,nil)
 end
+
+task(1,function()
+  a=MUKPopu({
+    tittle=_title.text,
+    list={
+
+    }
+  })
+end)

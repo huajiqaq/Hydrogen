@@ -15,7 +15,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.11131
+versionCode=0.1114
 layout_dir="layout/item_layout/"
 
 
@@ -310,7 +310,7 @@ end
 function 主题(str)
   全局主题值=str
   if 全局主题值=="Day" then
-    --    primaryc="#448aff"
+    --primaryc="#448aff"
     primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#fdd835"
     textc="#212121"
@@ -321,10 +321,10 @@ function 主题(str)
     viewshaderc="#00000000"
     grayc="#ECEDF1"
     ripplec="#559E9E9E"
-    --    cardedge="#FFE0E0E0"
+    --cardedge="#FFE0E0E0"
     cardedge=dec2hex(res.color.attr.colorSurface)
     oricardedge="#FFF6F6F6"
-    --    cardedge="#FFF6F6F6"
+    --cardedge="#FFF6F6F6"
     pcall(function()
       local _window = activity.getWindow();
       _window.setBackgroundDrawable(ColorDrawable(0xffffffff));
@@ -333,7 +333,6 @@ function 主题(str)
       _wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
       _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;--WRAP_CONTENT
       _window.setAttributes(_wlp);
-      --      activity.setTheme(android.R.style.Theme_Material_Light_NoActionBar)
     end)
     if 获取主题夜间模式() == true then
       if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then
@@ -344,16 +343,15 @@ function 主题(str)
       return
      else
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-      --   activity.recreate()
       return
     end
    elseif 全局主题值=="Night" then
-    --    primaryc="#FF88B0F8"
+    --primaryc="#FF88B0F8"
     primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#ffbfa328"
-    --    textc="#808080"
+    --textc="#808080"
     textc="#FFCBCBCB"
-    --    stextc="#666666"
+    --stextc="#666666"
     stextc="#808080"
     backgroundc="#ff191919"
     barbackgroundc="#ef191919"
@@ -363,7 +361,7 @@ function 主题(str)
     ripplec="#559E9E9E"
     cardedge=dec2hex(res.color.attr.colorSurface)
     oricardedge="#555555"
-    --    cardedge="#555555"
+    --cardedge="#555555"
     pcall(function()
       local _window = activity.getWindow();
       _window.setBackgroundDrawable(ColorDrawable(0xff222222));
@@ -372,11 +370,11 @@ function 主题(str)
       _wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
       _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;--WRAP_CONTENT
       _window.setAttributes(_wlp);
-      --      activity.setTheme(android.R.style.Theme_Material_NoActionBar)
+      --activity.setTheme(android.R.style.Theme_Material_NoActionBar)
     end)
     if 获取主题夜间模式() == false and 获取系统夜间模式() == false then
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-      --     activity.recreate()
+      --activity.recreate()
       return
     end
   end
@@ -386,7 +384,7 @@ function 设置主题()
   if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then
     if 获取系统夜间模式(true) then
       主题("Night")
-     else --暂时这样写，后期修复
+     else
       if Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))==true then
         主题("Night")
        else
@@ -479,7 +477,7 @@ function 颜色渐变(控件,左色,右色)
   import "android.graphics.drawable.GradientDrawable"
   local drawable = GradientDrawable(GradientDrawable.Orientation.TR_BL,{左色,右色,});
   控件.IndeterminateDrawable=(drawable)
-  --  控件.setBackgroundDrawable(ColorDrawable(左色))
+  --控件.setBackgroundDrawable(ColorDrawable(左色))
 end
 
 
@@ -542,12 +540,12 @@ function 波纹(id,lx)
         content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
       end
       if lx=="圆主题" then
-        --        content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
+        --content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
         content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
       end
       if lx=="方主题" then
         content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
-        --        content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
+        --content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
       end
       if lx=="圆自适应" then
         if 全局主题值=="Day" then
@@ -588,6 +586,7 @@ function 关闭对话框(an)
 end
 
 function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
+  local bwz
   if 全局主题值=="Day" then
     bwz=0x3f000000
    else
@@ -616,7 +615,6 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
       {
         CardView;
         layout_gravity="center",
-        --        background=cardedge,
         CardBackgroundColor=cardedge,
         radius="3dp",
         Elevation="0dp";
@@ -667,13 +665,12 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
           layout_width="-2";
           layout_height="-2";
           radius="2dp";
-          --background="#00000000";
           CardBackgroundColor="#00000000";
           layout_marginTop="8dp";
           layout_marginLeft="24dp";
           layout_marginBottom="24dp";
           Elevation="0";
-          onClick=dsnr;
+          id="dsnr_c";
           {
             TextView;
             layout_width="-1";
@@ -701,13 +698,12 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
           layout_width="-2";
           layout_height="-2";
           radius="2dp";
-          --background="#00000000";
           CardBackgroundColor="#00000000";
           layout_marginTop="8dp";
           layout_marginLeft="8dp";
           layout_marginBottom="24dp";
           Elevation="0";
-          onClick=qxnr;
+          id="qxnr_c";
           {
             TextView;
             layout_width="-1";
@@ -735,7 +731,7 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
           layout_marginRight="24dp";
           layout_marginBottom="24dp";
           Elevation="1dp";
-          onClick=qdnr;
+          id="qdnr_c";
           {
             TextView;
             layout_width="-1";
@@ -756,11 +752,21 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
   };
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
-  an=bottomSheetDialog.show()
+  local an=bottomSheetDialog.show()
+  dsnr_c.onClick=function()
+    dsnr(an)
+  end;
+  qxnr_c.onClick=function()
+    qxnr(an)
+  end;
+  qdnr_c.onClick=function()
+    qdnr(an)
+  end;
 end
 
 
 function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
+  local bwz
   if 全局主题值=="Day" then
     bwz=0x3f000000
    else
@@ -839,13 +845,12 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
           layout_width="-2";
           layout_height="-2";
           radius="2dp";
-          --background="#00000000";
           CardBackgroundColor="#00000000";
           layout_marginTop="8dp";
           layout_marginLeft="8dp";
           layout_marginBottom="24dp";
           Elevation="0";
-          onClick=qxnr;
+          id="qxnr_c";
           {
             TextView;
             layout_width="-1";
@@ -873,7 +878,7 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
           layout_marginRight="24dp";
           layout_marginBottom="24dp";
           Elevation="1dp";
-          onClick=qdnr;
+          id="qdnr_c";
           {
             TextView;
             layout_width="-1";
@@ -894,71 +899,14 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
   };
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
-  an=bottomSheetDialog.show()
+  local an=bottomSheetDialog.show()
+  qxnr_c.onClick=function()
+    qxnr(an)
+  end;
+  qdnr_c.onClick=function()
+    qdnr(an)
+  end;
 end
-
-
-function 问题详情(nr,code)
-  if 全局主题值=="Day" then
-    bwz=0x3f000000
-   else
-    bwz=0x3fffffff
-  end
-
-  local gd2 = GradientDrawable()
-  gd2.setColor(转0x(backgroundc))
-  local radius=dp2px(16)
-  gd2.setCornerRadii({radius,radius,radius,radius,0,0,0,0})--圆角
-  gd2.setShape(0)
-  local dann={
-    LinearLayout;
-    layout_width="-1";
-    layout_height="-1";
-    {
-      LinearLayout;
-      orientation="vertical";
-      layout_width="-1";
-      layout_height="-2";
-      Elevation="4dp";
-      BackgroundDrawable=gd2;
-      id="ztbj";
-      {
-        CardView;
-        layout_gravity="center",
-        --background=cardedge,
-        CardBackgroundColor=cardedge;
-        radius="3dp",
-        Elevation="0dp";
-        layout_height="6dp",
-        layout_width="56dp",
-        layout_marginTop="12dp";
-      };
-      {
-        TextView;
-        layout_width="-1";
-        layout_height="-2";
-        textSize="19sp";
-        layout_marginTop="12dp";
-        layout_marginLeft="24dp";
-        layout_marginRight="24dp";
-        Text="详细描述";
-        Typeface=字体("product-Bold");
-        textColor=primaryc;
-      };
-      {
-        LuaWebView;
-        id="show",
-        layout_width="-1";
-        layout_height="-1";
-
-      };
-    };
-  };
-  local bottomSheetDialog = BottomSheetDialog(this)
-  bottomSheetDialog.setContentView(loadlayout(dann))
-  an=bottomSheetDialog.show()
-end
-
 
 
 
@@ -1049,7 +997,7 @@ function 检查链接(url,b)
     if open=="false" then
       activity.newActivity("answer",{questions,answer,nil,true})
      else
-      activity.newActivity("huida",{url})--"https://www.zhihu.com/question/"..tostring(v.Tag.链接2.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.链接2.Text):match("分割(.+)")})
+      activity.newActivity("huida",{url})
     end
    elseif url:find("zhuanlan.zhihu.com/p/") then--/p/143744216
     if b then return true end
@@ -1082,7 +1030,6 @@ function 检查链接(url,b)
           end,function()
           视频链接=v.playlist.HD.play_url
         end)
-        --        activity.finish()
         activity.newActivity("huida",{视频链接})
        elseif code==401 then
         提示("请登录后查看视频")
@@ -1098,7 +1045,6 @@ function 检查链接(url,b)
     zHttp.get(url,head,function(code,content)
       if code==200 then
         local peopleid=content:match('":{"id":"(.-)","urlToken')
-        --        activity.finish()
         activity.newActivity("people",{peopleid,true})
        elseif code==401 then
         提示("请登录后查看用户")
@@ -1160,7 +1106,6 @@ function 检查意图(url,b)
       提示("暂不支持的知乎意图"..intent)
     end
    elseif url and (url:find("http://") or url:find("https://")) and url:find("zhihu.com") then
-    --    local myurl="https"..url:match("https(.+)")
     检查链接(url)
   end
 end
@@ -1275,7 +1220,6 @@ function 下载文件对话框(title,url,path,ex)
       TextView,
       id="appdownsong",
       text=title,
-      --  typeface=Typeface.DEFAULT_BOLD,
       layout_marginTop="24dp",
       layout_marginLeft="24dp",
       layout_marginRight="24dp",
@@ -1287,8 +1231,6 @@ function 下载文件对话框(title,url,path,ex)
       TextView,
       id="appdowninfo",
       text="已下载：0MB/0MB\n下载状态：准备下载",
-      --id="显示信息",
-      --  typeface=Typeface.MONOSPACE,
       layout_marginRight="24dp",
       layout_marginLeft="24dp",
       layout_marginBottom="8dp",
@@ -1330,15 +1272,16 @@ function 下载文件对话框(title,url,path,ex)
      else
       if path:find(".apk$")~=nil then
         提示("安装包下载成功,大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
-        双按钮对话框("安装APP",[===[您下载了安装包文件，要现在安装吗？ 取消后可前往]===]..path.."手动安装","立即安装","取消",function()
-          --    关闭对话框(an)
+        双按钮对话框("安装APP",[===[您下载了安装包文件，要现在安装吗？ 取消后可前往]===]..path.."手动安装","立即安装","取消",function(an)
           安装apk(path)
-          end,function()
+          end,function(an)
           关闭对话框(an)
         end)
+        if myupdatedialog then
         myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).Text="立即安装"
         myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
           安装apk(path)
+        end
         end
        else
         提示("下载完成，大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
@@ -1482,7 +1425,8 @@ function MUKPopu(t)
   tab.pop=pop
 
   if this.getSharedData("允许加载代码")=="true" then
-    if t.list[#t.list].text~="执行代码" and t.list[#t.list].src~=图标("build")  then
+    local count=#t.list
+    if count==0 or t.list[count].text~="执行代码" then
       table.insert(t.list,{src=图标("build"),text="执行代码",onClick=function()
           local InputLayout={
             LinearLayout;
@@ -1576,6 +1520,7 @@ function 加入收藏夹(回答id,收藏类型)
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
+  local list,dialog_lay,lp,lq,tip_text,add_button,add_text,cp,lay,Choice_dialog,adp
   import "android.widget.LinearLayout$LayoutParams"
   list=ListView(activity).setFastScrollEnabled(true)
   dialog_lay=LinearLayout(activity)
@@ -2099,24 +2044,6 @@ task(1,function()
         Glide.get(this).clearMemory();
       end
 
-      --[[
-      --判断是否为主线程
-      if Looper.myLooper() == Looper.getMainLooper() then
-        --新建线程清理磁盘上的缓存
-        Thread(Runnable({
-          run=function()
-            Glide.get(context).clearDiskCache()
-          end
-        })).start()
-        --清理内存缓存
-        Glide.get(this).clearMemory();
-      end
-
-      --清理缓存
-      LuaUtil.rmDir(File(tostring(activity.getExternalCacheDir()).."/images"))
-      LuaUtil.rmDir(File(tostring(ContextCompat.getDataDir(activity)).."/cache"))
-]]
-
       collectgarbage("collect")
       System.gc()
     end
@@ -2317,7 +2244,6 @@ function 清理内存()
     import "androidx.core.content.ContextCompat"
     local datadir=tostring(ContextCompat.getDataDir(activity))
     local imagetmp=tostring(activity.getExternalCacheDir()).."/images"
-    --   dar=File(activity.getLuaDir()).parent.."/cache/webviewCache"
     require "import"
     import "java.io.File"
     local tmp={[1]=0}

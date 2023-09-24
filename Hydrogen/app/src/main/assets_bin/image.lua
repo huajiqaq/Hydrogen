@@ -8,7 +8,6 @@ import "com.dingyi.adapter.BaseViewPage2Adapter"
 import "android.view.*"
 import "com.nwdxlgzs.view.photoview.PhotoView"
 import "androidx.viewpager2.widget.ViewPager2$OnPageChangeCallback"
---compile "libs/glide_4.8" --使用 glide 4.8 dex
 import "com.bumptech.glide.Glide"
 import "com.bumptech.glide.request.RequestOptions"
 import "com.bumptech.glide.request.RequestListener"
@@ -79,7 +78,6 @@ lastBitmap=""
 picpage.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
 
   onPageSelected=function(i)--选中的页数
-    --    print(i)
     now_count.text=(i+1)..""
 
     local parent=views[i].ids

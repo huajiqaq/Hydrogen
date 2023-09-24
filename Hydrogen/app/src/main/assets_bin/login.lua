@@ -28,9 +28,9 @@ login_web.getSettings().setDomStorageEnabled(true);
 login_web
 .getSettings()
 .setAppCacheEnabled(true)
---//开启 DOM 存储功能
+--开启 DOM 存储功能
 .setDomStorageEnabled(true)
--- //开启 数据库 存储功能
+--开启 数据库 存储功能
 .setDatabaseEnabled(true)
 .setCacheMode(2)
 
@@ -62,7 +62,7 @@ login_web.setWebViewClient{
     if url:find("wtloginmqq") then
       view.stopLoading()
       双按钮对话框("提示","是否使用QQ登录知乎？","是","否",
-      function()
+      function(an)
         activity.finish()
         xpcall(function()
           intent=Intent("android.intent.action.VIEW")
@@ -71,12 +71,12 @@ login_web.setWebViewClient{
           this.startActivity(intent)
           an.dismiss()
         end,
-        function(v)
+        function()
           提示("尝试打开出错")
           an.dismiss()
         end)
       end,
-      function()
+      function(an)
         view.loadUrl("https://www.zhihu.com/signin")
         an.dismiss()
       end)

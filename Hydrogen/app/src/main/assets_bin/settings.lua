@@ -4,7 +4,6 @@ import "android.view.*"
 import "android.graphics.PorterDuffColorFilter"
 import "android.graphics.PorterDuff"
 import "mods.muk"
---import "mods.loadlayout"
 import "android.widget.NumberPicker$OnValueChangeListener"
 import "com.google.android.material.materialswitch.MaterialSwitch"
 设置视图("layout/settings")
@@ -60,7 +59,6 @@ data = {
 
   {__type=1,title="页面设置"},
   {__type=3,subtitle="主题设置",image=图标("")},
-  -- {__type=4,subtitle="暗色工具栏主题",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("theme_darkactionbar"))}},
 
   {__type=1,title="其他"},
   {__type=3,subtitle="关于",image=图标("")},
@@ -364,7 +362,6 @@ about_item={
       ImageView;
       layout_height="25dp";
       id="image";
-      --padding="10dp";
       layout_width="25dp";
       layout_marginLeft="15dp";
       ColorFilter=textc;
@@ -404,7 +401,6 @@ about_item={
       ImageView;
       layout_height="25dp";
       id="image";
-      --padding="10dp";
       layout_width="25dp";
       layout_marginLeft="15dp";
       ColorFilter=textc;
@@ -430,7 +426,6 @@ about_item={
       ImageView;
       layout_height="25dp";
       id="image";
-      --padding="10dp";
       layout_width="25dp";
       layout_marginLeft="15dp";
       ColorFilter=textc;
@@ -465,7 +460,6 @@ about_item={
       ImageView;
       layout_height="25dp";
       id="image";
-      --padding="10dp";
       layout_width="25dp";
       layout_marginLeft="15dp";
       ColorFilter=textc;

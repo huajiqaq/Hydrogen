@@ -60,7 +60,6 @@
               ellipsize='marquee',
               Selected=true,
               gravity="center|left";
-              -- paddingLeft="16dp";
               Typeface=字体("product-Bold");
             };
             {
@@ -119,7 +118,6 @@
         layout_height="56dp",
         clickable="true",
         id="ll",
-        --background=backgroundc,
         {
           LinearLayout;
           layout_width="-1";
@@ -226,7 +224,6 @@
               ImageView;
               layout_height="24dp";
               layout_width="24dp";
-              --      src=图标("download");
               ColorFilter=primaryc;
               PivotX="12dp";
               PivotY="24dp";
@@ -236,7 +233,6 @@
             LinearLayout;
             layout_height="-1";
             layout_width="-2";
-            -- background=backgroundc;
             layout_weight="1";
           };
         };

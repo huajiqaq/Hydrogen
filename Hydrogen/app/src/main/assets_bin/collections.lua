@@ -90,7 +90,6 @@ if collections_url=="local" then
 
 
   function 加载笔记()
-    -- xpcall(function()
     notedata={}
     if #luajava.astable(File(内置存储文件("Collection/")))==0 then
       提示("你没有在本地收藏任何内容")
@@ -249,7 +248,6 @@ if collections_url=="local" then
 
     listview.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(id,v,zero,one)
-        --print(path,v.Text)
         local open=activity.getSharedData("内部浏览器查看回答")
         local filestr=io.open(内置存储文件("Collection/"..path.."/"..v.Text.."/".."detail.txt"))
         local id=tostring(filestr:read("*a"):match[[question_id="(.-)"]]).."分割"..tostring(io.open(内置存储文件("Collection/"..path.."/"..v.Text.."/".."detail.txt")):read("*a"):match[[answer_id="(.-)"]])
@@ -272,10 +270,10 @@ if collections_url=="local" then
   })
   list5.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
     onItemLongClick=function(id,v,zero,one)
-      双按钮对话框("删除","删除该问题？该操作不可撤消！","是的","点错了",function()删除文件(内置存储文件("Collection/"..v.Tag.catitle.Text))
+      双按钮对话框("删除","删除该问题？该操作不可撤消！","是的","点错了",function(an)删除文件(内置存储文件("Collection/"..v.Tag.catitle.Text))
         an.dismiss()
         加载笔记()
-        提示("已删除")end,function()an.dismiss()end)
+        提示("已删除")end,function(an)an.dismiss()end)
       return true
   end})
 
@@ -380,7 +378,6 @@ if collections_url=="local" then
         if open=="false" then
           activity.newActivity("answer",{tostring(v.Tag.cid.Text):match("(.+)回答分割"),tostring(v.Tag.cid.Text):match("回答分割(.+)")})
          else
-
           activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.cid.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.cid.Text):match("分割(.+)")})
         end
       end
@@ -389,7 +386,7 @@ if collections_url=="local" then
 
   list5.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
     onItemLongClick=function(id,v,zero,one)
-      双按钮对话框("取消收藏","取消收藏该问题？该操作不可撤消！","是的","点错了",function()
+      双按钮对话框("取消收藏","取消收藏该问题？该操作不可撤消！","是的","点错了",function(an)
         an.dismiss()
         if tostring(v.Tag.cid.text):find("回答分割") then
           删除类型="answer"
@@ -408,7 +405,7 @@ if collections_url=="local" then
             list5.adapter.notifyDataSetChanged()
           end
         end)
-      end,function()an.dismiss()end)
+      end,function(an)an.dismiss()end)
       return true
   end})
 
@@ -483,7 +480,7 @@ task(1,function()
           if not(collections_id) then
             return 提示("本地收藏不支持此功能")
            else
-            双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function()
+            双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
               an.dismiss()
               zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
                 if code==200 then
@@ -491,7 +488,7 @@ task(1,function()
                   activity.setResult(1600,nil)
                 end
               end)
-            end,function()an.dismiss()end)
+            end,function(an)an.dismiss()end)
           end
       end},
 

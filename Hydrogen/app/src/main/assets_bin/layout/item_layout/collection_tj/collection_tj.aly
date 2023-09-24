@@ -85,7 +85,6 @@
             layout_marginTop="8dp";
             orientation="horizontal";
             id="mc_palne",
-            layout_width="fill";
             {
               TextView;
               id="底部内容";

@@ -253,7 +253,7 @@
                   layout_width="25dp";
                   layout_height="25dp",
                   onClick=function()
-                    双按钮对话框("注销","你确定要注销吗","手滑了","确定",function() 关闭对话框(an)end,function()
+                    双按钮对话框("注销","你确定要注销吗","手滑了","确定",function(an) 关闭对话框(an)end,function(an)
                       清除所有cookie()
                       activity.setSharedData("signdata",nil)
                       activity.setSharedData("idx",nil)

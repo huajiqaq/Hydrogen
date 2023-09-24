@@ -73,7 +73,6 @@
             CardView;
             Elevation='0';
             radius='4dp';
-            --  id="_root",
             layout_gravity="center_vertical",
             CardBackgroundColor=cardbackroundc,
             {

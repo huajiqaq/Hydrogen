@@ -92,7 +92,6 @@ head = {
 
 function 检查链接(url,b)
   local open=activity.getSharedData("内部浏览器查看回答")
-  --  local url="https"..url:match("https(.+)")
   if url:find("zhihu.com/question") then
 
     local answer,questions=0,0
@@ -116,7 +115,7 @@ function 检查链接(url,b)
     if open=="false" then
       newLuaActivity(this.getLuaDir("answer.lua"),Object{questions,answer,nil,true})
      else
-      newLuaActivity(this.getLuaDir("huida.lua"),Object{url})--"https://www.zhihu.com/question/"..tostring(v.Tag.链接2.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.链接2.Text):match("分割(.+)")})
+      newLuaActivity(this.getLuaDir("huida.lua"),Object{url})
     end
    elseif url:find("zhuanlan.zhihu.com/p/") then--/p/143744216
     newLuaActivity(this.getLuaDir("column.lua"),Object{url:match("zhihu.com/p/(.+)")})
@@ -142,7 +141,6 @@ function 检查链接(url,b)
           end,function()
           视频链接=v.playlist.HD.play_url
         end)
-        --        activity.finish()
         newLuaActivity(this.getLuaDir("huida.lua"),Object{视频链接})
        elseif code==401 then
         提示("请登录后查看视频")
@@ -156,7 +154,6 @@ function 检查链接(url,b)
     zHttp.get(url,head,function(code,content)
       if code==200 then
         local peopleid=content:match('":{"id":"(.-)","urlToken')
-        --        activity.finish()
         newLuaActivity(this.getLuaDir("people.lua"),Object{peopleid,true})
        elseif code==401 then
         提示("请登录后查看用户")
@@ -205,7 +202,6 @@ function 检查意图(url)
       提示("暂不支持的知乎意图"..intent)
     end
    elseif url and (url:find("http://") or url:find("https://")) and url:find("zhihu.com") then
-    --    local myurl="https"..url:match("https(.+)")
     检查链接(url)
   end
 end

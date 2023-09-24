@@ -153,11 +153,11 @@ end})
 notelist.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
   onItemLongClick=function(id,v,zero,one)
     local _,name=v.Tag.text.Text:match("(.+)/(.+)")
-    双按钮对话框("确认要删除 "..name.." 吗？","此操作不可撤销","确认删除","取消",function()
+    双按钮对话框("确认要删除 "..name.." 吗？","此操作不可撤销","确认删除","取消",function(an)
       删除文件(v.Tag.text.Text)
       加载笔记()
       关闭对话框(an)
-    end,function()关闭对话框(an)end)
+    end,function(an)关闭对话框(an)end)
     return true
 end})
 

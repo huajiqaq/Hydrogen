@@ -130,17 +130,6 @@ function 数据添加(t,b)
     end
   end)
 
-
-  --[[
-  if not(b) then return end
-
-  defer local question_base=require "model.question":new(tointeger(b.question.id))
-  :getData(function(tab)
-    all_answer.Text="点击查看全部"..tointeger(tab.answer_count).."个回答 >"
-
-  end)
-  ]]
-
   if activity.getSharedData("标题简略化")~="true" then
     _title.Text=b.question.title:gsub("/",[[ 或 ]])
    else
@@ -208,9 +197,8 @@ function 数据添加(t,b)
   .setLoadsImagesAutomatically(true)
   .setAllowFileAccess(false)
   .setDatabasePath(APP_CACHEDIR)
-  --//设置 应用 缓存目录
-  --  .setAppCachePath(APP_CACHEDIR)
-  --     //开启 应用缓存 功能
+  --设置 应用 缓存目录
+  --开启 应用缓存 功能
   .setSupportZoom(true)
   .setLoadWithOverviewMode(true)
   .setBuiltInZoomControls(true)
@@ -220,18 +208,18 @@ function 数据添加(t,b)
     .getSettings()
     .setAppCacheEnabled(false)
     .setCacheMode(WebSettings.LOAD_NO_CACHE)
-    --//开启 DOM 存储功能
+    --开启 DOM 存储功能
     .setDomStorageEnabled(false)
-    --        //开启 数据库 存储功能
+    --开启 数据库 存储功能
     .setDatabaseEnabled(false)
    else
     t.content
     .getSettings()
     .setAppCacheEnabled(true)
     .setCacheMode(2)
-    --//开启 DOM 存储功能
+    --开启 DOM 存储功能
     .setDomStorageEnabled(true)
-    --        //开启 数据库 存储功能
+    --开启 数据库 存储功能
     .setDatabaseEnabled(true)
   end
 
@@ -255,7 +243,6 @@ function 数据添加(t,b)
   end
 
   t.content.removeView(t.content.getChildAt(0))
-  --t.content.setbackground(0x01000000)
 
   t.content.setWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
@@ -341,13 +328,11 @@ function 数据添加(t,b)
     onProgressChanged=function(super,view,url,favicon)
       if 全局主题值=="Night" then
         黑暗页(view)
-        --   黑暗模式主题(view)
       end
     end,
     onShowCustomView=function(z,a,b)
       v=a
       s=t.msrcroll.getScrollY()
-      --      activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
       activity.getWindow().getDecorView().setSystemUiVisibility(
       View.SYSTEM_UI_FLAG_LAYOUT_STABLE
       | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -389,7 +374,7 @@ function 数据添加(t,b)
     .addUpdateListener{
       onAnimationUpdate=function(a)
         local x=a.getAnimatedValue()
-        pg.scrollTo(x,0)--activity.getWidth()*1.2,0)
+        pg.scrollTo(x,0)
       end
     }.start()
     isshow=true
@@ -413,8 +398,6 @@ function 加载页(mviews,pos,isleftadd,isload)
         pcall(function()
 
           if table.find(查重表,cb.id) then
-            --            pg.adapter.remove(pos)
-            --            pg.setCurrentItem(pos-1,false)
             mviews.load=nil
             重表状态=true
            else
@@ -800,25 +783,6 @@ task(1,function()
           local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
           加入收藏夹(url:match("answer/(.+)"),"answer")
         end
-        --[[
-        local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
-        local pgids=数据表[pgnum].ids
-        local username=pgids.username.text
-        local 写入内容='question_id="'..问题id..'"'
-        local 保存路径=内置存储文件("Collection/".._title.text)
-        写入内容=写入内容..'\n'
-        写入内容=写入内容..'answer_id="'..回答id..'"'
-        xpcall(function()
-          创建文件夹(保存路径)
-          创建文件夹(保存路径.."/"..username)
-          创建文件(保存路径.."/"..username.."/detail.txt")
-          写入文件(保存路径.."/"..username.."/detail.txt",写入内容)
-          提示("保存成功")
-          end,function()
-          提示("保存失败 可能是未授予本地存储权限")
-        end)
-      end
-      ]]
       },
 
       {
@@ -864,19 +828,3 @@ function onActivityResult(a,b,c)
     activity.recreate()
   end
 end
-
---[[
-if this.getSharedData("使用音量键滑动")=="true" then
-  function onKeyDown(keycode,event)
-    if keycode==24 then
-      pg.setCurrentItem(pg.getCurrentItem()+1,false)
-      return true
-     elseif keycode==25 then
-      pg.setCurrentItem(pg.getCurrentItem()-1,false)
-      return true
-     else
-      return false
-    end
-  end
-end
-]]

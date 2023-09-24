@@ -42,7 +42,6 @@ about_item={
       ImageView;
       layout_height="25dp";
       id="image";
-      --padding="10dp";
       layout_width="25dp";
       layout_marginLeft="15dp";
       ColorFilter=textc;
@@ -81,7 +80,6 @@ about_item={
       ImageView;
       layout_height="25dp";
       id="image";
-      --padding="10dp";
       layout_width="25dp";
       layout_marginLeft="15dp";
       ColorFilter=textc;
@@ -105,7 +103,6 @@ about_item={
       CircleImageView;
       layout_height="25dp";
       id="image";
-      --padding="10dp";
       layout_width="25dp";
       layout_marginLeft="15dp";
     };
@@ -214,5 +211,5 @@ about_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
     end
 
-    adp.notifyDataSetChanged()--更新列表
+    adp.notifyDataSetChanged()
 end})

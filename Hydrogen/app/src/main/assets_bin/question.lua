@@ -20,10 +20,10 @@ task(1,function()
   question_list.addHeaderView(loadlayout({
     LinearLayout;
     layout_width="-1";
-    --padding="8dp";
     orientation="vertical";
     layout_height="-1";
     background=backgroundc,
+    --开启动画可能卡顿
     --layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING),
     {
       MyTab
@@ -50,7 +50,6 @@ task(1,function()
         CardElevation="0dp";
         CardBackgroundColor=backgroundc;
         Radius="0dp";
-        --              layout_margin="4px";
         layout_margin=cardmargin;
         layout_width="-1";
         layout_height="-1";
@@ -239,7 +238,6 @@ function 刷新()
   question_base:next(function(r,a)
     if r==false and question_base.is_end==false then
       提示("获取回答列表出错 "..a or "")
-      --  刷新()
      else
       if question_base.is_end==false
         add=true
@@ -319,18 +317,18 @@ end)
     show
     .getSettings()
     .setAppCacheEnabled(false)
-    --//开启 DOM 存储功能
+    --开启 DOM 存储功能
     .setDomStorageEnabled(false)
-    --//开启 数据库 存储功能
+    --开启 数据库 存储功能
     .setDatabaseEnabled(false)
     .setCacheMode(WebSettings.LOAD_NO_CACHE);
    else
     show
     .getSettings()
     .setAppCacheEnabled(true)
-    --//开启 DOM 存储功能
+    --开启 DOM 存储功能
     .setDomStorageEnabled(true)
-    --//开启 数据库 存储功能
+    --开启 数据库 存储功能
     .setDatabaseEnabled(true)
     .setCacheMode(2)
   end
@@ -346,7 +344,6 @@ end)
       检查链接(url)
     end,
     onPageFinished=function(view,url)
-      --   show.setFocusable(false)
 
       if 全局主题值=="Night" then
         黑暗页(view)

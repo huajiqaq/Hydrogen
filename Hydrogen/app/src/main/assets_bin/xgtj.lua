@@ -4,7 +4,6 @@ import "android.view.*"
 import "android.graphics.PorterDuffColorFilter"
 import "android.graphics.PorterDuff"
 import "mods.muk"
---import "mods.loadlayout"
 import "android.widget.NumberPicker$OnValueChangeListener"
 import "mods.muk"
 import "com.lua.custrecycleradapter.*"
@@ -87,7 +86,6 @@ luajava.new(luajava.bindClass("androidx.recyclerview.widget.ItemTouchHelper"), l
     local itemclass = luajava.bindClass "androidx.recyclerview.widget.ItemTouchHelper$Callback"
     dragFlags = ItemTouchHelper.UP
     swipeFlags = ItemTouchHelper.LEFT
-    -- return int(itemclass.makeMovementFlags(dragFlags, swipeFlags))
     return int(itemclass.makeMovementFlags(ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT | ItemTouchHelper.DOWN | ItemTouchHelper.UP, 0));
 
   end,
@@ -163,7 +161,6 @@ function 开始加载推荐()
         if i==2 then
           table.insert(data,{myt="其他"})
           for i=1, #luajson.decode(content).guess_like_sections do
-            --提示(tostring(i))
             if luajson.decode(content).guess_like_sections[i].section_name~="圈子" then
               table.insert(data,{title=luajson.decode(content).guess_like_sections[i].section_name,text=tostring(tointeger(luajson.decode(content).guess_like_sections[i].section_id))})
 
@@ -208,9 +205,7 @@ function 修改地点()
            else
             mstr=mstr.." "..value.city_name
           end
-          --    print(mstr)
         end
-        --  print(mstr)
       end
 
       local dialog=AlertDialog.Builder(this)

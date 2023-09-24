@@ -70,7 +70,6 @@ function 刷新()
         a=" (作者) "
       end
       return v.name..a
-      --      return v.member.name..a
     end
     local myspan
     pcall(function()
@@ -122,7 +121,6 @@ function 评论刷新()
   comment_base:next(function(r,a)
     if r==false and comment_base.is_end==false then
       提示("获取评论列表出错 "..a or "")
-      --      评论刷新()
      else
       if comment_base.is_end==false
         add=true
@@ -175,7 +173,7 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
     if v.Tag.isme.text=="true" then
       local 请求链接="https://api.zhihu.com/comment_v5/comment/"..对话id
 
-      双按钮对话框("删除","删除该回复？该操作不可撤消！","是的","点错了",function()
+      双按钮对话框("删除","删除该回复？该操作不可撤消！","是的","点错了",function(an)
         search_base=require "model.dohttp"
         :new(请求链接)
         :setresultfunc(function(data)
@@ -183,7 +181,7 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
           an.dismiss()
         end)
         :getData("delete")
-      end,function()an.dismiss()end)
+      end,function(an)an.dismiss()end)
       return
     end
 
@@ -200,24 +198,24 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
       --如果评论下没有对话列表
       if v.Tag.comment_toast.Visibility==8 then
         if 文件是否存在(保存路径.."/mht.mht")then
-          双按钮对话框("收藏","收藏这条评论？","是的","点错了",function()
+          双按钮对话框("收藏","收藏这条评论？","是的","点错了",function(an)
             写入文件(写入文件路径,写入内容)
             提示("收藏成功")
             an.dismiss()
           end,
-          function()an.dismiss()end)
+          function(an)an.dismiss()end)
         end
         --如果评论下有对话列表
        elseif v.Tag.comment_toast.Visibility==0 then
         三按钮对话框("收藏","收藏这该条评论还是整个对话列表？","该评论","整个对话列表","点错了",
         --点击第一个按钮的事件
-        function()
+        function(an)
           写入文件(写入文件路径,写入内容)
           提示("收藏成功")
           an.dismiss()
         end,
         --点击第二个按钮事件
-        function()
+        function(an)
           zHttp.get("https://api.zhihu.com/comment_v5/comment/"..对话id.."/child_comment",head,function(code,content)
             if code==200
               写入内容=写入内容..'jsbody='..content..'jsbodyend'
@@ -230,7 +228,7 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
           end)
         end,
         --点击第三个按钮事件
-        function()
+        function(an)
           an.dismiss()
         end)
       end
@@ -239,12 +237,12 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
       写入内容='author="'..对话用户..'"'
       写入内容=写入内容.."\n"
       写入内容=写入内容..'content="'..对话内容..'"'
-      双按钮对话框("收藏","收藏这条评论？","是的","点错了",function()
+      双按钮对话框("收藏","收藏这条评论？","是的","点错了",function(an)
         写入文件(写入文件路径,写入内容)
         提示("收藏成功")
         an.dismiss()
       end,
-      function()an.dismiss()end)
+      function(an)an.dismiss()end)
     end
     return true
 end})
@@ -378,14 +376,12 @@ if _title.text=="对话列表" then
       list={
         {src=图标("format_align_left"),text="按时间顺序",onClick=function()
             comment_base:setSortBy("ts")
-            --          comment_base:setSortBy("created")
             comment_base:clear()
             comment_adp.clear()
             评论刷新()
         end},
         {src=图标("notes"),text="按默认顺序",onClick=function()
             comment_base:setSortBy("score")
-            --          comment_base:setSortBy("default")
             comment_base:clear()
             comment_adp.clear()
             评论刷新()

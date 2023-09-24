@@ -25,7 +25,6 @@ task(1,function()
     layout_width="-1";
     {
       MaterialCardView;
-      --    layout_marginBottom="0dp";
       layout_width="-1";
       radius="8dp";
       layout_height="-2";
@@ -70,7 +69,6 @@ task(1,function()
             id="people_sign",
             Typeface=字体("product");
             layout_gravity="center";
-            --                    singleLine=true;
           };
           {
             LinearLayout;
@@ -88,7 +86,6 @@ task(1,function()
               layout_height="-2";
               radius="4dp";
               layout_gravity="center",
-              --background=primaryc;
               CardBackgroundColor=primaryc;
               {
                 TextView;
@@ -113,7 +110,6 @@ task(1,function()
               layout_height="-2";
               radius="4dp";
               layout_gravity="center",
-              --background=primaryc;
               CardBackgroundColor=primaryc;
               {
                 TextView;
@@ -262,7 +258,6 @@ end)
 
 :setresultfunc(function(v)
   local 活动=v.source.action_text
-  --  local 预览内容=v.target.excerpt_new
   local 预览内容=v.target.excerpt
   local 点赞数=tointeger(v.target.voteup_count)
   local 评论数=tointeger(v.target.comment_count)
@@ -302,7 +297,6 @@ function 全部()
   base_people:next(function(r,a)
     if r==false and base_people.is_end==false then
       提示("获取个人动态列表出错 "..a or "")
-      --  刷新()
      elseif base_people.is_end==false then
       add=true
     end
@@ -469,18 +463,6 @@ add=true
 
 people_list.setOnScrollListener{
   onScroll=function(view,a,b,c)
-    --[[
-    if chobu=="搜索" then
-    if search_base.is_end then
-    print("hhh")
-    return
-    end
-   elseif base_people.is_end then
-   print("jsjsje")
-   return
-   end
-]]
-
     if a+b==c and add then
       刷新()
       System.gc()
@@ -512,7 +494,6 @@ function checktitle(str)
     search_base=require "model.dohttp"
     :new(下一页数据 or 请求链接)
     :setresultfunc(function(data)
-      -- local 搜索结果数量=tointeger(data.search_action_info.lc_idx)
       提示("搜索完毕")
       下一页数据=data.paging.next
       peotab:showTab(1)

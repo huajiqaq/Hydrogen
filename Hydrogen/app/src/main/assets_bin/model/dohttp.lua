@@ -114,39 +114,11 @@ end
 
 local function x_zse_96_b64encode(md5_bytes)
 
-  --[[
-  function left_shift(x, y)
-    return (x << y) % 2~32
-  end
-
-  function Unsigned_right_shift(x, y)
-    return (x >> y) % 2~32
-  end
-
-  function Q(e, t)
-    return left_shift(e, t) | Unsigned_right_shift(e, 32 - t)
-  end
-]]
-  --[[
-  function toUnsigned(n)
-    if n < 0 then
-      return 4294967296 + n
-     else
-      return n
-    end
-  end
-]]
-
   local local_48 = {48, 53, 57, 48, 53, 51, 102, 55, 100, 49, 53, 101, 48, 49, 100, 55}
   local local_50 = string.char(63,0)..md5_bytes
   local_50 = pad(local_50)
   local local_34 = string.sub(local_50, 1, 16)
-  --[[  
-  local local_34 = {}
-  for i = 1, 16 do
-    local_34[i] = string.byte(local_50, i)
-  end
-]]
+
   local local_35 = {}
   for local_11 = 1, 16 do
     local_35[local_11] = string.byte(local_34, local_11) ~ local_48[local_11] ~ 42
@@ -228,7 +200,6 @@ function base:setgetcallback(code,content,callback)
     local data=luajson.decode(content)
     if data.paging.is_end then
       提示("已经到底啦")
-      --            end
      else
       初始化(data.paging.next,self)
       self.resultfunc(data)

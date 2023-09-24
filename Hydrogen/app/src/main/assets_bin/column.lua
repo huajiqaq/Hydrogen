@@ -70,7 +70,6 @@ function 刷新()
       if url==false then
         提示("加载页面失败")
         _title.Text="加载失败"
-        --task(2,恢复白色)
        elseif activity.getSharedData("标题简略化")=="true" then
         _title.Text=类型
        else
@@ -78,7 +77,6 @@ function 刷新()
         autoname=url.author.name
         simpletitle=url.title
         _title.Text=url.title
-        --  恢复白色()
         content.loadUrl("https://www.zhihu.com/appview/p/"..result)
         保存历史记录(_title.Text,"文章分割"..result,50)
       end
@@ -94,7 +92,6 @@ function 刷新()
       保存历史记录(simpletitle,"想法分割"..result,50)
     end)
     content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
-    --对应api是https://www.zhihu.com/api/v4/pins/ID，或者https://api.zhihu.com/pins/ID，均可以取得内容，后续再做
    elseif 类型=="视频" then
     content.loadUrl("https://www.zhihu.com/zvideo/"..result.."?utm_id=0")
     _title.Text="视频"
@@ -126,18 +123,16 @@ content.getSettings()
 .setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
 .setJavaScriptEnabled(true)--设置支持Js
 .setJavaScriptCanOpenWindowsAutomatically(true)
---  .setSupportZoom(true)
---  .setLoadWithOverviewMode(true)
 .setUseWideViewPort(true)
 .setDefaultTextEncodingName("utf-8")
 .setLoadsImagesAutomatically(true)
 .setAllowFileAccess(true)
 .setDatabasePath(APP_CACHEDIR)
---//设置 应用 缓存目录
+--设置 应用 缓存目录
 .setAppCachePath(APP_CACHEDIR)
---//开启 DOM 存储功能
+--开启 DOM 存储功能
 .setDomStorageEnabled(true)
---        //开启 数据库 存储功能
+--开启 数据库 存储功能
 .setDatabaseEnabled(true)
 
 content.removeView(content.getChildAt(0))
@@ -147,18 +142,18 @@ if activity.getSharedData("禁用缓存")=="true"
   .getSettings()
   .setAppCacheEnabled(false)
   .setCacheMode(WebSettings.LOAD_NO_CACHE)
-  --//开启 DOM 存储功能
+  --开启 DOM 存储功能
   .setDomStorageEnabled(true)
-  -- //开启 数据库 存储功能
+  --开启 数据库 存储功能
   .setDatabaseEnabled(false)
  else
   content
   .getSettings()
   .setAppCacheEnabled(true)
   .setCacheMode(2)
-  --//开启 DOM 存储功能
+  --开启 DOM 存储功能
   .setDomStorageEnabled(true)
-  -- //开启 数据库 存储功能
+  --开启 数据库 存储功能
   .setDatabaseEnabled(true)
 end
 
@@ -222,7 +217,6 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
 
   end,
   onShowCustomView=function(view,url)
-    --    content.setVisibility(8);
     this.addContentView(view, WindowManager.LayoutParams(-1, -1))
     kkoo=view
     activity.getWindow().getDecorView().setSystemUiVisibility(5639)
@@ -391,7 +385,7 @@ if 类型=="文章" then
           src=图标("chat_bubble"),text="查看保存评论",onClick=function()
             local 保存路径=内置存储文件("Download/"..simpletitle.."/"..autoname)
             if getDirSize(保存路径.."/".."fold/")==0 then
-              --            提示("你还没有收藏评论")
+              提示("你还没有收藏评论")
              else
               activity.newActivity("comment",{result,"local",simpletitle,autoname})
             end
