@@ -404,13 +404,11 @@ task(1,function()
           question_base:setSortBy("created")
           question_base:clear()
           question_adp.clear()
-          刷新()
       end},
       {src=图标("notes"),text="按默认顺序",onClick=function()
           question_base:setSortBy("default")
           question_base:clear()
           question_adp.clear()
-          刷新()
       end},
       {
         src=图标("colorize"),text="回答",onClick=function()

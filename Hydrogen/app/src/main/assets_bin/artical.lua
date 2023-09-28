@@ -75,8 +75,14 @@ _star.onClick=function()
   end
   if click==1 then
     _star.setColorFilter(PorterDuffColorFilter(转0x(primaryc),PorterDuff.Mode.SRC_ATOP));
-    创建文件(内置存储文件("Note/"..atitle.text))
-    写入文件(内置存储文件("Note/"..atitle.text),"文章作者:"..aauthor.text.."\n"..atext.text)
+    local addstr
+    if aauthor.text and aauthor.text~="未知" then
+      addstr=" (作者:"..aauthor.text..")"
+     else
+      addstr=""
+    end
+    创建文件(内置存储文件("Note/"..atitle.text..addstr))
+    写入文件(内置存储文件("Note/"..atitle.text..addstr),atext.text)
     if _title.Text=="每日一文"then
       is_star=true
     end
@@ -172,6 +178,26 @@ artical_list_sr.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener{onRefr
     }),300)
 end})
 
+function checktitle(str)
+  local oridata=notelist.adapter.getData()
+  for b=1,2 do
+    if b==2 then
+      提示("搜索完毕 共搜索到"..#notelist.adapter.getData().."条数据\n提示：上拉可刷新列表")
+      if #notelist.adapter.getData()==0 then
+        加载笔记()
+        notelist.adapter.notifyDataSetChanged()
+      end
+    end
+    for i=#oridata,1,-1 do
+      if not oridata[i].title:find(str) then
+        table.remove(oridata, i)
+      end
+      notelist.adapter.notifyDataSetChanged()
+    end
+  end
+end
+
+
 task(1,function()
   a=MUKPopu({
     tittle="一文",
@@ -183,6 +209,32 @@ task(1,function()
           获取随机一文()
           click=0
           _star.setColorFilter(PorterDuffColorFilter(转0x(textc),PorterDuff.Mode.SRC_ATOP));
+      end},
+      {src=图标("search"),text="搜索保存内容",onClick=function()
+          InputLayout={
+            LinearLayout;
+            orientation="vertical";
+            Focusable=true,
+            FocusableInTouchMode=true,
+            {
+              EditText;
+              hint="输入";
+              layout_marginTop="5dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              layout_width="match_parent";
+              layout_gravity="center",
+              id="edit";
+            };
+          };
+
+          AlertDialog.Builder(this)
+          .setTitle("请输入")
+          .setView(loadlayout(InputLayout))
+          .setPositiveButton("确定", {onClick=function() checktitle(edit.text) end})
+          .setNegativeButton("取消", nil)
+          .show();
+
       end},
     }
   })

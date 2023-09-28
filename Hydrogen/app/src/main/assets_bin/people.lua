@@ -184,7 +184,7 @@ task(1,function()
         end
         _sortt.text="按时间排序"
         pcall(function()people_adp.clear()end)
-        其他("clear",false)
+        其他("clear")
         people_adp.notifyDataSetChanged()
       end
       menu.add("按赞数排序").onMenuItemClick=function(a)
@@ -193,7 +193,7 @@ task(1,function()
         end
         _sortt.text="按赞数排序"
         pcall(function()people_adp.clear()end)
-        其他("clear",false)
+        其他("clear")
         people_adp.notifyDataSetChanged()
       end
       pop.show()--显示
@@ -305,14 +305,12 @@ end
 
 local myurl={}
 
-function 其他(isclear,isload)
+function 其他(isclear)
   add=false
   if chobu=="all" then
     if isclear=="clear" then
       add=true
       base_people:clear()
-    end
-    if isload==false
       return
     end
     return 全部()
@@ -320,8 +318,6 @@ function 其他(isclear,isload)
   if isclear=="clear" then
     add=true
     myurl[chobu]=nil
-  end
-  if isload==false
     return
   end
   if chobu=="搜索" then
@@ -329,8 +325,6 @@ function 其他(isclear,isload)
       add=true
       下一页数据=false
       search_base:clear()
-    end
-    if isload==false
       return
     end
     return search_base:getData(nil,nil,function()
@@ -345,7 +339,7 @@ function 其他(isclear,isload)
         提示("搜索完毕 共搜索到"..#people_adp.getData().."条数据")
         if #people_adp.getData()==0 then
           chobu="all"
-          其他("clear",false)
+          其他("clear")
         end
       end
       for i=#oridata,1,-1 do
@@ -445,7 +439,7 @@ zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab",apphead,fun
          else
           num=""
         end
-        peotab:addTab(v.name..num,function() pcall(function()people_adp.clear()end) chobu=v.key 其他("clear",false) people_adp.notifyDataSetChanged() end,3)
+        peotab:addTab(v.name..num,function() pcall(function()people_adp.clear()end) chobu=v.key 其他("clear") people_adp.notifyDataSetChanged() end,3)
       end
       peotab:showTab(1)
     end
@@ -609,7 +603,7 @@ task(1,function()
           AlertDialog.Builder(this)
           .setTitle("请输入")
           .setView(loadlayout(InputLayout))
-          .setPositiveButton("确定", {onClick=function() 其他("clear",false) checktitle(edit.text) end})
+          .setPositiveButton("确定", {onClick=function() 其他("clear") checktitle(edit.text) end})
           .setNegativeButton("取消", nil)
           .show();
 
@@ -623,6 +617,6 @@ end)
 
 function onActivityResult(a,b,c)
   if b==100 then
-    其他("clear",false)
+    其他("clear")
   end
 end

@@ -209,6 +209,8 @@ function resolve_feed(v)
     问题id等="视频分割"..v.extra.id
     标题=v.common_card.feed_content.title.panel_text
     预览内容=作者.." : ".."[视频]"
+    --未知
+   elseif v.extra.type=="drama" then
    else
     if this.getSharedData("调式模式")=="true" then
       提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
@@ -220,8 +222,9 @@ function resolve_feed(v)
   return {底部内容=底部内容,标题2=标题,文章2=预览内容,链接2=问题id等,testy=testy,testk=testk}
 end
 
-function 主页推荐刷新(isprev)
+function 主页推荐刷新()
 
+  local isprev=home_isprev
   local result=tointeger(choosebutton)
 
   local myrequrl
@@ -243,6 +246,7 @@ function 主页推荐刷新(isprev)
   local url= myrequrl or murl
   zHttp.get(url,homeapphead1,function(code,content)
     if code==200 then
+      home_isprev=false
       homeapphead1["x-close-recommend"]="0"
       decoded_content = luajson.decode(content)
       if decoded_content.paging.is_end==false then
@@ -264,8 +268,9 @@ function 主页推荐刷新(isprev)
   end)
 end
 
-function 主页随机推荐 (isprev)
+function 主页随机推荐 ()
 
+  local isprev=home_isprev
   local myrequrl
   local addargs="&start_type=warm&refresh_scene=0&device=phone&short_container_setting_value=1"
 
@@ -279,6 +284,7 @@ function 主页随机推荐 (isprev)
   local posturl = myrequrl or "https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=2"
   zHttp.get(posturl,homeapphead,function(code,content)
     if code==200 then
+      home_isprev=false
       homeapphead["x-feed-prefetch"]="0"
       decoded_content = luajson.decode(content)
       主页加载数据长度=0
@@ -307,6 +313,10 @@ end
 
 
 function 主页刷新(isclear,isprev)
+
+  if isprev then
+    home_isprev=isprev
+  end
 
   if not list2.adapter or isclear then
 
@@ -402,6 +412,19 @@ function 主页刷新(isclear,isprev)
     })
 
     可以加载主页=true
+    主页加载数据长度=nil
+
+    if isprev~=true then
+      if #requrl>0 then
+        local result
+        if choosebutton==nil then
+          result=-1
+         else
+          result=tointeger(choosebutton)
+        end
+        requrl[result]={}
+      end
+    end
 
 
     list2.setOnScrollListener{
@@ -409,12 +432,14 @@ function 主页刷新(isclear,isprev)
         if a+b==c and 可以加载主页 then
 
           if 主页加载数据长度 then
-            local num=#list2.adapter.getData()-tonumber(主页加载数据长度)+1
+            local num=c-tonumber(主页加载数据长度)+1
+
             local postdata=""
-            for i=num,#list2.adapter.getData() do
+
+            for i=num,c do
               local local_postdata=luajson.encode(list2.adapter.getData()[i].testy)
               local addstr
-              if i~=#list2.adapter.getData() then
+              if i~=c then
                 addstr=","
                else
                 addstr=""
@@ -445,12 +470,13 @@ function 主页刷新(isclear,isprev)
     }
 
     return
-
+   elseif isclear==false then
+    return
   end
   if choosebutton==nil then
-    主页随机推荐(isprev)
+    主页随机推荐()
    elseif choosebutton then
-    主页推荐刷新(isprev)
+    主页推荐刷新()
   end
 end
 
@@ -467,8 +493,6 @@ homesr.setOnRefreshListener({
 
   end,
 });
-
-主页刷新()
 
 function bnv.onNavigationItemSelected(item)
   item = item.getTitle();
@@ -492,13 +516,13 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
     end
     if position == 0 then
       pos=position
+      主页刷新(false)
     end
     for i=0,bnv.getChildCount() do
       bnv.getMenu().getItem(i).setChecked(false)
     end
     bnv.getMenu().getItem(position).setChecked(true)
     _title.text=(bnv.getMenu().getItem(position).getTitle())
-
     if pos == 1 then
       想法刷新()
     end
@@ -551,6 +575,7 @@ function 日报刷新(isclear)
     });
 
     可以加载日报=true
+    ZUOTIAN=nil
 
     list1.setOnScrollListener{
       onScroll=function(view,a,b,c)
@@ -571,17 +596,24 @@ function 日报刷新(isclear)
 
     return
 
+   elseif isclear==false then
+    return
   end
 
-  --链接='http://www.zhihudaily.me/'
-  thisdata=thisdata-1
-  import "android.icu.text.SimpleDateFormat"
-  cal=Calendar.getInstance();
-  cal.add(Calendar.DATE,tointeger(thisdata));
-  d=cal.getTime();
-  sp= SimpleDateFormat("yyyyMMdd");
-  ZUOTIAN=sp.format(d);
-  链接 = 'https://kanzhihu.pro/api/news/'..tostring(ZUOTIAN)
+  if ZUOTIAN==nil then
+    链接 = "https://news-at.zhihu.com/api/4/stories/latest"
+    ZUOTIAN = true
+   else
+    --链接='http://www.zhihudaily.me/'
+    thisdata=thisdata-1
+    import "android.icu.text.SimpleDateFormat"
+    cal=Calendar.getInstance();
+    cal.add(Calendar.DATE,tointeger(thisdata));
+    d=cal.getTime();
+    sp= SimpleDateFormat("yyyyMMdd");
+    ZUOTIAN=sp.format(d);
+    链接 = 'https://news-at.zhihu.com/api/4/stories/before/'..tostring(ZUOTIAN)
+  end
   Http.get(链接,head,function(code,content)
     if code==200 then
      else
@@ -595,7 +627,7 @@ function 日报刷新(isclear)
       end
     end
 
-    for k,v in ipairs(luajson.decode(content).data.stories) do
+    for k,v in ipairs(luajson.decode(content).stories) do
       table.insert(yuxun_adpqy.getData(),{标题3=v.title,导向链接3=v.url})
       task(1,function() yuxun_adpqy.notifyDataSetChanged()end)
     end
@@ -846,7 +878,6 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       控件显示(bottombar)
       控件隐藏(page_daily)
       控件隐藏(page_collections)
-      切换页面(0)
       _title.setText("主页")
      elseif s=="日报" then
       setmyToolip(_ask,"提问")
@@ -859,7 +890,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
         end)
       end
       ch_light("日报")
-      日报刷新()
+      日报刷新(false)
       --隐藏主页viewpager
       控件隐藏(page_home)
       --隐藏主页底部栏
@@ -946,7 +977,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
       控件隐藏(bottombar)
       控件隐藏(page_daily)
       控件可见(page_collections)
-      task(400,function()收藏刷新(true) end)
+      task(400,function()收藏刷新(false) end)
       _title.setText("收藏")
      elseif s=="本地" then
       task(300,function()activity.newActivity("local_list")end)
@@ -1120,6 +1151,9 @@ function 关注刷新(isclear,isprev,num)
   if num==nil then
     num=1
   end
+  if isclear then
+    follow_isprev=true
+  end
   if isclear==nil and moments_tab and moments_tab[num] then
     if moments_tab[num].isend then
       return 提示("没有新内容了")
@@ -1178,11 +1212,14 @@ function 关注刷新(isclear,isprev,num)
     if moments_tab==nil then
       moments_tab={}
     end
-    moments_tab[num]={
-      prev=false,
-      nexturl=false,
-      isend=false
-    }
+
+    if follow_isprev~=true then
+      moments_tab[num]={
+        prev=false,
+        nexturl=false,
+        isend=false,
+      }
+    end
 
     thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
     thissr.setColorSchemeColors({转0x(primaryc)});
@@ -1253,7 +1290,7 @@ function 关注刷新(isclear,isprev,num)
   end
 
   local posturl
-  if isprev and moments_tab[num].prev then
+  if follow_isprev then
     posturl = moments_tab[num].prev
    else
     posturl = moments_tab[num].nexturl or "https://api.zhihu.com/moments_v3?feed_type="..alltype[num]
@@ -1265,6 +1302,7 @@ function 关注刷新(isclear,isprev,num)
 
   zHttp.get(posturl,followapphead,function(code,content)
     if code==200 then
+      follow_isprev=false
       local data=luajson.decode(content)
 
       moments_tab[num].isend=data.paging.is_end
@@ -1553,7 +1591,7 @@ function 收藏刷新(isclear)
   local pos=CollectiontabLayout.getSelectedTabPosition()+1;
   local thispage=allpage[pos]
   local thissr=allsr[pos]
-  if thispage.adapter and isclear==false
+  if thispage.adapter and isclear==false then
     return
   end
   if not(thispage.adapter) or isclear then
@@ -1848,18 +1886,18 @@ end
 
 local opentab={}
 function check()
-if activity.getSharedData("自动打开剪贴板上的知乎链接")~="true" then return end
-import "android.content.*"
---导入包
-local url=activity.getSystemService(Context.CLIPBOARD_SERVICE).getText()
+  if activity.getSharedData("自动打开剪贴板上的知乎链接")~="true" then return end
+  import "android.content.*"
+  --导入包
+  local url=activity.getSystemService(Context.CLIPBOARD_SERVICE).getText()
 
-url=tostring(url)
+  url=tostring(url)
 
-if opentab[url]~=true then
-  if url:find("zhihu.com") and 检查链接(url,true) then
-    双按钮对话框("提示","检测到剪贴板里含有知乎链接，是否打开？","打开","取消",function(an)关闭对话框(an)
-      opentab[url]=true
-      检查链接(url)
+  if opentab[url]~=true then
+    if url:find("zhihu.com") and 检查链接(url,true) then
+      双按钮对话框("提示","检测到剪贴板里含有知乎链接，是否打开？","打开","取消",function(an)关闭对话框(an)
+        opentab[url]=true
+        检查链接(url)
       end
       ,function(an)
         关闭对话框(an)

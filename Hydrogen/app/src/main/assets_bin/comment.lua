@@ -378,13 +378,11 @@ if _title.text=="对话列表" then
             comment_base:setSortBy("ts")
             comment_base:clear()
             comment_adp.clear()
-            评论刷新()
         end},
         {src=图标("notes"),text="按默认顺序",onClick=function()
             comment_base:setSortBy("score")
             comment_base:clear()
             comment_adp.clear()
-            评论刷新()
         end},
       }
     })
@@ -393,8 +391,10 @@ end
 
 function onActivityResult(a,b,c)
   if b==100 then
-    comment_base:clear()
-    评论刷新()
+    if comment_type~="local" then
+      comment_base:clear()
+      comment_list.Adapter.clear()
+    end
   end
 end
 

@@ -312,19 +312,16 @@ TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
                 mallpager[pos-1].Adapter.clear()
                 nexturl[1],isend[1]=false
                 reftype[1]="essence"
-                精华刷新()
             end},
             {src=图标("format_align_left"),text="按时间顺序",onClick=function()
                 mallpager[pos-1].Adapter.clear()
                 nexturl[1],isend[1]=false
                 reftype[1]="timeline_activity"
-                精华刷新()
             end},
             {src=图标("notes"),text="按热度顺序",onClick=function()
                 mallpager[pos-1].Adapter.clear()
                 nexturl[1],isend[1]=false
                 reftype[1]="top_activity"
-                精华刷新()
             end},
           }
         })
@@ -339,13 +336,11 @@ TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
                 mallpager[pos-1].Adapter.clear()
                 nexturl[2],isend[2]=false
                 reftype[2]="pin-new"
-                精华刷新()
             end},
             {src=图标("notes"),text="按热度顺序",onClick=function()
                 mallpager[pos-1].Adapter.clear()
                 nexturl[2],isend[2]=false
                 reftype[2]="pin-hot"
-                精华刷新()
             end},
           }
         })
@@ -360,13 +355,11 @@ TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
                 mallpager[pos-1].Adapter.clear()
                 nexturl[3],isend[3]=false
                 reftype[3]="new_zvideo"
-                精华刷新()
             end},
             {src=图标("notes"),text="按热度顺序",onClick=function()
                 mallpager[pos-1].Adapter.clear()
                 nexturl[3],isend[3]=false
                 reftype[3]="top_zvideo"
-                精华刷新()
             end},
           }
         })
@@ -414,19 +407,16 @@ task(1,function()
           mallpager[pos].Adapter.clear()
           nexturl[pos],isend[pos]=nil
           reftype[pos]="essence"
-          精华刷新()
       end},
       {src=图标("format_align_left"),text="按时间顺序",onClick=function()
           mallpager[pos].Adapter.clear()
           nexturl[pos],isend[pos]=nil
           reftype[pos]="timeline_activity"
-          精华刷新()
       end},
       {src=图标("notes"),text="按热度顺序",onClick=function()
           mallpager[pos].Adapter.clear()
           nexturl[pos],isend[pos]=nil
           reftype[pos]="top_activity"
-          精华刷新()
       end},
     }
   })

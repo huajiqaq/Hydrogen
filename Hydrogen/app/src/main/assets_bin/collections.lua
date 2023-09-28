@@ -421,11 +421,7 @@ function checktitle(str)
     if b==2 then
       提示("搜索完毕 共搜索到"..#list5.adapter.getData().."条数据")
       if #list5.adapter.getData()==0 then
-        if collections_url~="local" then
-          collections_base:clear()
-          初始化()
-          刷新()
-         else
+        if collections_url=="local" then
           加载笔记()
         end
         list5.adapter.notifyDataSetChanged()
@@ -502,7 +498,7 @@ function onActivityResult(a,b,c)
     if collections_url~="local" then
       collections_base:clear()
       初始化()
-      刷新()
+      list5.adapter.clear()
     end
   end
 end
