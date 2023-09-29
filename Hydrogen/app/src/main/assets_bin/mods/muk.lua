@@ -15,7 +15,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.11141
+versionCode=0.11142
 layout_dir="layout/item_layout/"
 
 
@@ -1278,10 +1278,10 @@ function 下载文件对话框(title,url,path,ex)
           关闭对话框(an)
         end)
         if myupdatedialog then
-        myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).Text="立即安装"
-        myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
-          安装apk(path)
-        end
+          myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).Text="立即安装"
+          myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+            安装apk(path)
+          end
         end
        else
         提示("下载完成，大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
@@ -1549,10 +1549,11 @@ function 加入收藏夹(回答id,收藏类型)
 
   add_text.onClick=function()
     新建收藏夹(function(mytext,myid)
-      adp.add({
+      adp.insert(0,{
         mytext=mytext,
         myid=myid
       })
+      activity.setResult(1600)
     end)
 
   end
@@ -1612,7 +1613,7 @@ function 加入收藏夹(回答id,收藏类型)
   end
 
   list.onItemLongClick=function(l,v,p,s)--列表长按事件
-    双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function()
+    双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
       an.dismiss()
       zHttp.delete("https://api.zhihu.com/collections/"..选中收藏夹,head,function(code,json)
         if code==200 then
@@ -1622,7 +1623,7 @@ function 加入收藏夹(回答id,收藏类型)
           adp.notifyDataSetChanged()
         end
       end)
-    end,function()an.dismiss()end)
+    end,function(an)an.dismiss()end)
   end
 
   local collections_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20"

@@ -178,7 +178,7 @@ function resolve_feed(v)
   local 作者=v.common_card.feed_content.source_line.elements[2].text.panel_text
 
   local 预览内容
-  --print(dump(v))
+
   if v.extra.type=="pin" then
     问题id等="想法分割"..v.extra.id--由于想法的id长达18位，而cJSON无法解析这么长的数字，所以暂时用截取url结尾的数字字符串来获取id
     --已由cjson转用json.lua 已解决
@@ -906,7 +906,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
         end
         新建收藏夹(function(mytext,myid,ispublic)
 
-          list4.adapter.add{
+          list4.adapter.insert(1,{
             collections_title={
               text=mytext,
             },
@@ -925,7 +925,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
               text=tostring(myid)
 
             },
-          }
+          })
 
         end)
       end
@@ -1199,7 +1199,7 @@ function 关注刷新(isclear,isprev,num)
           --选中之后再次点击即复选时触发
           local pos=tab.getPosition()+1
           followpos=pos
-          关注刷新(true,false,pos)
+          关注刷新(true,true,pos)
         end,
       });
 
@@ -1213,11 +1213,11 @@ function 关注刷新(isclear,isprev,num)
       moments_tab={}
     end
 
+
     if follow_isprev~=true then
       moments_tab[num]={
         prev=false,
         nexturl=false,
-        isend=false,
       }
     end
 
@@ -1236,6 +1236,7 @@ function 关注刷新(isclear,isprev,num)
     });
 
     可以加载关注[num]=true
+    moments_tab[num]["isend"]=false
 
     thispage.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(parent,v,pos,id)
@@ -1605,7 +1606,7 @@ function 收藏刷新(isclear)
       },
       AdapterView.OnItemClickListener{
         onItemClick=function(parent,v,pos,id)
-          if v.Tag.mc_title.text=="推荐关注收藏夹" then
+          if v.Tag.mc_id.text=="local" then
             activity.newActivity("collections_tj")
             return
           end
@@ -1613,6 +1614,51 @@ function 收藏刷新(isclear)
         end
       },
     }
+
+    local allonlongclick={
+      AdapterView.OnItemLongClickListener{
+        onItemLongClick=function(id,v,zero,one)
+          local collections_id=v.Tag.collections_id.text
+          if collections_id=="local" then
+            提示("不支持删除本地收藏夹")
+            return true
+          end
+          双按钮对话框("删除收藏夹","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
+            zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
+              if code==200 then
+                提示("已删除")
+                id.adapter.remove(zero)
+               else
+                提示("删除失败")
+              end
+            end)
+            an.dismiss()
+          end,function(an)an.dismiss()end)
+          return true
+      end},
+      AdapterView.OnItemLongClickListener{
+        onItemLongClick=function(id,v,zero,one)
+          local collections_id=v.Tag.mc_id.text
+          if collections_id=="local" then
+            提示("不支持操作此收藏夹")
+            return true
+          end
+          双按钮对话框("取关该收藏夹","取消关注该收藏夹？该操作不可撤消！","是的","点错了",function(an)
+            zHttp.delete("https://api.zhihu.com/collections/"..collections_id.."/followers/"..activity.getSharedData("idx"),head,function(code,json)
+              if code==200 then
+                提示("已取关")
+                id.adapter.remove(zero)
+               else
+                提示("删除失败")
+              end
+            end)
+            an.dismiss()
+          end,function(an)an.dismiss()end)
+          return true
+        end
+      },
+    }
+
 
     local alladd={
       {
@@ -1645,7 +1691,7 @@ function 收藏刷新(isclear)
           text=""
         },
         mc_id={
-          text="",
+          text="local",
         },
         background={foreground=Ripple(nil,转0x(ripplec),"方")},
       },
@@ -1653,6 +1699,7 @@ function 收藏刷新(isclear)
 
 
     thispage.setOnItemClickListener(allonclick[pos])
+    thispage.setOnItemLongClickListener(allonlongclick[pos])
 
     thissr.setColorSchemeColors({转0x(primaryc)});
     thissr.setOnRefreshListener({

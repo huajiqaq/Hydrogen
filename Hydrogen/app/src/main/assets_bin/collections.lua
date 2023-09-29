@@ -476,7 +476,7 @@ task(1,function()
           if not(collections_id) then
             return 提示("本地收藏不支持此功能")
            else
-            双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
+            双按钮对话框("删除收藏夹","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
               an.dismiss()
               zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
                 if code==200 then
