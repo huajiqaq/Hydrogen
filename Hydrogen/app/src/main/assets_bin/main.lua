@@ -37,6 +37,9 @@ zHttp = {}
 function zHttp.setcallback(code,content,callback)
   if code==403 then
     decoded_content = luajson.decode(content)
+    if decoded_content.error and decoded_content.error.message then
+      提示(decoded_content.error.message)
+    end
     if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
       AlertDialog.Builder(this)
       .setTitle("提示")

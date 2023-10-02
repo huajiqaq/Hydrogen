@@ -69,14 +69,6 @@ function base_question:setresultfunc(tab)
 end
 
 function base_question:getData(callback)
-  --[[  zHttp.get("https://www.zhihu.com/api/v4/questions/"..self.id.."?include=data%5B*%5D.answer_count,comment_count,follower_count,detail,excerpt",head,function(code,content)
-    if code==200 then
-      local data=luajson.decode(content)
-      callback(data)
-    end
-  end)
-  return self]]
-
   zHttp.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,excerpt",apphead
   ,function(code,content)
     if code==200 then

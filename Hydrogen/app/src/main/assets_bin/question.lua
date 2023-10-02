@@ -121,7 +121,9 @@ task(1,function()
               {
                 LinearLayout;
                 id="view",
-                onClick=function()end;
+                onClick=function()
+
+                end;
                 padding="4dp",
                 orientation="horizontal";
                 {
@@ -180,6 +182,63 @@ task(1,function()
                 };
               };
             };
+            {
+              CardView;
+              layout_width="-2";
+              layout_height="-2";
+              radius="4dp";
+              cardBackgroundColor=backgroundc;
+              Elevation="0";
+              layout_marginLeft="32dp";
+              {
+                LinearLayout;
+                onClick=function()
+                  local url="https://api.zhihu.com/questions/"..question_id.."/followers"
+                  if _follow.Text=="已关注" then
+                    zHttp.delete(url,posthead,function(code,content)
+                      if code==200 or code==204 then
+                        _follow.Text="未关注"
+                        _star.Text=removestar
+                       elseif code==401 then
+                        提示("请登录后使用本功能")
+                      end
+                    end)
+                   elseif _follow.Text=="未关注"
+                    zHttp.post(url,"",posthead,function(code,content)
+                      if code==200 or code==204 then
+                        _follow.Text="已关注"
+                        _star.Text=addstar
+                       elseif code==401 then
+                        提示("请登录后使用本功能")
+                      end
+                    end)
+                   else
+                    提示("加载中")
+                  end
+                end;
+                id="follow",
+                padding="4dp",
+                orientation="horizontal";
+                {
+                  ImageView;
+                  colorFilter=textc,
+                  layout_width="18dp";
+                  layout_height="18dp";
+                  src=图标("add");
+                };
+                {
+                  TextView;
+                  id="_follow",
+                  layout_marginLeft="4dp",
+                  layout_width="-1";
+                  layout_height="-1";
+                  gravity="center";
+                  Typeface=字体("product");
+                  textColor=textc,
+                  text="0";
+                };
+              };
+            };
           };
         };
       };
@@ -221,7 +280,7 @@ task(1,function()
     end
   }
   波纹({fh,_more},"圆主题")
-  波纹({discussion,view,description},"方自适应")
+  波纹({discussion,view,description,follow},"方自适应")
 end)
 
 question_list.adapter=question_adp
@@ -271,114 +330,237 @@ end)
   tags.ids.load.parent.visibility=0
   tags:addTab(name,function()检查链接(url)end,2)
 end)
-:getData(function(tab)
+function 加载数据()
+  question_base:getData(function(tab)
 
 
-  title.Text=tab.title
+    title.Text=tab.title
 
-  if 是否记录历史记录 then
-    初始化历史记录数据(true)
-    保存历史记录(title.Text,question_id,50)
-  end
+    if 是否记录历史记录 then
+      初始化历史记录数据(true)
+      保存历史记录(title.Text,question_id,50)
+    end
 
-  _comment.Text=tostring(tointeger(tab.comment_count))
-  _star.Text=tostring(tointeger(tab.follower_count))
-  _title.Text="共"..tostring(tointeger(tab.answer_count)).."个回答"
+    _comment.Text=tostring(tointeger(tab.comment_count))
+    _star.Text=tostring(tointeger(tab.follower_count))
+    _title.Text="共"..tostring(tointeger(tab.answer_count)).."个回答"
 
+    addstar=tostring(tointeger(_star.Text+1))
+    removestar=tostring(tointeger(_star.Text))
 
-  if #tab.excerpt>0 then
-    description.Text=tab.excerpt
-   else
-    description.visibility=8
-  end
-  description.onClick=function()
-    description.setVisibility(8)
-    show.loadUrl("")
-    show.setHorizontalScrollBarEnabled(false);
-    show.setVerticalScrollBarEnabled(false);
-    show.setVisibility(0)
-  end
+    if #tab.excerpt>0 then
+      description.Text=tab.excerpt
+     else
+      description.visibility=8
+    end
+    description.onClick=function()
+      description.setVisibility(8)
+      show.loadUrl("")
+      show.setHorizontalScrollBarEnabled(false);
+      show.setVerticalScrollBarEnabled(false);
+      show.setVisibility(0)
+    end
 
-  function imgReset()
-    show.loadUrl("javascript:(function(){" ..
-    "var objs = document.getElementsByTagName('img'); " ..
-    "for(var i=0;i<objs.length;i++) " ..
-    "{"
-    .. "var img = objs[i]; " ..
-    " img.style.maxWidth = '100%'; img.style.height = 'auto'; " ..
-    "}" ..
-    "})()")
-  end
+    function imgReset()
+      show.loadUrl("javascript:(function(){" ..
+      "var objs = document.getElementsByTagName('img'); " ..
+      "for(var i=0;i<objs.length;i++) " ..
+      "{"
+      .. "var img = objs[i]; " ..
+      " img.style.maxWidth = '100%'; img.style.height = 'auto'; " ..
+      "}" ..
+      "})()")
+    end
 
-  settings = show.getSettings();
-  settings.setJavaScriptEnabled(true)
+    settings = show.getSettings();
+    settings.setJavaScriptEnabled(true)
 
-  if activity.getSharedData("禁用缓存")=="true"
-    show
-    .getSettings()
-    .setAppCacheEnabled(false)
-    --开启 DOM 存储功能
-    .setDomStorageEnabled(false)
-    --开启 数据库 存储功能
-    .setDatabaseEnabled(false)
-    .setCacheMode(WebSettings.LOAD_NO_CACHE);
-   else
-    show
-    .getSettings()
-    .setAppCacheEnabled(true)
-    --开启 DOM 存储功能
-    .setDomStorageEnabled(true)
-    --开启 数据库 存储功能
-    .setDatabaseEnabled(true)
-    .setCacheMode(2)
-  end
+    if activity.getSharedData("禁用缓存")=="true"
+      show
+      .getSettings()
+      .setAppCacheEnabled(false)
+      --开启 DOM 存储功能
+      .setDomStorageEnabled(false)
+      --开启 数据库 存储功能
+      .setDatabaseEnabled(false)
+      .setCacheMode(WebSettings.LOAD_NO_CACHE);
+     else
+      show
+      .getSettings()
+      .setAppCacheEnabled(true)
+      --开启 DOM 存储功能
+      .setDomStorageEnabled(true)
+      --开启 数据库 存储功能
+      .setDatabaseEnabled(true)
+      .setCacheMode(2)
+    end
 
-  show.setDownloadListener({
-    onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
-      webview下载文件(链接, UA, 相关信息, 类型, 大小)
-  end})
+    show.setDownloadListener({
+      onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
+        webview下载文件(链接, UA, 相关信息, 类型, 大小)
+    end})
 
-  show.setWebViewClient{
-    shouldOverrideUrlLoading=function(view,url)
-      view.stopLoading()
-      检查链接(url)
-    end,
-    onPageFinished=function(view,url)
+    show.setWebViewClient{
+      shouldOverrideUrlLoading=function(view,url)
+        view.stopLoading()
+        检查链接(url)
+      end,
+      onPageFinished=function(view,url)
 
-      if 全局主题值=="Night" then
-        黑暗页(view)
-      end
+        if 全局主题值=="Night" then
+          黑暗页(view)
+        end
 
-      imgReset()
+        imgReset()
 
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+        view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
 
-      local z=JsInterface{
-        execute=function(b)
-          if b~=nil then
-            activity.newActivity("image",{b})
+        local z=JsInterface{
+          execute=function(b)
+            if b~=nil then
+              activity.newActivity("image",{b})
+            end
+          end
+        }
+
+        view.addJSInterface(z,"androlua")
+
+        if isLoaded == 1 then
+          show.setFocusable(false)
+         else
+          isLoaded = 1
+          show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);
+        end
+
+      end,
+
+      onProgressChanged=function(view,Progress)
+      end,
+      onLoadResource=function(view,url)
+      end,
+    }
+
+    mpop={
+      tittle="问题",
+      list={
+        {src=图标("share"),text="分享",onClick=function()
+            分享文本("https://www.zhihu.com/question/"..question_id)
+        end},
+        {src=图标("format_align_left"),text="按时间顺序",onClick=function()
+            question_base:setSortBy("created")
+            question_base:clear()
+            question_adp.clear()
+        end},
+        {src=图标("notes"),text="按默认顺序",onClick=function()
+            question_base:setSortBy("default")
+            question_base:clear()
+            question_adp.clear()
+        end},
+        {
+          src=图标("colorize"),text="回答",onClick=function()
+            if not(getLogin()) then
+              return 提示("请登录后使用本功能")
+            end
+            local url=" https://www.zhihu.com/question/"..question_id.."/write"
+
+            activity.newActivity("huida",{url,nil,true})
+          end
+        },
+      }
+    }
+
+    if tab.relationship.is_author then
+      table.insert(mpop.list,5,{
+        src=图标("colorize"),text="设置问题",onClick=function()
+          if not(getLogin()) then
+            return 提示("请登录后使用本功能")
+          end
+          local url=" https://www.zhihu.com/question/"..question_id
+
+          activity.newActivity("huida",{url,true})
+          提示("进入后请手动缩小设置")
+        end
+      })
+      table.insert(mpop.list,6,{
+        src=图标("colorize"),text="删除问题",onClick=function()
+          if not(getLogin()) then
+            return 提示("请登录后使用本功能")
+          end
+          local url=" https://www.zhihu.com/question/"..question_id.."/write"
+
+          zHttp.delete("https://www.zhihu.com/api/v4/questions/"..question_id,posthead,function(code,content)
+            if code==200 then
+              提示("删除成功")
+             elseif code==401 then
+              提示("请登录后使用本功能")
+            end
+          end)
+        end
+      })
+    end
+
+    if tab.relationship.my_answer then
+      table.insert(mpop.list,5,{
+        src=图标("colorize"),text="设置回答",onClick=function()
+          if not(getLogin()) then
+            return 提示("请登录后使用本功能")
+          end
+          local url=" https://www.zhihu.com/question/"..question_id.."/answer/"..tab.relationship.my_answer.answer_id
+
+          activity.newActivity("huida",{url,3000})
+          提示("进入后请手动缩小设置")
+        end
+      })
+      table.insert(mpop.list,6,{
+        src=图标("colorize"),text="删除回答",onClick=function(text)
+          if not(getLogin()) then
+            return 提示("请登录后使用本功能")
+          end
+
+          if text=="删除回答" then
+            zHttp.delete("https://www.zhihu.com/api/v4/answers/"..tab.relationship.my_answer.answer_id,posthead,function(code,content)
+              if code==200 then
+                mpop.list[6].text="恢复回答"
+                提示("删除成功")
+                a=MUKPopu(mpop)
+               elseif code==401 then
+                提示("请登录后使用本功能")
+              end
+            end)
+           else
+            zHttp.post("https://www.zhihu.com/api/v4/answers/"..tab.relationship.my_answer.answer_id.."/actions/restore",'',postapphead,function(code,content)
+              if code==200 then
+                提示("恢复成功")
+                mpop.list[6].text="删除回答"
+                a=MUKPopu(mpop)
+               elseif code==401 then
+                提示("请登录后使用本功能")
+              end
+            end)
           end
         end
-      }
+      })
 
-      view.addJSInterface(z,"androlua")
-
-      if isLoaded == 1 then
-        show.setFocusable(false)
+      if tab.relationship.my_answer.is_deleted then
+        mpop.list[6].text="恢复回答"
        else
-        isLoaded = 1
-        show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);
+        mpop.list[6].text="删除回答"
       end
 
-    end,
+    end
 
-    onProgressChanged=function(view,Progress)
-    end,
-    onLoadResource=function(view,url)
-    end,
-  }
+    if tab.relationship.is_following then
+      _follow.text="已关注"
+     else
+      _follow.text="未关注"
+    end
 
-end)
+    a=MUKPopu(mpop)
+
+  end)
+end
+
+加载数据()
 
 question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
@@ -392,38 +574,6 @@ question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   end
 })
 
-
-task(1,function()
-  a=MUKPopu({
-    tittle="问题",
-    list={
-      {src=图标("share"),text="分享",onClick=function()
-          分享文本("https://www.zhihu.com/question/"..question_id)
-      end},
-      {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-          question_base:setSortBy("created")
-          question_base:clear()
-          question_adp.clear()
-      end},
-      {src=图标("notes"),text="按默认顺序",onClick=function()
-          question_base:setSortBy("default")
-          question_base:clear()
-          question_adp.clear()
-      end},
-      {
-        src=图标("colorize"),text="回答",onClick=function()
-          if not(getLogin()) then
-            return 提示("请登录后使用本功能")
-          end
-          local url=" https://www.zhihu.com/question/"..question_id.."/write"
-
-          activity.newActivity("huida",{url,nil,true})
-        end
-      },
-    }
-  })
-end)
-
 if activity.getSharedData("问题提示0.01")==nil
   AlertDialog.Builder(this)
   .setTitle("小提示")
@@ -436,6 +586,8 @@ end
 function onActivityResult(a,b,c)
   if b==100 then
     activity.recreate()
+   elseif b==3000 then
+    加载数据()
   end
 
 end
@@ -443,3 +595,11 @@ end
 function onDestroy()
   show.destroy()
 end
+
+task(1,function()
+  a=MUKPopu({
+    tittle="问题",
+    list={
+    }
+  })
+end)

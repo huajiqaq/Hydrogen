@@ -1,4 +1,6 @@
+console.log("重新加载")
 window.onload = function () {
+    var style
     //隐藏头
     document.querySelector("header").style.display = "none"
     //隐藏底部
@@ -6,7 +8,7 @@ window.onload = function () {
     //去除距离
     document.querySelector(".Chat").style.margin = 0
     //隐藏滑动
-    document.querySelector(".ChatListGroup-SectionContent").style.overflowY = "hidden"
+    //document.querySelector(".ChatListGroup-SectionContent").style.overflowY = "hidden"
     //优化页面
     document.querySelector(".ChatSideBar").style.position = "unset"
     document.querySelector(".ChatSideBar").style.width = "unset"
@@ -18,12 +20,14 @@ window.onload = function () {
     document.querySelector(".Chat").style.height = "100%"
     document.querySelector(".Chat").style.position = "fixed"
     //防止图片压缩
-    var style = document.createElement('style');
+    style = document.createElement('style');
     style.innerHTML = 'img{max-width:unset !important}'
     document.head.appendChild(style);
-    //防止卡片压缩
-    var style = document.createElement('style');
-    style.innerHTML = '.css-36m70k{width:unset !important}'
+    //防止知乎小管家卡片压缩
+    style = document.createElement('style');
+    style.innerHTML = '.CardMessage{width:unset !important}'
+    //知乎小管家卡片子项
+    style.innerHTML += '.css-1snk75c{height:unset !important}'
     document.head.appendChild(style);
 
     var ismessage_str = null
@@ -57,6 +61,7 @@ window.onload = function () {
     }
 
     function handleChildChange() {
+        oristyle = document.querySelector(".ChatListGroup-SectionContent").style.cssText
         if (!ismessage_str) {
             document.querySelector('.Chat').childNodes[0].style.display = "none"
             document.querySelector('.Chat').childNodes[1].style.display = "flex"
@@ -83,8 +88,13 @@ window.onload = function () {
                 console.log(document.querySelector('.Chat').childNodes)
                 document.querySelector('.Chat').childNodes[0].style.display = "unset"
                 document.querySelector('.Chat').childNodes[1].style.display = "none"
+
+                //精准计算高度 防止某些情况下高度设置不正确
+                let ChatListGroup = document.querySelector('.Chat').childNodes[0].childNodes[1]
+                let height = ChatListGroup.clientHeight - ChatListGroup.childNodes[0].childNodes[0].clientHeight
+                document.querySelector('.ChatListGroup-SectionContent').style.height = height.toString() + "px"
+
                 button.remove()
-                document.querySelector(".ChatListGroup-SectionContent").style.height="unset"
                 history.pushState(null, null, '/messages');
                 console.log(document.querySelector('.Chat').childNodes[0].style.display)
 
@@ -116,6 +126,7 @@ window.onload = function () {
     const div = document.querySelector(".ChatListGroup-SectionContent");
 
     div.addEventListener("click", function (e) {
+        console.log(e)
         var clickdoc = e.target
         var isclick = clickdoc.closest('.Chat-ActionMenuPopover-Button')
         var isChild = clickdoc.closest('.ChatUserListItem')

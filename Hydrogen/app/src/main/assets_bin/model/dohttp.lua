@@ -206,7 +206,11 @@ function base:setgetcallback(code,content,callback)
       if callback then
         callback(content)
       end
-      self.is_end=data.paging.is_end
+      if data.paging then
+        self.is_end=data.paging.is_end
+       else
+        self.is_end=true
+      end
     end
    else
     local data=luajson.decode(content)
@@ -225,7 +229,11 @@ function base:setothercallback(code,content,callback)
     if callback then
       callback(content)
     end
-    self.is_end=data.paging.is_end
+    if data.paging then
+      self.is_end=data.paging.is_end
+     else
+      self.is_end=true
+    end
    else
     local data=luajson.decode(content)
     if data and data.error and data.error.message then

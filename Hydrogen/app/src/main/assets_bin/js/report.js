@@ -18,7 +18,7 @@ onfetch(response => {
 		if (response.status === 200) {
 			response.json()
 				.then(res => {
-					console.log("举报提交成功");
+					console.log("提交成功退出");
 				})
 		} else {
 			console.log("失败 状态码" + response.status)

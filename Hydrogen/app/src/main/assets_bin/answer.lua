@@ -243,7 +243,6 @@ function 数据添加(t,b)
   end
 
   t.content.removeView(t.content.getChildAt(0))
-
   t.content.setWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
       if url~=("https://www.zhihu.com/appview/answer/"..tointeger(b.id).."") then
@@ -332,27 +331,14 @@ function 数据添加(t,b)
     end,
     onShowCustomView=function(z,a,b)
       v=a
-      s=t.msrcroll.getScrollY()
-      activity.getWindow().getDecorView().setSystemUiVisibility(
-      View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-      | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-      | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-      | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-      | View.SYSTEM_UI_FLAG_FULLSCREEN
-      | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-
-      activity.getDecorView().addView(a)
+      t.msrcroll.setVisibility(8)
+      activity.getWindow().getDecorView().setSystemUiVisibility(5639)
+      activity.getDecorView().addView(v)
     end,
     onHideCustomView=function()
+      t.msrcroll.setVisibility(0)
       activity.getDecorView().removeView(v)
-      activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-      activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE)
-
-      设置主题()
-
-      t.msrcroll.smoothScrollTo(0,s)
-
+      activity.getWindow().getDecorView().setSystemUiVisibility(8208)
     end
   }))
 
@@ -559,6 +545,7 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
 
           --判断更新底栏数据
           if mviews.data and mviews.data.id then
+            回答id=mviews.data.id
             if mviews.data.voteup_count then
               vote_count.Text=tointeger(mviews.data.voteup_count)..""
               thanks_count.Text=tointeger(mviews.data.thanks_count)..""
@@ -625,7 +612,23 @@ function onDestroy()
   end
 end
 
+local voteup_data={}
+
 voteup.onClick=function()
+  if not voteup_data[回答id] then
+    local addvoteup,removevoteup
+    if 点赞状态[回答id] then
+      addvoteup=tostring(tointeger(vote_count.text))
+      removevoteup=tostring(tointeger(vote_count.text-1))
+     else
+      addvoteup=tostring(tointeger(vote_count.text+1))
+      removevoteup=tostring(tointeger(vote_count.text))
+    end
+    voteup_data[回答id]={
+      [1]=addvoteup,
+      [2]=removevoteup
+    }
+  end
   local pos=pg.getCurrentItem()
   local mviews=数据表[pg.adapter.getItem(pos).id]
   if not 点赞状态[回答id] then
@@ -634,7 +637,7 @@ voteup.onClick=function()
         提示("点赞成功")
         点赞状态[回答id]=true
         local data=luajson.decode(content)
-        vote_count.text=tostring(tointeger(data.voteup_count))
+        vote_count.text=voteup_data[回答id][1]
         mviews.data.voteup_count=vote_count.text
        elseif code==401 then
         提示("请登录后使用本功能")
@@ -646,7 +649,7 @@ voteup.onClick=function()
         提示("取消点赞成功")
         点赞状态[回答id]=false
         local data=luajson.decode(content)
-        vote_count.text=tostring(tointeger(data.voteup_count))
+        vote_count.text=voteup_data[回答id][2]
         mviews.data.voteup_count=vote_count.text
        elseif code==401 then
         提示("请登录后使用本功能")
@@ -655,7 +658,23 @@ voteup.onClick=function()
   end
 end
 
+local thank_data={}
+
 thank.onClick=function()
+  if not thank_data[回答id] then
+    local addthank,removethank
+    if 感谢状态[回答id] then
+      addthank=tostring(tointeger(thanks_count.text))
+      removethank=tostring(tointeger(thanks_count.text-1))
+     else
+      addthank=tostring(tointeger(thanks_count.text+1))
+      removethank=tostring(tointeger(thanks_count.text))
+    end
+    thank_data[回答id]={
+      [1]=addthank,
+      [2]=removethank
+    }
+  end
   local pos=pg.getCurrentItem()
   local mviews=数据表[pg.adapter.getItem(pos).id]
   if not 感谢状态[回答id] then
@@ -664,7 +683,7 @@ thank.onClick=function()
         提示("表达感谢成功")
         感谢状态[回答id]=true
         local data=luajson.decode(content)
-        thanks_count.text=tostring(tointeger(data.red_heart_count))
+        thanks_count.text=thank_data[回答id][1]
         mviews.data.thanks_count=thanks_count.text
        elseif code==401 then
         提示("请登录后使用本功能")
@@ -676,7 +695,7 @@ thank.onClick=function()
         提示("取消感谢成功")
         感谢状态[回答id]=false
         local data=luajson.decode(content)
-        thanks_count.text=tostring(tointeger(data.red_heart_count))
+        thanks_count.text=thank_data[回答id][2]
         mviews.data.thanks_count=thanks_count.text
        elseif code==401 then
         提示("请登录后使用本功能")
@@ -732,7 +751,7 @@ task(1,function()
             return
           end
 
-          url=" https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")
+          url="https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")
 
           activity.newActivity("huida",{url,nil,true})
 

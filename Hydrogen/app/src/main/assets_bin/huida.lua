@@ -13,32 +13,40 @@ activity.setContentView(loadlayout("layout/huida"))
 
 波纹({fh,_more},"圆主题")
 
-liulan.loadUrl(liulanurl)
+
+if type(docode)=="number" then
+  activity.setResult(docode)
+end
+
+-- 定义一个函数，接受一个字符串参数，返回一个布尔值
+function check_url(url)
+  -- 使用Lua的模式匹配，检查URL是否以https://www.zhihu.com/question/开头
+  local prefix = "https://www.zhihu.com/question/"
+  if url:sub(1, #prefix) == prefix then
+    -- 如果是，继续检查URL是否包含两个数字部分，分别是问题ID和回答ID
+    local question_id, answer_id = url:match(prefix .. "(%d+)/answer/(%d+)")
+    if question_id and answer_id then
+      -- 如果是，继续检查URL是否以?utm_id=结尾，或者没有其他内容
+      local suffix = url:sub(#prefix + #question_id + #answer_id + 9)
+      if suffix == "" or suffix:match("?utm_id=") then
+        -- 如果是，返回true，表示URL符合条件
+        return true
+      end
+    end
+  end
+  -- 否则，返回false，表示URL不符合条件
+  return false
+end
 
 if docode~=nil then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
- elseif liulanurl:find("zhihu") and not liulanurl:find("zvideo") then
+ elseif check_url(liulanurl) then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")
 end
 
+liulan.loadUrl(liulanurl)
 liulan.removeView(liulan.getChildAt(0))
 
-if ischeck then
-  if liulanurl=="https://www.zhihu.com" or docode=="提问" then
-    是否加载js=true
-   elseif liulanurl:find("zhihu") and liulanurl:find("answer") then
-    是否加载js=true
-   elseif liulanurl:find("https://www.zhihu.com/messages") then
-    是否加载js=true
-   elseif liulanurl:find("zhihu") and liulanurl:find("question") and liulanurl:find("write") then
-    是否加载js=true
-  end
-end
-
-if 是否加载js then
-  liulan.setVisibility(8)
-  progress.setVisibility(0)
-end
 
 function setProgress(p)
   ValueAnimator.ofFloat({pbar.getWidth(),activity.getWidth()/100*p})
@@ -96,8 +104,8 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
      elseif consoleMessage.message():find("重新加载") then
       liulan.setVisibility(8)
       progress.setVisibility(0)
-     elseif consoleMessage.message():find("举报提交成功") then
-      提示(consoleMessage.message())
+     elseif consoleMessage.message():find("提交成功退出") then
+      提示("成功")
       activity.finish()
     end
   end,
@@ -151,6 +159,9 @@ liulan.setWebViewClient{
       success_do()
       return
     end
+    if url:find("zhihu") and url:find("question") and url:find("write") or url:find("zhihu") and url:find("question") and url:find("edit") or url:find("answer_deleted_redirect") then
+      return
+    end
     if url:sub(1,4)~="http" then
       view.stopLoading()
       if 检查意图(url,true) then
@@ -194,14 +205,20 @@ liulan.setWebViewClient{
 
     if mtype=="举报" then
       加载js内容=获取js("report")
-     elseif url=="https://www.zhihu.com" or docode=="提问" then
+     elseif docode=="提问" then
       加载js内容=获取js("ask")
-     elseif url:find("zhihu") and url:find("answer") then
+     elseif check_url(liulanurl) then
       加载js内容=获取js("answer")
      elseif url:find("https://www.zhihu.com/messages") then
       加载js内容=获取js("messages")
      elseif url:find("zhihu") and url:find("question") and url:find("write") or url:find("zhihu") and url:find("question") and url:find("edit") then
       加载js内容=获取js("answering")
+     elseif url:find("https://www.zhihu.com/notifications") then
+      加载js内容=获取js("notification")
+     elseif url:find("https://www.zhihu.com/settings/") then
+      加载js内容=获取js("setting")
+     elseif docode then
+      加载js内容=获取js("model")
      else
       加载js内容=nil
     end

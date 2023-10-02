@@ -149,6 +149,11 @@ homeapphead["x-feed-prefetch"]="1"
 homeapphead1=table.clone(apphead)
 homeapphead1["scroll"]="down"
 
+requrl={
+  ["next"] = false,
+  ["prev"] = false,
+}
+
 function resolve_feed(v)
 
   v.extra.type=string.lower(v.extra.type)
@@ -230,13 +235,16 @@ function 主页推荐刷新()
   local myrequrl
   local addargs="&start_type=warm&tsp_ad_cardredesign=0&v_serial=1"
 
-  if requrl[result] then
-    if isprev then
-      myrequrl=requrl[result]["prev"]..addargs
-     else
-      myrequrl=requrl[result]["next"]..addargs
-    end
+  if isprev then
+    myrequrl=requrl["prev"]
+   else
+    myrequrl=requrl["next"]
   end
+
+  if myrequrl then
+    myrequrl=myrequrl..addargs
+  end
+
   local murl
   if choose_sub then
     murl="https://api.zhihu.com/feed-root/section/"..result.."?sub_page_id="..tointeger(choose_sub).."&channelStyle=0"
@@ -250,7 +258,7 @@ function 主页推荐刷新()
       homeapphead1["x-close-recommend"]="0"
       decoded_content = luajson.decode(content)
       if decoded_content.paging.is_end==false then
-        requrl[result]={
+        requrl={
           ["next"] = decoded_content.paging.next,
           ["prev"] = decoded_content.paging.previous,
         }
@@ -274,13 +282,16 @@ function 主页随机推荐 ()
   local myrequrl
   local addargs="&start_type=warm&refresh_scene=0&device=phone&short_container_setting_value=1"
 
-  if requrl[-1] then
-    if isprev then
-      myrequrl=requrl[-1]["prev"]..addargs
-     else
-      myrequrl=requrl[-1]["next"]..addargs
-    end
+  if isprev then
+    myrequrl=requrl["prev"]
+   else
+    myrequrl=requrl["next"]
   end
+
+  if myrequrl then
+    myrequrl=myrequrl..addargs
+  end
+
   local posturl = myrequrl or "https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=2"
   zHttp.get(posturl,homeapphead,function(code,content)
     if code==200 then
@@ -296,7 +307,7 @@ function 主页随机推荐 ()
         end
       end
       task(1,function() list2.adapter.notifyDataSetChanged()end)
-      requrl[-1] = {
+      requrl = {
         ["next"] = decoded_content.paging.next,
         ["prev"] = decoded_content.paging.previous,
       }
@@ -415,15 +426,7 @@ function 主页刷新(isclear,isprev)
     主页加载数据长度=nil
 
     if isprev~=true then
-      if #requrl>0 then
-        local result
-        if choosebutton==nil then
-          result=-1
-         else
-          result=tointeger(choosebutton)
-        end
-        requrl[result]={}
-      end
+      requrl={}
     end
 
 
@@ -1007,7 +1010,7 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
               jumpurl ="https://www.zhihu.com/messages"
             end
         end})
-        .setNegativeButton("确定", {onClick=function() if jumpurl==nil then jumpurl="https://www.zhihu.com/notifications" end activity.newActivity("huida",{jumpurl,true,true}) jumpurl=nil 提示("如显示不全请自行缩放") end})
+        .setNegativeButton("确定", {onClick=function() if jumpurl==nil then jumpurl="https://www.zhihu.com/notifications" end activity.newActivity("huida",{jumpurl,true,true}) jumpurl=nil end})
         .show();
       end)
      else
@@ -1144,33 +1147,42 @@ end
 
 followapphead = table.clone(apphead)
 followapphead["x-moments-ab-param"] = "follow_tab=1";
-
+moments_tab={
+  [1]={
+    prev=false,
+    nexturl=false,
+    isend=false,
+  },
+  [2]={
+    prev=false,
+    nexturl=false,
+    isend=false,
+  },
+  [3]={
+    prev=false,
+    nexturl=false,
+    isend=false,
+  }
+}
 
 function 关注刷新(isclear,isprev,num)
   -- origin15.19 更改
   if num==nil then
     num=1
   end
-  if isclear then
-    follow_isprev=true
+  if isprev then
+    moments_tab[num]["isprev"]=true
   end
-  if isclear==nil and moments_tab and moments_tab[num] then
-    if moments_tab[num].isend then
-      return 提示("没有新内容了")
-    end
-    return false
-  end
+
+  local follow_isprev=moments_tab[num]["isprev"]
+
   local alltype={"recommend","timeline","pin"}
   local allsr={gsr_j,gsr_t,gsr_p}
   local allpage={list9,list10,list11}
   local thispage=allpage[num]
   local thissr=allsr[num]
   可以加载关注={true,true,true}
-  if followpos then
-    num=followpos
-  end
-  if isclear or not(follow_itemc) or moments_tab[num]==nil then
-
+  if isclear or not(thispage.adapter) then
 
     if followTab.getTabCount()==0 then
       followTab.setupWithViewPager(fpage)
@@ -1187,7 +1199,6 @@ function 关注刷新(isclear,isprev,num)
         onTabSelected=function(tab)
           --选择时触发
           local pos=tab.getPosition()+1
-          followpos=pos
           关注刷新(nil,false,pos)
         end,
 
@@ -1198,7 +1209,6 @@ function 关注刷新(isclear,isprev,num)
         onTabReselected=function(tab)
           --选中之后再次点击即复选时触发
           local pos=tab.getPosition()+1
-          followpos=pos
           关注刷新(true,true,pos)
         end,
       });
@@ -1209,10 +1219,6 @@ function 关注刷新(isclear,isprev,num)
 
     --关注布局
     follow_itemc=获取适配器项目布局("home/home_following")
-    if moments_tab==nil then
-      moments_tab={}
-    end
-
 
     if follow_isprev~=true then
       moments_tab[num]={
@@ -1283,6 +1289,11 @@ function 关注刷新(isclear,isprev,num)
     }
 
     return
+   elseif isclear==nil and thispage.adapter then
+    if moments_tab[num].isend then
+      return 提示("没有新内容了")
+    end
+    return false
 
   end
 
@@ -1303,7 +1314,7 @@ function 关注刷新(isclear,isprev,num)
 
   zHttp.get(posturl,followapphead,function(code,content)
     if code==200 then
-      follow_isprev=false
+      moments_tab[num]["isprev"]=false
       local data=luajson.decode(content)
 
       moments_tab[num].isend=data.paging.is_end
@@ -1887,15 +1898,17 @@ function getuserinfo()
             end
           end
 
+          hometab={}
           for i=1, #decoded_content.selected_sections do
             if HometabLayout.getTabCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
               local tab=HometabLayout.newTab()
               tab.setText(decoded_content.selected_sections[i].section_name)
-              tab.view.onClick=function()
-                choose_sub=decoded_content.selected_sections[i].sub_page_id
-                choosebutton=decoded_content.selected_sections[i].section_id
-                主页刷新(true,true)
-              end
+              local choose_sub=decoded_content.selected_sections[i].sub_page_id
+              local choosebutton=decoded_content.selected_sections[i].section_id
+              table.insert(hometab,{
+                choose_sub=choose_sub,
+                choosebutton=choosebutton,
+              })
               HometabLayout.addTab(tab)
             end
           end
@@ -1903,6 +1916,29 @@ function getuserinfo()
           --HometabLayout.setVisibility(8)
         end
       end)
+
+      HometabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
+        onTabSelected=function(tab)
+          --选择时触发
+          local pos=tab.getPosition()+1
+          choose_sub=hometab[pos]["choose_sub"]
+          choosebutton=hometab[pos]["choosebutton"]
+          主页刷新(true,false)
+        end,
+
+        onTabUnselected=function(tab)
+          --未选择时触发
+        end,
+
+        onTabReselected=function(tab)
+          --选中之后再次点击即复选时触发
+          local pos=tab.getPosition()+1
+          choose_sub=hometab[pos]["choose_sub"]
+          choosebutton=hometab[pos]["choosebutton"]
+          主页刷新(true,true)
+        end,
+      });
+
 
 
      else

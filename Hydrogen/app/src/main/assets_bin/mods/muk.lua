@@ -15,7 +15,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.11142
+versionCode=0.1115
 layout_dir="layout/item_layout/"
 
 
@@ -1615,7 +1615,7 @@ function 加入收藏夹(回答id,收藏类型)
   list.onItemLongClick=function(l,v,p,s)--列表长按事件
     双按钮对话框("删除收藏","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
       an.dismiss()
-      zHttp.delete("https://api.zhihu.com/collections/"..选中收藏夹,head,function(code,json)
+      zHttp.delete("https://api.zhihu.com/collections/"..v.Tag.myid.text,head,function(code,json)
         if code==200 then
           提示("已删除")
           adp.setNotifyOnChange(true)
@@ -1624,6 +1624,7 @@ function 加入收藏夹(回答id,收藏类型)
         end
       end)
     end,function(an)an.dismiss()end)
+    return true
   end
 
   local collections_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20"
@@ -2183,6 +2184,9 @@ function zHttp.setcallback(code,content,callback)
     end)
     if _==false then
       return callback(code,content)
+    end
+    if decoded_content.error and decoded_content.error.message then
+      提示(decoded_content.error.message)
     end
     if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
       AlertDialog.Builder(this)
