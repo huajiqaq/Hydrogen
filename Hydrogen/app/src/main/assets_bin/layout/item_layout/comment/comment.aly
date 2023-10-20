@@ -24,6 +24,11 @@
     {
       TextView;
       textSize="0sp";
+      id="comment_author_id",
+    };
+    {
+      TextView;
+      textSize="0sp";
       id="isme",
     };
     {

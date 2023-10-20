@@ -19,46 +19,5 @@
     id="page",
     layout_width="-1";
     layout_height="-1";
-    pages={
-      {
-        LinearLayout,
-        orientation="vertical",
-        layout_width="fill",
-        layout_height="fill",
-        background=backgroundc,
-        {
-          SwipeRefreshLayout,
-          id="csr",
-          {
-            GridView;
-            layout_height="-1";
-            layout_width="-1";
-            nestedScrollingEnabled=true,
-            id="list4";
-            NumColumns=1;
-          };
-        }
-      };
-      {
-        LinearLayout,
-        orientation="vertical",
-        layout_width="fill",
-        layout_height="fill",
-        background=backgroundc,
-        id="page_mc";
-        {
-          SwipeRefreshLayout,
-          id="dsr",
-          {
-            GridView;
-            layout_height="-1";
-            layout_width="-1";
-            id="list8";
-            nestedScrollingEnabled=true,
-            NumColumns=1;
-          };
-        };
-      };
-    };
   };
 };

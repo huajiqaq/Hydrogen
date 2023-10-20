@@ -25,7 +25,12 @@ import "model.answer"
 
 comment.onClick=function()
   xpcall(function()
-    activity.newActivity("comment",{tointeger(数据表[pg.adapter.getItem(pg.getCurrentItem()).id].data.id),"answers",_title.Text,数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text})
+    local mcount=pg.getCurrentItem()
+    local mview=数据表[pg.adapter.getItem(mcount).id]
+    if mview.data.id==nil then
+      return 提示("加载中")
+    end
+    activity.newActivity("comment",{tointeger(mview.data.id),"answers",_title.Text,mview.ids.username.Text})
     end,function()
     提示("请稍等")
   end)
@@ -203,20 +208,20 @@ function 数据添加(t,b)
   .setLoadWithOverviewMode(true)
   .setBuiltInZoomControls(true)
 
-  if activity.getSharedData("禁用缓存")=="true"
+  if activity.getSharedData("禁用缓存")=="true" then
     t.content
     .getSettings()
     .setAppCacheEnabled(false)
     .setCacheMode(WebSettings.LOAD_NO_CACHE)
-    --开启 DOM 存储功能
+    --关闭 DOM 存储功能
     .setDomStorageEnabled(false)
-    --开启 数据库 存储功能
+    --关闭 数据库 存储功能
     .setDatabaseEnabled(false)
    else
     t.content
     .getSettings()
     .setAppCacheEnabled(true)
-    .setCacheMode(2)
+    .setCacheMode(WebSettings.LOAD_DEFAULT)
     --开启 DOM 存储功能
     .setDomStorageEnabled(true)
     --开启 数据库 存储功能
@@ -264,7 +269,7 @@ function 数据添加(t,b)
         t.progress.getParent().removeView(t.progress)
         t.progress=nil
       end
-      加载js(view,[[waitForKeyElements(' [class="AnswerReward"]', function() {document.getElementsByClassName("AnswerReward")[0].style.display = "none"});]])
+      屏蔽元素(view,{".AnswerReward"})
       if 问题id then
         zHttp.get("https://api.zhihu.com/api/v1/blue_page/blue_box?scene=QA&behavior=LOOK&keyword=&token="..回答id.."&parentToken="..问题id,apphead,function(code,content)
           if code==200 then
@@ -801,6 +806,13 @@ task(1,function()
         src=图标("book"),text="加入收藏夹",onClick=function()
           local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
           加入收藏夹(url:match("answer/(.+)"),"answer")
+        end
+      },
+
+      {
+        src=图标("book"),text="举报",onClick=function()
+          local url="https://www.zhihu.com/report?id="..回答id.."&type=answer"
+          activity.newActivity("huida",{url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
         end
       },
 

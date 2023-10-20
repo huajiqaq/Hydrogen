@@ -11,7 +11,7 @@ _title.text="推荐关注收藏夹"
 
 
 tabv.setVisibility(8)
-itemc=获取适配器项目布局("collection_tj/collection_tj")
+itemc=获取适配器项目布局("collections/collection_tj")
 
 
 history_list.setDividerHeight(0)
@@ -68,17 +68,12 @@ add=true
 history_list.setOnScrollListener{
   onScroll=function(view,a,b,c)
     if a+b==c and add then
-      提示("加载中")
       add=false
       刷新()
       System.gc()
     end
   end
 }
-
-function onActivityResult(a,b,c)
-  activity.setResult(b,nil)
-end
 
 task(1,function()
   a=MUKPopu({

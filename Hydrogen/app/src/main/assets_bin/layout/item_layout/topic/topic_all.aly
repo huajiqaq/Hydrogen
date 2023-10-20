@@ -28,7 +28,7 @@
         padding="16dp";
         {
           TextView;
-          id="all_id";
+          id="best_id";
           textSize="0sp";
         };
         {
@@ -46,7 +46,6 @@
             TextView;
             id="all_answer_count";
             textSize="12sp",
-
             textColor=textc;
             Typeface=字体("product");
           };

@@ -6,7 +6,6 @@ import "mods.muk"
 设置视图("layout/about")
 
 波纹({fh},"圆主题")
-波纹({recheck_text,download_text},"方自适应")
 
 控件隐藏(card_root)
 控件隐藏(download)

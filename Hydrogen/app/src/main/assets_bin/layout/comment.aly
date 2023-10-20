@@ -117,32 +117,13 @@
             maxLines=10;
             hint="输入评论";
           };
-
           {
-            CardView;
+            MaterialButton;
+            layout_marginRight="10dp";
             id="send";
-            layout_width="-2";
-            layout_height="-2";
-            radius="4dp";
-            layout_marginRight="6dp";
-            layout_gravity="center",
-            CardBackgroundColor=primaryc;
-            Visibility=View.GONE;
-            {
-              TextView;
-              id="sendtext",
-              layout_width="-1";
-              layout_height="-1";
-              textSize="14sp";
-              paddingRight="12dp";
-              paddingLeft="12dp";
-              paddingTop="8dp";
-              paddingBottom="8dp";
-              Text="发送";
-              textColor=backgroundc;
-              gravity="center";
-              Typeface=字体("product-Bold");
-            };
+            textColor=backgroundc;
+            text="发送";
+            Typeface=字体("product-Bold");
           };
         };
       };

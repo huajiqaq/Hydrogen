@@ -85,6 +85,14 @@
         orientation="vertical";
         layout_width="-1";
         layout_height="-1";
+
+        {
+          MyTab
+          {
+            id="peotab",
+          },
+          contentDescription="用户标签",
+        };
         {
           ListView;
           id="people_list";
@@ -94,6 +102,6 @@
           layout_marginTop="-8dp",
         }
       };
-    };
+    }
   };
 };

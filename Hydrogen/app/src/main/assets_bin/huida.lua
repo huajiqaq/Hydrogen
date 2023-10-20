@@ -13,7 +13,6 @@ activity.setContentView(loadlayout("layout/huida"))
 
 波纹({fh,_more},"圆主题")
 
-
 if type(docode)=="number" then
   activity.setResult(docode)
 end
@@ -38,12 +37,11 @@ function check_url(url)
   return false
 end
 
-if docode~=nil then
+if docode~=nil and ischeck~="null" then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
  elseif check_url(liulanurl) then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")
 end
-
 liulan.loadUrl(liulanurl)
 liulan.removeView(liulan.getChildAt(0))
 
@@ -91,7 +89,7 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onShowFileChooser=function(v,fic,fileChooserParams)
     uploadMessageAboveL=fic
     local intent= Intent(Intent.ACTION_PICK)
-    intent.setType("image/*")
+    intent.setType("image/*;video/*")
     this.startActivityForResult(intent, 1)
     return true;
   end,
@@ -107,6 +105,8 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
      elseif consoleMessage.message():find("提交成功退出") then
       提示("成功")
       activity.finish()
+     elseif consoleMessage.message()=="显示评论" then
+      activity.newActivity("comment",{mresult,mmtype.."s"})
     end
   end,
 
@@ -138,11 +138,43 @@ function onKeyDown(code,event)
   end
 end
 
+mpop={
+  tittle="网页",
+  list={
+    {src=图标("refresh"),text="刷新",onClick=function()
+        liulan.reload()
+    end},
+    {src=图标("redo"),text="前进",onClick=function()
+        liulan.goForward()
+    end},
+    {src=图标("undo"),text="后退",onClick=function()
+        liulan.goBack()
+    end},
+    {src=图标("close"),text="停止",onClick=function()
+        liulan.stopLoading()
+    end},
+
+    {src=图标("share"),text="分享",onClick=function()
+        if fxurl then
+          复制文本(fxurl)
+         else
+          复制文本(liulan.getUrl())
+        end
+        提示("已复制网页链接到剪切板")
+    end},
+
+  }
+}
+
 liulan.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)--回调参数，v控件，url网址
     local res=false
     if liulanurl:find("zhihu.com") and liulanurl:find("https://www.zhihu.com/account/unhuman") then
-      提示("验证通过")
+      view.stopLoading()
+      if url:find("zhihu.com/signin") then
+        activity.newActivity("login")
+        return
+      end
       local function success_do()
         activity.setResult(100)
         activity.finish()
@@ -160,6 +192,9 @@ liulan.setWebViewClient{
       return
     end
     if url:find("zhihu") and url:find("question") and url:find("write") or url:find("zhihu") and url:find("question") and url:find("edit") or url:find("answer_deleted_redirect") then
+      return
+    end
+    if url:find("zhihu") and url:find("zhuanlan") and url:find("write") or url:find("zhihu") and url:find("zhuanlan") and url:find("edit") then
       return
     end
     if url:sub(1,4)~="http" then
@@ -192,16 +227,22 @@ liulan.setWebViewClient{
         检查链接(url)
       end
     end
+    if url=="https://www.zhihu.com" or url=="https://www.zhihu.com/" or url=="https://www.zhihu.com?utm" then
+      view.stopLoading()
+    end
+
   end,
   onPageStarted=function(view,url,favicon)
-
     等待doc(view)
+    屏蔽元素(view,{"SignFlowHomepage-footer"})
     if url:find("zhihu.com/search") then
       加载js(view,'window.open=function() { return false }')
     end
     if 全局主题值=="Night" then
       黑暗模式主题(view)
     end
+
+    local mpop=table.clone(mpop)
 
     if mtype=="举报" then
       加载js内容=获取js("report")
@@ -213,16 +254,39 @@ liulan.setWebViewClient{
       加载js内容=获取js("messages")
      elseif url:find("zhihu") and url:find("question") and url:find("write") or url:find("zhihu") and url:find("question") and url:find("edit") then
       加载js内容=获取js("answering")
+     elseif url:find("zhihu") and url:find("zhuanlan") and url:find("write") or url:find("zhihu") and url:find("zhuanlan") and url:find("edit") then
+      加载js内容=获取js("write_zhuanlan")
      elseif url:find("https://www.zhihu.com/notifications") then
       加载js内容=获取js("notification")
      elseif url:find("https://www.zhihu.com/settings/") then
       加载js内容=获取js("setting")
-     elseif docode then
-      加载js内容=获取js("model")
+     elseif url:find("https://www.zhihu.com/knowledge%-plan/editor%-setting") then
+      加载js内容=获取js("editor-setting")
+     elseif url:find("https://www.zhihu.com/zvideo/upload%-video") then
+      加载js内容=获取js("upload_video")
+     elseif url:find("zhihu.com/market/paid") then
+      加载js内容=获取js("paid_content")
+      mresult=url:match("/section/(.+)")
+      mmtype="paid_column_section_manuscript"
+      table.insert(mpop.list,#mpop.list,{src=图标("chat_bubble"),text="查看评论",onClick=function()
+          activity.newActivity("comment",{mresult,mmtype.."s"})
+      end})
+      a=MUKPopu(mpop)
+     elseif docode=="想法" then
+      加载js内容=获取js("addpin")
+     elseif docode=="新建专栏" then
+      加载js内容=获取js("addcolumn")
+     elseif docode=="我的专栏" then
+      加载js内容=获取js("mycolumn")
+     elseif docode=="我的视频设置" then
+      加载js内容=获取js("myvideo-setting")
+     elseif docode=="我的文章设置" then
+      加载js内容=获取js("mywenzhang-setting")
      else
-      加载js内容=nil
+      加载js内容=获取js("model")
     end
 
+    a=MUKPopu(mpop)
 
     if 加载js内容 then
       加载js(view,加载js内容)
@@ -232,8 +296,6 @@ liulan.setWebViewClient{
   onLoadResource=function(view,url)
   end,
   onPageFinished=function(view,url)
-    if docode~="默认" then 屏蔽元素(view,{"SignFlowHomepage-footer"})
-    end
 end}
 
 
@@ -263,9 +325,9 @@ if activity.getSharedData("禁用缓存")=="true"
   liulan
   .getSettings()
   .setAppCacheEnabled(false)
-  --开启 DOM 存储功能
+  --关闭 DOM 存储功能
   .setDomStorageEnabled(true)
-  --开启 数据库 存储功能
+  --关闭 数据库 存储功能
   .setDatabaseEnabled(true)
   .setCacheMode(WebSettings.LOAD_NO_CACHE);
  else
@@ -276,7 +338,7 @@ if activity.getSharedData("禁用缓存")=="true"
   .setDomStorageEnabled(true)
   --开启 数据库 存储功能
   .setDatabaseEnabled(true)
-  .setCacheMode(2)
+  .setCacheMode(WebSettings.LOAD_DEFAULT)
 end
 
 liulan.setDownloadListener({
@@ -284,34 +346,9 @@ liulan.setDownloadListener({
     webview下载文件(链接, UA, 相关信息, 类型, 大小)
 end})
 
+
 task(1,function()
-  a=MUKPopu({
-    tittle="网页",
-    list={
-      {src=图标("refresh"),text="刷新",onClick=function()
-          liulan.reload()
-      end},
-      {src=图标("redo"),text="前进",onClick=function()
-          liulan.goForward()
-      end},
-      {src=图标("undo"),text="后退",onClick=function()
-          liulan.goBack()
-      end},
-      {src=图标("close"),text="停止",onClick=function()
-          liulan.stopLoading()
-      end},
-
-      {src=图标("share"),text="分享",onClick=function()
-          if fxurl then
-            复制文本(fxurl)
-           else
-            复制文本(liulan.getUrl())
-          end
-          提示("已复制网页链接到剪切板")
-      end},
-
-    }
-  })
+  a=MUKPopu(mpop)
 end)
 
 
@@ -346,6 +383,11 @@ onActivityResult=function(req,res,intent)
   if(results~=nil)then
     uploadMessageAboveL.onReceiveValue(results);
     uploadMessageAboveL = nil;
+  end
+  if res==100 then
+    if liulanurl:find("zhihu.com") and liulanurl:find("https://www.zhihu.com/account/unhuman") then
+      activity.finish()
+    end
   end
 end
 

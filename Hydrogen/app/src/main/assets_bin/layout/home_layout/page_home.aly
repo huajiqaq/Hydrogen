@@ -114,53 +114,6 @@
         id="fpage",
         layout_width="-1";
         layout_height="-1";
-        pages={
-          {
-            SwipeRefreshLayout;
-            id="gsr_j";
-            layout_height="fill";
-            layout_width="fill";
-            {
-              ListView;
-              DividerHeight="0",
-              layout_width="fill";
-              id="list9",
-              layout_height="fill";
-              nestedScrollingEnabled=true,
-            };
-          };
-
-          {
-            SwipeRefreshLayout;
-            id="gsr_t";
-            layout_height="fill";
-            layout_width="fill";
-            {
-              ListView;
-              DividerHeight="0",
-              layout_width="fill";
-              id="list10",
-              layout_height="fill";
-              nestedScrollingEnabled=true,
-            };
-          };
-
-          {
-            SwipeRefreshLayout;
-            id="gsr_p";
-            layout_height="fill";
-            layout_width="fill";
-            {
-              ListView;
-              DividerHeight="0",
-              layout_width="fill";
-              id="list11",
-              layout_height="fill";
-              nestedScrollingEnabled=true,
-            };
-          };
-
-        };
       };
     };
   };

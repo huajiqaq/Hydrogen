@@ -73,7 +73,7 @@ window.onload = function () {
     //防止图片压缩
     style.innerHTML += 'img{min-width:unset !important}'
     //隐藏底部
-    style.innerHTML += 'footer{display:none !important}'
+    style.innerHTML += '#SettingsMain > div > div> footer{display:none !important}'
     document.head.appendChild(style);
 
 
@@ -97,6 +97,28 @@ window.onload = function () {
     style.innerHTML += 'div.SettingsMain > div:first-child > div:first-child > div:first-child> div:nth-child(2){padding-bottom:unset !important}'
     document.head.appendChild(style);
 
+    //屏蔽
+    style = document.createElement('style');
+    //去卡片边距
+    style.innerHTML = '.css-188am9u{flex-wrap:wrap !important;}'
+    style.innerHTML += '.UserPage-content{margin-left:unset !important; width:unset !important }'
+    style.innerHTML += '.UserPageContent{width:unset !important }'
+    style.innerHTML += '.UserPageContent .UserPageItem:nth-child(2n){margin-right:10px !important }'
+    style.innerHTML += '.UserPageItem--withButton{width:unset !important }'
+    style.innerHTML += '.Modal-content{max-width:100vw !important}'
+    document.head.appendChild(style);
+    
+    //偏好设置 图片水印
+    style = document.createElement('style');
+    style.innerHTML = '.WatermarkPreferenceExamples-bg{display:none !important}'
+    style.innerHTML += '.WatermarkPreferenceExamples{flex-wrap:wrap !important}'
+    style.innerHTML += '.WatermarkPreferenceExamples-card{width:100% !important; background-color:#056DE8}'
+    style.innerHTML += 'section.WatermarkPreferenceExamples > div{width:100% !important}'
+    style.innerHTML += '.WatermarkPreferenceExamples{flex-wrap:wrap !important}'
+    //优化文字高度
+    style.innerHTML += '.SelectorField-title h4{height:unset !important}'
+    document.head.appendChild(style);
+
 
     console.log("加载完成")
-}
+}  

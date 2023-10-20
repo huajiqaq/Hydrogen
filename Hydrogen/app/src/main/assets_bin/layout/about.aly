@@ -142,10 +142,11 @@
                 {
                   CardView;
                   layout_marginRight="10dp";
-                  id="download";
+                  id="downloada";
                   layout_width="-2";
                   layout_height="-2";
                   radius="4dp";
+                  Visibility=8;
 
                   --background=primaryc;
                   CardBackgroundColor=primaryc;
@@ -168,30 +169,21 @@
                   };
                 };
                 {
-                  CardView;
+                  MaterialButton;
+                  id="download";
+                  textColor=backgroundc;
+                  text="去下载";
+                  Typeface=字体("product-Bold");
+                  onClick=function()浏览器打开(updateurl)end;
+                };
+                {
+                  MaterialButton;
+                  layout_marginLeft="10dp";
                   id="recheck";
-                  layout_width="-2";
-                  layout_height="-2";
-                  radius="4dp";
-                  layout_gravity="right",
-                  --background=primaryc;
-                  CardBackgroundColor=primaryc;
+                  textColor=backgroundc;
+                  text="检查更新";
+                  Typeface=字体("product-Bold");
                   onClick=function()控件隐藏(card_root) check_update()end;
-                  {
-                    TextView;
-                    id="recheck_text",
-                    layout_width="-1";
-                    layout_height="-1";
-                    textSize="14sp";
-                    paddingRight="12dp";
-                    paddingLeft="12dp";
-                    paddingTop="8dp";
-                    paddingBottom="8dp";
-                    Text="检查更新";
-                    textColor=backgroundc;
-                    gravity="center";
-                    Typeface=字体("product-Bold");
-                  };
                 };
               };
             };

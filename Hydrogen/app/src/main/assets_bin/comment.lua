@@ -50,7 +50,81 @@ local function setstyle(styleee)
   end
 end
 
+mtip=false
+
+function 多选菜单(v)
+  if mtip==false then
+    mtip=true
+    提示("提示：当文本太长时可能需要拖动菜单来展示全部菜单")
+  end
+  local rootview=v.getParent().getParent().getParent().getParent().getParent()
+  if 踩tab[rootview.Tag.comment_id.text]==true then
+    ctext="取消踩"
+   else
+    ctext="踩评论"
+  end
+
+  pop=PopupMenu(activity,v)
+  menu=pop.Menu
+  menu.add("分享").onMenuItemClick=function(a)
+    分享文本(v.Text)
+  end
+  menu.add("复制").onMenuItemClick=function(a)
+    import "android.content.*"
+    activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(v.Text)
+    提示("复制文本成功")
+  end
+  menu.add(ctext).onMenuItemClick=function(a)
+    if 踩tab[rootview.Tag.comment_id.text]==false
+      zHttp.put("https://api.zhihu.com/comment_v5/comment/"..rootview.Tag.comment_id.Text.."/reaction/dislike",'',postapphead,function(code,content)
+        if code==200 then
+          提示("踩成功")
+          踩tab[rootview.Tag.comment_id.text]=true
+        end
+      end)
+     else
+      zHttp.delete("https://api.zhihu.com/comment_v5/comment/"..rootview.Tag.comment_id.Text.."/reaction/dislike",postapphead,function(code,content)
+        if code==200 then
+          提示("取消踩成功")
+          踩tab[rootview.Tag.comment_id.text]=false
+        end
+      end)
+    end
+  end
+
+  menu.add("举报").onMenuItemClick=function(a)
+    local url="https://www.zhihu.com/report?id="..rootview.Tag.comment_id.Text.."&type=comment"
+    activity.newActivity("huida",{url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
+  end
+
+  menu.add("屏蔽").onMenuItemClick=function(a)
+    AlertDialog.Builder(this)
+    .setTitle("提示")
+    .setMessage("屏蔽过后如果想查看屏蔽的所有用户 可以在软件内主页右划 点击消息 选择设置 之后打开屏蔽即可管理屏蔽 你也可以选择管理屏蔽用户 但是这样没有选择设置可设置的多 如果只想查看屏蔽的用户 推荐选择屏蔽用户管理")
+    .setPositiveButton("我知道了", {onClick=function()
+        zHttp.post("https://api.zhihu.com/settings/blocked_users","people_id="..people_id,apphead,function(code,json)
+          if code==200 or code==201 then
+            提示("已拉黑")
+          end
+        end)
+    end})
+    .setNegativeButton("取消",nil)
+    .show();
+  end
+
+  menu.add("查看主页").onMenuItemClick=function(a)
+    activity.newActivity("people",{rootview.Tag.comment_author_id.text})
+  end
+
+  pop.show()--显示
+
+  return true
+end
+
+踩tab={}
+
 function 刷新()
+
   comment_itemc=获取适配器项目布局("comment/comment")
 
   comment_adp=MyLuaAdapter(activity,comment_itemc)
@@ -82,14 +156,14 @@ function 刷新()
      else
       myspan=Html.fromHtml(内容)
     end
+    踩tab[tostring(tointeger(tostring(v.id)))]=v.disliked
     comment_list.Adapter.add{comment_toast={Visibility=(v.child_comment_count==0 and 8 or 0)},
       comment_id=tointeger(tostring(v.id)),
+      comment_author_id=v.author.id,
       comment_art={
         text=myspan,
         MovementMethod=LinkMovementMethod.getInstance(),
-        onClick= function(view)
-          提示("点击文字不可以触发相关事件哦 你可长按文字复制 点击其余地方去打开楼中楼(如果有的话)")
-        end,
+        onClick=function(v,event) 多选菜单(v) end,
         Focusable=false,
       },
 
@@ -126,19 +200,17 @@ function 评论刷新()
         add=true
       end
       if _title.text=="评论" then
-        if comment_type~="pins" then
-          _title.text=string.format("共%s条评论",comment_base.common_counts )
-         else
-          _title.text=string.format("共%s条评论",comment_count)
-        end
+        _title.text=string.format("共%s条评论",comment_base.common_counts)
       end
     end
   end)
 end
 
-
 comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(id,v,zero,one)
+    if not(v.Tag) then
+      return true
+    end
     if _title.text~="对话列表" and v.Tag.comment_toast.getVisibility()==0 then
       activity.newActivity("comment",{v.Tag.comment_id.text,"comments",answer_title,answer_author,nil,comment_id,comment_type})
      else
@@ -146,13 +218,10 @@ comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     end
 end})
 
-
 comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
   onItemLongClick=function(id,v,zero,one)
     if not(v.Tag) then
-      import "android.content.*"
-      activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(v.Text)
-      提示("复制文本成功")
+      多选菜单(v)
       return true
     end
 
@@ -378,11 +447,15 @@ if _title.text=="对话列表" then
             comment_base:setSortBy("ts")
             comment_base:clear()
             comment_adp.clear()
+            踩tab={}
+            add=true
         end},
         {src=图标("notes"),text="按默认顺序",onClick=function()
             comment_base:setSortBy("score")
             comment_base:clear()
             comment_adp.clear()
+            踩tab={}
+            add=true
         end},
       }
     })

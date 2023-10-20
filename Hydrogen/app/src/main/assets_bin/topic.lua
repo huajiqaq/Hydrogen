@@ -5,9 +5,60 @@ import "com.google.android.material.tabs.TabLayout"
 activity.setContentView(loadlayout("layout/topic"))
 topic_id=...
 波纹({fh,page1,page2,page3},"圆主题")
+
+local allnum=5
+
+local topic_pages={
+  LinearLayout;
+  layout_height="-1",
+  layout_width="-1",
+  {
+    MaterialCardView;
+    layout_height="-2";
+    CardBackgroundColor=cardedge,
+    Elevation="0";
+    layout_width="-1";
+    layout_margin="16dp";
+    layout_marginTop="8dp";
+    layout_marginBottom="8dp";
+    radius="8dp";
+    StrokeColor=cardedge;
+    StrokeWidth=dp2px(1),
+
+    {
+      LinearLayout;
+      layout_width="-1",
+      orientation="vertical";
+      {
+        CircleImageView;
+        layout_gravity="center";
+        layout_marginTop="16dp",
+        layout_height="72dp",
+        layout_width="72dp",
+        id="_bigimage"
+      };
+      {
+        TextView;
+        id="_excerpt",
+        textColor=textc,
+        textSize="14sp",
+        Typeface=字体("product");
+        textIsSelectable=true;
+        layout_margin="16dp",
+        layout_marginBottom="8dp",
+      };
+    };
+  };
+};
+
+pagadp=SWKLuaPagerAdapter()
+
+pagadp.add(loadlayout(topic_pages))
+topic_page.setAdapter(pagadp)
+initpage(topic_page,"topic",allnum,true,1)
+
 topic_page.setCurrentItem(1,false)
 初始化历史记录数据(true)
-
 TopictabLayout.setupWithViewPager(topic_page)
 
 local TopicTable={"详情","讨论","想法","视频","问题"}
@@ -15,7 +66,7 @@ local TopicTable={"详情","讨论","想法","视频","问题"}
 --setupWithViewPager设置的必须手动设置text
 for i=1, #TopicTable do
   local itemnum=i-1
-  TopictabLayout.getTabAt(itemnum).setText(TopicTable[i]);
+  TopictabLayout.getTabAt(itemnum).Text=TopicTable[i]
 end
 
 
@@ -36,27 +87,29 @@ end)
 
 
 best_itemc=获取适配器项目布局("topic/topic_best")
+all_itemc=获取适配器项目布局("topic/topic_all")
 
 
-mallpager={best_list,think_list,video_list}
-reftype={"essence","pin-hot","top_zvideo"}
-nexturl={false,false,false}
-isend={false,false,false}
-isadd={true,true,true}
+reftype={"essence","pin-hot","top_zvideo","top_question"}
+nexturl={false,false,false,false}
+isend={false,false,false,false}
+isadd={true,true,true,true}
+itemc={best_itemc,best_itemc,best_itemc,all_itemc}
 
 function 精华刷新(istab)
-  local pos=TopictabLayout.getSelectedTabPosition();
+  local pos=TopictabLayout.getSelectedTabPosition()
+  local madapter=getpage(topic_page,"topic",pos,allnum,true,1)
 
-  if mallpager[pos].Adapter and istab then
+  if madapter.Adapter and istab then
     return
   end
 
   local posturl = nexturl[pos] or "https://api.zhihu.com/v5.1/topics/"..topic_id.."/feeds/"..reftype[pos]
 
 
-  if mallpager[pos].Adapter==nil then
+  if madapter.Adapter==nil then
 
-    mallpager[pos].setOnItemClickListener(AdapterView.OnItemClickListener{
+    madapter.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(parent,v,pos,id)
 
 
@@ -86,13 +139,13 @@ function 精华刷新(istab)
     })
 
 
-    local best_adp=LuaAdapter(activity,datas,best_itemc)
-    mallpager[pos].Adapter=best_adp
+    local best_adp=LuaAdapter(activity,datas,itemc[pos])
+    madapter.Adapter=best_adp
 
     isadd[pos]=true
 
 
-    mallpager[pos].setOnScrollListener{
+    madapter.setOnScrollListener{
       onScroll=function(view,a,b,c)
         if a+b==c and isadd[pos] then
           isadd[pos]=false
@@ -122,6 +175,14 @@ function 精华刷新(istab)
             title=v.target.question.title
             id=tointeger(v.target.question.id) or "null"
             id=id.."分割"..tointeger(v.target.id)
+           elseif v.target.type=="question" then
+            local title=v.target.title
+            local id=tointeger(v.target.id)
+            local answer_count=tointeger(v.target.answer_count).."个回答"
+            local follower_count=tointeger(v.target.follower_count).."人关注"
+            id="问题分割"..tointeger(v.target.id)
+            madapter.Adapter.add{all_title=title,all_follower_count=follower_count,all_answer_count=answer_count,best_id=id}
+            continue
            elseif v.target.type=="article" then
             title=v.target.title
             id="文章分割"..tointeger(v.target.id)
@@ -152,7 +213,7 @@ function 精华刷新(istab)
 
           local voteup_count=tointeger(v.target.voteup_count)
           local comment_count=tointeger(v.target.comment_count)
-          mallpager[pos].Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
+          madapter.Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
          elseif v.target.type=="topic_sticky_module" then
           if v.target.data then
 
@@ -181,7 +242,7 @@ function 精华刷新(istab)
                 voteup_count=tointeger(w.target.answer_count)
                 id="问题分割"..tointeger(w.target.id)
               end
-              mallpager[pos].Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
+              madapter.Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
             end
           end
         end
@@ -203,223 +264,77 @@ end
 
 精华刷新(true)
 
--- 定义一个函数，接受一个URL字符串作为参数
-local function replace_domain (url,replace_str)
-  -- 使用string.match函数，从URL中提取域名
-  local domain = string.match (url, "https?://([^/]+)")
-  -- 如果域名不是replace_str，就用string.gsub函数，将域名替换
-  if domain ~= replace_str then
-    if domain then
-      url = string.gsub (url, domain, replace_str)
-     else
-      return 提示(url.."不是一个有效的http链接")
-    end
-  end
-  -- 返回替换后的URL字符串
-  return url
-end
+tabmemu={
+  [1]={"essence","timeline_activity","top_activity"},
+  [2]={"pin-new","pin-hot"},
+  [3]={"new_zvideo","top_zvideo"},
+  [4]={"new_question","top_question"},
+}
 
-all_type="top_question"
+mpop={
+  tittle="话题",
+  list={
+    {src=图标("insert_chart"),text="按精华排序",onClick=function()
+        --只有第一个有三个 所以可以写死
+        local mallpager=getpage(topic_page,"topic",1,allnum,true,1)
+        mallpager.Adapter.clear()
+        nexturl[1],isend[1]=false
+        reftype[1]=tabmemu[1][1]
+    end},
+    {src=图标("format_align_left"),text="按时间顺序",onClick=function()
+        local mallpager=getpage(topic_page,"topic",1,allnum,true,1)
+        mallpager.Adapter.clear()
+        nexturl[1],isend[1]=false
+        reftype[1]=tabmemu[1][2]
+    end},
+    {src=图标("notes"),text="按热度顺序",onClick=function()
+        local mallpager=getpage(topic_page,"topic",1,allnum,true,1)
+        mallpager.Adapter.clear()
+        nexturl[1],isend[1]=false
+        reftype[1]=tabmemu[1][3]
+    end},
+  }
+}
 
-function 所有刷新(istab)
-
-  if all_list.Adapter and istab then
-    return
-  end
-
-  local posturl = all_nexturl or "https://api.zhihu.com/v5.1/topics/"..topic_id.."/feeds/"..all_type
-
-  if all_list.Adapter==nil then
-    all_itemc=获取适配器项目布局("topic/topic_all")
-    all_nexturl=false
-    all_isend=false
-    all_add=true
-
-
-    all_list.setOnItemClickListener(AdapterView.OnItemClickListener{
-      onItemClick=function(parent,v,pos,id)
-
-        local open=activity.getSharedData("内部浏览器查看回答")
-        if tostring(v.Tag.all_id.text):find("文章分割") then
-          activity.newActivity("column",{tostring(v.Tag.all_id.Text):match("文章分割(.+)"),tostring(v.Tag.all_id.Text):match("分割(.+)")})
-         else
-
-          保存历史记录(v.Tag.all_title.Text,v.Tag.all_id.Text,50)
-
-          if open=="false" then
-            activity.newActivity("question",{v.Tag.all_id.Text,nil})
-           else
-            activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.all_id.Text)})
-          end
-        end
-      end
-    })
-
-    local all_adp=LuaAdapter(activity,all_datas,all_itemc)
-    all_list.Adapter=all_adp
-    all_list.setOnScrollListener{
-      onScroll=function(view,a,b,c)
-        if a+b==c and all_add then
-          all_add=false
-          if all_nexturl then
-            all_nexturl=replace_domain (all_nexturl,"api.zhihu.com")
-          end
-          所有刷新()
-          System.gc()
-        end
-      end
-    }
-    return
-  end
-
-  zHttp.get(posturl,head,function(code,content)
-    if code==200 then
-      for k,v in ipairs(luajson.decode(content).data) do
-        local title=v.target.title
-        local id=tointeger(v.target.id)
-        local answer_count=tointeger(v.target.answer_count).."个回答"
-        local follower_count=tointeger(v.target.follower_count).."人关注"
-        all_list.Adapter.add{all_title=title,all_follower_count=follower_count,all_answer_count=answer_count,all_id=id}
-      end
-
-      local data=luajson.decode(content)
-      all_isend=data.paging.is_end
-      all_nexturl=data.paging.next
-
-      if all_isend==false then
-        all_add=true
-       else
-        提示("没有新内容了")
-      end
-
-    end
-  end)
-end
-
-
+mmpop={
+  tittle="话题",
+  list={
+    {src=图标("format_align_left"),text="按时间顺序",onClick=function()
+        local pos=TopictabLayout.getSelectedTabPosition()
+        local mallpager=getpage(topic_page,"topic",pos,allnum,true,1)
+        mallpager.Adapter.clear()
+        nexturl[pos],isend[pos]=false
+        reftype[pos]=tabmemu[pos][1]
+    end},
+    {src=图标("notes"),text="按热度顺序",onClick=function()
+        local pos=TopictabLayout.getSelectedTabPosition()
+        local mallpager=getpage(topic_page,"topic",pos,allnum,true,1)
+        mallpager.Adapter.clear()
+        nexturl[pos],isend[pos]=false
+        reftype[pos]=tabmemu[pos][2]
+    end},
+  }
+}
 
 TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
   onTabSelected=function(tab)
     --选择时触发
-    local pos=tab.getPosition()+1
-    if pos==2 then
-      精华刷新(true)
-      task(1,function()
-        a=MUKPopu({
-          tittle="话题",
-          list={
-            {src=图标("insert_chart"),text="按精华排序",onClick=function()
-                mallpager[pos-1].Adapter.clear()
-                nexturl[1],isend[1]=false
-                reftype[1]="essence"
-            end},
-            {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-                mallpager[pos-1].Adapter.clear()
-                nexturl[1],isend[1]=false
-                reftype[1]="timeline_activity"
-            end},
-            {src=图标("notes"),text="按热度顺序",onClick=function()
-                mallpager[pos-1].Adapter.clear()
-                nexturl[1],isend[1]=false
-                reftype[1]="top_activity"
-            end},
-          }
-        })
-      end)
-     elseif pos==3 then
-      精华刷新(true)
-      task(1,function()
-        a=MUKPopu({
-          tittle="话题",
-          list={
-            {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-                mallpager[pos-1].Adapter.clear()
-                nexturl[2],isend[2]=false
-                reftype[2]="pin-new"
-            end},
-            {src=图标("notes"),text="按热度顺序",onClick=function()
-                mallpager[pos-1].Adapter.clear()
-                nexturl[2],isend[2]=false
-                reftype[2]="pin-hot"
-            end},
-          }
-        })
-      end)
-     elseif pos==4 then
-      精华刷新(true)
-      task(1,function()
-        a=MUKPopu({
-          tittle="话题",
-          list={
-            {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-                mallpager[pos-1].Adapter.clear()
-                nexturl[3],isend[3]=false
-                reftype[3]="new_zvideo"
-            end},
-            {src=图标("notes"),text="按热度顺序",onClick=function()
-                mallpager[pos-1].Adapter.clear()
-                nexturl[3],isend[3]=false
-                reftype[3]="top_zvideo"
-            end},
-          }
-        })
-      end)
-     elseif pos==5 then
-      所有刷新(true)
-      task(1,function()
-        a=MUKPopu({
-          tittle="话题",
-          list={
-            {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-                all_list.Adapter.clear()
-                all_nexturl,all_isend=false
-                all_add=true
-                all_type="new_question"
-                所有刷新()
-            end},
-            {src=图标("notes"),text="按热度顺序",onClick=function()
-                all_list.Adapter.clear()
-                all_nexturl,all_isend=false
-                all_add=true
-                all_type="top_question"
-                所有刷新()
-            end},
-          }
-        })
-      end)
+    local pos=tab.getPosition()
+    if pos==0 then
      else
-      task(1,function()
-        a=MUKPopu({
-          tittle="话题",
-          list={},
-        })
-      end)
+      精华刷新(true)
+      if pos==1 then
+        a=MUKPopu(mpop)
+       else
+        a=MUKPopu(mmpop)
+      end
     end
   end,
 });
 
 task(1,function()
   local pos=TopictabLayout.getSelectedTabPosition();
-  a=MUKPopu({
-    tittle="话题",
-    list={
-      {src=图标("insert_chart"),text="按精华排序",onClick=function()
-          mallpager[pos].Adapter.clear()
-          nexturl[pos],isend[pos]=nil
-          reftype[pos]="essence"
-      end},
-      {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-          mallpager[pos].Adapter.clear()
-          nexturl[pos],isend[pos]=nil
-          reftype[pos]="timeline_activity"
-      end},
-      {src=图标("notes"),text="按热度顺序",onClick=function()
-          mallpager[pos].Adapter.clear()
-          nexturl[pos],isend[pos]=nil
-          reftype[pos]="top_activity"
-      end},
-    }
-  })
+  a=MUKPopu(mpop)
 end)
 
 if activity.getSharedData("话题提示0.01")==nil

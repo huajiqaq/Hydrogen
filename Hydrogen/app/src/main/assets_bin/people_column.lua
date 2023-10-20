@@ -8,14 +8,14 @@ activity.setContentView(loadlayout("layout/history"))
 初始化历史记录数据(true)
 
 id,title=...
-if activity.getSharedData("标题简略化")~="true" then
+if activity.getSharedData("标题简略化")~="true" and title then
   _title.text=title
  else
   _title.text="专栏"
 end
 
 tabv.setVisibility(8)
-itemc=获取适配器项目布局("people_column/people_column")
+itemc=获取适配器项目布局("people/people_column")
 
 
 history_list.setDividerHeight(0)
@@ -115,7 +115,6 @@ add=true
 history_list.setOnScrollListener{
   onScroll=function(view,a,b,c)
     if a+b==c and add then
-      提示("加载中")
       add=false
       刷新()
       System.gc()

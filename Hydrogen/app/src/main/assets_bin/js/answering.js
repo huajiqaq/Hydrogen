@@ -28,7 +28,7 @@ window.onload = function () {
   //优化卡片显示
   style = document.createElement('style');
   style.innerHTML = '.Modal--large{width:unset !important}'
-  style.innerHTML += '.Modal{width:unset !important; max-height:-webkit-fill-available !important}'
+  style.innerHTML += '.Modal{width:100% !important; max-height:-webkit-fill-available !important}'
   style.innerHTML += '.Modal-closeButton{position:unset !important}'
   document.head.appendChild(style);
   //占满宽度
@@ -81,43 +81,11 @@ window.onload = function () {
 
 
   //点击问题详情的提示
-  document.querySelectorAll(".css-gn5yqd")[0].addEventListener('click', function () {
-    alert('右滑查看问题详情 关闭请右滑点击右边内容"X"手动关闭')
-  })
-
-  // 附件的对话框优化
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      //console.log(mutation)
-      // 判断是否为div元素创建
-      if (mutation.type === 'childList') {
-        // 遍历所有iframe元素，获取其contentWindow
-        mutation.addedNodes.forEach((addedNode) => {
-          let childNodes_count = addedNode.childNodes.length
-          if (childNodes_count > 0) {
-            const iframe = addedNode.querySelector('iframe');
-            if (iframe) {
-              iframe.onload = function () {
-                const contentWindow = iframe.contentWindow;
-                let document = contentWindow.document;
-                console.log(document)
-                //附件卡片
-                style = document.createElement('style');
-                style.innerHTML = '.Modal{width:100% !important}'
-                document.head.appendChild(style);
-              }
-            }
-          }
-        });
-      }
-    });
-  });
-
-  // 配置观察选项
-  const config = { childList: true, subtree: true };
-  // 开始监听document根节点及其子节点的变化
-  observer.observe(document.body, config);
-
+  if (document.querySelector(".css-gn5yqd")) {
+    document.querySelector(".css-gn5yqd").addEventListener('click', function () {
+      alert('右滑查看问题详情 关闭请右滑点击右边内容"X"手动关闭')
+    })
+  }
   console.log("加载完成")
 
 }

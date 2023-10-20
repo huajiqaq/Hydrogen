@@ -8,4 +8,8 @@ window.onload = function () {
     style = document.createElement('style');
     style.innerHTML = '.Modal{box-shadow:unset !important;width:unset}'
     document.head.appendChild(style);
+    //隐藏底部的按钮
+    style = document.createElement('style');
+    style.innerHTML = '.OpenInAppButton{display:none !important}'
+    document.head.appendChild(style);
 }

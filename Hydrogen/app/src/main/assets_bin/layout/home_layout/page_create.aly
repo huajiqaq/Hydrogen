@@ -1,0 +1,23 @@
+{
+  LinearLayout;
+  layout_width="-1";
+  layout_height="-1";
+  orientation="vertical";
+  id="page_create";
+
+  {
+    TabLayout,
+    layout_width="fill",
+    id="createtabLayout",
+    elevation ="2dp",
+    tabMode=TabLayout.MODE_SCROLLABLE;
+    layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)
+  };
+
+  {
+    ViewPager,
+    id="createpage",
+    layout_width="-1";
+    layout_height="-1";
+  };
+};

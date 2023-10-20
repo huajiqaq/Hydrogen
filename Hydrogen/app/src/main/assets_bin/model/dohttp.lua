@@ -212,13 +212,6 @@ function base:setgetcallback(code,content,callback)
         self.is_end=true
       end
     end
-   else
-    local data=luajson.decode(content)
-    if data and data.error and data.error.message then
-      提示("报错了 错误原因："..data.error.message)
-     else
-      提示("出错 请重新尝试")
-    end
   end
 end
 
@@ -233,13 +226,6 @@ function base:setothercallback(code,content,callback)
       self.is_end=data.paging.is_end
      else
       self.is_end=true
-    end
-   else
-    local data=luajson.decode(content)
-    if data and data.error and data.error.message then
-      提示("报错了 错误原因："..data.error.message)
-     else
-      提示("出错 请重新尝试")
     end
   end
 end

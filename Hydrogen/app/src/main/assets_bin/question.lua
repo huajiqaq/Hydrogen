@@ -194,20 +194,20 @@ task(1,function()
                 LinearLayout;
                 onClick=function()
                   local url="https://api.zhihu.com/questions/"..question_id.."/followers"
-                  if _follow.Text=="已关注" then
-                    zHttp.delete(url,posthead,function(code,content)
+                  if _follow.Text=="未关注" then
+                    zHttp.post(url,"",posthead,function(code,content)
                       if code==200 or code==204 then
-                        _follow.Text="未关注"
-                        _star.Text=removestar
+                        _follow.Text="已关注"
+                        _star.Text=tostring(关注数量[1])
                        elseif code==401 then
                         提示("请登录后使用本功能")
                       end
                     end)
-                   elseif _follow.Text=="未关注"
-                    zHttp.post(url,"",posthead,function(code,content)
+                   elseif _follow.Text=="已关注" then
+                    zHttp.delete(url,posthead,function(code,content)
                       if code==200 or code==204 then
-                        _follow.Text="已关注"
-                        _star.Text=addstar
+                        _follow.Text="未关注"
+                        _star.Text=tostring(关注数量[2])
                        elseif code==401 then
                         提示("请登录后使用本功能")
                       end
@@ -235,7 +235,7 @@ task(1,function()
                   gravity="center";
                   Typeface=字体("product");
                   textColor=textc,
-                  text="0";
+                  text="加载中";
                 };
               };
             };
@@ -285,11 +285,12 @@ end)
 
 question_list.adapter=question_adp
 
-zHttp.post("https://api.zhihu.com/usertask-core/action/read_content",'{"content_id":"'..question_id..'","content_type":"QUESTION","action_time":'..os.time()..'}',postapphead,function(code,content)
-  if code==200 then
-  end
-end)
-
+if getLogin() then
+  zHttp.post("https://api.zhihu.com/usertask-core/action/read_content",'{"content_id":"'..question_id..'","content_type":"QUESTION","action_time":'..os.time()..'}',postapphead,function(code,content)
+    if code==200 then
+    end
+  end)
+end
 
 function 刷新()
   resultbar.Visibility=0
@@ -345,9 +346,6 @@ function 加载数据()
     _star.Text=tostring(tointeger(tab.follower_count))
     _title.Text="共"..tostring(tointeger(tab.answer_count)).."个回答"
 
-    addstar=tostring(tointeger(_star.Text+1))
-    removestar=tostring(tointeger(_star.Text))
-
     if #tab.excerpt>0 then
       description.Text=tab.excerpt
      else
@@ -379,9 +377,9 @@ function 加载数据()
       show
       .getSettings()
       .setAppCacheEnabled(false)
-      --开启 DOM 存储功能
+      --关闭 DOM 存储功能
       .setDomStorageEnabled(false)
-      --开启 数据库 存储功能
+      --关闭 数据库 存储功能
       .setDatabaseEnabled(false)
       .setCacheMode(WebSettings.LOAD_NO_CACHE);
      else
@@ -392,7 +390,7 @@ function 加载数据()
       .setDomStorageEnabled(true)
       --开启 数据库 存储功能
       .setDatabaseEnabled(true)
-      .setCacheMode(2)
+      .setCacheMode(WebSettings.LOAD_DEFAULT)
     end
 
     show.setDownloadListener({
@@ -463,7 +461,7 @@ function 加载数据()
             end
             local url=" https://www.zhihu.com/question/"..question_id.."/write"
 
-            activity.newActivity("huida",{url,nil,true})
+            activity.newActivity("huida",{url,true,true})
           end
         },
       }
@@ -486,7 +484,7 @@ function 加载数据()
           if not(getLogin()) then
             return 提示("请登录后使用本功能")
           end
-          local url=" https://www.zhihu.com/question/"..question_id.."/write"
+          local url="https://www.zhihu.com/question/"..question_id.."/write"
 
           zHttp.delete("https://www.zhihu.com/api/v4/questions/"..question_id,posthead,function(code,content)
             if code==200 then
@@ -550,8 +548,10 @@ function 加载数据()
     end
 
     if tab.relationship.is_following then
+      关注数量={[1]=tointeger(_star.Text),[2]=tointeger(_star.Text)-1}
       _follow.text="已关注"
      else
+      关注数量={[1]=tointeger(_star.Text+1),[2]=tointeger(_star.Text)}
       _follow.text="未关注"
     end
 

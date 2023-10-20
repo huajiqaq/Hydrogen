@@ -167,6 +167,8 @@
         };
         "layout.home_layout.page_daily";
         "layout.home_layout.page_collections";
+        "layout.home_layout.page_follow";
+        "layout.home_layout.page_create";
 
       };
     };
@@ -211,7 +213,6 @@
         layout_width="fill";
         orientation="vertical";
         id="侧滑头",
-        onClick=function()activity.newActivity("login",{"https://www.zhihu.com/signin?next=www.zhihu.com","登录"}) end;
         {
           LinearLayout;
           layout_height="-1";
@@ -285,6 +286,7 @@
               SingleLine=true;
               gravity="center|left";
             };
+
             {
               TextView;
               layout_width="-2";

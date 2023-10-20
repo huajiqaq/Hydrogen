@@ -42,6 +42,7 @@
       textColor="#ffffff",
     };
   };
+
   {
     CardView;
     layout_width="56dp",

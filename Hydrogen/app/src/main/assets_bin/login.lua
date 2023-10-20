@@ -17,7 +17,7 @@ login_web.removeView(login_web.getChildAt(0))
 if url then
   login_web.loadUrl(url)
  else
-  login_web.loadUrl("https://www.zhihu.com/signin")
+  login_web.loadUrl("https://www.zhihu.com/signin?next=www.zhihu.com")
 end
 
 
@@ -32,7 +32,7 @@ login_web
 .setDomStorageEnabled(true)
 --开启 数据库 存储功能
 .setDatabaseEnabled(true)
-.setCacheMode(2)
+.setCacheMode(WebSettings.LOAD_DEFAULT)
 
 login_web.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onConsoleMessage=function(consoleMessage)
@@ -53,7 +53,8 @@ login_web.setWebViewClient{
 
   end,
   shouldOverrideUrlLoading=function(view,url)
-    if login_web.getUrl()~="https://www.zhihu.com/" then
+
+    if not view.getUrl():find("https://www.zhihu.com/%?utm_id") and view.getUrl()~="https://www.zhihu.com/" then
       login_web.setVisibility(8)
       progress.setVisibility(0)
     end
@@ -89,25 +90,32 @@ login_web.setWebViewClient{
     end
   end,
   onPageFinished=function(view,url)
-    if login_web.getUrl():find("https://www.zhihu.com/%?utm_id") or login_web.getUrl()=="https://www.zhihu.com" then
-      activity.setResult(100)
-      activity.finish()
-      提示("登录成功")
+    if url:find("https://www.zhihu.com/%?utm_id") or url=="https://www.zhihu.com" then
+      local myurl= 'https://www.zhihu.com/api/v4/me'
+      --避免head刷新不及时
+      local head = {
+        ["cookie"] = 获取Cookie("https://www.zhihu.com/")
+      }
+      zHttp.get(myurl,head,function(code,content)
+        if code==200 then
+          local data=luajson.decode(content)
+          local uid=data.id--用tointeger不行数值太大了会
+          activity.setSharedData("idx",uid)
+          activity.setResult(100)
+          activity.finish()
+          提示("登录成功")
+         else
+          activity.finish()
+          提示("登录失败")
+        end
+      end)
+
      else
       progress.setVisibility(8)
       login_web.setVisibility(0)
     end
 
 end}
-
-function onKeyDown(keyCode,event)
-
-  if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
-    activity.setResult(100)
-    activity.finish()
-    return true;
-  end
-end
 
 
 function onDestroy()

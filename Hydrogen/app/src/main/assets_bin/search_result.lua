@@ -12,7 +12,7 @@ str=...
 
 _title.text="收藏搜索结果"
 tabv.setVisibility(8)
-itemc=获取适配器项目布局("search_result/search_result")
+itemc=获取适配器项目布局("search/search_result")
 
 history_list.setDividerHeight(0)
 adp=MyLuaAdapter(activity,itemc)

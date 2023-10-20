@@ -13,7 +13,7 @@ import "androidx.recyclerview.widget.*"
 设置视图("layout/xgtj")
 
 波纹({fh},"圆主题")
-波纹({moren,xiugai},"方自适应")
+波纹({moren},"方自适应")
 
 
 local list_item=获取适配器项目布局("xgtj/xgtj")

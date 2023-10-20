@@ -300,7 +300,7 @@ if activity.getSharedData("禁用缓存")=="true"
   webview
   .getSettings()
   .setAppCacheEnabled(true)
-  .setCacheMode(2)
+  .setCacheMode(WebSettings.LOAD_DEFAULT)
 end
 
 webview.setDownloadListener({

@@ -22,7 +22,7 @@
         padding="4dp";
         id="_back";
         layout_margin="12dp";
-        onClick=function()关闭页面() activity.newActivity("home") end;
+        onClick=function()关闭页面() end;
       };
       {
         View,

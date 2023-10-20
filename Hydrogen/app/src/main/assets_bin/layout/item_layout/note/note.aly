@@ -22,7 +22,6 @@
       layout_height="fill";
       id="background";
       ripple="圆自适应",
-
       layout_width="fill";
       {
         LinearLayout;

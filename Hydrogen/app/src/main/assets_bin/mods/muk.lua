@@ -1,5 +1,9 @@
 require "import"
 import "mods.imports"
+
+import "model.zHttp"
+import "model.zhihu_url"
+
 luajson=require "json"
 
 initApp=true
@@ -15,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.1115
+versionCode=0.112
 layout_dir="layout/item_layout/"
 
 
@@ -501,7 +505,7 @@ end
 
 function 屏蔽元素(id,tab)
   for i,v in pairs(tab) do
-    加载js(id,[[document.getElementsByClassName(']]..v..[[')[0].style.display='none';]])
+    加载js(id,[[let doc=document.createElement('style');doc.innerHTML=']]..v..[[{display:none !important}';document.head.appendChild(doc);]])
   end
 end
 
@@ -971,144 +975,6 @@ function 渐变跳转页面(ym,cs)
   end
 end
 
-function 检查链接(url,b)
-  local open=activity.getSharedData("内部浏览器查看回答")
-  --  local url="https"..url:match("https(.+)")
-  if url:find("zhihu.com/question") then
-
-    local answer,questions=0,0
-    if url:find("answer") then
-      questions,answer=url:match("question/(.-)/"),url:match("answer/(.-)?") or url:match("answer/(.+)")
-     else
-      questions,answer=url:match("question/(.-)?") or url:match("question/(.+)"),nil
-      if b then
-        return true
-      end
-      if open=="false" then
-        activity.newActivity("question",{questions,true})
-       else
-        activity.newActivity("huida",{url})
-      end
-      return
-    end
-    if b then
-      return true
-    end
-    if open=="false" then
-      activity.newActivity("answer",{questions,answer,nil,true})
-     else
-      activity.newActivity("huida",{url})
-    end
-   elseif url:find("zhuanlan.zhihu.com/p/") then--/p/143744216
-    if b then return true end
-    activity.newActivity("column",{url:match("zhihu.com/p/(.+)")})
-   elseif url:find("zhuanlan.zhihu.com") then--/p/143744216
-    if b then return true end
-    activity.newActivity("huida",{url})
-   elseif url:find("zhihu.com/appview/p/") then--/p/143744216
-    if b then return true end
-    activity.newActivity("column",{url:match("appview/p/(.+)")})
-   elseif url:find("zhihu.com/topics/") then--/p/143744216
-    if b then return true end
-    activity.newActivity("topic",{url:match("/topics/(.+)")})
-   elseif url:find("zhihu.com/topic/") then--/p/143744216
-    if b then return true end
-    activity.newActivity("topic",{url:match("/topic/(.+)")})
-   elseif url:find("zhihu.com/pin/") then
-    if b then return true end
-    activity.newActivity("column",{url:match("/pin/(.+)"),"想法"})
-   elseif url:find("zhihu.com/video/") then
-    if b then return true end
-    local videoid= url:match("video/(.+)")
-    zHttp.get("https://lens.zhihu.com/api/v4/videos/"..videoid,head,function(code,content)
-      if code==200 then
-        local v=luajson.decode(content)
-        xpcall(function()
-          视频链接=v.playlist.SD.play_url
-          end,function()
-          视频链接=v.playlist.LD.play_url
-          end,function()
-          视频链接=v.playlist.HD.play_url
-        end)
-        activity.newActivity("huida",{视频链接})
-       elseif code==401 then
-        提示("请登录后查看视频")
-      end
-    end)
-   elseif url:find("zhihu.com/zvideo/") then
-    if b then return true end
-    local videoid=url:match("/zvideo/(.-)?") or url:match("/zvideo/(.+)")
-    activity.newActivity("column",{videoid,"视频"})
-   elseif url:find("zhihu.com/people") or url:find("zhihu.com/org") then
-    if b then return true end
-    local people_name=url:match("/people/(.-)?") or url:match("/people/(.+)")
-    zHttp.get(url,head,function(code,content)
-      if code==200 then
-        local peopleid=content:match('":{"id":"(.-)","urlToken')
-        activity.newActivity("people",{peopleid,true})
-       elseif code==401 then
-        提示("请登录后查看用户")
-      end
-    end)
-   elseif url:find("zhihu.com/signin") then
-    if b then return false end
-    activity.newActivity("login")
-   elseif url:find("https://ssl.ptlogin2.qq.com/jump") then
-    if b then return false end
-    activity.finish()
-    activity.newActivity("login",{url})
-   elseif url:find("zhihu://") then
-    if b then return true end
-    检查意图(url)
-   else
-    if b then return false end
-    activity.newActivity("huida",{url})
-  end
-end
-
-function 检查意图(url,b)
-  local open=activity.getSharedData("内部浏览器查看回答")
-  if url and url:find("zhihu://") then
-    if url:find "answers" then
-      if b then return true end
-      local id=url:match("answers/(.-)?")
-      activity.newActivity("answer",{"null",tointeger(id),nil,true})
-     elseif url:find "answer" then
-      if b then return true end
-      local id=url:match("answer/(.-)/") or url:match("answer/(.+)")
-      activity.newActivity("answer",{"null",tointeger(id),nil,true})
-     elseif url:find "questions" then
-      if b then return true end
-      activity.newActivity("question",{url:match("questions/(.-)?"),true})
-     elseif url:find "question" then
-      if b then return true end
-      activity.newActivity("question",{url:match("question/(.-)?"),true})
-     elseif url:find "topic" then
-      if b then return true end
-      activity.newActivity("topic",{url:match("topic/(.-)/")})
-     elseif url:find "people" then
-      if b then return true end
-      activity.newActivity("people",{url:match("people/(.-)?"),true})
-     elseif url:find "articles" then
-      if b then return true end
-      activity.newActivity("column",{url:match("articles/(.-)?")})
-     elseif url:find "article" then
-      if b then return true end
-      activity.newActivity("column",{url:match("article/(.-)?")})
-     elseif url:find "pin" then
-      if b then return true end
-      activity.newActivity("column",{url:match("pin/(.-)?"),"想法"})
-     elseif url:find "zvideo" then
-      if b then return true end
-      activity.newActivity("column",{url:match("zvideo/(.-)?"),"视频"})
-     else
-      if b then return false end
-      提示("暂不支持的知乎意图"..intent)
-    end
-   elseif url and (url:find("http://") or url:find("https://")) and url:find("zhihu.com") then
-    检查链接(url)
-  end
-end
 
 function 关闭页面()
   activity.finish()
@@ -1425,8 +1291,7 @@ function MUKPopu(t)
   tab.pop=pop
 
   if this.getSharedData("允许加载代码")=="true" then
-    local count=#t.list
-    if count==0 or t.list[count].text~="执行代码" then
+    if t.isload_codeEx~=true then
       table.insert(t.list,{src=图标("build"),text="执行代码",onClick=function()
           local InputLayout={
             LinearLayout;
@@ -1466,6 +1331,7 @@ function MUKPopu(t)
             end
           end
       end})
+      t.isload_codeEx=true
     end
   end
 
@@ -1476,6 +1342,7 @@ function MUKPopu(t)
   tab.poplist.adapter.notifyDataSetChanged()
   return tab
 end
+
 
 function showpop(view,pop)
   pop.showAsDropDown(view)
@@ -1517,6 +1384,7 @@ function table.join(old,add)
 end
 
 function 加入收藏夹(回答id,收藏类型)
+  canload=true
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
@@ -1564,9 +1432,6 @@ function 加入收藏夹(回答id,收藏类型)
   .setTitle("选择路径")
   .setPositiveButton("确认",{
     onClick=function()
-      local head = {
-        ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-      }
       zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..选中收藏夹,head,function(code,json)
         if code==200 then
           提示("收藏成功")
@@ -1628,10 +1493,6 @@ function 加入收藏夹(回答id,收藏类型)
   end
 
   local collections_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20"
-
-  local head = {
-    ["cookie"] = 获取Cookie("https://www.zhihu.com/")
-  }
 
   zHttp.get(collections_url,head,function(code,content)
     if code==200 then
@@ -1817,6 +1678,110 @@ function 新建收藏夹(callback)
   end
 end
 
+function 加入专栏(回答id,收藏类型)
+  if not(getLogin()) then
+    return 提示("请登录后使用本功能")
+  end
+  canload=true
+  local list,dialog_lay,lp,lq,tip_text,add_button,add_text,cp,lay,Choice_dialog,adp
+  import "android.widget.LinearLayout$LayoutParams"
+  list=ListView(activity).setFastScrollEnabled(true)
+  dialog_lay=LinearLayout(activity)
+  .setOrientation(0)
+  .setGravity(Gravity.RIGHT|Gravity.CENTER)
+
+  lp=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+  lp.gravity = Gravity.RIGHT|Gravity.CENTER
+  lq=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+  lq.gravity = Gravity.CENTER
+
+  tip_text=TextView(activity)
+  .setText("待选中专栏")
+  .setTypeface(字体("product"))
+  .setLayoutParams(lq);
+
+  add_button=ImageView(activity).setImageBitmap(loadbitmap(图标("add")))
+  .setColorFilter(转0x(textc))
+  .setLayoutParams(lp);
+
+  add_text=TextView(activity).setText("新建专栏")
+  .setTypeface(字体("product"))
+  .setLayoutParams(lp);
+
+  dialog_lay.addView(add_text).addView(add_button)
+
+  add_text.onClick=function()
+    activity.newActivity("huida",{"https://www.zhihu.com/column/request","新建专栏","null"})
+    提示("已跳转 请自行添加")
+  end
+
+  cp=TextView(activity)
+  lay=LinearLayout(activity).setOrientation(1).addView(tip_text).addView(dialog_lay).addView(cp).addView(list)
+  Choice_dialog=AlertDialog.Builder(activity)--创建对话框
+  .setTitle("选择路径")
+  .setPositiveButton("确认",{
+    onClick=function()
+      zHttp.post("https://api.zhihu.com/"..收藏类型.."s/"..回答id.."/republish",'{"action":"create","column":"'..选中专栏..'"}',apphead,function(code,json)
+        if code==200 then
+          提示("成功")
+         else
+          提示("失败")
+        end
+      end)
+  end})
+  .setNegativeButton("取消",nil)
+  .setView(lay)
+  .show()
+
+  local item={
+    LinearLayout,
+    orientation="vertical",
+    layout_width="fill",
+    {
+      TextView,
+      id="mytext",
+      layout_width="match_parent",
+      layout_height="wrap_content",
+      textSize="16sp",
+      gravity="center_vertical",
+      Typeface=字体("product-Bold");
+      paddingStart=64,
+      paddingEnd=64,
+      minHeight=192
+    },
+    {
+      TextView,
+      id="myid",
+      layout_width="0dp",
+      layout_height="0dp",
+    },
+  }
+
+  adp=LuaAdapter(activity,item)
+  list.setAdapter(adp)
+
+
+  list.onItemClick=function(l,v,p,s)--列表点击事件
+    tip_text.Text="当前选中专栏："..v.Tag.mytext.Text
+    选中专栏=v.Tag.myid.Text
+  end
+
+  local collections_url= "https://api.zhihu.com/members/"..activity.getSharedData("idx").."/owned-columns?type="..收藏类型.."&id="..回答id
+
+  zHttp.get(collections_url,postapphead,function(code,content)
+    if code==200 then
+      adp.setNotifyOnChange(true)
+      for k,v in ipairs(luajson.decode(content).data) do
+        adp.add({
+          mytext=v.title,
+          myid=v.id
+        })
+      end
+
+    end
+  end)
+end
+
 import "android.graphics.drawable.GradientDrawable"
 
 StringHelper = {}
@@ -1850,7 +1815,22 @@ function StringHelper.GetBytes(char)
   end
 end
 
-function StringHelper.Sub(str, startIndex, endIndex)
+function StringHelper.getCount(str)
+  local tempStr = str
+  local index = 0 -- 字符记数
+  local bytes = 0 -- 字符的字节记数
+
+  endIndex = endIndex or -1
+  while string.len(tempStr) > 0 do
+    bytes = bytes + StringHelper.GetBytes(tempStr)
+    tempStr = string.sub(str, bytes+1)
+
+    index = index + 1
+  end
+  return index
+end
+
+function StringHelper.Sub(str,startIndex, endIndex,addStr)
   local tempStr = str
   local byteStart = 1 -- string.sub截取的开始位置
   local byteEnd = -1 -- string.sub截取的结束位置
@@ -1871,7 +1851,16 @@ function StringHelper.Sub(str, startIndex, endIndex)
 
     index = index + 1
   end
-  return string.sub(str, byteStart, byteEnd)
+  if addStr then
+    if StringHelper.getCount(str)>=endIndex then
+      addStr=addStr
+     else
+      addStr=""
+    end
+   else
+    addStr=""
+  end
+  return string.sub(str, byteStart, byteEnd)..addStr
 end
 
 function 替换文件字符串(路径,要替换的字符串,替换成的字符串)
@@ -2051,6 +2040,8 @@ task(1,function()
     end
   end)
 
+  islogin=getLogin()
+
   local old_onResume=onResume
   function onResume()
     if old_onResume~=nil then
@@ -2060,6 +2051,30 @@ task(1,function()
       activity.recreate()
       return
     end
+    if islogin~=getLogin() then
+      islogin=getLogin()
+      onActivityResult(nil,100,nil)
+    end
+  end
+
+  local old_onActivityResult=onActivityResult
+  function onActivityResult(a,b,c)
+    if b==100 then
+      setHead()
+      if islogin~=getLogin() then
+        if mytip_dia and mytip_dia.isShowing() then
+          mytip_dia.dismiss()
+          mytip_dia=nil
+          canload=true
+        end
+      end
+    end
+    activity.setResult(b)
+    --由于可能有setHead 所以必须写在前面
+    if old_onActivityResult~=nil then
+      old_onActivityResult(a,b,c)
+    end
+
   end
 
 end)
@@ -2175,74 +2190,6 @@ end
 
 setHead()
 
-zHttp = {}
-
-function zHttp.setcallback(code,content,callback)
-  if code==403 then
-    local _ = pcall(function()
-      decoded_content=luajson.decode(content)
-    end)
-    if _==false then
-      return callback(code,content)
-    end
-    if decoded_content.error and decoded_content.error.message then
-      提示(decoded_content.error.message)
-    end
-    if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
-      AlertDialog.Builder(this)
-      .setTitle("提示")
-      .setMessage(decoded_content.error.message)
-      .setCancelable(false)
-      .setPositiveButton("立即跳转",{onClick=function() activity.newActivity("huida",{decoded_content.error.redirect}) 提示("已跳转 成功后请自行退出") end})
-      .show()
-     else
-      callback(code,content)
-    end
-   else
-    callback(code,content)
-  end
-end
-
-function zHttp.request(url,method,data,head,callback)
-  local method=string.lower(method)
-  if method=="get" then
-    zHttp.get(url,head,callback)
-   elseif method=="delete" then
-    zHttp.delete(url,head,callback)
-   elseif method=="post" then
-    zHttp.post(url,data,head,callback)
-   elseif method=="put" then
-    zHttp.put(url,data,head,callback)
-  end
-end
-
-function zHttp.get(url,head,callback)
-  Http.get(url,head,function(code,content)
-    zHttp.setcallback(code,content,callback)
-  end)
-end
-
-function zHttp.delete(url,head,callback)
-  Http.delete(url,head,function(code,content)
-    zHttp.setcallback(code,content,callback)
-  end)
-end
-
-
-function zHttp.post(url,data,head,callback)
-  Http.post(url,data,head,function(code,content)
-    zHttp.setcallback(code,content,callback)
-  end)
-end
-
-function zHttp.put(url,data,head,callback)
-  Http.put(url,data,head,function(code,content)
-    zHttp.setcallback(code,content,callback)
-  end)
-end
-
-
-
 function 清理内存()
   task(1,function()
 
@@ -2254,21 +2201,23 @@ function 清理内存()
     local tmp={[1]=0}
 
     local function getDirSize(tab,path)
-      if File(path).exists() then
+      if File(path).isDirectory() then
         local a=luajava.astable(File(path).listFiles() or {})
 
         for k,v in pairs(a) do
           if v.isDirectory() then
             getDirSize(tab,tostring(v))
            else
-
             tab[1]=tab[1]+v.length()
           end
         end
+
+        LuaUtil.rmDir(File(path))
+
       end
     end
 
-    dar=datadir.."/cache"
+    local dar=datadir.."/cache"
     getDirSize(tmp,dar)
     getDirSize(tmp,imagetmp)
 
@@ -2278,9 +2227,6 @@ function 清理内存()
       a1.delete()
       a2.delete()
     end)
-
-    LuaUtil.rmDir(File(dar))
-    LuaUtil.rmDir(File(imagetmp))
 
     m = tmp[1]
     if m == 0 then
@@ -2542,4 +2488,84 @@ function get_number_and_following(str)
   end
   -- 返回table
   return result
+end
+
+function getpage(view,str,num,allnum,onlylist,orinum)
+  if view.adapter==nil or view.adapter.getCount()<allnum then
+    if view.adapter and view.adapter.getCount()<allnum then
+      allnum=allnum-view.adapter.getCount()
+    end
+    initpage(view,str,allnum,onlylist,orinum)
+  end
+  if orinum then
+    num=orinum+num
+  end
+  if onlylist then
+    local list=str.."list".."_"..tostring(num)
+    return _G[list]
+   else
+    local sr=str.."sr".."_"..tostring(num)
+    local list=str.."list".."_"..tostring(num)
+    return _G[list],_G[sr]
+  end
+end
+
+function initpage(view,str,allnum,onlylist,orinum)
+  if orinum==nil then
+    orinum=0
+  end
+  local pagadp=view.adapter or SWKLuaPagerAdapter()
+
+  if onlylist then
+    for i=1+orinum,allnum do
+
+      local list=str.."list".."_"..tostring(i)
+      local addview=
+      {
+        ListView;
+        DividerHeight="0",
+        layout_width="fill";
+        id=list,
+        layout_height="fill";
+        nestedScrollingEnabled=true,
+      };
+
+      pagadp.add(loadlayout(addview))
+      pagadp.notifyDataSetChanged()
+    end
+   else
+    for i=1+orinum,allnum do
+      local list=str.."list".."_"..tostring(i)
+      local sr=str.."sr".."_"..tostring(i)
+      local addview={
+        SwipeRefreshLayout;
+        id=sr;
+        layout_height="fill";
+        layout_width="fill";
+        {
+          ListView;
+          DividerHeight="0",
+          layout_width="fill";
+          id=list,
+          layout_height="fill";
+          nestedScrollingEnabled=true,
+        };
+      }
+
+      pagadp.add(loadlayout(addview))
+      pagadp.notifyDataSetChanged()
+    end
+  end
+
+  if view.adapter==nil then
+    view.setAdapter(pagadp)
+  end
+
+end
+
+function numtostr(num)
+  if num>10000 then
+    num=tostring(math.floor(num/10000)).."万"
+  end
+  return tostring(num)
 end

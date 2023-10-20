@@ -96,24 +96,6 @@
         tabGravity=TabLayout.GRAVITY_FILL,
         layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)
       };
-
-      {
-        LinearLayout;
-        layout_height="8dp";
-        layout_width=activity.getWidth()/3;
-        id="page_scroll";
-        layout_alignParentBottom="true";
-        Gravity="center";
-        {
-          CardView;
-          CardBackgroundColor=primaryc;
-          elevation="0";
-          radius="4dp";
-          layout_height="8dp";
-          layout_marginTop="4dp";
-          layout_width="32dp";
-        };
-      };
     };
     {
       LinearLayout;
@@ -126,78 +108,6 @@
         id="topic_page",
         layout_width="-1";
         layout_weight="1";
-        pages={
-          {
-            LinearLayout;
-            layout_height="-1",
-            layout_width="-1",
-            {
-              MaterialCardView;
-              layout_height="-2";
-              CardBackgroundColor=cardedge,
-              Elevation="0";
-              layout_width="-1";
-              layout_margin="16dp";
-              layout_marginTop="8dp";
-              layout_marginBottom="8dp";
-              radius="8dp";
-              StrokeColor=cardedge;
-              StrokeWidth=dp2px(1),
-
-              {
-                LinearLayout;
-                layout_width="-1",
-                orientation="vertical";
-                {
-                  CircleImageView;
-                  layout_gravity="center";
-                  layout_marginTop="16dp",
-                  layout_height="72dp",
-                  layout_width="72dp",
-                  id="_bigimage"
-                };
-                {
-                  TextView;
-                  id="_excerpt",
-                  textColor=textc,
-                  textSize="14sp",
-                  Typeface=字体("product");
-                  textIsSelectable=true;
-                  layout_margin="16dp",
-                  layout_marginBottom="8dp",
-                };
-              };
-            };
-          };
-
-          {
-            GridView;
-            layout_width="-1";
-            layout_height="-1";
-            id="best_list";
-          };
-
-          {
-            GridView;
-            layout_width="-1";
-            layout_height="-1";
-            id="think_list";
-          };
-
-          {
-            GridView;
-            layout_width="-1";
-            layout_height="-1";
-            id="video_list";
-          };
-
-          {
-            GridView;
-            layout_width="-1";
-            layout_height="-1";
-            id="all_list";
-          };
-        };
       };
     };
   };
