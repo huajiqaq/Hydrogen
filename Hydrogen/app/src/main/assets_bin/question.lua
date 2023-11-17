@@ -16,6 +16,8 @@ question_itemc=获取适配器项目布局("question/question")
 
 question_adp=MyLuaAdapter(activity,question_datas,question_itemc)
 
+
+
 task(1,function()
   question_list.addHeaderView(loadlayout({
     LinearLayout;
@@ -112,11 +114,11 @@ task(1,function()
             padding="4dp";
             layout_marginTop="8dp";
             {
-              CardView;
+              MaterialCardView;
               layout_width="-2";
               layout_height="-2";
-              radius="4dp";
               CardBackgroundColor=backgroundc;
+              StrokeWidth=0,
               Elevation="0";
               {
                 LinearLayout;
@@ -147,12 +149,12 @@ task(1,function()
               };
             };
             {
-              CardView;
+              MaterialCardView;
               layout_width="-2";
               layout_height="-2";
-              radius="4dp";
               cardBackgroundColor=backgroundc;
               Elevation="0";
+              StrokeWidth=0,
               layout_marginLeft="32dp";
               {
                 LinearLayout;
@@ -183,12 +185,12 @@ task(1,function()
               };
             };
             {
-              CardView;
+              MaterialCardView;
               layout_width="-2";
               layout_height="-2";
-              radius="4dp";
               cardBackgroundColor=backgroundc;
               Elevation="0";
+              StrokeWidth=0,
               layout_marginLeft="32dp";
               {
                 LinearLayout;
@@ -410,6 +412,8 @@ function 加载数据()
         end
 
         imgReset()
+        
+        加载js(view,获取js("zhihugif"))
 
         view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
 

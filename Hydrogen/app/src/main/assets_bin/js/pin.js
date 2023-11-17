@@ -14,9 +14,10 @@ window.onload = function () {
             console.log("显示评论")
         });
 
-        ele.childNodes[3].addEventListener('click', function () {
+        ele.childNodes[3].addEventListener('click', function (e) {
             console.log("查看用户")
-        });
+            e.stopPropagation();
+        },true);
 
         document.querySelector(".Toolbar-customizedArea").addEventListener('click', function () {
             console.log("显示评论")

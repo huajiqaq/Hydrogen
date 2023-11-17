@@ -103,6 +103,10 @@ m = {
 
 }
 
+if not starthome then
+  this.setSharedData("starthome","推荐")
+end
+
 if this.getSharedData("开启想法")=="true" then
   home_list={["推荐"]=0,["想法"]=1,["热榜"]=2,["关注"]=3}
  elseif this.getSharedData("开启想法")=="false" then
@@ -113,9 +117,6 @@ if this.getSharedData("开启想法")=="true" then
   end
   table.remove(home_layout_table,2)
   table.remove(m,2)
- elseif not starthome then
-  this.setSharedData("starthome","推荐")
-  starthome=this.getSharedData("starthome")
 end
 
 for i =1,#home_layout_table do
@@ -202,7 +203,7 @@ function resolve_feed(v)
      elseif v.common_card.feed_content.video
       预览内容=作者.." : ".."[视频]"
     end
-   elseif v.extra.type=="article" then
+   elseif v.extra.type=="post" or v.extra.type=="article" then
     问题id等="文章分割"..tointeger(v.extra.id)
     标题=v.common_card.feed_content.title.panel_text
     if v.common_card.feed_content.content then
@@ -218,6 +219,21 @@ function resolve_feed(v)
     问题id等="直播分割"..v.extra.id
     标题=v.common_card.feed_content.title.panel_text
     预览内容="正在直播中"
+
+    --知乎图书 例如https://www.zhihu.com/pub/book/120202629
+    --不考虑适配
+   elseif v.extra.type=="ebook" then
+    return
+
+    --知乎训练 例如 https://www.zhihu.com/education/training/sku-detail/1699846867112804354
+    --不考虑适配
+   elseif v.extra.type=="training" then
+    return
+
+    --vip推荐
+    --不考虑适配
+   elseif v.extra.type:find("vip") then
+    return
    else
     提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
     AlertDialog.Builder(this)
@@ -240,6 +256,8 @@ function resolve_feed(v)
 end
 
 function 主页推荐刷新()
+  
+  local yxuan_adpqy=list2.adapter
 
   local isprev=home_isprev
   local result=tointeger(choosebutton)
@@ -279,16 +297,18 @@ function 主页推荐刷新()
           local 添加数据=resolve_feed(v)
           if 添加数据 then
             主页加载数据长度=主页加载数据长度+1
-            table.insert(list2.adapter.getData(),添加数据)
+            table.insert(yxuan_adpqy.getData(),添加数据)
           end
         end
-        task(1,function() list2.adapter.notifyDataSetChanged()end)
+        task(1,function() yxuan_adpqy.notifyDataSetChanged()end)
       end
     end
   end)
 end
 
 function 主页随机推荐 ()
+  
+  local yxuan_adpqy=list2.adapter
 
   local isprev=home_isprev
   local myrequrl
@@ -315,10 +335,10 @@ function 主页随机推荐 ()
         local 添加数据=resolve_feed(v)
         if 添加数据 then
           主页加载数据长度=主页加载数据长度+1
-          table.insert(list2.adapter.getData(),添加数据)
+          table.insert(yxuan_adpqy.getData(),添加数据)
         end
       end
-      task(1,function() list2.adapter.notifyDataSetChanged()end)
+      task(1,function() yxuan_adpqy.notifyDataSetChanged()end)
       requrl = {
         ["next"] = decoded_content.paging.next,
         ["prev"] = decoded_content.paging.previous,
@@ -343,6 +363,12 @@ function 主页刷新(isclear,isprev)
 
   if not list2.adapter or isclear then
 
+    if list2.adapter then
+      list2.setOnScrollListener(nil)
+      luajava.clear(list2.adapter)
+      list2.adapter=nil
+    end
+
     homeapphead["x-feed-prefetch"]="1"
     homeapphead1["x-close-recommend"]=nil
 
@@ -353,7 +379,7 @@ function 主页刷新(isclear,isprev)
       onItemClick=function(parent,v,pos,id)
         if getLogin() then
           v.Tag.testk.Text='"r"'
-          list2.adapter.getData()[list2.getPositionForView(v)+1].testk='"r"'
+          yxuan_adpqy.getData()[list2.getPositionForView(v)+1].testk='"r"'
 
           local postdata=luajson.encode(v.Tag.testy.Text)
           postdata=urlEncode('[['..v.Tag.testk.Text..','..postdata..']]')
@@ -453,27 +479,34 @@ function 主页刷新(isclear,isprev)
         if a+b==c and 可以加载主页 then
 
           if 主页加载数据长度 and getLogin() then
+
+            local yxuan_adpqy=view.adapter
+
             local num=c-tonumber(主页加载数据长度)+1
 
-            local postdata=""
+            if num>0 then
 
-            for i=num,c do
-              local local_postdata=luajson.encode(list2.adapter.getData()[i].testy)
-              local addstr
-              if i~=c then
-                addstr=","
-               else
-                addstr=""
+              local postdata=""
+
+              for i=num,c do
+                local local_postdata=luajson.encode(yxuan_adpqy.getData()[i].testy)
+                local addstr
+                if i~=c then
+                  addstr=","
+                 else
+                  addstr=""
+                end
+                local_postdata='['..yxuan_adpqy.getData()[i].testk..','..local_postdata..']'..addstr
+                postdata=postdata..local_postdata
               end
-              local_postdata='['..list2.adapter.getData()[i].testk..','..local_postdata..']'..addstr
-              postdata=postdata..local_postdata
+              postdata="targets="..urlEncode("["..postdata.."]")
+
+              zHttp.post("https://api.zhihu.com/lastread/touch/v2",postdata,apphead,function(code,content)
+                if code==200 then
+                end
+              end)
             end
-            postdata="targets="..urlEncode("["..postdata.."]")
 
-            zHttp.post("https://api.zhihu.com/lastread/touch/v2",postdata,apphead,function(code,content)
-              if code==200 then
-              end
-            end)
           end
 
           主页刷新()
@@ -555,7 +588,11 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
     end
 
     if pos == 3 then
-      关注刷新(nil,false)
+      if not(getLogin()) then
+        提示("请登录后使用本功能")
+       else
+        关注刷新(nil,false)
+      end
     end
 
     for i=0,bnv.getChildCount() do
@@ -575,10 +612,17 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
 
 function 日报刷新(isclear)
 
-  if not(itemc3) or isclear then
+  if not(list1.adapter) or isclear then
+
+    if list1.adapter then
+      list1.setOnScrollListener(nil)
+      luajava.clear(list1.adapter)
+      list1.adapter=nil
+    end
+
     itemc3=获取适配器项目布局("home/home_daily")
     thisdata=1
-    yuxun_adpqy=LuaAdapter(activity,itemc3)
+    local yuxun_adpqy=LuaAdapter(activity,itemc3)
     list1.Adapter=yuxun_adpqy
     news={}
     list1.setOnItemClickListener(AdapterView.OnItemClickListener{
@@ -628,6 +672,8 @@ function 日报刷新(isclear)
     return
   end
 
+  local yuxun_adpqy=list1.Adapter
+
   if ZUOTIAN==nil then
     链接 = "https://news-at.zhihu.com/api/4/stories/latest"
     ZUOTIAN = true
@@ -642,7 +688,7 @@ function 日报刷新(isclear)
     ZUOTIAN=sp.format(d);
     链接 = 'https://news-at.zhihu.com/api/4/stories/before/'..tostring(ZUOTIAN)
   end
-  Http.get(链接,head,function(code,content)
+  zHttp.get(链接,head,function(code,content)
     if code==200 then
      else
       return
@@ -1124,6 +1170,11 @@ function 热榜刷新(isclear)
 
   if isclear or not(itemc) then
 
+    if list3.adapter then
+      luajava.clear(热榜adp)
+      list3.adapter=nil
+    end
+
     itemc=获取适配器项目布局("home/home_hot")
 
     import "androidx.recyclerview.widget.LinearLayoutManager"
@@ -1259,6 +1310,7 @@ moments_tab={
   }
 }
 
+canclick_follow=true
 
 function 关注刷新(isclear,isprev,num)
   -- origin15.19 更改
@@ -1273,41 +1325,67 @@ function 关注刷新(isclear,isprev,num)
 
   local alltype={"recommend","timeline","pin"}
   local thispage,thissr=getpage(fpage,"follow",num,3)
+
+  if followTab.getTabCount()==0 then
+    followTab.setupWithViewPager(fpage)
+    local followTable={"精选","最新","想法"}
+
+    --setupWithViewPager设置的必须手动设置text
+    for i=1, #followTable do
+      local itemnum=i-1
+      local tab=followTab.getTabAt(itemnum)
+      tab.setText(followTable[i]);
+    end
+
+    followTab.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
+      onTabSelected=function(tab)
+        --选择时触发
+        if canclick_follow then
+          canclick_follow=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              canclick_follow=true
+            end,
+          }),1050)
+         else
+          return false
+        end
+        local pos=tab.getPosition()+1
+        关注刷新(nil,false,pos)
+      end,
+
+      onTabUnselected=function(tab)
+        --未选择时触发
+      end,
+
+      onTabReselected=function(tab)
+        --选中之后再次点击即复选时触发
+        if canclick_follow then
+          canclick_follow=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              canclick_follow=true
+            end,
+          }),1050)
+         else
+          return false
+        end
+        local pos=tab.getPosition()+1
+        关注刷新(true,true,pos)
+      end,
+    });
+
+
+  end
+
   可以加载关注={true,true,true}
   if isclear or not(thispage.adapter) then
 
-    if followTab.getTabCount()==0 then
-      followTab.setupWithViewPager(fpage)
-      local followTable={"精选","最新","想法"}
-
-      --setupWithViewPager设置的必须手动设置text
-      for i=1, #followTable do
-        local itemnum=i-1
-        local tab=followTab.getTabAt(itemnum)
-        tab.setText(followTable[i]);
-      end
-
-      followTab.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
-        onTabSelected=function(tab)
-          --选择时触发
-          local pos=tab.getPosition()+1
-          关注刷新(nil,false,pos)
-        end,
-
-        onTabUnselected=function(tab)
-          --未选择时触发
-        end,
-
-        onTabReselected=function(tab)
-          --选中之后再次点击即复选时触发
-          local pos=tab.getPosition()+1
-          关注刷新(true,true,pos)
-        end,
-      });
-
-
+    if thispage.adapter then
+      thispage.setOnScrollListener(nil)
+      luajava.clear(thispage.adapter)
+      thispage.adapter=nil
     end
-
 
     --关注布局
     follow_itemc=获取适配器项目布局("home/home_following")
@@ -1329,7 +1407,6 @@ function 关注刷新(isclear,isprev,num)
             thissr.setRefreshing(false);
           end,
         }),1000)
-
       end,
     });
 
@@ -1347,6 +1424,9 @@ function 关注刷新(isclear,isprev,num)
           activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("视频分割(.+)"),"视频"})
          elseif tostring(v.Tag.follow_id.text):find("想法分割") then
           activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("想法分割(.+)"),"想法"})
+         elseif tostring(v.Tag.follow_id.text):find("直播分割") then
+          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("直播分割(.+)"),"直播"})
+
 
 
          else
@@ -1406,6 +1486,8 @@ function 关注刷新(isclear,isprev,num)
     return 提示("请登录后使用本功能")
   end
 
+  local madapter=thispage.Adapter
+
   zHttp.get(posturl,followapphead,function(code,content)
     if code==200 then
       moments_tab[num]["isprev"]=false
@@ -1414,6 +1496,10 @@ function 关注刷新(isclear,isprev,num)
       moments_tab[num].isend=data.paging.is_end
       moments_tab[num].prev=data.paging.previous
       moments_tab[num].nexturl=data.paging.next
+
+      if data.has_new==false then
+        moments_tab[num].isend=true
+      end
 
       if moments_tab[num].isend==false then
         可以加载关注[num]=true
@@ -1455,18 +1541,35 @@ function 关注刷新(isclear,isprev,num)
             end
             问题id等="想法分割"..tointeger(v.target.id)
             点赞数=tointeger(v.target.reaction_count)
-            预览内容=v.target.content[1].content
+
+            if #v.target.content>0 then
+              预览内容=v.target.content[1].content
+             else
+              预览内容="无"
+            end
+
+            if 预览内容=="" then
+              if v.target.content[2].type=="image" then
+                预览内容="[图片]"
+              end
+            end
            elseif v.target.type=="zvideo"
             问题id等="视频分割"..tointeger(v.target.id)
             标题=v.target.title
             if 预览内容==nil or 预览内容=="" then
               预览内容="[视频]"
             end
+           elseif v.target.type=="moments_drama" then
+            问题id等="直播分割"..tointeger(v.target.id)
+            标题=v.target.title
+            if 预览内容==nil or 预览内容=="" then
+              预览内容="[直播]"
+            end
           end
           if 预览内容~="[视频]" then
             预览内容=作者名称.." : "..预览内容
           end
-          thispage.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+          madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
 
          elseif v.type=="feed_item_index_group" then
 
@@ -1476,8 +1579,8 @@ function 关注刷新(isclear,isprev,num)
 
           -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
           local 数据=get_number_and_following(v.target.desc)
-          local 点赞数=tointeger(数据[1])
-          local 评论数=tointeger(数据[3])
+          local 点赞数=tointeger(数据[1]) or 数据[1]
+          local 评论数=tointeger(数据[3]) or 数据[3]
           local 标题=v.target.title
           local 时间=时间戳(v.action_time)
           local 预览内容=v.target.digest
@@ -1501,13 +1604,19 @@ function 关注刷新(isclear,isprev,num)
             if 预览内容==nil or 预览内容=="" then
               预览内容="[视频]"
             end
+           elseif v.target.type=="drama" then
+            问题id等="直播分割"..tointeger(v.target.id)
+            标题=v.target.title
+            if 预览内容==nil or 预览内容=="" then
+              预览内容="[直播]"
+            end
           end
           if not 预览内容 then
             预览内容="无底部内容"
            elseif 预览内容~="[视频]" then
             预览内容=关注作者名称.." : "..预览内容
           end
-          thispage.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+          madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
          elseif v.type=="item_group_card" then
           local 关注作者头像=v.actor.avatar_url
           local 关注作者名称=v.actor.name
@@ -1518,8 +1627,8 @@ function 关注刷新(isclear,isprev,num)
           for e,q in ipairs(v.data) do
             -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
             local 数据=get_number_and_following(q.desc)
-            local 点赞数=tointeger(数据[1])
-            local 评论数=tointeger(数据[3])
+            local 点赞数=tointeger(数据[1]) or 数据[1]
+            local 评论数=tointeger(数据[3]) or 数据[3]
             local 标题=q.title
             local 时间=时间戳(v.action_time)
             local 预览内容=q.digest
@@ -1543,11 +1652,17 @@ function 关注刷新(isclear,isprev,num)
               if 预览内容==nil or 预览内容=="" then
                 预览内容="[视频]"
               end
+             elseif v.target.type=="drama" then
+              问题id等="直播分割"..tointeger(v.target.id)
+              标题=v.target.title
+              if 预览内容==nil or 预览内容=="" then
+                预览内容="[直播]"
+              end
             end
             if 预览内容~="[视频]" then
               预览内容=关注作者名称.." : "..预览内容
             end
-            thispage.Adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+            madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
           end
 
          elseif v.type=="recommend_user_card_list" then
@@ -1567,6 +1682,11 @@ function 想法刷新(isclear)
   end
 
   if not(itemcc) or isclear then
+
+    if recy.adapter then
+      luajava.clear(recy.adapter)
+      recy.adapter=nil
+    end
 
     itemcc=获取适配器项目布局("home/home_thinker")
     mytab={}
@@ -1685,7 +1805,7 @@ end
 可以加载收藏={}
 collection_isend={}
 collection_nexturl={}
-
+canclick_collection=true
 
 function 收藏刷新(isclear)
 
@@ -1757,6 +1877,16 @@ function 收藏刷新(isclear)
     CollectiontabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
       onTabSelected=function(tab)
         --选择时触发
+        if canclick_collection then
+          canclick_collection=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              canclick_collection=true
+            end,
+          }),1050)
+         else
+          return false
+        end
         local pos=tab.getPosition()+1
         followpos=pos
         收藏刷新(false)
@@ -1768,6 +1898,16 @@ function 收藏刷新(isclear)
 
       onTabReselected=function(tab)
         --选中之后再次点击即复选时触发
+        if canclick_collection then
+          canclick_collection=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              canclick_collection=true
+            end,
+          }),1050)
+         else
+          return false
+        end
         收藏刷新(true)
       end,
     });
@@ -1778,6 +1918,12 @@ function 收藏刷新(isclear)
     return
   end
   if not(thispage.adapter) or isclear then
+
+    if thispage.adapter then
+      thispage.setOnScrollListener(nil)
+      luajava.clear(thispage.adapter)
+      thispage.adapter=nil
+    end
 
     local allitemc={获取适配器项目布局("home/home_collections"),获取适配器项目布局("home/home_shared_collections")}
     local allonclick={
@@ -1801,10 +1947,6 @@ function 收藏刷新(isclear)
       AdapterView.OnItemLongClickListener{
         onItemLongClick=function(id,v,zero,one)
           local collections_id=v.Tag.collections_id.text
-          if collections_id=="local" then
-            提示("不支持删除本地收藏夹")
-            return true
-          end
           双按钮对话框("删除收藏夹","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
             zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
               if code==200 then
@@ -1843,24 +1985,7 @@ function 收藏刷新(isclear)
 
 
     local alladd={
-      {
-        collections_title={
-          text="本地收藏",
-        },
-        collections_art={
-          text="你猜有几个内容？",
-        },
-        is_lock=图标("https"),
-        collections_item={
-          text="0",
-        },
-        collections_follower={
-          text="0",
-        },
-        collections_id={
-          text="local"
-        },
-      },
+      {"null"},
       {
         mc_image="https://picx.zhimg.com/50/v2-abed1a8c04700ba7d72b45195223e0ff_xl.jpg",
         mc_name={
@@ -1897,8 +2022,11 @@ function 收藏刷新(isclear)
     });
 
     thispage.adapter=MyLuaAdapter(activity,allitemc[pos])
+    local madapter=thispage.Adapter
 
-    table.insert(thispage.adapter.getData(),alladd[pos])
+    if alladd[pos][1]~="null" then
+      table.insert(madapter.getData(),alladd[pos])
+    end
 
     可以加载收藏[pos]=true
     collection_isend[pos]=false
@@ -1924,6 +2052,8 @@ function 收藏刷新(isclear)
   end
   local dofun=alldo[pos]
 
+  local madapter=thispage.Adapter
+
   local collections_url= collection_nexturl[pos] or oriurl[pos]
   zHttp.get(collections_url,head,function(code,content)
     if code==200 then
@@ -1936,7 +2066,7 @@ function 收藏刷新(isclear)
         提示("没有新内容了")
       end
       for k,v in ipairs(data.data) do
-        thispage.adapter.add(dofun(v))
+        madapter.add(dofun(v))
       end
 
      else
@@ -1952,7 +2082,7 @@ end
 可以加载关注内容={}
 follow_content_isend={}
 follow_content_nexturl={}
-
+canclick_follow=true
 
 function 关注内容刷新(isclear)
 
@@ -2101,6 +2231,16 @@ function 关注内容刷新(isclear)
     followtabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
       onTabSelected=function(tab)
         --选择时触发
+        if canclick_follow then
+          canclick_follow=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              canclick_follow=true
+            end,
+          }),1050)
+         else
+          return false
+        end
         local pos=tab.getPosition()+1
         followpos=pos
         关注内容刷新(false)
@@ -2112,6 +2252,16 @@ function 关注内容刷新(isclear)
 
       onTabReselected=function(tab)
         --选中之后再次点击即复选时触发
+        if canclick_follow then
+          canclick_follow=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              canclick_follow=true
+            end,
+          }),1050)
+         else
+          return false
+        end
         关注内容刷新(true)
       end,
     });
@@ -2122,6 +2272,12 @@ function 关注内容刷新(isclear)
     return
   end
   if not(thispage.adapter) or isclear then
+
+    if thispage.adapter then
+      thispage.setOnScrollListener(nil)
+      luajava.clear(thispage.adapter)
+      thispage.adapter=nil
+    end
 
     local colltab=获取适配器项目布局("home/home_shared_collections")
     local itemc=获取适配器项目布局("simple/card")
@@ -2172,6 +2328,7 @@ function 关注内容刷新(isclear)
     });
 
     thispage.adapter=MyLuaAdapter(activity,allitemc[pos])
+    local madapter=thispage.Adapter
 
     if pos==2 then
       thispage.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
@@ -2205,7 +2362,7 @@ function 关注内容刷新(isclear)
         end
       })
 
-      table.insert(thispage.adapter.getData(), {
+      table.insert(madapter.getData(), {
         mc_image="https://picx.zhimg.com/50/v2-abed1a8c04700ba7d72b45195223e0ff_xl.jpg",
         mc_name={
           text="为你推荐"
@@ -2257,6 +2414,7 @@ function 关注内容刷新(isclear)
     提示("请登录后使用本功能")
     return
   end
+  local madapter=thispage.Adapter
   local collections_url= follow_content_nexturl[pos] or "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/"..oritype[pos].."?offset=0"
   zHttp.get(collections_url,apphead,function(code,content)
     if code==200 then
@@ -2269,7 +2427,7 @@ function 关注内容刷新(isclear)
         提示("没有新内容了")
       end
       for k,v in ipairs(data.data) do
-        thispage.adapter.add(dofun(v))
+        madapter.add(dofun(v))
       end
 
      else
@@ -2283,6 +2441,7 @@ end
 可以加载创作内容={}
 create_content_isend={}
 create_content_nexturl={}
+canclick_create=true
 
 function 创作内容刷新(isclear)
 
@@ -2407,6 +2566,16 @@ function 创作内容刷新(isclear)
     createtabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
       onTabSelected=function(tab)
         --选择时触发
+        if canclick_create then
+          canclick_create=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              canclick_create=true
+            end,
+          }),1050)
+         else
+          return false
+        end
         local pos=tab.getPosition()+1
         createpos=pos
         创作内容刷新(false)
@@ -2418,6 +2587,16 @@ function 创作内容刷新(isclear)
 
       onTabReselected=function(tab)
         --选中之后再次点击即复选时触发
+        if canclick_create then
+          canclick_create=false
+          Handler().postDelayed(Runnable({
+            run=function()
+              canclick_create=true
+            end,
+          }),1050)
+         else
+          return false
+        end
         创作内容刷新(true)
       end,
     });
@@ -2428,6 +2607,12 @@ function 创作内容刷新(isclear)
     return
   end
   if not(thispage.adapter) or isclear then
+
+    if thispage.adapter then
+      thispage.setOnScrollListener(nil)
+      luajava.clear(thispage.adapter)
+      thispage.adapter=nil
+    end
 
     local itemc=获取适配器项目布局("simple/card")
     local allitemc={itemc,itemc,itemc,itemc,itemc,itemc,itemc}
@@ -2526,6 +2711,9 @@ function 创作内容刷新(isclear)
     提示("请登录后使用本功能")
     return
   end
+
+  local madapter=thispage.adapter
+
   local collections_url= create_content_nexturl[pos] or "https://api.zhihu.com/"..oritype[pos].."?limit=10"
   zHttp.get(collections_url,apphead,function(code,content)
     if code==200 then
@@ -2538,7 +2726,7 @@ function 创作内容刷新(isclear)
         提示("没有新内容了")
       end
       for k,v in ipairs(data.data) do
-        thispage.adapter.add(reslove_create(v))
+        madapter.add(reslove_create(v))
       end
 
      else

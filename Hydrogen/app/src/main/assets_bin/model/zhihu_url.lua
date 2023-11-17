@@ -13,7 +13,7 @@ end
 
 function string:getUrlArg(arg)
   --lua对字符串进行了优化 变量为字符串时也可以调用string的其他方法
-  return self:match(arg.."(.-)?") or self:match(arg.."(.+)")
+  return self:match(arg.."(.-)/%?") or  self:match(arg.."(.-)?") or self:match(arg.."(.+)")
 end
 
 function newLuaActivity(filedir,args)

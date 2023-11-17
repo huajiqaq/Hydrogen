@@ -12,6 +12,8 @@ id,mtype,title,tz,issub=...
 
 mtype=mtype:gsub("更多","")
 
+canclick_followed=true
+
 if not mtype:find("的")
   mtype="的"..mtype
 end
@@ -113,6 +115,16 @@ if mtype:find("收藏") then
       CollectiontabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
         onTabSelected=function(tab)
           --选择时触发
+          if canclick_followed then
+            canclick_followed=false
+            Handler().postDelayed(Runnable({
+              run=function()
+                canclick_followed=true
+              end,
+            }),1050)
+           else
+            return false
+          end
           local pos=tab.getPosition()+1
           followpos=pos
           收藏刷新(false)
@@ -124,6 +136,16 @@ if mtype:find("收藏") then
 
         onTabReselected=function(tab)
           --选中之后再次点击即复选时触发
+          if canclick_followed then
+            canclick_followed=false
+            Handler().postDelayed(Runnable({
+              run=function()
+                canclick_followed=true
+              end,
+            }),1050)
+           else
+            return false
+          end
           收藏刷新(true)
         end,
       });
@@ -134,6 +156,12 @@ if mtype:find("收藏") then
       return
     end
     if not(thispage.adapter) or isclear then
+
+      if thispage.adapter then
+        thispage.setOnScrollListener(nil)
+        luajava.clear(thispage.adapter)
+        thispage.adapter=nil
+      end
 
       local allitemc={获取适配器项目布局("home/home_collections"),获取适配器项目布局("home/home_shared_collections")}
       local allonclick={
@@ -253,8 +281,9 @@ if mtype:find("收藏") then
       });
 
       thispage.adapter=MyLuaAdapter(activity,allitemc[pos])
+      local madapter=thispage.Adapter
 
-      table.insert(thispage.adapter.getData(),alladd[pos])
+      table.insert(madapter.getData(),alladd[pos])
 
       可以加载收藏[pos]=true
       collection_isend[pos]=false
@@ -280,6 +309,8 @@ if mtype:find("收藏") then
     end
     local dofun=alldo[pos]
 
+    local madapter=thispage.Adapter
+
     local collections_url= collection_nexturl[pos] or oriurl[pos]
     zHttp.get(collections_url,head,function(code,content)
       if code==200 then
@@ -292,7 +323,7 @@ if mtype:find("收藏") then
           提示("没有新内容了")
         end
         for k,v in ipairs(data.data) do
-          thispage.adapter.add(dofun(v))
+          madapter.add(dofun(v))
         end
 
        else

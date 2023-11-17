@@ -6,7 +6,7 @@
   {
     MaterialCardView;
     CardElevation="0dp";
-    radius="8dp";
+    radius=cardradius;
     layout_width="-1";
     layout_height="48dp";
     layout_margin="8dp";

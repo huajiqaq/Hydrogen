@@ -74,11 +74,10 @@
             layout_marginTop="8dp";
             layout_marginBottom="8dp";
             layout_gravity='center';
-            -- layout_marginLeft="0%w";
             Elevation='0';
             layout_width='fill';
             layout_height='-2';
-            radius='8dp';
+            radius=cardradius;
             id="_root",
             StrokeColor=cardedge;
             StrokeWidth=dp2px(1),
@@ -170,6 +169,7 @@
                 };
                 {
                   MaterialButton;
+                  layout_marginRight="10dp";
                   id="download";
                   textColor=backgroundc;
                   text="去下载";
@@ -178,7 +178,6 @@
                 };
                 {
                   MaterialButton;
-                  layout_marginLeft="10dp";
                   id="recheck";
                   textColor=backgroundc;
                   text="检查更新";

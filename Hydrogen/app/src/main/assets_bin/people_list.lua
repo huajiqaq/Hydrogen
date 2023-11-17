@@ -89,7 +89,7 @@ function 刷新()
         end
         myurl=testurl
       end
-      if luajson.decode(content).paging.is_end and isclear~="clear" then
+      if luajson.decode(content).paging.is_end then
         提示("已经没有更多内容了")
        else
         add=true

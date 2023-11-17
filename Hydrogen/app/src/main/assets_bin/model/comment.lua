@@ -27,11 +27,9 @@ end
 function base:getUrlByType(id,type)
 
   if type~="comments" then
-    return "https://api.zhihu.com/comment_v5/"..type.."/"..id.."/root_comment?order_by="..(self.sortby or "score").."&type="
---    return "https://api.zhihu.com/"..type.."/"..id.."/comments?include=badge%5B%2A%5D.topics%2Ccomment_count%2Cexcerpt%2Cvoteup_count%2Ccreated_time%2Cupdated_time%2Cupvoted_followees%2Cvoteup_count&limit=20&sort_by="..(self.sortby or "default")
+    return "https://api.zhihu.com/comment_v5/"..type.."/"..id.."/root_comment?order_by="..(self.sortby or "score")
    else
-    return ("https://api.zhihu.com/comment_v5/comment/"..id.."/child_comment")
-    --    return ("https://api.zhihu.com/comments/"..id.."/conversation")--.."?include=badge%5B%2A%5D.topics%2Ccomment_count%2Cexcerpt%2Cvoteup_count%2Ccreated_time%2Cupdated_time%2Cupvoted_followees%2Cvoteup_count&limit=20")
+    return "https://api.zhihu.com/comment_v5/comment/"..id.."/child_comment?order_by="..(self.sortby or "score")
   end
 end
 

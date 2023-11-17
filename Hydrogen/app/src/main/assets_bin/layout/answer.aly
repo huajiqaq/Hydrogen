@@ -40,16 +40,18 @@
           };
         };
         {
-          CardView;
-          radius="6dp";
+          MaterialCardView;
+          radius=cardradius;
           CardBackgroundColor=backgroundc;
           elevation="0dp";
           layout_width="-1",
           layout_weight="1",
+          StrokeWidth=0,
           {
             LinearLayout;
             id="all_root",
             layout_width="-1",
+            padding="2dp";
             orientation="vertical";
             {
               TextView;

@@ -87,8 +87,10 @@ picpage.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，�
       if url:find("zhimg.com") then
         if url:find("%.webp?") then
           url=url:gsub("%.webp%?", ".jpg?")
+          mls[tostring(i)]=url
          elseif url:find("%.png?") then
           url=url:gsub("%.png%?", ".jpg?")
+          mls[tostring(i)]=url
         end
       end
 
@@ -124,7 +126,9 @@ ripple.onClick=function()
     return false
   end
   local url=mls[""..picpage.getCurrentItem()]
-  Http.download(url,Environment.getExternalStorageDirectory().toString().."/Pictures/Hydrogen/"..os.time()..".jpg",function(code,msg)
+      import "android.webkit.URLUtil"
+    local 文件名=URLUtil.guessFileName(url,nil,nil)
+  Http.download(url,Environment.getExternalStorageDirectory().toString().."/Pictures/Hydrogen/"..文件名,function(code,msg)
     if code==200 then
       提示("已保存到"..msg)
      else

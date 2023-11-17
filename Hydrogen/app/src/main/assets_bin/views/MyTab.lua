@@ -56,7 +56,6 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
       LinearLayout;
       layout_width="-2";
       layout_height="-2";
-      --     background=backroundc,
       onClick=function(v)
         onClick(v)
       end,
@@ -66,7 +65,6 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
         orientation="vertical";
         padding="9dp";
         layout_height="-1";
-        --       background=backroundc,
         {
           CardView;
           CardBackgroundColor=转0x(primaryc)-0xdf000000,
@@ -77,16 +75,13 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
             layout_width="-2";
             layout_height="-2";
             padding="6dp",
-            --         background=backroundc,
             paddingLeft="10dp",
             paddingRight="10dp",
-
             orientation="vertical";
             {
               TextView;
               layout_width="-1";
               layout_height="-1";
-
               textSize="13sp",
               Typeface=字体("product");
               textColor=primaryc,
@@ -95,9 +90,6 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
             };
           };
         };
-
-
-
       }
     }
     self.ids.add.addView(loadlayout(layout2,self.ids))
@@ -108,7 +100,6 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
       LinearLayout;
       layout_width="-2";
       layout_height="-2";
-      --     background=backroundc,
       onClick=function(v)
         self:showTab(index)
         onClick(v)
@@ -119,7 +110,6 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
         orientation="vertical";
         padding="9dp";
         layout_height="-1";
-        --       background=backroundc,
         {
           CardView;
           elevation="0";
@@ -129,7 +119,6 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
             layout_width="-2";
             layout_height="-2";
             padding="6dp",
-            --         background=backroundc,
             paddingLeft="10dp",
             paddingRight="10dp",
 
@@ -166,7 +155,6 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
       layout_width="20%w";
       gravity="center";
       onClick=function(v)
-
         self:showTab(index)
         onClick(v)
       end,
@@ -178,7 +166,6 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
         Text=text;
         Typeface=字体("product-Bold");
         textSize="16sp";
-        --        textColor=stextc;
         textColor=textc;
       };
     };
@@ -190,97 +177,6 @@ function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点�
   end
   return self
 end
-
---[[
-function tab:addTab(text,onClick,type)--新建tab text:显示文字 onClick 点击事件 type 类型
-  local index=#(self.indexTab)+1
-  local layout=
-
-  {
-    LinearLayout;
-    layout_height="-1";
-    layout_width="20%w";
-    gravity="center";
-    onClick=function(v)
-
-      self:showTab(index)
-      onClick(v)
-    end,
-    {
-
-      TextView;
-      layout_width="-2";
-      layout_height="-2";
-      Text=text;
-      Typeface=字体("product-Bold");
-      textSize="16sp";
-      textColor=stextc;
-    };
-  };
-
-  local layout2= {
-    LinearLayout;
-    layout_width="-2";
-    layout_height="-2";
-    background=backroundc,
-    onClick=function(v)
-      onClick(v)
-    end,
-    {
-      LinearLayout;
-      layout_width="-1";
-      orientation="vertical";
-      padding="9dp";
-      layout_height="-1";
-      background=backroundc,
-      {
-        CardView;
-        CardBackgroundColor=转0x(primaryc)-0xdf000000,
-        elevation="0";
-        radius="4%w";
-        {
-          LinearLayout;
-          layout_width="-2";
-          layout_height="-2";
-          padding="6dp",
-          background=backroundc,
-          paddingLeft="10dp",
-          paddingRight="10dp",
-
-          orientation="vertical";
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-1";
-
-            textSize="13sp",
-            Typeface=字体("product");
-            textColor=primaryc,
-            gravity="center";
-            text=text;
-          };
-        };
-      };
-
-
-
-    }
-  }
-  self.ids.type=type --记录类型
-
-  self.ids.add.addView(loadlayout(type==2 and layout2 or layout,self.ids))--三目运算加载layout (比if好多了)
-
-  if self.ids.type==2 then 波纹({self.ids.add.getChildAt(self.ids.add.getChildCount()-1).getChildAt(0).getChildAt(0).getChildAt(0)},"圆主题") end
-
-  if self.ids.type==nil then--如果type是1
-    self.ids.page_scroll.visibility=0 --显示指示块
-    self.ids.showindex=#self.indexTab+1--更新指示table位置
-    self.indexTab[#self.indexTab+1]=#self.indexTab+1--更新 ？(cao 我忘了)
-
-  end
-  return self
-end
-]]
 
 function tab:showTab(index)--显示table参数 仅当type==1生效
   if self.ids.type==2 then
@@ -295,13 +191,9 @@ function tab:showTab(index)--显示table参数 仅当type==1生效
         local textv=view.getChildAt(0).getChildAt(0).getChildAt(0).getChildAt(0)
         if i+1==index then--是否位指示table
           cardv.CardBackgroundColor=转0x(primaryc)-0xdf000000
---          textv.textColor=Color.GRAY
---          textv.textColor=转0x(primaryc)
           --指示器动画 和显示 索引更新
          else
-
           cardv.CardBackgroundColor=转0x(cardbackc)
---          textv.textColor=Color.GRAY
         end
       end
     end)

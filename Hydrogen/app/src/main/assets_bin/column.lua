@@ -162,7 +162,7 @@ function 刷新()
       .show()
     end
    elseif 类型=="直播" then
-   followdoc='document.querySelector(".TheaterRoomHeader-actor").childNodes[2]'
+    followdoc='document.querySelector(".TheaterRoomHeader-actor").childNodes[2]'
     zHttp.get("https://www.zhihu.com/api/v4/drama/dramas/"..result.."/lite",head,function(code,content)
       _title.Text="直播"
       authorid=luajson.decode(content).theater.actor.id
@@ -246,6 +246,7 @@ content.setWebViewClient{
   onPageStarted=function(view,url,favicon)
     --网页加载
     等待doc(view)
+    加载js(view,获取js("zhihugif"))
     if 全局主题值=="Night" then
       黑暗模式主题(view)
      else
@@ -291,6 +292,7 @@ local z=JsInterface{
 content.addJSInterface(z,"androlua")
 
 import "com.lua.LuaWebChrome"
+import "android.content.pm.ActivityInfo"
 content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onProgressChanged=function(view,p)
     setProgress(p)
@@ -302,11 +304,13 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   end,
   onShowCustomView=function(view,url)
     this.addContentView(view, WindowManager.LayoutParams(-1, -1))
+    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     kkoo=view
     activity.getWindow().getDecorView().setSystemUiVisibility(5639)
   end,
   onHideCustomView=function(view,url)
     kkoo.getParent().removeView(kkoo.setForeground(nil).setVisibility(8))
+    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     content.setVisibility(0)
     kkoo=nil
     activity.getWindow().getDecorView().setSystemUiVisibility(8208)
@@ -439,8 +443,13 @@ if 类型=="本地" then
       },
       {
         src=图标("share"),text="分享",onClick=function()
-          local format="【%s】%s:… %s"
-          分享文本(string.format(format,_title.Text,autoname,fxurl))
+          if autoname and fxurl then
+            local format="【%s】%s:… %s"
+            分享文本(string.format(format,_title.Text,autoname,fxurl))
+           else
+            local format="【%s】 %s"
+            分享文本(string.format(format,_title.Text,content.getUrl()))
+          end
         end
       },
       {
@@ -523,7 +532,13 @@ if 类型=="文章" then
 
     end
   })
- elseif 类型=="圆桌" or 类型=="专题" then
+ elseif 类型 then
+  mpop["tittle"]=类型
+  table.remove(mpop.list,3)
+  table.remove(mpop.list,3)
+  table.remove(mpop.list,3)
+  table.remove(mpop.list,3)
+ else
   table.remove(mpop.list,2)
   table.remove(mpop.list,2)
   table.remove(mpop.list,2)

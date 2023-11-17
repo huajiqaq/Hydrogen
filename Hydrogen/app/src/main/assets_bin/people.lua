@@ -503,7 +503,11 @@ end)
    elseif v.target.type=="moments_pin" then
     标题=v.target.author.name.."发表了想法"
     问题id="想法分割"..tostring(v.target.id)
-    预览内容=v.target.content[1].content
+    if #v.target.content>0 then
+      预览内容=v.target.content[1].content
+     else
+      预览内容="无"
+    end
    else
     问题id="文章分割"..tointeger(v.target.id)
     标题=v.target.title
@@ -527,6 +531,8 @@ end
 
 local myurl={}
 function 其他(isclear)
+  randomstr=getRandom(16)
+  local ramdom_str=randomstr
   add=false
   if chobu=="all" then
     if isclear=="clear" then
@@ -594,6 +600,9 @@ function 其他(isclear)
   end
 
   zHttp.get(geturl,apphead,function(code,content)
+    if ramdom_str~=randomstr then
+      return
+    end
     if code==200 then
       if luajson.decode(content).paging.next then
         testurl=luajson.decode(content).paging.next

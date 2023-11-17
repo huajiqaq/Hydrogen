@@ -262,6 +262,7 @@ function 数据添加(t,b)
         t.progress.setVisibility(0)
       end
       等待doc(view)
+      加载js(view,获取js("zhihugif"))
     end,
     onPageFinished=function(view,url,favicon)
       t.content.setVisibility(0)

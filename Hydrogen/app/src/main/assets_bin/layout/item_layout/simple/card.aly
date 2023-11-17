@@ -12,7 +12,7 @@
     layout_margin="16dp";
     layout_marginTop="8dp";
     layout_marginBottom="8dp";
-    radius="8dp";
+    radius=cardradius;
     CardBackgroundColor=cardedge;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),

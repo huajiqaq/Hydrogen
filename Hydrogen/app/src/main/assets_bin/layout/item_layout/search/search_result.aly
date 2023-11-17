@@ -13,7 +13,7 @@
     Elevation='0';
     layout_width='-1';
     layout_height='-2';
-    radius='8dp';
+    radius=cardradius;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
     {

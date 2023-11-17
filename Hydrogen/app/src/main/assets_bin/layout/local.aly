@@ -40,19 +40,22 @@
           };
         };
         {
-          CardView;
-          radius="6dp";
+          MaterialCardView;
+          radius=cardradius;
           CardBackgroundColor=backgroundc;
           elevation="0dp";
           layout_width="-1",
           layout_weight="1",
+          StrokeWidth=0,
           {
             LinearLayout;
             id="all_root",
             layout_width="-1",
+            padding="2dp";
             orientation="vertical";
             onClick=function()
-              activity.newActivity("question",{问题id})
+              local questionid=xxx:match[[question_id="(.-)"]]
+              activity.newActivity("question",{questionid})
             end;
             {
               TextView;
@@ -93,7 +96,6 @@
     {
       ScrollView,
       id="msrcroll",
-
       {
         LinearLayout;
         layout_width="-1";
@@ -149,7 +151,7 @@
               textSize="14sp",
               layout_marginLeft="60dp",
               layout_marginRight="5dp",
-              layout_marginTop="40dp",  
+              layout_marginTop="40dp",
               layout_marginBottom="10dp",
               gravity="left|bottom",
               textColor="#FF767676",

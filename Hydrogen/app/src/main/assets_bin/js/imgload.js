@@ -1,6 +1,11 @@
 (function () {
     var tags = document.getElementsByTagName("img");
     for (var i = 0; i < tags.length; i++) {
+        if (tags[i].className.includes("GifPlayer-gif2mp4Image")) {
+            const imageUrl = tags[i].src
+            const newImageUrl = imageUrl.replace(/(\.\w+)(\?.*)?$/, ".gif$2");
+            tags[i].src = newImageUrl;
+        }
         tags[i].onclick = function () {
             var tag = document.getElementsByTagName("img");
             var t = {};

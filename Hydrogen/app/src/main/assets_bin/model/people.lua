@@ -16,6 +16,7 @@ end
 function base:clear()
   self.nextUrl=nil
   self.is_end=false
+  self.adp=nil
   self.data={}
   return self
 end

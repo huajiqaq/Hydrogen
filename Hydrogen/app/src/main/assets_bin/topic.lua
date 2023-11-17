@@ -21,7 +21,7 @@ local topic_pages={
     layout_margin="16dp";
     layout_marginTop="8dp";
     layout_marginBottom="8dp";
-    radius="8dp";
+    radius=cardradius;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
 
@@ -211,8 +211,8 @@ function 精华刷新(istab)
             id="想法分割"..tointeger(v.target.id)
           end
 
-          local voteup_count=tointeger(v.target.voteup_count)
-          local comment_count=tointeger(v.target.comment_count)
+          local voteup_count=tointeger(v.target.voteup_count) or tointeger(v.target.counter.applaud)
+          local comment_count=tointeger(v.target.comment_count) or tointeger(v.target.counter.comment)
           madapter.Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
          elseif v.target.type=="topic_sticky_module" then
           if v.target.data then
@@ -316,9 +316,20 @@ mmpop={
   }
 }
 
+canclick_topic=true
 TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
   onTabSelected=function(tab)
     --选择时触发
+    if canclick_topic then
+      canclick_topic=false
+      Handler().postDelayed(Runnable({
+        run=function()
+          canclick_topic=true
+        end,
+      }),1050)
+     else
+      return false
+    end
     local pos=tab.getPosition()
     if pos==0 then
      else

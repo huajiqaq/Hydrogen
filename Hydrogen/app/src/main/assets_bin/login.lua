@@ -105,7 +105,7 @@ login_web.setWebViewClient{
           activity.finish()
           提示("登录成功")
          else
-          activity.finish()
+          view.loadUrl("https://www.zhihu.com/signin")
           提示("登录失败")
         end
       end)

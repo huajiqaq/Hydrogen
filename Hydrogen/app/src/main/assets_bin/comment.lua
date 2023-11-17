@@ -63,7 +63,6 @@ function 多选菜单(v)
    else
     ctext="踩评论"
   end
-
   pop=PopupMenu(activity,v)
   menu=pop.Menu
   menu.add("分享").onMenuItemClick=function(a)
@@ -225,20 +224,10 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
       return true
     end
 
-    if type(answer_title)~="string" then
-      return
-    end
-
-    local result=get_write_permissions()
-    if result~=true then
-      return true
-    end
-
     local commenttype
     local 对话id=v.Tag.comment_id.text
     local 对话用户=v.Tag.comment_author.text
     local 对话内容=v.Tag.comment_art.text
-    local 写入文件路径=保存路径.."/".."fold/"..对话用户.."+"..对话id
     if v.Tag.isme.text=="true" then
       local 请求链接="https://api.zhihu.com/comment_v5/comment/"..对话id
 
@@ -251,9 +240,19 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
         end)
         :getData("delete")
       end,function(an)an.dismiss()end)
-      return
+      return true
     end
 
+    if type(answer_title)~="string" then
+      return true
+    end
+
+    local result=get_write_permissions()
+    if result~=true then
+      return true
+    end
+
+    local 写入文件路径=保存路径.."/".."fold/"..对话用户.."+"..对话id
     local 写入内容='author="'..对话用户..'"'
     local 写入内容=写入内容.."\n"
     local 写入内容=写入内容..'content="'..对话内容..'"'
@@ -421,9 +420,22 @@ end
 if _title.text=="对话列表" then
   task(1,function()
     a=MUKPopu({
-      tittle=_title.text,
+      tittle="评论",
       list={
-
+        {src=图标("format_align_left"),text="按时间顺序",onClick=function()
+            comment_base:setSortBy("ts")
+            comment_base:clear()
+            comment_adp.clear()
+            踩tab={}
+            add=true
+        end},
+        {src=图标("notes"),text="按默认顺序",onClick=function()
+            comment_base:setSortBy("score")
+            comment_base:clear()
+            comment_adp.clear()
+            踩tab={}
+            add=true
+        end},
       }
     })
   end)
@@ -474,34 +486,34 @@ end
 send.onClick=function()
   local send_text=edit.Text
   local mytext
-  local commentid
   local postdata
   local 请求链接
-  local replyid
+  local 评论类型
+  local 评论id
+  local 回复id
 
-  if oricomment_id then
-    commentid=oricomment_id
-   else
-    commentid=comment_id
-  end
-
-  local replyid=当前回复人 or ""
+  local 回复id=当前回复人 or ""
 
   local unicode=require "unicode"
 
   local mytext=unicode.encode(send_text)
 
-  if oricomment_id then
-    postdata='{"comment_id":"'..oricomment_id..'","content":"'..mytext..';","extra_params":"","has_img":false,"reply_comment_id":"'.. replyid ..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
-
-    请求链接="https://api.zhihu.com/comment_v5/"..oricomment_type.."/"..oricomment_id.."/comment"
-
+  if _title.text=="对话列表" then
+    --防止在对话列表内回复id为空
+    if 回复id=="" then
+      回复id=comment_id
+    end
+    --将类型和id改为原来的 防止报404
+    评论类型 = oricomment_type
+    评论id = oricomment_id
    else
-    postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..replyid..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
-
-    请求链接="https://api.zhihu.com/comment_v5/"..comment_type.."/"..comment_id.."/comment"
-
+    评论类型 = comment_type
+    评论id = comment_id
   end
+
+  postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
+  请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
+
 
   search_base=require "model.dohttp"
   :new(请求链接)

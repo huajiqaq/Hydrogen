@@ -134,12 +134,6 @@ local_listview.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
 end})
 
 function 本地列表(path)
-  if 全局主题值=="Day" then
-    bwz=0x3f000000
-   else
-    bwz=0x3fffffff
-  end
-
   local gd2 = GradientDrawable()
   gd2.setColor(转0x(backgroundc))--填充
   local radius=dp2px(16)
@@ -156,7 +150,6 @@ function 本地列表(path)
       layout_height="-2";
       Elevation="4dp";
       BackgroundDrawable=gd2;
-      id="ztbj";
       {
         CardView;
         layout_gravity="center",
@@ -193,61 +186,15 @@ function 本地列表(path)
         layout_height="-2";
         gravity="right|center";
         {
-          CardView;
-          layout_width="-2";
-          layout_height="-2";
-          radius="2dp";
-          background="#00000000";
-          layout_marginTop="8dp";
-          layout_marginLeft="8dp";
-          layout_marginBottom="24dp";
-          Elevation="0";
-          onClick=qxnr;
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-2";
-            textSize="16sp";
-            Typeface=字体("product-Bold");
-            paddingRight="16dp";
-            paddingLeft="16dp";
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text=qx;
-            textColor=stextc;
-            BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-          };
-        };
-        {
-          CardView;
-          layout_width="-2";
-          layout_height="-2";
-          radius="4dp";
-          CardBackgroundColor=primaryc;
-          layout_marginTop="8dp";
-          layout_marginLeft="8dp";
-          layout_marginRight="24dp";
-          layout_marginBottom="24dp";
-          Elevation="1dp";
-          onClick=qdnr;
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-2";
-            textSize="16sp";
-            paddingRight="16dp";
-            paddingLeft="16dp";
-            Typeface=字体("product-Bold");
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text="关闭";
-            onClick=function()
-              an.dismiss()
-            end,
-
-            textColor=backgroundc;
-            BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-          };
+          MaterialButton;
+          layout_marginTop="16dp";
+          layout_marginLeft="16dp";
+          layout_marginRight="16dp";
+          layout_marginBottom="16dp";
+          textColor=backgroundc;
+          text="关闭";
+          Typeface=字体("product-Bold");
+          onClick=function()an.dismiss()end;
         };
       };
     };

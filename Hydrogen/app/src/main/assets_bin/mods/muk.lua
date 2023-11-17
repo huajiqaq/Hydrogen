@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.112
+versionCode=0.21
 layout_dir="layout/item_layout/"
 
 
@@ -434,18 +434,23 @@ function 转0x(j)
 end
 
 function 提示(t)
+
+  if my_toast then
+    my_toast.cancel()
+  end
+
   local w=activity.width
 
   local tsbj={
     LinearLayout,
     Gravity="bottom",
     {
-      CardView,
+      MaterialCardView,
       layout_width="-1";
       layout_height="-2";
       CardElevation="0",
       CardBackgroundColor=转0x(textc)-0x3f000000,
-      Radius="8dp",
+      StrokeWidth=0,
       layout_margin="16dp";
       layout_marginBottom="64dp";
       {
@@ -469,7 +474,7 @@ function 提示(t)
     }
   }
 
-  Toast.makeText(activity,t,Toast.LENGTH_SHORT).setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0).setView(loadlayout(tsbj)).show()
+  my_toast=Toast.makeText(activity,t,Toast.LENGTH_SHORT).setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0).setView(loadlayout(tsbj)).show()
 end
 
 
@@ -606,47 +611,46 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
   gd2.setShape(0)--形状，0矩形，1圆形，2线，3环形
   local dann={
     LinearLayout;
-    layout_width="-1";
-    layout_height="-1";
+    layout_width=-1;
+    layout_height=-1;
     {
       LinearLayout;
       orientation="vertical";
-      layout_width="-1";
-      layout_height="-2";
+      layout_width=-1;
+      layout_height=-2;
       Elevation="4dp";
       BackgroundDrawable=gd2;
       id="ztbj";
       {
         CardView;
         layout_gravity="center",
-        CardBackgroundColor=cardedge,
+        CardBackgroundColor=转0x(cardedge);
         radius="3dp",
         Elevation="0dp";
         layout_height="6dp",
         layout_width="56dp",
         layout_marginTop="12dp";
       };
-
       {
         TextView;
-        layout_width="-1";
-        layout_height="-2";
+        layout_width=-1;
+        layout_height=-2;
         textSize="20sp";
         layout_marginTop="24dp";
         layout_marginLeft="24dp";
         layout_marginRight="24dp";
         Text=bt;
         Typeface=字体("product-Bold");
-        textColor=primaryc;
+        textColor=转0x(primaryc);
       };
       {
         ScrollView;
-        layout_width="-1";
-        layout_height="-1";
+        layout_width=-1;
+        layout_height=-1;
         {
           TextView;
-          layout_width="-1";
-          layout_height="-2";
+          layout_width=-1;
+          layout_height=-2;
           textSize="14sp";
           layout_marginTop="8dp";
           layout_marginLeft="24dp";
@@ -654,108 +658,60 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
           layout_marginBottom="8dp";
           Typeface=字体("product");
           Text=nr;
-          textColor=textc;
+          textColor=转0x(textc);
           id="sandhk_wb";
         };
       };
       {
         LinearLayout;
         orientation="horizontal";
-        layout_width="-1";
-        layout_height="-2";
+        layout_width=-1;
+        layout_height=-2;
         gravity="right|center";
         {
-          CardView;
-          layout_width="-2";
-          layout_height="-2";
-          radius="2dp";
-          CardBackgroundColor="#00000000";
-          layout_marginTop="8dp";
-          layout_marginLeft="24dp";
-          layout_marginBottom="24dp";
-          Elevation="0";
+          MaterialButton_TextButton;
+          layout_marginTop="16dp";
+          layout_marginLeft="16dp";
+          layout_marginRight="16dp";
+          layout_marginBottom="16dp";
+          textColor=转0x(stextc);
+          text=ds;
           id="dsnr_c";
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-2";
-            textSize="16sp";
-            Typeface=字体("product-Bold");
-            paddingRight="16dp";
-            paddingLeft="16dp";
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text=ds;
-            textColor=stextc;
-            BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-          };
+          RippleColor=ColorStateList(int[0].class{int{}},int{bwz});
+          Typeface=字体("product-Bold");
         };
         {
           LinearLayout;
           orientation="horizontal";
-          layout_width="-1";
-          layout_height="-2";
-          layout_weight="1";
+          layout_width=-1;
+          layout_height=-2;
+          layout_weight=1;
         };
         {
-          CardView;
-          layout_width="-2";
-          layout_height="-2";
-          radius="2dp";
-          CardBackgroundColor="#00000000";
-          layout_marginTop="8dp";
-          layout_marginLeft="8dp";
-          layout_marginBottom="24dp";
-          Elevation="0";
+          MaterialButton_TextButton;
+          textColor=转0x(stextc);
+          text=qx;
           id="qxnr_c";
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-2";
-            textSize="16sp";
-            Typeface=字体("product-Bold");
-            paddingRight="16dp";
-            paddingLeft="16dp";
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text=qx;
-            textColor=stextc;
-            BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-          };
+          RippleColor=ColorStateList(int[0].class{int{}},int{bwz});
+          Typeface=字体("product-Bold");
         };
         {
-          CardView;
-          layout_width="-2";
-          layout_height="-2";
-          radius="4dp";
-          --background=primaryc;
-          CardBackgroundColor=primaryc;
-          layout_marginTop="8dp";
-          layout_marginLeft="8dp";
-          layout_marginRight="24dp";
-          layout_marginBottom="24dp";
-          Elevation="1dp";
+          MaterialButton;
+          layout_marginTop="16dp";
+          layout_marginLeft="16dp";
+          layout_marginRight="16dp";
+          layout_marginBottom="16dp";
+          textColor=转0x(backgroundc);
+          text=qd;
           id="qdnr_c";
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-2";
-            textSize="16sp";
-            paddingRight="16dp";
-            paddingLeft="16dp";
-            Typeface=字体("product-Bold");
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text=qd;
-            textColor=backgroundc;
-            BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-          };
+          Typeface=字体("product-Bold");
         };
       };
     };
   };
+
   local bottomSheetDialog = BottomSheetDialog(this)
-  bottomSheetDialog.setContentView(loadlayout(dann))
+  bottomSheetDialog.setContentView(loadlayout2(dann))
   local an=bottomSheetDialog.show()
   dsnr_c.onClick=function()
     dsnr(an)
@@ -770,6 +726,7 @@ end
 
 
 function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
+
   local bwz
   if 全局主题值=="Day" then
     bwz=0x3f000000
@@ -786,21 +743,20 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
   gd2.setShape(0)--形状，0矩形，1圆形，2线，3环形
   local dann={
     LinearLayout;
-    layout_width="-1";
-    layout_height="-1";
+    layout_width=-1;
+    layout_height=-1;
     {
       LinearLayout;
       orientation="vertical";
-      layout_width="-1";
-      layout_height="-2";
+      layout_width=-1;
+      layout_height=-2;
       Elevation="4dp";
       BackgroundDrawable=gd2;
       id="ztbj";
       {
         CardView;
         layout_gravity="center",
-        --background=cardedge,
-        CardBackgroundColor=cardedge;
+        CardBackgroundColor=转0x(cardedge);
         radius="3dp",
         Elevation="0dp";
         layout_height="6dp",
@@ -809,24 +765,24 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
       };
       {
         TextView;
-        layout_width="-1";
-        layout_height="-2";
+        layout_width=-1;
+        layout_height=-2;
         textSize="20sp";
         layout_marginTop="24dp";
         layout_marginLeft="24dp";
         layout_marginRight="24dp";
         Text=bt;
         Typeface=字体("product-Bold");
-        textColor=primaryc;
+        textColor=转0x(primaryc);
       };
       {
         ScrollView;
-        layout_width="-1";
-        layout_height="-1";
+        layout_width=-1;
+        layout_height=-1;
         {
           TextView;
-          layout_width="-1";
-          layout_height="-2";
+          layout_width=-1;
+          layout_height=-2;
           textSize="14sp";
           layout_marginTop="8dp";
           layout_marginLeft="24dp";
@@ -834,75 +790,41 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
           layout_marginBottom="8dp";
           Typeface=字体("product");
           Text=nr;
-          textColor=textc;
+          textColor=转0x(textc);
           id="sandhk_wb";
         };
       };
       {
         LinearLayout;
         orientation="horizontal";
-        layout_width="-1";
-        layout_height="-2";
+        layout_width=-1;
+        layout_height=-2;
         gravity="right|center";
         {
-          CardView;
-          layout_width="-2";
-          layout_height="-2";
-          radius="2dp";
-          CardBackgroundColor="#00000000";
-          layout_marginTop="8dp";
-          layout_marginLeft="8dp";
-          layout_marginBottom="24dp";
-          Elevation="0";
+          MaterialButton_TextButton;
+          textColor=转0x(stextc);
+          text=qx;
           id="qxnr_c";
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-2";
-            textSize="16sp";
-            Typeface=字体("product-Bold");
-            paddingRight="16dp";
-            paddingLeft="16dp";
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text=qx;
-            textColor=stextc;
-            BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-          };
+          RippleColor=ColorStateList(int[0].class{int{}},int{bwz});
+          Typeface=字体("product-Bold");
         };
         {
-          CardView;
-          layout_width="-2";
-          layout_height="-2";
-          radius="4dp";
-          --background=primaryc;
-          CardBackgroundColor=primaryc;
-          layout_marginTop="8dp";
-          layout_marginLeft="8dp";
-          layout_marginRight="24dp";
-          layout_marginBottom="24dp";
-          Elevation="1dp";
+          MaterialButton;
+          layout_marginTop="16dp";
+          layout_marginLeft="16dp";
+          layout_marginRight="16dp";
+          layout_marginBottom="16dp";
+          textColor=转0x(backgroundc);
+          text=qd;
           id="qdnr_c";
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="-2";
-            textSize="16sp";
-            paddingRight="16dp";
-            paddingLeft="16dp";
-            Typeface=字体("product-Bold");
-            paddingTop="8dp";
-            paddingBottom="8dp";
-            Text=qd;
-            textColor=backgroundc;
-            BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
-          };
+          Typeface=字体("product-Bold");
         };
       };
     };
   };
+
   local bottomSheetDialog = BottomSheetDialog(this)
-  bottomSheetDialog.setContentView(loadlayout(dann))
+  bottomSheetDialog.setContentView(loadlayout2(dann))
   local an=bottomSheetDialog.show()
   qxnr_c.onClick=function()
     qxnr(an)
@@ -1918,6 +1840,8 @@ end
 
 cardback=oricardedge
 cardmargin="4px"
+--nil不设置 就是默认值
+cardradius=nil
 
 --cardback=全局主题值=="Day" and cardedge or backgroundc
 --cardmargin=全局主题值=="Day" and "4px" or false
@@ -2061,12 +1985,10 @@ task(1,function()
   function onActivityResult(a,b,c)
     if b==100 then
       setHead()
-      if islogin~=getLogin() then
-        if mytip_dia and mytip_dia.isShowing() then
-          mytip_dia.dismiss()
-          mytip_dia=nil
-          canload=true
-        end
+      if mytip_dia and mytip_dia.isShowing() then
+        mytip_dia.dismiss()
+        mytip_dia=nil
+        canload=true
       end
     end
     activity.setResult(b)
@@ -2362,13 +2284,17 @@ function 替换文件字符串(路径,要替换的字符串,替换成的字符�
   end
 end
 
-function getApiurl()
-  import "java.net.URL"
-  local urlConnection = URL("http://mtw.so/6h4kqE").openConnection();
-  urlConnection.setRequestMethod("GET");
-  local location = urlConnection.getHeaderField("Location");
-  urlConnection.disconnect();
-  return location
+function getRandom(n)
+  local t = {
+    "0","1","2","3","4","5","6","7","8","9",
+    "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+    "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+  }
+  local s = ""
+  for i =1, n do
+    s = s .. t[math.random(#t)]
+  end;
+  return s
 end
 
 local glid_manage=Glide.with(this)

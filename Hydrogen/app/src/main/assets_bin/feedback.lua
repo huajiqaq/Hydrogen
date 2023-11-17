@@ -89,11 +89,32 @@ send.onClick=function()
   progress.setVisibility(0)
   task(300,function()
     send.setVisibility(0) progress.setVisibility(8)
-    local uri=Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=1906327347")
-    if not(pcall(activity.startActivity,Intent(Intent.ACTION_VIEW,uri))) then
-      提示("你没安装QQ")
-     else
-      提示("跳转成功 请使用QQ反馈Bug")
-    end
+    local 单选列表={"使用Gitee Issues反馈","使用Github Issues反馈","使用腾讯问卷反馈","使用QQ反馈"}
+    local dofun={
+      function()
+        浏览器打开("https://gitee.com/huajicloud/Hydrogen/issues")
+      end,
+      function()
+        浏览器打开("https://github.com/huajiqaq/Hydrogen/issues")
+      end,
+      function()
+        浏览器打开("https://wj.qq.com/s2/12762946/e7a4/")
+      end,
+      function()
+        local uri=Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=1906327347")
+        if not(pcall(activity.startActivity,Intent(Intent.ACTION_VIEW,uri))) then
+          提示("你没安装QQ")
+         else
+          提示("跳转成功 请使用QQ反馈Bug")
+        end
+    end}
+     dialog=AlertDialog.Builder(this)
+    .setTitle("请选择反馈方式")
+    .setSingleChoiceItems(单选列表,-1,{onClick=function(v,p)
+        dofun[p+1]()
+        dialog.dismiss()
+    end})
+    .setPositiveButton("关闭",nil)
+    .show()
   end)
 end

@@ -94,7 +94,7 @@
         layout_width="fill";
         StrokeColor=oricardedge;
         StrokeWidth=dp2px(1),
-        radius="8dp";
+        radius=cardradius;
         CardBackgroundColor=barbackgroundc;
         id="inputLay";
         --开启动画可能造成卡顿
