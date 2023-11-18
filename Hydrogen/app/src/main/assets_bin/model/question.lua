@@ -59,7 +59,6 @@ function base_question:getChild(id) --获取传输类
     child.data=table.clone(self.data)
     child.now=index
   end
-  --  print(dump(luajson.encode(child)))
   return luajson.encode(child)
 end
 

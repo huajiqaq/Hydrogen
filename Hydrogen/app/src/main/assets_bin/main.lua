@@ -1,10 +1,7 @@
 require "import"
 initApp=true
 import "jesse205"
-
--- 检测是否需要进入欢迎页面
 import "agreements"
-
 import "android.content.Intent"
 import "android.content.ComponentName"
 import "android.net.Uri"
@@ -32,6 +29,9 @@ if not(welcomeAgain) then
   activity.newActivity("home",{activity.getIntent()})
   activity.finish()
 end
+
+-- 检测是否需要进入欢迎页面
+
 if welcomeAgain then
   newSubActivity("Welcome")
   activity.finish()

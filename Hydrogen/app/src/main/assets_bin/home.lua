@@ -678,7 +678,6 @@ function 日报刷新(isclear)
     链接 = "https://news-at.zhihu.com/api/4/stories/latest"
     ZUOTIAN = true
    else
-    --链接='http://www.zhihudaily.me/'
     thisdata=thisdata-1
     import "android.icu.text.SimpleDateFormat"
     cal=Calendar.getInstance();

@@ -60,7 +60,6 @@ function base:next(callback)
         self.nextUrl=decoded_content.paging.next
         self.is_end=decoded_content.paging.is_end
         self.common_counts=tointeger(decoded_content.counts.total_counts)
---        self.common_counts=tointeger(decoded_content.common_counts)
         for k,v in ipairs(decoded_content.data) do
           if self.data[v.id] then
            else

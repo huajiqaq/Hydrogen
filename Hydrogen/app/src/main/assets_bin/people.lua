@@ -743,7 +743,6 @@ function checktitle(str)
   if isstart=="true" then--开启
     add=true
     chobu="搜索"
-    --提示("搜索中 请耐心等待")
     local 请求链接="https://www.zhihu.com/api/v4/search_v3?correction=1&t=general&q="..urlEncode(str).."&restricted_scene=member&restricted_field=member_hash_id&restricted_value="..people_id
 
     pcall(function()people_adp.clear()end)

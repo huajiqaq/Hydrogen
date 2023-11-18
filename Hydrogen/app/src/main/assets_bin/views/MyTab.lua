@@ -29,7 +29,6 @@ tab.layout={--根布局
       Visibility=8,
       layout_alignParentBottom="true";
       gravity="center";
-      --background=textc;
       {
         CardView;
         background=primaryc,

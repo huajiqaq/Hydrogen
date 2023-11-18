@@ -7,7 +7,8 @@ collections_id,isfollow=...
 activity.setContentView(loadlayout("layout/collections"))
 
 
-collections_url="https://api.zhihu.com/collections/"..collections_id.."/contents?with_deleted=1&offset=0"
+apiurl="https://api.zhihu.com/collections/"..collections_id.."/contents"
+collections_url=apiurl.."?with_deleted=1&offset=0"
 
 zHttp.get("https://api.zhihu.com/collections/"..collections_id.."?with_deleted=1&censor=1",head,function(code,content)
   if code==200 then--判断网站状态
@@ -179,7 +180,7 @@ list5.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
        elseif tostring(v.Tag.cid.text):find("视频分割") then
         删除类型="zvideo"
       end
-      zHttp.delete(collections_url:match("(.+)/answer").."/contents/"..v.Tag.cid.Text:match("分割(.+)").."?content_type="..删除类型,head,function(code,json)
+      zHttp.delete(apiurl.."/"..v.Tag.cid.Text:match("分割(.+)").."?content_type="..删除类型,head,function(code,json)
         if code==200 then
           提示("已删除")
           activity.setResult(1600,nil)
@@ -192,7 +193,6 @@ list5.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
 end})
 
 
---有时间再补充 api接口请求头需要一些参数被加密 k实现同种功能可无限zHttp.get获取内容 后直到is_end 再执行搜索
 function checktitle(str)
   local oridata=list5.adapter.getData()
 

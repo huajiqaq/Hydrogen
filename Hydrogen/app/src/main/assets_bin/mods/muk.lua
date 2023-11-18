@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.21
+versionCode=0.22
 layout_dir="layout/item_layout/"
 
 
@@ -372,13 +372,11 @@ function 主题(str)
       local _wlp = _window.getAttributes();
       _wlp.gravity = Gravity.BOTTOM;
       _wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
-      _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;--WRAP_CONTENT
+      _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;
       _window.setAttributes(_wlp);
-      --activity.setTheme(android.R.style.Theme_Material_NoActionBar)
     end)
     if 获取主题夜间模式() == false and 获取系统夜间模式() == false then
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-      --activity.recreate()
       return
     end
   end
@@ -418,7 +416,7 @@ function activity背景颜色(color)
   _wlp = _window.getAttributes();
   _wlp.gravity = Gravity.BOTTOM;
   _wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
-  _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;--WRAP_CONTENT
+  _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;
   _window.setAttributes(_wlp);
 end
 
@@ -549,12 +547,10 @@ function 波纹(id,lx)
         content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
       end
       if lx=="圆主题" then
-        --content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
         content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
       end
       if lx=="方主题" then
         content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
-        --content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f448aff})))
       end
       if lx=="圆自适应" then
         if 全局主题值=="Day" then

@@ -83,7 +83,7 @@
         DividerHeight=0;
         layout_width="fill";
         background=backgroundc,
-        layout_height="fill";--高度需要更苦list多少进行计算，或者自己根据自己的不同写表达式
+        layout_height="fill";
         id="list5";
       };
     };

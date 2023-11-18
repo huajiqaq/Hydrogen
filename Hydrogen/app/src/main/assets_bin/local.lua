@@ -193,9 +193,6 @@ end
 
 file:close()
 
---在这里加载url会没载入webview设置 放到最后加载
---webview.loadUrl(myuri)
-
 if this.getSharedData("关闭硬件加速")=="true" then
   webview.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
 end

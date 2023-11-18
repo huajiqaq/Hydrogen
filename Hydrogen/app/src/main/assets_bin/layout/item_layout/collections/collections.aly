@@ -2,7 +2,6 @@
   LinearLayout;
   layout_width="fill";
   orientation="horizontal";
-  --background=backgroundc,
   BackgroundColor=backgroundc;
   {
     MaterialCardView;

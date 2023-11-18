@@ -114,40 +114,30 @@ tab={
     activity.newActivity("xgtj")
   end,
   设置默认主页=function()
-    if this.getSharedData("starthome")=="推荐" then
-      starnum=0
-     elseif this.getSharedData("starthome")=="想法" then
-      starnum=1
-     elseif this.getSharedData("starthome")=="热榜" then
-      starnum=2
-     elseif this.getSharedData("starthome")=="关注" then
-      starnum=3
-    end
+    starthome={"推荐","想法","热榜","关注"}
+    starthometab={["推荐"]=1,["想法"]=2,["热榜"]=3,["关注"]=4}
+    --每次进入主页都检查starthome是否存在 所以一般情况下都存在
+    starnum=starthometab[this.getSharedData("starthome")]
     tipalert=AlertDialog.Builder(this)
     .setTitle("请选择默认主页")
-    .setSingleChoiceItems({"推荐","想法","热榜","关注"}, starnum,{onClick=function(v,p)
-        if p==0 then
-          starthome="推荐"
-        end
-        if p==1 then
-          starthome ="想法"
-        end
-        if p==2 then
-          starthome ="热榜"
-        end
-        if p==3 then
-          starthome ="关注"
-        end
+    .setSingleChoiceItems({"推荐","想法","热榜","关注"}, starnum-1,{onClick=function(v,p)
+        starnum=p+1
     end})
     .setPositiveButton("确定", nil)
     .setNegativeButton("取消",nil)
     .show();
     tipalert.getButton(tipalert.BUTTON_POSITIVE).onClick=function()
-      if starthome==nil then starthome="推荐" end
+      if starnum==nil then
+        starnum=1
+      end
+      local starthome=starthome[starnum]
       if starthome=="想法" and this.getSharedData("开启想法")=="false" then
         提示("由于已关闭想法功能 所以无法选择想法")
        else
-        this.setSharedData("starthome",starthome) starthome=nil 提示("下次启动App生效") end
+        this.setSharedData("starthome",starthome)
+        starnum=nil
+        提示("下次启动App生效")
+      end
       tipalert.dismiss()
     end
 

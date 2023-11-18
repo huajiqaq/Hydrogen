@@ -49,7 +49,6 @@ function base:next(callback)
       nextoffset=self.nextUrl:match("?offset=(.-)&page_num")
     end
 
-    --zHttp.get(self.nextUrl or "https://api.zhihu.com/people/"..self.id.."/activities?limit=20",head,function(code,body)
     zHttp.get(self.nextUrl or "https://api.zhihu.com/moments/"..self.id.."/origin?limit=20",apphead,function(code,body)
 
       if code==200 then

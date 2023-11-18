@@ -134,7 +134,6 @@
               };
               {
                 LinearLayout;
-                --            orientation="horizontal";
                 layout_marginTop="10dp",
                 layout_width="-1";
                 layout_height="-1",
@@ -146,8 +145,6 @@
                   layout_height="-2";
                   radius="4dp";
                   Visibility=8;
-
-                  --background=primaryc;
                   CardBackgroundColor=primaryc;
                   layout_gravity="right",
                   onClick=function()浏览器打开(updateurl)end;

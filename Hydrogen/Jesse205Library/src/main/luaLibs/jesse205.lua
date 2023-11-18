@@ -27,14 +27,11 @@ local fastImport = {
   FileUtil = "com.jesse205.util.FileUtil",
   ClearContentHelper = "com.jesse205.helper.ClearContentHelper",
   -- 导入各种风格的控件
-  --报错 暂时略过
-  --[[
   StyleWidget = "com.jesse205.widget.StyleWidget",
   MaterialButton_TextButton = "com.jesse205.widget.StyleWidget",
   MaterialButton_OutlinedButton = "com.jesse205.widget.StyleWidget",
   MaterialButton_TextButton_Normal = "com.jesse205.widget.StyleWidget",
   MaterialButton_TextButton_Icon = "com.jesse205.widget.StyleWidget",
-  ]]
   -- 导入各种布局表
   MyTextInputLayout = "com.jesse205.layout.MyTextInputLayout"
 }

@@ -56,7 +56,6 @@ help_item={
       id="content";
       Typeface=字体("product");
       textSize="14sp";
-      --      textColor=stextc;
       textColor=textc;
       layout_marginRight="16dp",
       layout_marginLeft="16dp",
