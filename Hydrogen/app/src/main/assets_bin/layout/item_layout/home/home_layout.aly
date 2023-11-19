@@ -3,6 +3,7 @@
   layout_width="-1";
   orientation="horizontal";
   BackgroundColor=backgroundc;
+  id="rootview";
   {
     MaterialCardView;
     layout_gravity="center";

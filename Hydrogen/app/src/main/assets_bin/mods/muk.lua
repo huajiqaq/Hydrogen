@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.22
+versionCode=0.221
 layout_dir="layout/item_layout/"
 
 
@@ -1261,6 +1261,149 @@ function MUKPopu(t)
   return tab
 end
 
+--例如
+--[[
+  tab={
+
+    {"menu 1",function() print("1") end},--one
+    {"menu 2",function() print("2") end},
+    {"menu 3",function() print("3") end},
+
+    {--box
+      "子菜单1",
+      {
+        {"menu 1",function() print("1") end},
+        {"menu 2",function() print("2") end},
+        {"menu 3",function() print("3") end},
+      },
+    },
+
+  }
+  showPopMenu(tab,"主菜单").showAsDropDown(menu)--弹出菜单
+]]
+function showPopMenu(tab,title)
+  local lp = activity.getWindow().getAttributes();
+  lp.alpha = 0.85;
+  activity.getWindow().setAttributes(lp);
+  activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+  local ripple = activity.obtainStyledAttributes({android.R.attr.selectableItemBackgroundBorderless}).getResourceId(0,0)
+  local ripples = activity.obtainStyledAttributes({android.R.attr.selectableItemBackground}).getResourceId(0,0)
+  local Popup_layout={
+    LinearLayout;
+    {
+      MaterialCardView;
+      Elevation="0";
+      CardBackgroundColor=0xfffafafa;
+      StrokeWidth=0,
+      layout_width="192dp";
+      layout_height="-2";
+      layout_marginLeft="8dp";
+      {
+        ScrollView;
+        layout_height="fill";
+        layout_width="fill";
+        {
+          LinearLayout;
+          layout_height="fill";
+          layout_width="fill";
+          {
+            LinearLayout;
+            layout_height="-1";
+            layout_width="-1";
+            orientation="vertical",
+            id="Popup_list";
+          };
+        };
+      }
+    };
+  };
+  --PopupWindow
+  pops=PopupWindow(activity)
+  --PopupWindow加载布局
+  pops.setContentView(loadlayout(Popup_layout))
+  pops.setWidth(-2)
+  pops.setHeight(-2)
+  pops.setFocusable(true)
+  pops.setOutsideTouchable(true)
+  pops.setBackgroundDrawable(ColorDrawable(0x00000000))
+  pops.onDismiss=function()
+    local lp = activity.getWindow().getAttributes();
+    lp.alpha = 1;
+    activity.getWindow().setAttributes(lp);
+    activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+  end
+
+  --PopupWindow标题项布局
+  local Popup_list_title={
+    LinearLayout;
+    layout_width="-1";
+    layout_height="48dp";
+    {
+      TextView;
+      id="popadp_text";
+      Typeface=Typeface.DEFAULT_BOLD,
+      textColor=0xFF2196F3;
+
+      layout_width="-1";
+      layout_height="-1";
+      textSize="14sp";
+      gravity="left|center";
+      paddingLeft="16dp";
+      Enabled=false,
+    };
+  };
+
+  if title then--如果有标题
+    local view=loadlayout(Popup_list_title)--设置标题项布局
+    Popup_list.addView(view)--添加
+    popadp_text.setText(title)--设置标题
+  end
+
+  --PopupWindow列表项布局
+  local Popup_list_item={
+    LinearLayout;
+    layout_width="-1";
+    layout_height="48dp";
+    {
+      TextView;
+      id="popadp_text";
+      textColor=textc;
+      Typeface=字体("product");
+      layout_width="-1";
+      layout_height="-1";
+      textSize="14sp";
+      gravity="left|center";
+      paddingLeft="16dp";
+    };
+  };
+
+  for a,b in ipairs(tab) do--遍历
+    view=loadlayout(Popup_list_item)--设置菜单项布局
+    view.BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x10000000}));
+    if type(b[2])=="function" then--one
+
+      Popup_list.addView(view)--添加
+      popadp_text.setText(b[1])--设置文字
+      view.onClick=function()--菜单项点击事件
+        pops.dismiss()--关闭
+        b[2]()--事件
+      end
+
+     elseif type(b[2])=="table" then--box
+
+      Popup_list.addView(view)--添加
+      popadp_text.setText(b[1].."...")--设置文字
+      view.onClick=function()--菜单项点击事件
+        pops.dismiss()--关闭
+        showPopMenu(b[2],b[1])--打开子菜单
+      end
+
+    end
+  end
+  return pops
+end
+
+
 
 function showpop(view,pop)
   pop.showAsDropDown(view)
@@ -1302,7 +1445,6 @@ function table.join(old,add)
 end
 
 function 加入收藏夹(回答id,收藏类型)
-  canload=true
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
@@ -1351,6 +1493,7 @@ function 加入收藏夹(回答id,收藏类型)
   .setPositiveButton("确认",{
     onClick=function()
       zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..选中收藏夹,head,function(code,json)
+        canload=true
         if code==200 then
           提示("收藏成功")
          else
@@ -1600,7 +1743,6 @@ function 加入专栏(回答id,收藏类型)
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
-  canload=true
   local list,dialog_lay,lp,lq,tip_text,add_button,add_text,cp,lay,Choice_dialog,adp
   import "android.widget.LinearLayout$LayoutParams"
   list=ListView(activity).setFastScrollEnabled(true)
@@ -1640,6 +1782,7 @@ function 加入专栏(回答id,收藏类型)
   .setPositiveButton("确认",{
     onClick=function()
       zHttp.post("https://api.zhihu.com/"..收藏类型.."s/"..回答id.."/republish",'{"action":"create","column":"'..选中专栏..'"}',apphead,function(code,json)
+        canload=true
         if code==200 then
           提示("成功")
          else

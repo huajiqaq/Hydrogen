@@ -103,7 +103,7 @@ m = {
 
 }
 
-if not starthome then
+if not this.getSharedData("starthome") then
   this.setSharedData("starthome","推荐")
 end
 
@@ -252,11 +252,17 @@ function resolve_feed(v)
   end
   local testy=v.brief
   local testk='"t"'
-  return {底部内容=底部内容,标题2=标题,文章2=预览内容,链接2=问题id等,testy=testy,testk=testk}
+  return {底部内容=底部内容,标题2=标题,文章2=预览内容,链接2=问题id等,testy=testy,testk=testk,
+    rootview={
+      onTouch=function(v,event)
+        downx=event.getRawX()
+        downy=event.getRawY()
+    end}
+  }
 end
 
 function 主页推荐刷新()
-  
+
   local yxuan_adpqy=list2.adapter
 
   local isprev=home_isprev
@@ -307,7 +313,7 @@ function 主页推荐刷新()
 end
 
 function 主页随机推荐 ()
-  
+
   local yxuan_adpqy=list2.adapter
 
   local isprev=home_isprev
@@ -441,25 +447,29 @@ function 主页刷新(isclear,isprev)
         end
         zHttp.get("https://api.zhihu.com/negative-feedback/panel?scene_code=RECOMMEND&content_type="..mytype.."&content_token="..myid,apphead,function(code,content)
           if code==200 then
-            local pop=PopupMenu(activity,v)
-            menu=pop.Menu
+            local mtab={}
             local data=luajson.decode(content).data.items
             for k,v in ipairs(data) do
               local mbutton=v.raw_button
               local method=string.lower(mbutton.action.method)
-              menu.add(mbutton.text.panel_text).onMenuItemClick=function()
-                if mbutton.action.backend_url then
-                  zHttp.request(mbutton.action.backend_url,method,"",apphead,function(code,content)
-                    if code==200 then
-                      提示(mbutton.text.toast_text)
-                    end
-                  end)
-                 elseif mbutton.action.intent_url then
-                  activity.newActivity("huida",{mbutton.action.intent_url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
+              local mstr=mbutton.text.panel_text
+              table.insert(mtab,{
+                mstr,
+                function()
+                  if mbutton.action.backend_url then
+                    zHttp.request(mbutton.action.backend_url,method,"",apphead,function(code,content)
+                      if code==200 then
+                        提示(mbutton.text.toast_text)
+                      end
+                    end)
+                   elseif mbutton.action.intent_url then
+                    activity.newActivity("huida",{mbutton.action.intent_url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
+                  end
                 end
-              end
-              pop.show()--显示
+              })
             end
+            local pop=showPopMenu(mtab)
+            pop.showAtLocation(v, Gravity.NO_GRAVITY, downx, downy);
           end
         end)
         return true
