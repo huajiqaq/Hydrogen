@@ -93,19 +93,35 @@ task(1,function()
             };
 
             {
-              TextView;
-              typeface=字体("product");
-              textSize="12sp";
-              letterSpacing="0.02";
-              textColor=textc,
-              MaxLines=3;
-              layout_width="-1";
-              ellipsize="end",
-              id="description",
-              text="加载中";
-              layout_marginTop="8dp";
-              Visibility=0,
+              MaterialCardView;
+              layout_width="fill";
+              layout_height="-2";
+              cardBackgroundColor=backgroundc;
+              Elevation="0";
+              StrokeWidth=0,
+              id="description_card";
+              {
+                LinearLayout;
+                id="description",
+                padding="4dp",
+                orientation="horizontal";
+                layout_width="fill";
+                {
+                  TextView;
+                  typeface=字体("product");
+                  textSize="12sp";
+                  letterSpacing="0.02";
+                  textColor=textc,
+                  MaxLines=3;
+                  layout_width="fill";
+                  ellipsize="end",
+                  id="description_text",
+                  text="加载中";
+                  Visibility=0,
+                };
+              };
             };
+
           };
           {
             LinearLayout;
@@ -122,10 +138,6 @@ task(1,function()
               Elevation="0";
               {
                 LinearLayout;
-                id="view",
-                onClick=function()
-
-                end;
                 padding="4dp",
                 orientation="horizontal";
                 {
@@ -349,12 +361,12 @@ function 加载数据()
     _title.Text="共"..tostring(tointeger(tab.answer_count)).."个回答"
 
     if #tab.excerpt>0 then
-      description.Text=tab.excerpt
+      description_text.Text=tab.excerpt
      else
-      description.visibility=8
+      description_card.visibility=8
     end
     description.onClick=function()
-      description.setVisibility(8)
+      description_card.setVisibility(8)
       show.loadUrl("")
       show.setHorizontalScrollBarEnabled(false);
       show.setVerticalScrollBarEnabled(false);
@@ -412,7 +424,7 @@ function 加载数据()
         end
 
         imgReset()
-        
+
         加载js(view,获取js("zhihugif"))
 
         view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})

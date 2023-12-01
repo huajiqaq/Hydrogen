@@ -76,7 +76,7 @@ end
 
 function 刷新()
   if 类型=="文章" then
-    zHttp.get("https://api.zhihu.com/articles/"..result,head,function(code,body)
+    zHttp.get("https://www.zhihu.com/api/v4/articles/"..result,head,function(code,body)
       if code==200 then
         local url=luajson.decode(body)
         content.setVisibility(0)
@@ -533,11 +533,13 @@ if 类型=="文章" then
     end
   })
  elseif 类型 then
-  mpop["tittle"]=类型
-  table.remove(mpop.list,3)
-  table.remove(mpop.list,3)
-  table.remove(mpop.list,3)
-  table.remove(mpop.list,3)
+  if 类型~="本地" then
+    mpop["tittle"]=类型
+    table.remove(mpop.list,3)
+    table.remove(mpop.list,3)
+    table.remove(mpop.list,3)
+    table.remove(mpop.list,3)
+  end
  else
   table.remove(mpop.list,2)
   table.remove(mpop.list,2)
@@ -545,7 +547,6 @@ if 类型=="文章" then
   table.remove(mpop.list,2)
   table.remove(mpop.list,2)
 end
-
 task(1,function()
   a=MUKPopu(mpop)
 end)

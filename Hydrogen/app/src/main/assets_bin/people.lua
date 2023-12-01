@@ -28,6 +28,7 @@ task(1,function()
     layout_width="-1";
     {
       MaterialCardView;
+      id="rootcard";
       layout_width="-1";
       radius="8dp";
       layout_height="-2";
@@ -328,6 +329,11 @@ people_list.adapter=people_adp
 
 local base_people=require "model.people":new(people_id)
 :getData(function(data)
+  if data==false then
+    _title.Text="获取用户信息失败"  
+    rootcard.Visibility=8    
+    return false
+  end
   local 名字=data.name
   大头像=data.avatar_url_template
   local 签名=data.headline

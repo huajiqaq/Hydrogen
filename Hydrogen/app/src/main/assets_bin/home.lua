@@ -2224,7 +2224,6 @@ function 关注内容刷新(isclear)
     end
   }
 
-
   local oritype={"following_questions","following_collections","following_topics","following_columns","followees","following_news_specials","following_roundtables"}
 
   if followtabLayout.getTabCount()==0 then
@@ -2424,7 +2423,7 @@ function 关注内容刷新(isclear)
     return
   end
   local madapter=thispage.Adapter
-  local collections_url= follow_content_nexturl[pos] or "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/"..oritype[pos].."?offset=0"
+  local collections_url= follow_content_nexturl[pos] or "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/"..oritype[pos].."?limit=10"
   zHttp.get(collections_url,apphead,function(code,content)
     if code==200 then
       local data=luajson.decode(content)
@@ -2452,12 +2451,7 @@ create_content_isend={}
 create_content_nexturl={}
 canclick_create=true
 
-function 创作内容刷新(isclear)
-
-  local pos=createtabLayout.getSelectedTabPosition()+1;
-  if pos==0 then
-    pos=1
-  end
+function 创作内容点击判断(pos)
   if pos==3 then
     setmyToolip(_ask,"创建想法")
     _ask.onClick=function()
@@ -2508,6 +2502,16 @@ function 创作内容刷新(isclear)
       activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true}) end)
     end
   end
+end
+
+function 创作内容刷新(isclear)
+
+  local pos=createtabLayout.getSelectedTabPosition()+1;
+  if pos==0 then
+    pos=1
+  end
+
+  创作内容点击判断(pos)
 
   local thispage,thissr=getpage(createpage,"create",pos,7)
 

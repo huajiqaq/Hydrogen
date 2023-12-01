@@ -50,13 +50,7 @@ local function setstyle(styleee)
   end
 end
 
-mtip=false
-
 function 多选菜单(v)
-  if mtip==false then
-    mtip=true
-    提示("提示：当文本太长时可能需要拖动菜单来展示全部菜单")
-  end
   local rootview=v.getParent().getParent().getParent().getParent().getParent()
   if 踩tab[rootview.Tag.comment_id.text]==true then
     ctext="取消踩"
@@ -116,7 +110,8 @@ function 多选菜单(v)
   }
 
   local pop=showPopMenu(mtab)
-  pop.showAtLocation(v, Gravity.NO_GRAVITY, downx, downy);
+  pop.showAtLocation(rootview, Gravity.NO_GRAVITY, downx, downy);
+
   return true
 end
 

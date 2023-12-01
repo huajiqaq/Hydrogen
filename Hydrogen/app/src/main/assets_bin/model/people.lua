@@ -36,6 +36,7 @@ function base:getData(callback)
       callback(data)
      elseif luajson.decode(content).error then
       提示(luajson.decode(content).error.message)
+      callback(false)
     end
   end)
   return self

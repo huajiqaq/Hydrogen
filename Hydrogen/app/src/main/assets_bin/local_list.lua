@@ -133,6 +133,24 @@ local_listview.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
     return true
 end})
 
+local item={
+  LinearLayout,
+  orientation="vertical",
+  layout_width="fill",
+  {
+    TextView,
+    id="mytext",
+    layout_width="match_parent",
+    layout_height="wrap_content",
+    textSize="16sp",
+    gravity="center_vertical",
+    Typeface=字体("product-Bold");
+    paddingStart=64,
+    paddingEnd=64,
+    minHeight=192,
+  },
+}
+
 function 本地列表(path)
   local gd2 = GradientDrawable()
   gd2.setColor(转0x(backgroundc))--填充
@@ -202,17 +220,40 @@ function 本地列表(path)
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(dann))
   an=bottomSheetDialog.show()
-  datas={}
+
+  adp=LuaAdapter(activity,item)
+
   for v,s in pairs(luajava.astable(File(内置存储文件("Download/"..path.."/")).listFiles())) do
-    table.insert(datas,s.Name)
+    adp.add({
+      mytext=s.Name,
+    })
   end
-  array_adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1,String(datas))
-  listview.setAdapter(array_adp)
+
+  listview.setAdapter(adp)
 
   listview.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
-      activity.newActivity("local",{path,v.Text})
+      activity.newActivity("local",{path,v.Tag.mytext.Text})
       an.dismiss()
+  end})
+
+  listview.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
+    onItemLongClick=function(id,v,zero,one)
+      双按钮对话框("删除","删除该内容？该操作不可撤消！","是的","点错了",function(an)删除文件(内置存储文件("Download/"..path.."/"..v.Tag.mytext.Text))
+        an.dismiss()
+        --当内容为1个时 删除后该保存内容就没有了意义 所以当删除时连同清理该保存内容
+        if id.adapter.getCount()==1 then
+          提示("已删除 由于删除后无内容保存 所以已自动关闭")
+          删除文件(内置存储文件("Download/"..path))
+          --访问全局变量的an
+          _G["an"].dismiss()
+          加载笔记(mystr)
+         else
+          id.adapter.remove(zero)
+          提示("已删除")
+        end
+      end,function(an)an.dismiss()end)
+      return true
   end})
 
 end
@@ -261,24 +302,33 @@ task(1,function()
             return false
           end
 
-          local sdcarddir=Environment.getExternalStorageDirectory().toString()
-          local filesdir=activity.getExternalFilesDir(nil).toString()
-          local path=activity.getSharedData("savepath") or sdcarddir
-          local path=path.."/Hydrogen.zip"
+          AlertDialog.Builder(this)
+          .setTitle("提示")
+          .setMessage("修改本目录是修改导入/导出时的默认目录 目前不支持修改保存文件的默认目录")
+          .setPositiveButton("我知道了",{onClick=function()
 
-          ChoicePath(activity.getSharedData("savepath") or sdcarddir,
-          function(path)
-            local savepath
-            local last_char = string.sub(path, -1)
-            -- 判断最后一部分是否为斜杠
-            if last_char == '/' then
-              savepath = string.sub(path, 1, -2)
-             else
-              savepath=path
-            end
-            activity.setSharedData("savepath",savepath)
-            提示("自定义路径成功")
-          end)
+              local sdcarddir=Environment.getExternalStorageDirectory().toString()
+              local filesdir=activity.getExternalFilesDir(nil).toString()
+              local path=activity.getSharedData("savepath") or sdcarddir
+              local path=path.."/Hydrogen.zip"
+
+              ChoicePath(activity.getSharedData("savepath") or sdcarddir,
+              function(path)
+                local savepath
+                local last_char = string.sub(path, -1)
+                -- 判断最后一部分是否为斜杠
+                if last_char == '/' then
+                  savepath = string.sub(path, 1, -2)
+                 else
+                  savepath=path
+                end
+                activity.setSharedData("savepath",savepath)
+                提示("自定义路径成功")
+              end)
+
+          end})
+          .setNegativeButton("取消", nil)
+          .show()
 
       end},
       {src=图标("info"),text="导入",onClick=function()
@@ -296,7 +346,12 @@ task(1,function()
           local path=activity.getSharedData("savepath") or sdcarddir
           local path=path.."/Hydrogen.zip"
           if 文件是否存在(path) then
-            ZipUtil.unzip(path,filesdir.."/Hydrogen")
+            task(function()
+              local path=activity.getSharedData("savepath") or sdcarddir
+              local path=path.."/Hydrogen.zip"
+              local filesdir=activity.getExternalFilesDir(nil).toString()
+              ZipUtil.unzip(path,filesdir.."/Hydrogen")
+            end)
             删除文件(path)
             提示("导入成功")
            else
@@ -314,14 +369,18 @@ task(1,function()
             return false
           end
 
-          local sdcarddir=Environment.getExternalStorageDirectory().toString()
-          local filesdir=activity.getExternalFilesDir(nil).toString()
           local path=activity.getSharedData("savepath") or sdcarddir
+
           if 文件夹是否存在(path)~=true then
             创建文件夹(path)
           end
 
-          ZipUtil.zip(filesdir.."/Hydrogen",path)
+          task(function()
+            local sdcarddir=Environment.getExternalStorageDirectory().toString()
+            local filesdir=activity.getExternalFilesDir(nil).toString()
+            local path=activity.getSharedData("savepath") or sdcarddir
+            ZipUtil.zip(filesdir.."/Hydrogen",path)
+          end)
           提示("导出成功,导出文件在"..path.."/Hydrogen.zip")
       end},
       {src=图标("info"),text="问题",onClick=function()
