@@ -42,8 +42,6 @@ function base:clear()
 end
 
 
-
-
 function base:setresultfunc(tab)
   self.resultfunc=tab
   return self

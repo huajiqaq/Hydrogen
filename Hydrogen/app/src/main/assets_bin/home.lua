@@ -1669,7 +1669,11 @@ function 关注刷新(isclear,isprev,num)
               end
             end
             if 预览内容~="[视频]" then
-              预览内容=关注作者名称.." : "..预览内容
+              if q.type=="question" then
+                预览内容="无预览内容"
+               else
+                预览内容=关注作者名称.." : "..预览内容
+              end
             end
             madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
           end

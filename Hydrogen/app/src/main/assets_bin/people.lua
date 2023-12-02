@@ -30,7 +30,7 @@ task(1,function()
       MaterialCardView;
       id="rootcard";
       layout_width="-1";
-      radius="8dp";
+      radius=cardridus;
       layout_height="-2";
       layout_marginTop="0dp";
       layout_margin="16dp";
@@ -83,11 +83,12 @@ task(1,function()
             layout_marginTop="8dp";
             gravity="center";
             {
-              CardView;
+              MaterialCardView;
               layout_width="-2";
               layout_height="-2";
-              radius="4dp";
-              CardBackgroundColor=cardedge;
+              Elevation="0";
+              StrokeWidth=0,
+              cardBackgroundColor=cardedge;
               Elevation="0";
               {
                 LinearLayout;
@@ -111,10 +112,11 @@ task(1,function()
               };
             };
             {
-              CardView;
+              MaterialCardView;
               layout_width="-2";
               layout_height="-2";
-              radius="4dp";
+              Elevation="0";
+              StrokeWidth=0,
               cardBackgroundColor=cardedge;
               Elevation="0";
               layout_marginLeft="10dp";
@@ -140,10 +142,11 @@ task(1,function()
               };
             };
             {
-              CardView;
+              MaterialCardView;
               layout_width="-2";
               layout_height="-2";
-              radius="4dp";
+              Elevation="0";
+              StrokeWidth=0,
               cardBackgroundColor=cardedge;
               Elevation="0";
               layout_marginLeft="10dp";
@@ -330,8 +333,8 @@ people_list.adapter=people_adp
 local base_people=require "model.people":new(people_id)
 :getData(function(data)
   if data==false then
-    _title.Text="获取用户信息失败"  
-    rootcard.Visibility=8    
+    _title.Text="获取用户信息失败"
+    rootcard.Visibility=8
     return false
   end
   local 名字=data.name
@@ -503,7 +506,11 @@ end)
     问题id=tointeger(v.target.id).."问题分割"
     标题=v.target.title
    elseif v.target.type=="column" then
-    return
+    问题id="专栏分割"..v.target.id.."专栏标题"..v.target.title
+    评论数=tointeger(v.target.items_count)
+    标题=v.target.title
+    预览内容=v.target.intro
+
    elseif v.target.type=="collection" then
     return
    elseif v.target.type=="moments_pin" then
@@ -514,6 +521,16 @@ end)
      else
       预览内容="无"
     end
+   elseif v.target.type=="zvideo" then
+    xpcall(function()
+      videourl=v.target.video.playlist.sd.url
+      end,function()
+      videourl=v.target.video.playlist.ld.url
+      end,function()
+      videourl=v.target.video.playlist.hd.url
+    end)
+    问题id="视频分割"..videourl
+    标题=v.target.title
    else
     问题id="文章分割"..tointeger(v.target.id)
     标题=v.target.title
@@ -654,6 +671,7 @@ function 其他(isclear)
           问题id="专栏分割"..v.id.."专栏标题"..v.title
           评论数=tointeger(v.items_count)
           标题=v.title
+          预览内容=v.intro
 
          elseif v.type=="collection" then
           return
@@ -784,6 +802,7 @@ function checktitle(str)
           问题id="专栏分割"..v.object.id.."专栏标题"..v.object.title
           评论数=tointeger(v.object.items_count)
           标题=v.object.title
+          预览内容=v.object.intro
 
          elseif v.object.type=="collection" then
           return

@@ -227,24 +227,7 @@ if mtype:find("收藏") then
 
 
       local alladd={
-        {
-          collections_title={
-            text="本地收藏",
-          },
-          collections_art={
-            text="你猜有几个内容？",
-          },
-          is_lock=图标("https"),
-          collections_item={
-            text="0",
-          },
-          collections_follower={
-            text="0",
-          },
-          collections_id={
-            text="local"
-          },
-        },
+        "null",
         {
           mc_image="https://picx.zhimg.com/50/v2-abed1a8c04700ba7d72b45195223e0ff_xl.jpg",
           mc_name={
@@ -283,7 +266,9 @@ if mtype:find("收藏") then
       thispage.adapter=MyLuaAdapter(activity,allitemc[pos])
       local madapter=thispage.Adapter
 
-      table.insert(madapter.getData(),alladd[pos])
+      if alladd[pos]~="null"
+        table.insert(madapter.getData(),alladd[pos])
+      end
 
       可以加载收藏[pos]=true
       collection_isend[pos]=false
