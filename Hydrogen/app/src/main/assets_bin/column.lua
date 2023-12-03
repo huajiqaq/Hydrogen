@@ -77,6 +77,7 @@ if getLogin() then
 end
 
 function 刷新()
+  content.BackgroundColor=转0x("#00000000",true);
   content.setVisibility(8)
   if 类型=="文章" then
     zHttp.get("https://www.zhihu.com/api/v4/articles/"..result,head,function(code,body)
@@ -225,7 +226,7 @@ if activity.getSharedData("禁用缓存")=="true"
   .setDatabaseEnabled(true)
 end
 
-mty.setWebContentsDebuggingEnabled(true)
+
 content.setWebViewClient{
   onReceivedError=function(view,a,b)
 
@@ -246,12 +247,10 @@ content.setWebViewClient{
   end,
   onPageStarted=function(view,url,favicon)
     --网页加载
+    content.setVisibility(0)
     等待doc(view)
-    加载js(view,获取js("zhihugif"))
     if 全局主题值=="Night" then
-      content.BackgroundColor=转0x("#00000000",true);
       黑暗模式主题(view)
-      content.setVisibility(0)
      else
       白天主题(view)
     end
@@ -272,6 +271,7 @@ content.setWebViewClient{
       加载js(view,获取js("drama"))
     end
 
+    加载js(view,获取js("zhihugif"))
 
   end,
   onPageFinished=function(view,l)

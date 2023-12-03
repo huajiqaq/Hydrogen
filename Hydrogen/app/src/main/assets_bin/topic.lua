@@ -132,7 +132,7 @@ function 精华刷新(istab)
 
             activity.newActivity("answer",{tostring(v.Tag.best_id.Text):match("(.+)分割"),tostring(v.Tag.best_id.Text):match("分割(.+)")})
            else
-            activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.best_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.best_id.Text):match("分割(.+)")})
+            activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.best_id.Text):match("分割(.+)")})
           end
         end
       end

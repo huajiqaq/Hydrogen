@@ -235,7 +235,7 @@ function resolve_feed(v)
    elseif v.extra.type:find("vip") then
     return
     --需要购买的专栏/小说
-    --不考虑适配   
+    --不考虑适配
    elseif v.extra.type:find("paid") then
     return
    else
@@ -423,7 +423,7 @@ function 主页刷新(isclear,isprev)
 
             activity.newActivity("answer",{tostring(v.Tag.链接2.Text):match("(.+)分割"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
            else
-            activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.链接2.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.链接2.Text):match("分割(.+)")})
+            activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.链接2.Text):match("分割(.+)")})
           end
         end
       end
@@ -1325,6 +1325,63 @@ moments_tab={
 
 canclick_follow=true
 
+initpage(fpage,"follow",3)
+followTab.setupWithViewPager(fpage)
+local followTable={"精选","最新","想法"}
+
+--setupWithViewPager设置的必须手动设置text
+for i=1, #followTable do
+  local itemnum=i-1
+  local tab=followTab.getTabAt(itemnum)
+  tab.setText(followTable[i]);
+end
+
+followTab.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
+  onTabSelected=function(tab)
+    if not(getLogin()) then
+      return 提示("请登录后使用本功能")
+    end
+    --选择时触发
+    if canclick_follow then
+      canclick_follow=false
+      Handler().postDelayed(Runnable({
+        run=function()
+          canclick_follow=true
+        end,
+      }),1050)
+     else
+      return false
+    end
+    local pos=tab.getPosition()+1
+    关注刷新(nil,false,pos)
+  end,
+
+  onTabUnselected=function(tab)
+    --未选择时触发
+  end,
+
+  onTabReselected=function(tab)
+    --选中之后再次点击即复选时触发
+    if not(getLogin()) then
+      return 提示("请登录后使用本功能")
+    end
+    if canclick_follow then
+      canclick_follow=false
+      Handler().postDelayed(Runnable({
+        run=function()
+          canclick_follow=true
+        end,
+      }),1050)
+     else
+      return false
+    end
+    local pos=tab.getPosition()+1
+    关注刷新(true,true,pos)
+  end,
+});
+
+
+
 function 关注刷新(isclear,isprev,num)
   -- origin15.19 更改
   if num==nil then
@@ -1340,54 +1397,6 @@ function 关注刷新(isclear,isprev,num)
   local thispage,thissr=getpage(fpage,"follow",num,3)
 
   if followTab.getTabCount()==0 then
-    followTab.setupWithViewPager(fpage)
-    local followTable={"精选","最新","想法"}
-
-    --setupWithViewPager设置的必须手动设置text
-    for i=1, #followTable do
-      local itemnum=i-1
-      local tab=followTab.getTabAt(itemnum)
-      tab.setText(followTable[i]);
-    end
-
-    followTab.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
-      onTabSelected=function(tab)
-        --选择时触发
-        if canclick_follow then
-          canclick_follow=false
-          Handler().postDelayed(Runnable({
-            run=function()
-              canclick_follow=true
-            end,
-          }),1050)
-         else
-          return false
-        end
-        local pos=tab.getPosition()+1
-        关注刷新(nil,false,pos)
-      end,
-
-      onTabUnselected=function(tab)
-        --未选择时触发
-      end,
-
-      onTabReselected=function(tab)
-        --选中之后再次点击即复选时触发
-        if canclick_follow then
-          canclick_follow=false
-          Handler().postDelayed(Runnable({
-            run=function()
-              canclick_follow=true
-            end,
-          }),1050)
-         else
-          return false
-        end
-        local pos=tab.getPosition()+1
-        关注刷新(true,true,pos)
-      end,
-    });
-
 
   end
 
@@ -1448,7 +1457,7 @@ function 关注刷新(isclear,isprev,num)
           if open=="false" then
             activity.newActivity("answer",{tostring(v.Tag.follow_id.Text):match("(.+)分割"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
            else
-            activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+            activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
           end
         end
       end

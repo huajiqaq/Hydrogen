@@ -71,6 +71,15 @@ data = {
 
 tab={
 
+  ["内部浏览器查看回答"]=function()
+    AlertDialog.Builder(this)
+    .setTitle("不推荐开启此选项")
+    .setMessage("开启后 回答 问题将会以知乎网页形式打开")
+    .setCancelable(false)
+    .setPositiveButton("我知道了",nil)
+    .show()
+  end,
+
   ["回答预加载(beta)"]=function()
     提示("此功能可能还有隐性bug,仅供体验，若影响体验请关闭")
   end,

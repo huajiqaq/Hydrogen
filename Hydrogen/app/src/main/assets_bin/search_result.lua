@@ -105,7 +105,7 @@ history_list.onItemClick=function(l,v,c,b)
       保存历史记录(v.Tag.people_title.Text,v.Tag.people_url.Text,50)
       activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
      else
-      activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+      activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
     end
   end
 end

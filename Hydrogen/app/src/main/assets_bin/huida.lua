@@ -39,9 +39,10 @@ end
 
 if docode~=nil and ischeck~="null" then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
- elseif check_url(liulanurl) then
+ elseif check_url(liulanurl) or liulanurl:find("https://www.zhihu.com/answer/") then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")
 end
+liulan.BackgroundColor=转0x("#00000000",true);
 liulan.loadUrl(liulanurl)
 liulan.removeView(liulan.getChildAt(0))
 
@@ -173,7 +174,7 @@ mpop={
 
 liulan.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)--回调参数，v控件，url网址
-    local res=false
+    res=false
     if liulanurl:find("zhihu.com") and liulanurl:find("https://www.zhihu.com/account/unhuman") then
       view.stopLoading()
       if url:find("zhihu.com/signin") then
@@ -228,6 +229,10 @@ liulan.setWebViewClient{
       end
      else
       if 检查链接(url,true) then
+        if liulanurl:find("https://www.zhihu.com/answer/") then
+          liulanurl=url
+          return
+        end
         view.stopLoading()
         检查链接(url)
       end
@@ -244,7 +249,6 @@ liulan.setWebViewClient{
       加载js(view,'window.open=function() { return false }')
     end
     if 全局主题值=="Night" then
-      view.BackgroundColor=转0x("#00000000",true);
       黑暗模式主题(view)
     end
 
@@ -297,6 +301,8 @@ liulan.setWebViewClient{
     if 加载js内容 then
       加载js(view,加载js内容)
     end
+
+    加载js(view,获取js("zhihugif"))
 
     liulan.setVisibility(0)
 

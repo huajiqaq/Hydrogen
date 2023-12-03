@@ -163,7 +163,7 @@ history_list.onItemClick=function(l,v,c,b)
     if open=="false" then
       activity.newActivity("answer",{(recordii[clicknum]):match("(.+)分割"),(recordii[clicknum]):match("分割(.+)")})
      else
-      activity.newActivity("huida",{"https://www.zhihu.com/question/"..(recordii[clicknum]):match("(.+)分割").."/answer/"..(recordii[clicknum]):match("分割(.+)")})
+      activity.newActivity("huida",{"https://www.zhihu.com/answer/"..(recordii[clicknum]):match("分割(.+)")})
     end
    else
     if open=="false" then

@@ -11,15 +11,14 @@ activity.setContentView(loadlayout("layout/login"))
 
 波纹({fh,_info},"圆主题")
 
-
 login_web.removeView(login_web.getChildAt(0))
-login_web.setVisibility(8)
+login_web.BackgroundColor=转0x("#00000000",true)
+
 if url then
   login_web.loadUrl(url)
  else
   login_web.loadUrl("https://www.zhihu.com/signin?next=www.zhihu.com")
 end
-
 
 --开启 DOM storage API 功能
 login_web.getSettings().setDomStorageEnabled(true);
@@ -87,8 +86,6 @@ login_web.setWebViewClient{
     加载js(view,获取js("login"))
     if 全局主题值=="Night" then
       黑暗模式主题(view)
-      view.BackgroundColor=转0x("#00000000",true);
-      login_web.setVisibility(0)
     end
   end,
   onPageFinished=function(view,url)

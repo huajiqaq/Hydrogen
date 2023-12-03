@@ -866,7 +866,7 @@ people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       if open=="false" then
         activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)"),nil,true})
        else
-        activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.follow_id.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
+        activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
       end
     end
   end

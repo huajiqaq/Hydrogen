@@ -79,13 +79,12 @@
         id="login_web",
         layout_height="-1",
         layout_width="-1",
-        Visibility=8,
       };
       {
         ProgressBar;
         ProgressBarBackground=转0x(primaryc),
         id="progress";
-        Visibility=0,
+        Visibility=8,
         layout_height="56dp",
         layout_width="56dp",
       };

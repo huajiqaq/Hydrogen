@@ -9,10 +9,12 @@
                     const imageUrl = this.src
                     const newImageUrl = imageUrl.replace(/(\.\w+)(\?.*)?$/, ".gif$2");
                     this.src = newImageUrl;
+                    this.dataset.src = newImageUrl;
                     e.stopPropagation()
                     this.parentNode.className = this.parentNode.className + " isPlaying"
                     for (var i = 0; i < this.parentNode.childNodes.length; i++) {
                         if (this.parentNode.childNodes[i].tagName != "IMG") {
+                            console.log(this.parentNode.childNodes[i])
                             this.parentNode.childNodes[i].style.display = "none"
                             this.parentNode.childNodes[i].style.pointerEvents = "none"
                         }
@@ -22,10 +24,13 @@
                 var tag = document.getElementsByTagName("img");
                 var t = {};
                 for (var z = 0; z < tag.length; z++) {
-                    if (tag[z].parentNode.className.includes("GifPlayer")) {
-                        t[z] = tag[z].src.replace(/(\.\w+)(\?.*)?$/, ".gif$2")
+                    if (tag[z].dataset.src) {
+                        t[z] = tag[z].dataset.src
                     } else {
-                        t[z] = tag[z].src;
+                        t[z] = tag[z].src
+                    }
+                    if (tag[z].parentNode.className.includes("GifPlayer")) {
+                        t[z] = t[z].replace(/(\.\w+)(\?.*)?$/, ".gif$2")
                     }
                     if (tag[z].src == this.src) {
                         t[tag.length] = z;
@@ -40,7 +45,14 @@
             var tag = document.getElementsByTagName("img");
             var t = {};
             for (var z = 0; z < tag.length; z++) {
-                t[z] = tag[z].src;
+                if (tag[z].dataset.src) {
+                    t[z] = tag[z].dataset.src
+                } else {
+                    t[z] = tag[z].src
+                }
+                if (tag[z].parentNode.className.includes("GifPlayer")) {
+                    t[z] = t[z].replace(/(\.\w+)(\?.*)?$/, ".gif$2")
+                }
                 if (tag[z].src == this.src) {
                     t[tag.length] = z;
                 }

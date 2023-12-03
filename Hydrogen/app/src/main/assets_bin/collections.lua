@@ -158,7 +158,7 @@ list5.setOnItemClickListener(AdapterView.OnItemClickListener{
       if open=="false" then
         activity.newActivity("answer",{tostring(v.Tag.cid.Text):match("(.+)回答分割"),tostring(v.Tag.cid.Text):match("回答分割(.+)")})
        else
-        activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(v.Tag.cid.Text):match("(.+)分割").."/answer/"..tostring(v.Tag.cid.Text):match("分割(.+)")})
+        activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.cid.Text):match("分割(.+)")})
       end
     end
   end

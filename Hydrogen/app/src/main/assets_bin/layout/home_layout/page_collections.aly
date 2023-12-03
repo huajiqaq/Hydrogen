@@ -9,7 +9,7 @@
     background=backgroundc;
     layout_width="fill",
     id="CollectiontabLayout",
-    elevation ="2dp",
+    elevation ="4dp",
     tabMode=TabLayout.MODE_FIXED;
     tabGravity=TabLayout.GRAVITY_FILL,
     layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)

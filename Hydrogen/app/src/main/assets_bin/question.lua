@@ -368,10 +368,8 @@ function 加载数据()
     end
     description.onClick=function()
       description_card.setVisibility(8)
+      show.BackgroundColor=转0x("#00000000",true);
       show.loadUrl("")
-      if 全局主题值=="Night" then
-        show.BackgroundColor=转0x("#00000000",true);
-      end
       show.setHorizontalScrollBarEnabled(false);
       show.setVerticalScrollBarEnabled(false);
     end
@@ -590,7 +588,7 @@ question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     if open=="false" then
       activity.newActivity("answer",{question_id,tostring(v.Tag.question_id.Text),question_base:getChild(tointeger(v.Tag.question_id.Text))})
      else
-      activity.newActivity("huida",{"https://www.zhihu.com/question/"..question_id.."/answer/"..tostring(v.Tag.question_id.Text)})
+      activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.question_id.Text)})
     end
 
   end

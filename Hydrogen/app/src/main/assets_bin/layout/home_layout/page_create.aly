@@ -10,7 +10,7 @@
     background=backgroundc;
     layout_width="fill",
     id="createtabLayout",
-    elevation ="2dp",
+    elevation ="4dp",
     tabMode=TabLayout.MODE_SCROLLABLE;
     layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)
   };
