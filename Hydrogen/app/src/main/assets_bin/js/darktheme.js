@@ -1,5 +1,4 @@
-;(function () {
-    document.addEventListener('DOMContentLoaded', () => {
+; (function () {
     'use strict';
 
     let util = {
@@ -76,6 +75,8 @@
                     twitterwidget,
                     .sr-reader,
                     .no-dark-mode,
+                    /* .ImageLoader-message 知乎加载图片时的文字 */
+                    .ImageLoader-message,
                     .sr-backdrop {
                         ${this.isFirefox() ? util.firefoxReverseFilter : util.reverseFilter}
                     }
@@ -177,11 +178,19 @@
         firstEnableDarkMode() {
             if (document.head) {
                 this.enableDarkMode();
+                const headObserver = new MutationObserver(() => {
+                    this.enableDarkMode();
+                });
+                headObserver.observe(document.head, { childList: true, subtree: true });
+            } else {
+                const docObserver = new MutationObserver(() => {
+                    if (document.head) {
+                        this.firstEnableDarkMode();
+                        docObserver.disconnect()
+                    }
+                });
+                docObserver.observe(document, { childList: true });
             }
-            const headObserver = new MutationObserver(() => {
-                this.enableDarkMode();
-            });
-            headObserver.observe(document.head, {childList: true, subtree: true});
         },
 
         init() {
@@ -190,5 +199,4 @@
         }
     };
     main.init();
-    })
 })();

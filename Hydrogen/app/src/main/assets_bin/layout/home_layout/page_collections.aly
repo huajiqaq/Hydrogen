@@ -6,6 +6,7 @@
   id="page_collections";
   {
     TabLayout,
+    background=backgroundc;
     layout_width="fill",
     id="CollectiontabLayout",
     elevation ="2dp",

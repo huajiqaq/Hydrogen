@@ -49,6 +49,8 @@ end
 
 
 波纹({fh,_more},"圆主题")
+静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),pbar,"横")
+
 
 function setProgress(p)
   ValueAnimator.ofFloat({pbar.getWidth(),activity.getWidth()/100*p})
@@ -75,11 +77,11 @@ if getLogin() then
 end
 
 function 刷新()
+  content.setVisibility(8)
   if 类型=="文章" then
     zHttp.get("https://www.zhihu.com/api/v4/articles/"..result,head,function(code,body)
       if code==200 then
         local url=luajson.decode(body)
-        content.setVisibility(0)
         autoname=url.author.name
         simpletitle=url.title
         simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
@@ -105,7 +107,6 @@ function 刷新()
       end
     end)
    elseif 类型=="想法" then
-    content.setVisibility(0)
     _title.Text="查看想法"
     zHttp.get("https://www.zhihu.com/api/v4/pins/"..result,head,function(code,content)
       simpletitle=luajson.decode(content).excerpt_title
@@ -248,7 +249,9 @@ content.setWebViewClient{
     等待doc(view)
     加载js(view,获取js("zhihugif"))
     if 全局主题值=="Night" then
+      content.BackgroundColor=转0x("#00000000",true);
       黑暗模式主题(view)
+      content.setVisibility(0)
      else
       白天主题(view)
     end
@@ -297,8 +300,12 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onProgressChanged=function(view,p)
     setProgress(p)
     if p==100 then
-      pbar.setVisibility(8)
-      setProgress(0)
+      setProgress(100)
+      task(500,function()
+        linearParams=pbar.getLayoutParams()
+        linearParams.width =0
+        pbar.setLayoutParams(linearParams)
+      end)
     end
 
   end,

@@ -176,7 +176,7 @@ function 数据添加(t,b)
     end
   end
 
-  波纹({t.ripple},"圆黑")
+  波纹({t.ripple},"圆自适应")
 
   t.userinfo.post{
     run=function()

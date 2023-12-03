@@ -234,6 +234,10 @@ function resolve_feed(v)
     --不考虑适配
    elseif v.extra.type:find("vip") then
     return
+    --需要购买的专栏/小说
+    --不考虑适配   
+   elseif v.extra.type:find("paid") then
+    return
    else
     提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
     AlertDialog.Builder(this)

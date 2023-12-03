@@ -15,6 +15,7 @@
       layout_height="wrap";
       layout_width="fill";
       TargetElevation=0;
+      background=backgroundc;
       {
         MaterialToolbar;
         id="toolbar";

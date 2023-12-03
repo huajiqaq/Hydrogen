@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.23
+versionCode=0.24
 layout_dir="layout/item_layout/"
 
 
@@ -307,7 +307,7 @@ end
 
 function dec2hex(n)
   local color=0xFFFFFFFF & n
-  hex_str = string.format("#%08X", color)
+  local hex_str = string.format("#%08X", color)
   return hex_str
 end
 
@@ -320,7 +320,8 @@ function 主题(str)
     textc="#212121"
     stextc="#424242"
     backgroundc="#ffffffff"
-    barbackgroundc="#efffffff"
+    oribarbackgroundc="#efffffff"
+    barbackgroundc=android.res.color.attr.colorBackground&0xFFFFFF+0xFF000000*0.8
     cardbackc="#fff1f1f1"
     viewshaderc="#00000000"
     grayc="#ECEDF1"
@@ -358,12 +359,13 @@ function 主题(str)
     --stextc="#666666"
     stextc="#808080"
     backgroundc="#ff191919"
-    barbackgroundc="#ef191919"
+    oribarbackgroundc="#ef191919"
+    barbackgroundc=android.res.color.attr.colorBackground&0xFFFFFF+0xFF000000*0.8
     cardbackc="#ff212121"
     viewshaderc="#80000000"
     grayc="#212121"
     ripplec="#559E9E9E"
-    cardedge=dec2hex(res.color.attr.colorSurface)
+    cardedge=dec2hex(res.color.attr.colorSurface-0x4f000000)
     oricardedge="#555555"
     --cardedge="#555555"
     pcall(function()
@@ -420,13 +422,17 @@ function activity背景颜色(color)
   _window.setAttributes(_wlp);
 end
 
-function 转0x(j)
+function 转0x(j,isAndroid)
   if #j==7 then
     jj=j:match("#(.+)")
     jjj=tonumber("0xff"..jj)
    else
     jj=j:match("#(.+)")
     jjj=tonumber("0x"..jj)
+  end
+  -- 如果安卓的颜色值大于2^31-1，那么它是一个负数，需要减去2^32
+  if isAndroid and jjj > 2^31 - 1 then
+    jjj = tointeger(jjj - 2^32)
   end
   return jjj
 end
@@ -1367,7 +1373,7 @@ function showPopMenu(tab,title)
     {
       TextView;
       id="popadp_text";
-      textColor=textc;
+      textColor=stextc;
       Typeface=字体("product");
       layout_width="-1";
       layout_height="-1";
@@ -2618,4 +2624,8 @@ function numtostr(num)
     num=tostring(math.floor(num/10000)).."万"
   end
   return tostring(num)
+end
+
+if Build.VERSION.SDK_INT >= 21 then
+  activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(转0x(backgroundc,true));
 end

@@ -89,6 +89,7 @@
       background="#00000000";
       {
         TabLayout,
+        background=backgroundc;
         layout_width="fill",
         id="TopictabLayout",
         elevation ="2dp",

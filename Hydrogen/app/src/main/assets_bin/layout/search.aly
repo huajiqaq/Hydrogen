@@ -7,6 +7,7 @@
     layout_height="-1";
     layout_width="-1";
     id="_root";
+    background=backgroundc,
     orientation="vertical";
     {
       LinearLayout,
@@ -35,7 +36,6 @@
         LinearLayout;
         layout_height="-1";
         layout_width="-1";
-        id="_root";
         orientation="vertical";
         {
           TextView;

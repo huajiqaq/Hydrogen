@@ -12,6 +12,7 @@
       orientation="vertical",
       {
         TabLayout,
+        background=backgroundc;
         layout_width="fill",
         id="HometabLayout",
         elevation ="2dp",
@@ -101,6 +102,7 @@
       --padding="8dp";
       {
         TabLayout,
+        background=backgroundc;
         layout_width="fill",
         id="followTab",
         elevation ="2dp",

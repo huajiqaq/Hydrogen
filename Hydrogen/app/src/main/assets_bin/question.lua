@@ -87,6 +87,7 @@ task(1,function()
                 LuaWebView;
                 layout_marginTop="8dp";
                 id="show",
+                Visibility=8;
                 layout_width="-1";
                 layout_height="wrap_content",
               };
@@ -368,9 +369,11 @@ function 加载数据()
     description.onClick=function()
       description_card.setVisibility(8)
       show.loadUrl("")
+      if 全局主题值=="Night" then
+        show.BackgroundColor=转0x("#00000000",true);
+      end
       show.setHorizontalScrollBarEnabled(false);
       show.setVerticalScrollBarEnabled(false);
-      show.setVisibility(0)
     end
 
     function imgReset()
@@ -417,6 +420,8 @@ function 加载数据()
         view.stopLoading()
         检查链接(url)
       end,
+      onPageStarted=function(view,url,favicon)
+      end,
       onPageFinished=function(view,url)
 
         if 全局主题值=="Night" then
@@ -441,6 +446,7 @@ function 加载数据()
 
         if isLoaded == 1 then
           show.setFocusable(false)
+          show.setVisibility(0)
          else
           isLoaded = 1
           show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);

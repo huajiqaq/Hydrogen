@@ -1,5 +1,4 @@
 ; (function () {
-    document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
     let util = {
@@ -39,9 +38,18 @@
 
 
         init() {
-            this.createDayStyle();
+            if (document.head) {
+                this.createDayStyle();
+            } else {
+                const docObserver = new MutationObserver(() => {
+                    if (document.head) {
+                        this.init();
+                        docObserver.disconnect()
+                    }
+                });
+                docObserver.observe(document, { childList: true });
+            }
         }
     };
     main.init();
-    })
 })();

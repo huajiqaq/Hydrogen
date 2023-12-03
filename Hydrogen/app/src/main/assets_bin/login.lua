@@ -13,7 +13,7 @@ activity.setContentView(loadlayout("layout/login"))
 
 
 login_web.removeView(login_web.getChildAt(0))
-
+login_web.setVisibility(8)
 if url then
   login_web.loadUrl(url)
  else
@@ -87,6 +87,8 @@ login_web.setWebViewClient{
     加载js(view,获取js("login"))
     if 全局主题值=="Night" then
       黑暗模式主题(view)
+      view.BackgroundColor=转0x("#00000000",true);
+      login_web.setVisibility(0)
     end
   end,
   onPageFinished=function(view,url)

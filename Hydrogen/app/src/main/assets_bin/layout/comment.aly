@@ -86,48 +86,8 @@
         background=backgroundc,
         layout_height="-1";
         id="comment_list";
-        layout_weight=1;
+        --        layout_weight=1;
       };
-
-      {
-        MaterialCardView;
-        layout_width="fill";
-        StrokeColor=oricardedge;
-        StrokeWidth=dp2px(1),
-        radius=cardradius;
-        CardBackgroundColor=barbackgroundc;
-        id="inputLay";
-        --开启动画可能造成卡顿
-        --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-        {
-          LinearLayout;
-          layout_width="fill";
-          layout_height="fill";
-          gravity="center";
-          Focusable=true;
-          FocusableInTouchMode=true;
-          --开启动画可能造成卡顿
-          --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-          {
-            EditText;
-            id="edit";
-            layout_weight=1;
-            layout_marginLeft="16dp";
-            layout_margin="8dp";
-            maxLines=10;
-            hint="输入评论";
-          };
-          {
-            MaterialButton;
-            layout_marginRight="10dp";
-            id="send";
-            textColor=backgroundc;
-            text="发送";
-            Typeface=字体("product-Bold");
-          };
-        };
-      };
-
     };
     {
       LinearLayout,
@@ -159,5 +119,53 @@
         };
       };
     };
+
+
+
   },
+
+  {
+    RelativeLayout,
+    layout_width="-1",
+    layout_height="-1",
+    gravity="bottom";
+    {
+      MaterialCardView;
+      layout_width="fill";
+      StrokeWidth=dp2px(0),
+      radius=cardradius;
+      CardBackgroundColor=barbackgroundc;
+      id="inputLay";
+      --开启动画可能造成卡顿
+      --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+      {
+        LinearLayout;
+        layout_width="fill";
+        layout_height="fill";
+        gravity="center";
+        Focusable=true;
+        FocusableInTouchMode=true;
+        --开启动画可能造成卡顿
+        --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+        {
+          EditText;
+          id="edit";
+          layout_weight=1;
+          layout_marginLeft="16dp";
+          layout_margin="8dp";
+          maxLines=10;
+          hint="输入评论";
+        };
+        {
+          MaterialButton;
+          layout_marginRight="10dp";
+          id="send";
+          textColor=backgroundc;
+          text="发送";
+          Typeface=字体("product-Bold");
+        };
+      };
+    };
+  };
+
 };

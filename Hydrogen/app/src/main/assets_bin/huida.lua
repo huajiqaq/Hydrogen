@@ -61,6 +61,7 @@ function setProgress(p)
 end
 
 _title.text="加载中"
+liulan.setVisibility(8)
 
 liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onReceivedTitle=function(view, title)
@@ -80,8 +81,12 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onProgressChanged=function(view,p)
     setProgress(p)
     if p==100 then
-      pbar.setVisibility(8)
-      setProgress(0)
+      setProgress(100)
+      task(500,function()
+        linearParams=pbar.getLayoutParams()
+        linearParams.width =0
+        pbar.setLayoutParams(linearParams)
+      end)
     end
 
   end,
@@ -239,6 +244,7 @@ liulan.setWebViewClient{
       加载js(view,'window.open=function() { return false }')
     end
     if 全局主题值=="Night" then
+      view.BackgroundColor=转0x("#00000000",true);
       黑暗模式主题(view)
     end
 
@@ -291,6 +297,8 @@ liulan.setWebViewClient{
     if 加载js内容 then
       加载js(view,加载js内容)
     end
+
+    liulan.setVisibility(0)
 
   end,
   onLoadResource=function(view,url)

@@ -7,6 +7,7 @@
 
   {
     TabLayout,
+    background=backgroundc;
     layout_width="fill",
     id="createtabLayout",
     elevation ="2dp",
