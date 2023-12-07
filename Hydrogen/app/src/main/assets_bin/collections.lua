@@ -68,17 +68,17 @@ function 初始化()
   :setresultfunc(function(tab)
 
     if tab.type=="answer" then
-      点赞数=tointeger(tab.voteup_count)..""
-      评论数=tointeger(tab.comment_count)..""
+      点赞数=(tab.voteup_count)..""
+      评论数=(tab.comment_count)..""
       内容=tab.excerpt
       标题=tab.question.title
-      id分割=tointeger(tab.question.id).."回答分割"..tointeger(tab.id)
+      id分割=(tab.question.id).."回答分割"..(tab.id)
      elseif tab.type=="article" then
-      点赞数=tointeger(tab.voteup_count)..""
-      评论数=tointeger(tab.comment_count)..""
+      点赞数=(tab.voteup_count)..""
+      评论数=(tab.comment_count)..""
       内容=tab.excerpt
       标题=tab.title
-      id分割="文章分割"..tointeger(tab.id)
+      id分割="文章分割"..(tab.id)
       yuxunnn_ay.add{
         cavoteup=点赞数,
         cacomment=评论数,
@@ -91,19 +91,19 @@ function 初始化()
      elseif tab.type=="pin" then
 
       内容=tab.excerpt_title
-      点赞数=tointeger(tab.collection_count)..""
-      评论数=tointeger(tab.comment_count)..""
+      点赞数=(tab.collection_count)..""
+      评论数=(tab.comment_count)..""
       标题="一个想法"
       id分割="想法分割"..tab.id
      elseif tab.type=="zvideo" then
 
       内容=tab.excerpt_title
-      点赞数=tointeger(tab.collection_count)..""
-      评论数=tointeger(tab.comment_count)..""
+      点赞数=(tab.collection_count)..""
+      评论数=(tab.comment_count)..""
       标题=tab.title
       id分割="视频分割"..tab.id
      else
-      id分割="其他分割"..tointeger(v.target.id)
+      id分割="其他分割"..(v.target.id)
       标题=tab.title
     end
     yuxunnn_ay.add{

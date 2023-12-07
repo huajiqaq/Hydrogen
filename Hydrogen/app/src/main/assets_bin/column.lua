@@ -51,6 +51,48 @@ end
 波纹({fh,_more},"圆主题")
 静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),pbar,"横")
 
+--设置webview
+
+content=mty
+
+content.getSettings()
+.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
+.setJavaScriptEnabled(true)--设置支持Js
+.setJavaScriptCanOpenWindowsAutomatically(true)
+.setUseWideViewPort(true)
+.setDefaultTextEncodingName("utf-8")
+.setLoadsImagesAutomatically(true)
+.setAllowFileAccess(true)
+.setDatabasePath(APP_CACHEDIR)
+--设置 应用 缓存目录
+.setAppCachePath(APP_CACHEDIR)
+--开启 DOM 存储功能
+.setDomStorageEnabled(true)
+--开启 数据库 存储功能
+.setDatabaseEnabled(true)
+
+content.removeView(content.getChildAt(0))
+
+if activity.getSharedData("禁用缓存")=="true"
+  content
+  .getSettings()
+  .setAppCacheEnabled(false)
+  .setCacheMode(WebSettings.LOAD_NO_CACHE)
+  --关闭 DOM 存储功能
+  .setDomStorageEnabled(true)
+  --关闭 数据库 存储功能
+  .setDatabaseEnabled(false)
+ else
+  content
+  .getSettings()
+  .setAppCacheEnabled(true)
+  .setCacheMode(WebSettings.LOAD_DEFAULT)
+  --开启 DOM 存储功能
+  .setDomStorageEnabled(true)
+  --开启 数据库 存储功能
+  .setDatabaseEnabled(true)
+end
+
 
 function setProgress(p)
   ValueAnimator.ofFloat({pbar.getWidth(),activity.getWidth()/100*p})
@@ -184,56 +226,11 @@ function 刷新()
 
 end
 
---设置webview
-
-content=mty
-
-content.getSettings()
-.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
-.setJavaScriptEnabled(true)--设置支持Js
-.setJavaScriptCanOpenWindowsAutomatically(true)
-.setUseWideViewPort(true)
-.setDefaultTextEncodingName("utf-8")
-.setLoadsImagesAutomatically(true)
-.setAllowFileAccess(true)
-.setDatabasePath(APP_CACHEDIR)
---设置 应用 缓存目录
-.setAppCachePath(APP_CACHEDIR)
---开启 DOM 存储功能
-.setDomStorageEnabled(true)
---开启 数据库 存储功能
-.setDatabaseEnabled(true)
-
-content.removeView(content.getChildAt(0))
-
-if activity.getSharedData("禁用缓存")=="true"
-  content
-  .getSettings()
-  .setAppCacheEnabled(false)
-  .setCacheMode(WebSettings.LOAD_NO_CACHE)
-  --关闭 DOM 存储功能
-  .setDomStorageEnabled(true)
-  --关闭 数据库 存储功能
-  .setDatabaseEnabled(false)
- else
-  content
-  .getSettings()
-  .setAppCacheEnabled(true)
-  .setCacheMode(WebSettings.LOAD_DEFAULT)
-  --开启 DOM 存储功能
-  .setDomStorageEnabled(true)
-  --开启 数据库 存储功能
-  .setDatabaseEnabled(true)
-end
-
-
 content.setWebViewClient{
   onReceivedError=function(view,a,b)
 
   end,
   shouldOverrideUrlLoading=function(view,url)
-    import "android.content.*"
-    activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(url)
     if url:sub(1,4)~="http" then
       if 检查意图(url,true) then
         view.stopLoading()
@@ -275,6 +272,7 @@ content.setWebViewClient{
 
   end,
   onPageFinished=function(view,l)
+
   end,
   onLoadResource=function(view,url)
     view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
@@ -301,11 +299,16 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     setProgress(p)
     if p==100 then
       setProgress(100)
-      task(500,function()
-        linearParams=pbar.getLayoutParams()
-        linearParams.width =0
-        pbar.setLayoutParams(linearParams)
-      end)
+      Handler().postDelayed(Runnable({
+        run=function()
+          pbar.Visibility=4
+          linearParams=pbar.getLayoutParams()
+          linearParams.width =0
+          pbar.setLayoutParams(linearParams)
+        end,
+      }),500)
+     else
+      pbar.Visibility=0
     end
 
   end,
@@ -394,6 +397,9 @@ end})
 --退出时去除webview的内存
 
 function onDestroy()
+  content.clearCache(true)
+  content.clearFormData()
+  content.clearHistory()
   content.destroy()
 end
 

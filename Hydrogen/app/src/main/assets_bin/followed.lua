@@ -12,7 +12,7 @@ id,mtype,title,tz,issub=...
 
 mtype=mtype:gsub("更多","")
 
-canclick_followed=true
+canclick_followed={true,true}
 
 if not mtype:find("的")
   mtype="的"..mtype
@@ -42,15 +42,15 @@ if mtype:find("收藏") then
   collection_isend={}
   collection_nexturl={}
 
-  function 收藏刷新(isclear)
+  function 收藏刷新(isclear,pos)
 
-    local pos=CollectiontabLayout.getSelectedTabPosition()+1;
-    if pos==0 then
+    if pos==nil then
       pos=1
       if tz then
         pos=2
       end
     end
+
     local thispage,thissr=getpage(page,"collection",pos,2)
 
     local alldo={
@@ -63,13 +63,13 @@ if mtype:find("收藏") then
           is_lock=v.is_public==false and 图标("https") or nil,
 
           collections_art={
-            text=""..tointeger(v.item_count).."个内容"
+            text=""..(v.item_count).."个内容"
           },
           collections_item={
             text=math.floor(v.comment_count)..""
           },
           collections_follower={
-            text=tointeger(v.follower_count)..""
+            text=(v.follower_count)..""
           },
           collections_id={
             text=tostring(v.id)
@@ -115,19 +115,18 @@ if mtype:find("收藏") then
       CollectiontabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
         onTabSelected=function(tab)
           --选择时触发
-          if canclick_followed then
-            canclick_followed=false
+          local pos=tab.getPosition()+1
+          if canclick_followed[pos] then
+            canclick_followed[pos]=false
             Handler().postDelayed(Runnable({
               run=function()
-                canclick_followed=true
+                canclick_followed[pos]=true
               end,
             }),1050)
            else
             return false
           end
-          local pos=tab.getPosition()+1
-          followpos=pos
-          收藏刷新(false)
+          收藏刷新(false,pos)
         end,
 
         onTabUnselected=function(tab)
@@ -136,17 +135,18 @@ if mtype:find("收藏") then
 
         onTabReselected=function(tab)
           --选中之后再次点击即复选时触发
-          if canclick_followed then
-            canclick_followed=false
+          local pos=tab.getPosition()+1
+          if canclick_followed[pos]then
+            canclick_followed[pos]=false
             Handler().postDelayed(Runnable({
               run=function()
-                canclick_followed=true
+                canclick_followed[pos]=true
               end,
             }),1050)
            else
             return false
           end
-          收藏刷新(true)
+          收藏刷新(true,pos)
         end,
       });
 
@@ -249,11 +249,11 @@ if mtype:find("收藏") then
 
       thispage.setOnItemClickListener(allonclick[pos])
       thispage.setOnItemLongClickListener(allonlongclick[pos])
-
+      thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
       thissr.setColorSchemeColors({转0x(primaryc)});
       thissr.setOnRefreshListener({
         onRefresh=function()
-          收藏刷新(true)
+          收藏刷新(true,pos)
           Handler().postDelayed(Runnable({
             run=function()
               thissr.setRefreshing(false);
@@ -278,7 +278,7 @@ if mtype:find("收藏") then
         onScroll=function(view,a,b,c)
           if a+b==c and 可以加载收藏[pos] then
             可以加载收藏[pos]=false
-            收藏刷新()
+            收藏刷新(nil,pos)
             thissr.setRefreshing(true)
             System.gc()
             Handler().postDelayed(Runnable({
@@ -449,9 +449,9 @@ if mtype:find("收藏") then
 
   history_list.onItemClick=function(l,v,c,b)
     if tostring(v.Tag.链接.Text):find("视频合集分割") then
-      activity.newActivity("huida",{tostring(v.Tag.链接.Text):match("视频分割(.+)"),"视频",true})
+      activity.newActivity("followed",{tostring(v.Tag.链接.Text):match("视频合集分割(.+)"),mtype,title,tz,true})
      elseif tostring(v.Tag.链接.Text):find("视频分割") then
-      activity.newActivity("followed",{v.Tag.链接.Text})
+      activity.newActivity("huida",{tostring(v.Tag.链接.Text):match("视频分割(.+)"),"视频",true})
      elseif tostring(v.Tag.链接.Text):find("专栏分割") then
       activity.newActivity("people_column",{tostring(v.Tag.链接.Text):match("专栏分割(.+)")})
      elseif tostring(v.Tag.链接.Text):find("话题分割") then

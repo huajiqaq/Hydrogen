@@ -304,7 +304,7 @@ if getLogin() then
         if v.sub_tab then
           for i,k in ipairs(v.sub_tab) do
             if k.number>0 then
-              num=" "..tostring(tointeger(k.number))
+              num=" "..tostring((k.number))
              else
               num=""
             end
@@ -312,7 +312,7 @@ if getLogin() then
           end
          else
           if v.number>0 then
-            num=" "..tostring(tointeger(v.number))
+            num=" "..tostring((v.number))
            else
             num=""
           end
@@ -488,26 +488,26 @@ end)
 :setresultfunc(function(v)
   local 活动=v.source.action_text
   local 预览内容=v.target.excerpt
-  local 点赞数=tointeger(v.target.voteup_count)
-  local 评论数=tointeger(v.target.comment_count)
+  local 点赞数=(v.target.voteup_count)
+  local 评论数=(v.target.comment_count)
   xpcall(function()
     头像=v.source.actor.avatar_url
     end,function()
     头像=v.actor.avatar_url
   end)
   if v.target.type=="answer" then
-    问题id=tointeger(v.target.question.id) or "null"
-    问题id=问题id.."分割"..tointeger(v.target.id)
+    问题id=(v.target.question.id) or "null"
+    问题id=问题id.."分割"..(v.target.id)
     标题=v.target.question.title
    elseif v.target.type=="topic" then
     people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.target.id,people_title=v.target.name,people_image=头像}
     return
    elseif v.target.type=="question" then
-    问题id=tointeger(v.target.id).."问题分割"
+    问题id=(v.target.id).."问题分割"
     标题=v.target.title
    elseif v.target.type=="column" then
     问题id="专栏分割"..v.target.id.."专栏标题"..v.target.title
-    评论数=tointeger(v.target.items_count)
+    评论数=(v.target.items_count)
     标题=v.target.title
     预览内容=v.target.intro
 
@@ -532,7 +532,7 @@ end)
     问题id="视频分割"..videourl
     标题=v.target.title
    else
-    问题id="文章分割"..tointeger(v.target.id)
+    问题id="文章分割"..(v.target.id)
     标题=v.target.title
   end
   people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
@@ -651,11 +651,11 @@ function 其他(isclear)
           v=v.target
         end
         local 预览内容=v.excerpt
-        local 点赞数=tointeger(v.voteup_count)
-        local 评论数=tointeger(v.comment_count)
+        local 点赞数=(v.voteup_count)
+        local 评论数=(v.comment_count)
         if v.type=="answer" then
-          问题id=tointeger(v.question.id) or "null"
-          问题id=问题id.."分割"..tointeger(v.id)
+          问题id=(v.question.id) or "null"
+          问题id=问题id.."分割"..(v.id)
           标题=v.question.title
           活动=活动 or "发布了回答"
          elseif v.type=="topic" then
@@ -664,12 +664,12 @@ function 其他(isclear)
           return
          elseif v.type=="question" then
           活动=活动 or "发布了问题"
-          问题id=tointeger(v.id).."问题分割"
+          问题id=(v.id).."问题分割"
           标题=v.title
          elseif v.type=="column" then
           活动=活动 or "发布了专栏"
           问题id="专栏分割"..v.id.."专栏标题"..v.title
-          评论数=tointeger(v.items_count)
+          评论数=(v.items_count)
           标题=v.title
           预览内容=v.intro
 
@@ -681,8 +681,8 @@ function 其他(isclear)
           问题id="想法分割"..v.id
           预览内容=v.content[1].content
 
-          点赞数=tointeger(v.reaction_count)
-          评论数=tointeger(v.comment_count)
+          点赞数=(v.reaction_count)
+          评论数=(v.comment_count)
          elseif v.type=="zvideo" then
           活动=活动 or "发布了视频"
           xpcall(function()
@@ -696,7 +696,7 @@ function 其他(isclear)
           标题=v.title
          else
           活动=活动 or "发布了文章"
-          问题id="文章分割"..tointeger(v.id)
+          问题id="文章分割"..(v.id)
           标题=v.title
         end
         if 预览内容=="" then
@@ -717,10 +717,10 @@ function moreload()
         local 问题id="更多"..v.title
         local 添加字符串
         if v.sub_title then
-          if v.sub_title=="" then
-            v.sub_title=0
-          end
           添加字符串="共有"..v.sub_title.."个内容 "
+          if v.sub_title=="" then
+            添加字符串=""
+          end
          else
           添加字符串=""
         end
@@ -779,28 +779,28 @@ function checktitle(str)
       _sort.setVisibility(8)
       for i,v in ipairs(data.data) do
         local 预览内容=v.object.excerpt
-        local 点赞数=tointeger(v.object.voteup_count)
-        local 评论数=tointeger(v.object.comment_count)
+        local 点赞数=(v.object.voteup_count)
+        local 评论数=(v.object.comment_count)
         local 头像
         pcall(function()
           头像=v.object.author.avatar_url
         end)
         if v.object.type=="answer" then
           活动="回答了问题"
-          问题id=tointeger(v.object.question.id) or "null"
-          问题id=问题id.."分割"..tointeger(v.object.id)
+          问题id=(v.object.question.id) or "null"
+          问题id=问题id.."分割"..(v.object.id)
           标题=v.object.question.name
          elseif v.object.type=="topic" then
           people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
           return
          elseif v.object.type=="question" then
           活动="发布了问题"
-          问题id=tointeger(v.object.id).."问题分割"
+          问题id=(v.object.id).."问题分割"
           标题=v.object.title
          elseif v.object.type=="column" then
           活动="发表了专栏"
           问题id="专栏分割"..v.object.id.."专栏标题"..v.object.title
-          评论数=tointeger(v.object.items_count)
+          评论数=(v.object.items_count)
           标题=v.object.title
           预览内容=v.object.intro
 
@@ -824,7 +824,7 @@ function checktitle(str)
           标题=v.object.title
          else
           活动="发表了文章"
-          问题id="文章分割"..tointeger(v.object.id)
+          问题id="文章分割"..(v.object.id)
           标题=v.object.title
         end
         people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}

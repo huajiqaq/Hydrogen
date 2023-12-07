@@ -1,14 +1,16 @@
 {--侧滑根布局
   DrawerLayout;
-  background=backgroundc;
   layout_width="match_parent";
   layout_height="match_parent";
   id="_drawer";
+  background=backgroundc;
+
   {
     CoordinatorLayout;
     id="mainLay";
     layout_height="fill";
     layout_width="fill";
+    background=backgroundc;
 
     {
       AppBarLayout;
@@ -175,21 +177,14 @@
     {
       CoordinatorLayout;
       id="bottombar";
-      layout_height="fill";
+      layout_height="wrap";
       layout_width="fill";
+      layout_gravity="bottom";
       {
         BottomNavigationView;
         id="bnv";
         layout_width="fill";
         layout_height="wrap";
-        layout_gravity="bottom";
-      };
-      {
-        CoordinatorLayout;
-        id="vcl";
-        layout_width="fill";
-        layout_height="fill";
-        paddingBottom="72dp";
       };
     };
   };
@@ -201,6 +196,7 @@
     backgroundColor=0,
     layout_gravity="left";
     id="_drawer_root";
+    background=backgroundc;
     {
       LinearLayout;
       layout_height="-1";

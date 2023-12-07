@@ -292,42 +292,16 @@ task(1,function()
       {src=图标("email"),text="反馈",onClick=function()
           activity.newActivity("feedback")
       end},
-      {src=图标("info"),text="自定义目录",onClick=function()
+      {src=图标("info"),text="导入/导出教程",onClick=function()
           if Build.VERSION.SDK_INT <30 then
             return 提示("该功能只提供安卓10以上版本使用")
           end
 
-          local result=get_write_permissions(true)
-          if result~=true then
-            return false
-          end
-
           AlertDialog.Builder(this)
           .setTitle("提示")
-          .setMessage("修改本目录是修改导入/导出时的默认目录 目前不支持修改保存文件的默认目录")
-          .setPositiveButton("我知道了",{onClick=function()
-
-              local sdcarddir=Environment.getExternalStorageDirectory().toString()
-              local filesdir=activity.getExternalFilesDir(nil).toString()
-              local path=activity.getSharedData("savepath") or sdcarddir
-              local path=path.."/Hydrogen.zip"
-
-              ChoicePath(activity.getSharedData("savepath") or sdcarddir,
-              function(path)
-                local savepath
-                local last_char = string.sub(path, -1)
-                -- 判断最后一部分是否为斜杠
-                if last_char == '/' then
-                  savepath = string.sub(path, 1, -2)
-                 else
-                  savepath=path
-                end
-                activity.setSharedData("savepath",savepath)
-                提示("自定义路径成功")
-              end)
-
-          end})
-          .setNegativeButton("取消", nil)
+          .setMessage("提示:在最新版本中 已经废除自定义目录的设置 自定义目录只是设置了默认导入/导出目录 并不是设置保存本地文件的默认路径 如果在老版本设置自定义目录后导出文件后 在新版本导入会导入新版本无法导入 你可以在老版本软件内点击自定义目录选择/sdcard 来解决该问题\n导入:首先 你需要先在软件内点击导出 之后导入即可\n导出:点击导出即可")
+          .setPositiveButton("我知道了",nil)
+          .setCancelable(false)
           .show()
 
       end},
@@ -343,11 +317,11 @@ task(1,function()
 
           local sdcarddir=Environment.getExternalStorageDirectory().toString()
           local filesdir=activity.getExternalFilesDir(nil).toString()
-          local path=activity.getSharedData("savepath") or sdcarddir
+          local path=sdcarddir
           local path=path.."/Hydrogen.zip"
           if 文件是否存在(path) then
             task(function()
-              local path=activity.getSharedData("savepath") or sdcarddir
+              local path=sdcarddir
               local path=path.."/Hydrogen.zip"
               local filesdir=activity.getExternalFilesDir(nil).toString()
               ZipUtil.unzip(path,filesdir.."/Hydrogen")
@@ -369,7 +343,7 @@ task(1,function()
             return false
           end
 
-          local path=activity.getSharedData("savepath") or sdcarddir
+          local path=sdcarddir
 
           if 文件夹是否存在(path)~=true then
             创建文件夹(path)
@@ -378,7 +352,7 @@ task(1,function()
           task(function()
             local sdcarddir=Environment.getExternalStorageDirectory().toString()
             local filesdir=activity.getExternalFilesDir(nil).toString()
-            local path=activity.getSharedData("savepath") or sdcarddir
+            local path=sdcarddir
             ZipUtil.zip(filesdir.."/Hydrogen",path)
           end)
           提示("导出成功,导出文件在"..path.."/Hydrogen.zip")

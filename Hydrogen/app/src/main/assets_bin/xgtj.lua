@@ -153,7 +153,7 @@ function 开始加载推荐()
           for i=1, #luajson.decode(content).selected_sections do
             adapter.notifyDataSetChanged()
             if i<#luajson.decode(content).selected_sections+1 and luajson.decode(content).selected_sections[i].section_name~="圈子" then
-              table.insert(data,{title=luajson.decode(content).selected_sections[i].section_name,text=tostring(tointeger(luajson.decode(content).selected_sections[i].section_id))})
+              table.insert(data,{title=luajson.decode(content).selected_sections[i].section_name,text=tostring(luajson.decode(content).selected_sections[i].section_id)})
 
             end
           end
@@ -162,14 +162,14 @@ function 开始加载推荐()
           table.insert(data,{myt="其他"})
           for i=1, #luajson.decode(content).guess_like_sections do
             if luajson.decode(content).guess_like_sections[i].section_name~="圈子" then
-              table.insert(data,{title=luajson.decode(content).guess_like_sections[i].section_name,text=tostring(tointeger(luajson.decode(content).guess_like_sections[i].section_id))})
+              table.insert(data,{title=luajson.decode(content).guess_like_sections[i].section_name,text=tostring((luajson.decode(content).guess_like_sections[i].section_id))})
 
             end
           end
           for i=1, #luajson.decode(content).more_sections do
             if luajson.decode(content).more_sections[i].section_name~="圈子" then
 
-              table.insert(data,{title=luajson.decode(content).more_sections[i].section_name,text=tostring(tointeger(luajson.decode(content).more_sections[i].section_id))})
+              table.insert(data,{title=luajson.decode(content).more_sections[i].section_name,text=tostring((luajson.decode(content).more_sections[i].section_id))})
 
             end
           end

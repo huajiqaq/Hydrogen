@@ -311,56 +311,7 @@ webview.setWebViewClient{
     view.stopLoading()
     view.goBack()
   end,
-  onPageStarted=function(view,url,favicon)
-  end,
-  onPageFinished=function(view,url,favicon)
-  end,
-  onLoadResource=function(view,url)
-    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-  end,
 }
-
-local v,s;
-
-local z=JsInterface{
-  execute=function(b)
-    if b~=nil and #b>3 then
-      activity.newActivity("image",{b})
-    end
-  end
-}
-
-webview.addJSInterface(z,"androlua")
-
-webview.setWebChromeClient(luajava.override(WebChromeClient,{
-  onProgressChanged=function(super,view,url,favicon)
-  end,
-  onShowCustomView=function(z,a,b)
-    v=a
-    s=mscroll.getScrollY()
-    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-    activity.getWindow().getDecorView().setSystemUiVisibility(
-    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-    | View.SYSTEM_UI_FLAG_FULLSCREEN
-    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-
-    activity.getDecorView().addView(a)
-  end,
-  onHideCustomView=function()
-    activity.getDecorView().removeView(v)
-    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-    activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE)
-
-    设置主题()
-
-    mscroll.smoothScrollTo(0,s)
-
-  end
-}))
 
 webview.loadUrl(myuri)
 webview.setVisibility(0)

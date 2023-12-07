@@ -43,6 +43,48 @@ if docode~=nil and ischeck~="null" then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")
 end
 liulan.BackgroundColor=转0x("#00000000",true);
+
+liulan.getSettings()
+.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
+.setJavaScriptEnabled(true)--设置支持Js
+.setLoadWithOverviewMode(true)
+.setDefaultTextEncodingName("utf-8")
+.setLoadsImagesAutomatically(true)
+.setAllowFileAccess(false)
+.setDatabasePath(APP_CACHEDIR)
+--设置 应用 缓存目录
+.setAppCachePath(APP_CACHEDIR)
+--开启 DOM 存储功能
+.setDomStorageEnabled(true)
+--开启 数据库 存储功能
+.setDatabaseEnabled(true)
+--开启 应用缓存 功能
+
+.setUseWideViewPort(true)
+.setBuiltInZoomControls(true)
+.setSupportZoom(true)
+
+
+if activity.getSharedData("禁用缓存")=="true"
+  liulan
+  .getSettings()
+  .setAppCacheEnabled(false)
+  --关闭 DOM 存储功能
+  .setDomStorageEnabled(true)
+  --关闭 数据库 存储功能
+  .setDatabaseEnabled(true)
+  .setCacheMode(WebSettings.LOAD_NO_CACHE);
+ else
+  liulan
+  .getSettings()
+  .setAppCacheEnabled(true)
+  --开启 DOM 存储功能
+  .setDomStorageEnabled(true)
+  --开启 数据库 存储功能
+  .setDatabaseEnabled(true)
+  .setCacheMode(WebSettings.LOAD_DEFAULT)
+end
+
 liulan.loadUrl(liulanurl)
 liulan.removeView(liulan.getChildAt(0))
 
@@ -83,11 +125,16 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     setProgress(p)
     if p==100 then
       setProgress(100)
-      task(500,function()
-        linearParams=pbar.getLayoutParams()
-        linearParams.width =0
-        pbar.setLayoutParams(linearParams)
-      end)
+      Handler().postDelayed(Runnable({
+        run=function()
+          pbar.Visibility=4
+          linearParams=pbar.getLayoutParams()
+          linearParams.width =0
+          pbar.setLayoutParams(linearParams)
+        end,
+      }),500)
+     else
+      pbar.Visibility=0
     end
 
   end,
@@ -313,48 +360,6 @@ liulan.setWebViewClient{
 end}
 
 
-
-liulan.getSettings()
-.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
-.setJavaScriptEnabled(true)--设置支持Js
-.setLoadWithOverviewMode(true)
-.setDefaultTextEncodingName("utf-8")
-.setLoadsImagesAutomatically(true)
-.setAllowFileAccess(false)
-.setDatabasePath(APP_CACHEDIR)
---设置 应用 缓存目录
-.setAppCachePath(APP_CACHEDIR)
---开启 DOM 存储功能
-.setDomStorageEnabled(true)
---开启 数据库 存储功能
-.setDatabaseEnabled(true)
---开启 应用缓存 功能
-
-.setUseWideViewPort(true)
-.setBuiltInZoomControls(true)
-.setSupportZoom(true)
-
-
-if activity.getSharedData("禁用缓存")=="true"
-  liulan
-  .getSettings()
-  .setAppCacheEnabled(false)
-  --关闭 DOM 存储功能
-  .setDomStorageEnabled(true)
-  --关闭 数据库 存储功能
-  .setDatabaseEnabled(true)
-  .setCacheMode(WebSettings.LOAD_NO_CACHE);
- else
-  liulan
-  .getSettings()
-  .setAppCacheEnabled(true)
-  --开启 DOM 存储功能
-  .setDomStorageEnabled(true)
-  --开启 数据库 存储功能
-  .setDatabaseEnabled(true)
-  .setCacheMode(WebSettings.LOAD_DEFAULT)
-end
-
 liulan.setDownloadListener({
   onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
     webview下载文件(链接, UA, 相关信息, 类型, 大小)
@@ -406,5 +411,8 @@ onActivityResult=function(req,res,intent)
 end
 
 function onDestroy()
+  liulan.clearCache(true)
+  liulan.clearFormData()
+  liulan.clearHistory()
   liulan.destroy()
 end

@@ -70,7 +70,7 @@ function base:getOneData(cb,z) --获取一条数据
       end
     end
     if self.getid then
-      self:getAnswer(tointeger(self.getid),function(myz)
+      self:getAnswer((self.getid),function(myz)
         --获取并存储pageinfo
         local mypageinfo=myz.pagination_info
         local mygetid

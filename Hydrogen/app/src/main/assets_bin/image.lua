@@ -29,7 +29,7 @@ mls=luajson.decode(ls)
 
 local now=mls[tostring(table.size(mls)-1)]
 
-now_count.text=(tointeger(now)+1)..""
+now_count.text=((now)+1)..""
 
 all_count.text=(table.size(mls)-1)..""
 
@@ -126,8 +126,8 @@ ripple.onClick=function()
     return false
   end
   local url=mls[""..picpage.getCurrentItem()]
-      import "android.webkit.URLUtil"
-    local 文件名=URLUtil.guessFileName(url,nil,nil)
+  import "android.webkit.URLUtil"
+  local 文件名=URLUtil.guessFileName(url,nil,nil)
   Http.download(url,Environment.getExternalStorageDirectory().toString().."/Pictures/Hydrogen/"..文件名,function(code,msg)
     if code==200 then
       提示("已保存到"..msg)

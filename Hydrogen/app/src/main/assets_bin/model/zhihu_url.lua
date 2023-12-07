@@ -142,6 +142,27 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/signin") then
     if b then return true end
     newLuaActivity("login")
+   elseif url:find("zhihu.com/oia") then
+    if b then return true end
+    local webview=LuaWebView(this)
+    webview.loadUrl(url)
+    webview
+    .getSettings()
+    .setAppCacheEnabled(false)
+    --关闭 DOM 存储功能
+    .setDomStorageEnabled(true)
+    --关闭 数据库 存储功能
+    .setDatabaseEnabled(true)
+    .setCacheMode(WebSettings.LOAD_NO_CACHE);
+    webview.setWebViewClient{
+      shouldOverrideUrlLoading=function(view,url)
+        webview.clearCache(true)
+        webview.clearFormData()
+        webview.clearHistory()
+        webview.destroy()
+        return 检查链接(url)
+      end
+    }
    elseif url:find("https://ssl.ptlogin2.qq.com/jump") then
     if b then return true end
     activity.finish()
@@ -161,11 +182,11 @@ function 检查意图(url,b)
     if url:find "answers" then
       if b then return true end
       local id=url:getUrlArg("answers/")
-      newLuaActivity("answer",{"null",tointeger(id),nil,true})
+      newLuaActivity("answer",{"null",(id),nil,true})
      elseif url:find "answer" then
       if b then return true end
       local id=url:getUrlArg("answer/")
-      newLuaActivity("answer",{"null",tointeger(id),nil,true})
+      newLuaActivity("answer",{"null",(id),nil,true})
      elseif url:find "questions" then
       if b then return true end
       newLuaActivity("question",{url:getUrlArg("questions/"),true})

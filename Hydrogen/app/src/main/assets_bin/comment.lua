@@ -129,7 +129,7 @@ function 刷新()
   :setresultfunc(function(v)
     local 头像=v.author.avatar_url
     local 内容=v.content
-    local 点赞数=tointeger(v.vote_count)
+    local 点赞数=(v.vote_count)
     local 时间=时间戳(v.created_time)
     local 名字,id=v.author.name,"没有id"
     local function isauthor(v)
@@ -142,17 +142,16 @@ function 刷新()
     local myspan
     pcall(function()
       名字=isauthor(v.author).. "  →  "..isauthor(v.reply_to_author)
-      if _title.text~="对话列表" then id=tointeger(v.id) end
+      if _title.text~="对话列表" then id=(v.id) end
     end)
     if 内容:find("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]") then
-      评论链接=内容:match("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]")
       myspan=setstyle(Html.fromHtml(内容))
      else
       myspan=Html.fromHtml(内容)
     end
-    踩tab[tostring(tointeger(tostring(v.id)))]=v.disliked
+    踩tab[tostring((tostring(v.id)))]=v.disliked
     comment_list.Adapter.add{comment_toast={Visibility=(v.child_comment_count==0 and 8 or 0)},
-      comment_id=tointeger(tostring(v.id)),
+      comment_id=(tostring(v.id)),
       comment_author_id=v.author.id,
       comment_art={
         text=myspan,
@@ -340,7 +339,6 @@ if comment_type=="comments" then
     local myspan
 
     if 内容:find("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]") then
-      评论链接=内容:match("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]")
       myspan=setstyle(Html.fromHtml(内容))
      else
       myspan=Html.fromHtml(内容)

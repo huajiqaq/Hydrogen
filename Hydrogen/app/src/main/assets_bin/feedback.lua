@@ -107,7 +107,7 @@ send.onClick=function()
           提示("跳转成功 请使用QQ反馈Bug")
         end
     end}
-     dialog=AlertDialog.Builder(this)
+    dialog=AlertDialog.Builder(this)
     .setTitle("请选择反馈方式")
     .setSingleChoiceItems(单选列表,-1,{onClick=function(v,p)
         dofun[p+1]()

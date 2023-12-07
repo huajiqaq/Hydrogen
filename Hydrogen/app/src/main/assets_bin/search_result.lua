@@ -27,25 +27,25 @@ function 刷新()
     下一页数据=data.paging.next
     for i,v in ipairs(data.data) do
       local 预览内容=v.object.excerpt
-      local 点赞数=tointeger(v.object.voteup_count)
-      local 评论数=tointeger(v.object.comment_count)
+      local 点赞数=(v.object.voteup_count)
+      local 评论数=(v.object.comment_count)
       local 头像=v.object.author.avatar_url
       if v.object.type=="answer" then
         活动="回答了问题"
-        问题id=tointeger(v.object.question.id) or "null"
-        问题id=问题id.."分割"..tointeger(v.object.id)
+        问题id=(v.object.question.id) or "null"
+        问题id=问题id.."分割"..(v.object.id)
         标题=v.object.question.name
        elseif v.object.type=="topic" then
         history_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
         return
        elseif v.object.type=="question" then
         活动="发布了问题"
-        问题id=tointeger(v.object.id).."问题分割"
+        问题id=(v.object.id).."问题分割"
         标题=v.object.title
        elseif v.object.type=="column" then
         活动="发表了专栏"
         问题id="专栏分割"..v.object.id.."专栏标题"..v.object.title
-        评论数=tointeger(v.object.items_count)
+        评论数=(v.object.items_count)
         标题=v.object.title
 
        elseif v.object.type=="collection" then
@@ -68,7 +68,7 @@ function 刷新()
         标题=v.object.title
        else
         活动="发表了文章"
-        问题id="文章分割"..tointeger(v.object.id)
+        问题id="文章分割"..(v.object.id)
         标题=v.object.title
       end
       history_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}

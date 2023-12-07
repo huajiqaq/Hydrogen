@@ -66,6 +66,7 @@ task(1,function()
           {
             LinearLayout;
             orientation="vertical";
+            layout_width="-1";
             layout_height="-2",
             {
               TextView;
@@ -78,6 +79,104 @@ task(1,function()
               layout_width="-1";
               layout_marginTop="8dp";
             };
+
+            {
+              MaterialCardView;
+              layout_marginTop="8dp";
+              layout_marginBottom="8dp";
+              layout_gravity='center';
+              Elevation='0';
+              layout_width='fill';
+              layout_height='-2';
+              radius=cardradius;
+              id="_root",
+              CardBackgroundColor=cardedge;
+              StrokeColor=cardedge;
+              StrokeWidth=dp2px(1),
+              onClick=function()
+                if 用户id then
+                  activity.newActivity("people",{用户id})
+                 else
+                  提示("加载中")
+                end
+              end,
+              {
+                LinearLayout;
+                orientation="horizontal",
+                ripple="圆自适应",
+                layout_width="fill";
+                {
+                  LinearLayout;
+                  padding="16dp";
+                  layout_gravity="center_vertical",
+                  layout_weight=1;
+                  {
+                    CircleImageView;
+                    layout_width="26dp",
+                    layout_height="26dp",
+                    id="people_image",
+                    layout_gravity="center_vertical",
+                  };
+                  {
+                    LinearLayout;
+                    layout_marginLeft="5dp";
+                    orientation="vertical";
+                    {
+                      TextView;
+                      id="username";
+                      layout_marginLeft="6dp",
+                      textColor=textc;
+                      layout_gravity="center_vertical",
+                      Typeface=字体("product-Bold");
+                      textSize="14sp";
+                    };
+                    {
+                      TextView;
+                      textSize="14sp";
+                      id="userheadline";
+                      textColor=textc;
+                      layout_marginLeft="6dp",
+                      layout_marginTop="8dp";
+                      Typeface=字体("product");
+                    };
+                  };
+                };
+                {
+                  LinearLayout;
+                  layout_gravity="center_vertical",
+                  {
+                    MaterialButton;
+                    layout_marginRight="10dp";
+                    id="following";
+                    textColor=backgroundc;
+                    layout_gravity="right|center",
+                    Typeface=字体("product-Bold");
+                    onClick=function(view)
+                      if view.Text=="关注" then
+                        zHttp.post("https://api.zhihu.com/people/"..用户id.."/followers","",posthead,function(a,b)
+                          if a==200 then
+                            view.Text="取关";
+                            提示("关注成功")
+                           elseif a==500 then
+                            提示("请登录后使用本功能")
+                          end
+                        end)
+                       elseif view.Text=="取关" then
+                        zHttp.delete("https://api.zhihu.com/people/"..用户id.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
+                          if a==200 then
+                            view.Text="关注";
+                            提示("取关成功")
+                          end
+                        end)
+                       else
+                        提示("加载中")
+                      end
+                    end,
+                  };
+                };
+              };
+            };
+
             {
               RelativeLayout;
               id="letgo";
@@ -124,6 +223,75 @@ task(1,function()
             };
 
           };
+
+          {
+            LinearLayout;
+            layout_width="-1";
+            layout_height="-1";
+            padding="4dp";
+            layout_marginTop="8dp";
+            layout_gravity="right|center",
+            gravity="right|center",
+            id="openroot";
+            Visibility=8;
+            {
+              MaterialCardView;
+              layout_width="-2";
+              layout_height="-2";
+              cardBackgroundColor=backgroundc;
+              Elevation="0";
+              StrokeWidth=0,
+              layout_gravity="right|center",
+              {
+                LinearLayout;
+                onClick=function()
+                  if description_text.text=="加载中" then
+                    return 提示("加载中")
+                  end
+                  if _open.text=="展开" then
+                    openimg.setImageBitmap(loadbitmap(图标("arrow_drop_up")))
+                    description_card.setVisibility(8)
+                    isLoaded = 0
+                    show.loadUrl("")
+                    show.BackgroundColor=转0x("#00000000",true);
+                    show.setHorizontalScrollBarEnabled(false);
+                    show.setVerticalScrollBarEnabled(false);
+                    _open.text="收起"
+                   elseif _open.text=="收起" then
+                    openimg.setImageBitmap(loadbitmap(图标("arrow_drop_down")))
+                    description_card.setVisibility(0)
+                    isLoaded = 1
+                    show.Visibility=8
+                    _open.text="展开"
+                  end
+                end;
+                id="open",
+                padding="4dp",
+                orientation="horizontal";
+                {
+                  ImageView;
+                  colorFilter=textc,
+                  layout_width="18dp";
+                  layout_height="18dp";
+                  id="openimg";
+                  src=图标("arrow_drop_down");
+                  layout_gravity="center_vertical",
+                };
+                {
+                  TextView;
+                  id="_open",
+                  layout_marginLeft="4dp",
+                  layout_width="-1";
+                  layout_height="wrap";
+                  gravity="center";
+                  Typeface=字体("product");
+                  textColor=textc,
+                  text="展开";
+                };
+              };
+            };
+          };
+
           {
             LinearLayout;
             layout_width="-1";
@@ -147,13 +315,14 @@ task(1,function()
                   layout_width="18dp";
                   layout_height="18dp";
                   src=图标("star");
+                  layout_gravity="center_vertical",
                 };
                 {
                   TextView;
                   id="_star",
                   layout_marginLeft="4dp",
                   layout_width="-1";
-                  layout_height="-1";
+                  layout_height="wrap";
                   gravity="center";
                   Typeface=字体("product");
                   textColor=textc,
@@ -183,13 +352,14 @@ task(1,function()
                   layout_width="18dp";
                   layout_height="18dp";
                   src=图标("message");
+                  layout_gravity="center_vertical",
                 };
                 {
                   TextView;
                   id="_comment",
                   layout_marginLeft="4dp",
                   layout_width="-1";
-                  layout_height="-1";
+                  layout_height="wrap";
                   gravity="center";
                   Typeface=字体("product");
                   textColor=textc,
@@ -240,13 +410,14 @@ task(1,function()
                   layout_width="18dp";
                   layout_height="18dp";
                   src=图标("add");
+                  layout_gravity="center_vertical",
                 };
                 {
                   TextView;
                   id="_follow",
                   layout_marginLeft="4dp",
                   layout_width="-1";
-                  layout_height="-1";
+                  layout_height="wrap";
                   gravity="center";
                   Typeface=字体("product");
                   textColor=textc,
@@ -295,7 +466,7 @@ task(1,function()
     end
   }
   波纹({fh,_more},"圆主题")
-  波纹({discussion,view,description,follow},"方自适应")
+  波纹({discussion,view,description,follow,open},"方自适应")
 end)
 
 question_list.adapter=question_adp
@@ -335,9 +506,9 @@ question_base=require "model.question":new(question_id)
   end
   question_adp.add{
     question_author=tab.author.name,
-    question_voteup=tointeger(tab.voteup_count).."",
-    question_comment=tointeger(tab.comment_count).."",
-    question_id=tointeger(tab.id),
+    question_voteup=(tab.voteup_count).."",
+    question_comment=(tab.comment_count).."",
+    question_id=(tab.id),
     question_art=tab.excerpt,
     question_image=tab.author.avatar_url,
   }
@@ -357,19 +528,23 @@ function 加载数据()
       保存历史记录(title.Text,question_id,50)
     end
 
-    _comment.Text=tostring(tointeger(tab.comment_count))
-    _star.Text=tostring(tointeger(tab.follower_count))
-    _title.Text="共"..tostring(tointeger(tab.answer_count)).."个回答"
+    _comment.Text=tostring((tab.comment_count))
+    _star.Text=tostring((tab.follower_count))
+    _title.Text="共"..tostring((tab.answer_count)).."个回答"
 
     if #tab.excerpt>0 then
       description_text.Text=tab.excerpt
+      openroot.visibility=0
      else
       description_card.visibility=8
     end
     description.onClick=function()
       description_card.setVisibility(8)
-      show.BackgroundColor=转0x("#00000000",true);
+      isLoaded = 0
+      openimg.setImageBitmap(loadbitmap(图标("arrow_drop_up")))
+      _open.text="收起"
       show.loadUrl("")
+      show.BackgroundColor=转0x("#00000000",true);
       show.setHorizontalScrollBarEnabled(false);
       show.setVerticalScrollBarEnabled(false);
     end
@@ -577,6 +752,21 @@ function 加载数据()
 
     a=MUKPopu(mpop)
 
+    loadglide(people_image,tab.author.avatar_url)
+    username.text=tab.author.name
+    userheadline.text=tab.author.headline
+
+    if userheadline.text=="" then
+      userheadline.text="暂无签名"
+    end
+
+    用户id=tab.author.id
+    if tab.author.is_following then
+      following.Text="取关";
+     else
+      following.Text="关注";
+    end
+
   end)
 end
 
@@ -586,7 +776,7 @@ question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
     local open=activity.getSharedData("内部浏览器查看回答")
     if open=="false" then
-      activity.newActivity("answer",{question_id,tostring(v.Tag.question_id.Text),question_base:getChild(tointeger(v.Tag.question_id.Text))})
+      activity.newActivity("answer",{question_id,tostring(v.Tag.question_id.Text),question_base:getChild((v.Tag.question_id.Text))})
      else
       activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.question_id.Text)})
     end
@@ -613,6 +803,9 @@ function onActivityResult(a,b,c)
 end
 
 function onDestroy()
+  show.clearCache(true)
+  show.clearFormData()
+  show.clearHistory()
   show.destroy()
 end
 

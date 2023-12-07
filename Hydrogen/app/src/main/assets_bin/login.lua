@@ -12,17 +12,6 @@ activity.setContentView(loadlayout("layout/login"))
 波纹({fh,_info},"圆主题")
 
 login_web.removeView(login_web.getChildAt(0))
-login_web.BackgroundColor=转0x("#00000000",true)
-
-if url then
-  login_web.loadUrl(url)
- else
-  login_web.loadUrl("https://www.zhihu.com/signin?next=www.zhihu.com")
-end
-
---开启 DOM storage API 功能
-login_web.getSettings().setDomStorageEnabled(true);
-
 
 login_web
 .getSettings()
@@ -32,6 +21,15 @@ login_web
 --开启 数据库 存储功能
 .setDatabaseEnabled(true)
 .setCacheMode(WebSettings.LOAD_DEFAULT)
+
+login_web.BackgroundColor=转0x("#00000000",true)
+
+if url then
+  login_web.loadUrl(url)
+ else
+  login_web.loadUrl("https://www.zhihu.com/signin?next=www.zhihu.com")
+end
+
 
 login_web.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onConsoleMessage=function(consoleMessage)
@@ -98,7 +96,7 @@ login_web.setWebViewClient{
       zHttp.get(myurl,head,function(code,content)
         if code==200 then
           local data=luajson.decode(content)
-          local uid=data.id--用tointeger不行数值太大了会
+          local uid=data.id
           activity.setSharedData("idx",uid)
           activity.setResult(100)
           activity.finish()
@@ -118,5 +116,8 @@ end}
 
 
 function onDestroy()
+  login_web.clearCache(true)
+  login_web.clearFormData()
+  login_web.clearHistory()
   login_web.destroy()
 end

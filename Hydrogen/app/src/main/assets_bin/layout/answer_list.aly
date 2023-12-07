@@ -28,7 +28,6 @@
         layout_width="45dp",
         layout_height="45dp",
         layout_gravity="left|center",
-        src="icon.png",
         id="usericon",
       },
       {

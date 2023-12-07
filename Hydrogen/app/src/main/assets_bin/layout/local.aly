@@ -185,13 +185,13 @@
     {
       CardView;
       elevation="6dp";
+      BackgroundColor=barbackgroundc;
       {
         RelativeLayout,
         layout_width="fill",
         layout_height="56dp",
         clickable="true",
         id="ll",
-        background=backgroundc,
         {
           LinearLayout;
           layout_width="-1";
@@ -322,8 +322,8 @@
       radius="28dp";
       y="-8dp",
       layout_margin="28dp";
-      CardBackgroundColor=backgroundc;
-      elevation="2dp";
+      CardBackgroundColor=barbackgroundc;
+      elevation="0";
       alpha=1;
       {
         ImageView;

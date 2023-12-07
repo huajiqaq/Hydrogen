@@ -127,6 +127,7 @@ page_home.setAdapter(pagadp)
 
 optmenu = {}
 loadmenu(bnv.getMenu(), m, optmenu, 3)
+bnv.setLabelVisibilityMode(1)
 
 
 _title.setText("主页")
@@ -196,7 +197,7 @@ function resolve_feed(v)
     end
    elseif v.extra.type=="answer" then
     问题id等="null"
-    问题id等=问题id等.."分割"..tointeger(v.extra.id)
+    问题id等=问题id等.."分割"..(v.extra.id)
     标题=v.common_card.feed_content.title.panel_text
     if v.common_card.feed_content.content then
       预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
@@ -204,7 +205,7 @@ function resolve_feed(v)
       预览内容=作者.." : ".."[视频]"
     end
    elseif v.extra.type=="post" or v.extra.type=="article" then
-    问题id等="文章分割"..tointeger(v.extra.id)
+    问题id等="文章分割"..(v.extra.id)
     标题=v.common_card.feed_content.title.panel_text
     if v.common_card.feed_content.content then
       预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
@@ -270,7 +271,7 @@ function 主页推荐刷新()
   local yxuan_adpqy=list2.adapter
 
   local isprev=home_isprev
-  local result=tointeger(choosebutton)
+  local result=(choosebutton)
 
   local myrequrl
   local addargs="&start_type=warm&tsp_ad_cardredesign=0&v_serial=1"
@@ -287,7 +288,7 @@ function 主页推荐刷新()
 
   local murl
   if choose_sub then
-    murl="https://api.zhihu.com/feed-root/section/"..result.."?sub_page_id="..tointeger(choose_sub).."&channelStyle=0"
+    murl="https://api.zhihu.com/feed-root/section/"..result.."?sub_page_id="..(choose_sub).."&channelStyle=0"
    else
     murl="https://api.zhihu.com/feed-root/section/"..result.."?channelStyle=0"
   end
@@ -695,7 +696,7 @@ function 日报刷新(isclear)
     thisdata=thisdata-1
     import "android.icu.text.SimpleDateFormat"
     cal=Calendar.getInstance();
-    cal.add(Calendar.DATE,tointeger(thisdata));
+    cal.add(Calendar.DATE,(thisdata));
     d=cal.getTime();
     sp= SimpleDateFormat("yyyyMMdd");
     ZUOTIAN=sp.format(d);
@@ -1286,10 +1287,10 @@ function 热榜刷新(isclear)
             local tab=luajson.decode(content).data
 
             for i=1,#tab do
-              local 标题,热度,排行,导向链接=tab[i].target.title,tab[i].detail_text,i,tointeger(tab[i].target.id)..""
+              local 标题,热度,排行,导向链接=tab[i].target.title,tab[i].detail_text,i,(tab[i].target.id)..""
               local 热榜图片=tab[i].children[1].thumbnail
               if tab[i].target.type=="article" then
-                导向链接="文章分割"..tointeger(tab[i].target.id)
+                导向链接="文章分割"..(tab[i].target.id)
               end
               table.insert(myhotdata,{标题=标题,热度=热度,排行=排行,导向链接=导向链接,热图片={src=热榜图片,Visibility=#热榜图片>0 and 0 or 8}})
             end
@@ -1323,7 +1324,7 @@ moments_tab={
   }
 }
 
-canclick_follow=true
+canclick_follow={true,true,true}
 
 initpage(fpage,"follow",3)
 followTab.setupWithViewPager(fpage)
@@ -1342,17 +1343,17 @@ followTab.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
       return 提示("请登录后使用本功能")
     end
     --选择时触发
-    if canclick_follow then
-      canclick_follow=false
+    local pos=tab.getPosition()+1
+    if canclick_follow[pos] then
+      canclick_follow[pos]=false
       Handler().postDelayed(Runnable({
         run=function()
-          canclick_follow=true
+          canclick_follow[pos]=true
         end,
       }),1050)
      else
       return false
     end
-    local pos=tab.getPosition()+1
     关注刷新(nil,false,pos)
   end,
 
@@ -1362,20 +1363,20 @@ followTab.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
 
   onTabReselected=function(tab)
     --选中之后再次点击即复选时触发
+    local pos=tab.getPosition()+1
     if not(getLogin()) then
       return 提示("请登录后使用本功能")
     end
-    if canclick_follow then
-      canclick_follow=false
+    if canclick_follow[pos] then
+      canclick_follow[pos]=false
       Handler().postDelayed(Runnable({
         run=function()
-          canclick_follow=true
+          canclick_follow[pos]=true
         end,
       }),1050)
      else
       return false
     end
-    local pos=tab.getPosition()+1
     关注刷新(true,true,pos)
   end,
 });
@@ -1519,10 +1520,6 @@ function 关注刷新(isclear,isprev,num)
       moments_tab[num].prev=data.paging.previous
       moments_tab[num].nexturl=data.paging.next
 
-      if data.has_new==false then
-        moments_tab[num].isend=true
-      end
-
       if moments_tab[num].isend==false then
         可以加载关注[num]=true
        elseif moments_tab[num].isend then
@@ -1537,32 +1534,32 @@ function 关注刷新(isclear,isprev,num)
             end,function()
             关注作者头像=v.source.actor.avatar_url
           end)
-          local 点赞数=tointeger(v.target.voteup_count)
-          local 评论数=tointeger(v.target.comment_count)
+          local 点赞数=(v.target.voteup_count)
+          local 评论数=(v.target.comment_count)
           local 标题=v.target.title
           local 作者名称=v.source.actor.name
           local 动作=作者名称..v.source.action_text
           local 时间=时间戳(v.source.action_time)
           local 预览内容=v.target.excerpt
           if v.target.type=="answer" then
-            问题id等=tointeger(v.target.question.id) or "null"
-            问题id等=问题id等.."分割"..tointeger(v.target.id)
+            问题id等=(v.target.question.id) or "null"
+            问题id等=问题id等.."分割"..(v.target.id)
             标题=v.target.question.title
            elseif v.target.type=="question" then
-            问题id等="问题分割"..tointeger(v.target.id)
+            问题id等="问题分割"..(v.target.id)
             标题=v.target.title
            elseif v.target.type=="article"
-            问题id等="文章分割"..tointeger(v.target.id)
+            问题id等="文章分割"..(v.target.id)
             标题=v.target.title
            elseif v.target.type=="pin"
-            问题id等="想法分割"..tointeger(v.target.id)
+            问题id等="想法分割"..(v.target.id)
             标题=v.target.title
            elseif v.target.type=="moments_pin"
             if 标题==nil or 标题=="" then
               标题="一个想法"
             end
-            问题id等="想法分割"..tointeger(v.target.id)
-            点赞数=tointeger(v.target.reaction_count)
+            问题id等="想法分割"..v.target.id
+            点赞数=(v.target.reaction_count)
 
             if #v.target.content>0 then
               预览内容=v.target.content[1].content
@@ -1576,13 +1573,13 @@ function 关注刷新(isclear,isprev,num)
               end
             end
            elseif v.target.type=="zvideo"
-            问题id等="视频分割"..tointeger(v.target.id)
+            问题id等="视频分割"..(v.target.id)
             标题=v.target.title
             if 预览内容==nil or 预览内容=="" then
               预览内容="[视频]"
             end
            elseif v.target.type=="moments_drama" then
-            问题id等="直播分割"..tointeger(v.target.id)
+            问题id等="直播分割"..(v.target.id)
             标题=v.target.title
             if 预览内容==nil or 预览内容=="" then
               预览内容="[直播]"
@@ -1591,7 +1588,7 @@ function 关注刷新(isclear,isprev,num)
           if 预览内容~="[视频]" then
             预览内容=作者名称.." : "..预览内容
           end
-          madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+          madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
 
          elseif v.type=="feed_item_index_group" then
 
@@ -1601,33 +1598,33 @@ function 关注刷新(isclear,isprev,num)
 
           -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
           local 数据=get_number_and_following(v.target.desc)
-          local 点赞数=tointeger(数据[1]) or 数据[1]
-          local 评论数=tointeger(数据[3]) or 数据[3]
+          local 点赞数=(数据[1]) or 数据[1]
+          local 评论数=(数据[3]) or 数据[3]
           local 标题=v.target.title
           local 时间=时间戳(v.action_time)
           local 预览内容=v.target.digest
           local 作者名称=v.target.author
           if v.target.type=="answer" then
-            问题id等=tointeger(questonid) or "null"
-            问题id等=问题id等.."分割"..tointeger(v.target.id)
+            问题id等=(questonid) or "null"
+            问题id等=问题id等.."分割"..(v.target.id)
             标题=v.target.title
            elseif v.target.type=="question" then
-            问题id等="问题分割"..tointeger(v.target.id)
+            问题id等="问题分割"..(v.target.id)
             标题=v.target.title
            elseif v.target.type=="article"
-            问题id等="文章分割"..tointeger(v.target.id)
+            问题id等="文章分割"..(v.target.id)
             标题=v.target.title
            elseif v.target.type=="pin"
-            问题id等="想法分割"..tointeger(v.target.id)
+            问题id等="想法分割"..(v.target.id)
             标题=v.target.title
            elseif v.target.type=="zvideo"
-            问题id等="视频分割"..tointeger(v.target.id)
+            问题id等="视频分割"..(v.target.id)
             标题=v.target.title
             if 预览内容==nil or 预览内容=="" then
               预览内容="[视频]"
             end
            elseif v.target.type=="drama" then
-            问题id等="直播分割"..tointeger(v.target.id)
+            问题id等="直播分割"..(v.target.id)
             标题=v.target.title
             if 预览内容==nil or 预览内容=="" then
               预览内容="[直播]"
@@ -1638,7 +1635,7 @@ function 关注刷新(isclear,isprev,num)
            elseif 预览内容~="[视频]" then
             预览内容=关注作者名称.." : "..预览内容
           end
-          madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+          madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
          elseif v.type=="item_group_card" then
           local 关注作者头像=v.actor.avatar_url
           local 关注作者名称=v.actor.name
@@ -1649,33 +1646,33 @@ function 关注刷新(isclear,isprev,num)
           for e,q in ipairs(v.data) do
             -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
             local 数据=get_number_and_following(q.desc)
-            local 点赞数=tointeger(数据[1]) or 数据[1]
-            local 评论数=tointeger(数据[3]) or 数据[3]
+            local 点赞数=(数据[1]) or 数据[1]
+            local 评论数=(数据[3]) or 数据[3]
             local 标题=q.title
             local 时间=时间戳(v.action_time)
             local 预览内容=q.digest
             local 作者名称=q.author
             if q.type=="answer" then
               问题id等="null"
-              问题id等=问题id等.."分割"..tointeger(q.id)
+              问题id等=问题id等.."分割"..(q.id)
               标题=q.title
              elseif q.type=="question" then
-              问题id等="问题分割"..tointeger(q.id)
+              问题id等="问题分割"..(q.id)
               标题=q.title
              elseif q.type=="article"
-              问题id等="文章分割"..tointeger(q.id)
+              问题id等="文章分割"..(q.id)
               标题=q.title
              elseif q.type=="pin"
-              问题id等="想法分割"..tointeger(q.id)
+              问题id等="想法分割"..(q.id)
               标题=q.title
              elseif q.type=="zvideo"
-              问题id等="视频分割"..tointeger(q.id)
+              问题id等="视频分割"..(q.id)
               标题=q.title
               if 预览内容==nil or 预览内容=="" then
                 预览内容="[视频]"
               end
              elseif v.target.type=="drama" then
-              问题id等="直播分割"..tointeger(v.target.id)
+              问题id等="直播分割"..(v.target.id)
               标题=v.target.title
               if 预览内容==nil or 预览内容=="" then
                 预览内容="[直播]"
@@ -1688,7 +1685,7 @@ function 关注刷新(isclear,isprev,num)
                 预览内容=关注作者名称.." : "..预览内容
               end
             end
-            madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=预览内容,follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+            madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
           end
 
          elseif v.type=="recommend_user_card_list" then
@@ -1831,12 +1828,12 @@ end
 可以加载收藏={}
 collection_isend={}
 collection_nexturl={}
-canclick_collection=true
+canclick_collection={true,true}
 
-function 收藏刷新(isclear)
 
-  local pos=CollectiontabLayout.getSelectedTabPosition()+1;
-  if pos==0 then
+function 收藏刷新(isclear,pos)
+
+  if pos==nil then
     pos=1
   end
   local thispage,thissr=getpage(page,"collection",pos,2)
@@ -1851,13 +1848,13 @@ function 收藏刷新(isclear)
         is_lock=v.is_public==false and 图标("https") or nil,
 
         collections_art={
-          text=""..tointeger(v.item_count).."个内容"
+          text=""..(v.item_count).."个内容"
         },
         collections_item={
           text=math.floor(v.comment_count)..""
         },
         collections_follower={
-          text=tointeger(v.follower_count)..""
+          text=(v.follower_count)..""
         },
         collections_id={
           text=tostring(v.id)
@@ -1903,19 +1900,18 @@ function 收藏刷新(isclear)
     CollectiontabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
       onTabSelected=function(tab)
         --选择时触发
-        if canclick_collection then
-          canclick_collection=false
+        local pos=tab.getPosition()+1
+        if canclick_collection[pos] then
+          canclick_collection[pos]=false
           Handler().postDelayed(Runnable({
             run=function()
-              canclick_collection=true
+              canclick_collection[pos]=true
             end,
           }),1050)
          else
           return false
         end
-        local pos=tab.getPosition()+1
-        followpos=pos
-        收藏刷新(false)
+        收藏刷新(false,pos)
       end,
 
       onTabUnselected=function(tab)
@@ -1924,17 +1920,18 @@ function 收藏刷新(isclear)
 
       onTabReselected=function(tab)
         --选中之后再次点击即复选时触发
-        if canclick_collection then
-          canclick_collection=false
+        local pos=tab.getPosition()+1
+        if canclick_collection[pos] then
+          canclick_collection[pos]=false
           Handler().postDelayed(Runnable({
             run=function()
-              canclick_collection=true
+              canclick_collection[pos]=true
             end,
           }),1050)
          else
           return false
         end
-        收藏刷新(true)
+        收藏刷新(true,pos)
       end,
     });
 
@@ -2034,10 +2031,11 @@ function 收藏刷新(isclear)
     thispage.setOnItemClickListener(allonclick[pos])
     thispage.setOnItemLongClickListener(allonlongclick[pos])
 
+    thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
     thissr.setColorSchemeColors({转0x(primaryc)});
     thissr.setOnRefreshListener({
       onRefresh=function()
-        收藏刷新(true)
+        收藏刷新(true,pos)
         Handler().postDelayed(Runnable({
           run=function()
             thissr.setRefreshing(false);
@@ -2062,7 +2060,7 @@ function 收藏刷新(isclear)
       onScroll=function(view,a,b,c)
         if a+b==c and 可以加载收藏[pos] then
           可以加载收藏[pos]=false
-          收藏刷新()
+          收藏刷新(nil,pos)
           thissr.setRefreshing(true)
           System.gc()
           Handler().postDelayed(Runnable({
@@ -2108,12 +2106,11 @@ end
 可以加载关注内容={}
 follow_content_isend={}
 follow_content_nexturl={}
-canclick_follow=true
+canclick_follow_content={true,true}
 
-function 关注内容刷新(isclear)
+function 关注内容刷新(isclear,pos)
 
-  local pos=followtabLayout.getSelectedTabPosition()+1;
-  if pos==0 then
+  if pos==nil then
     pos=1
   end
 
@@ -2256,19 +2253,19 @@ function 关注内容刷新(isclear)
     followtabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
       onTabSelected=function(tab)
         --选择时触发
-        if canclick_follow then
-          canclick_follow=false
+        local pos=tab.getPosition()+1
+        if canclick_follow_content[pos] then
+          canclick_follow_content[pos]=false
           Handler().postDelayed(Runnable({
             run=function()
-              canclick_follow=true
+              canclick_follow_content[pos]=true
             end,
           }),1050)
          else
           return false
         end
         local pos=tab.getPosition()+1
-        followpos=pos
-        关注内容刷新(false)
+        关注内容刷新(false,pos)
       end,
 
       onTabUnselected=function(tab)
@@ -2277,17 +2274,18 @@ function 关注内容刷新(isclear)
 
       onTabReselected=function(tab)
         --选中之后再次点击即复选时触发
-        if canclick_follow then
-          canclick_follow=false
+        local pos=tab.getPosition()+1
+        if canclick_follow_content[pos] then
+          canclick_follow_content[pos]=false
           Handler().postDelayed(Runnable({
             run=function()
-              canclick_follow=true
+              canclick_follow_content[pos]=true
             end,
           }),1050)
          else
           return false
         end
-        关注内容刷新(true)
+        关注内容刷新(true,pos)
       end,
     });
 
@@ -2339,10 +2337,11 @@ function 关注内容刷新(isclear)
 
     thispage.setOnItemClickListener(onclick)
 
+    thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
     thissr.setColorSchemeColors({转0x(primaryc)});
     thissr.setOnRefreshListener({
       onRefresh=function()
-        关注内容刷新(true)
+        关注内容刷新(true,pos)
         Handler().postDelayed(Runnable({
           run=function()
             thissr.setRefreshing(false);
@@ -2419,7 +2418,7 @@ function 关注内容刷新(isclear)
       onScroll=function(view,a,b,c)
         if a+b==c and 可以加载关注内容[pos] then
           可以加载关注内容[pos]=false
-          关注内容刷新()
+          关注内容刷新(nil,pos)
           thissr.setRefreshing(true)
           System.gc()
           Handler().postDelayed(Runnable({
@@ -2466,7 +2465,7 @@ end
 可以加载创作内容={}
 create_content_isend={}
 create_content_nexturl={}
-canclick_create=true
+canclick_create={true,true,true,true,true,true,true}
 
 function 创作内容点击判断(pos)
   if pos==3 then
@@ -2521,10 +2520,9 @@ function 创作内容点击判断(pos)
   end
 end
 
-function 创作内容刷新(isclear)
+function 创作内容刷新(isclear,pos)
 
-  local pos=createtabLayout.getSelectedTabPosition()+1;
-  if pos==0 then
+  if pos==nil then
     pos=1
   end
 
@@ -2596,19 +2594,18 @@ function 创作内容刷新(isclear)
     createtabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
       onTabSelected=function(tab)
         --选择时触发
-        if canclick_create then
-          canclick_create=false
+        local pos=tab.getPosition()+1
+        if canclick_create[pos] then
+          canclick_create[pos]=false
           Handler().postDelayed(Runnable({
             run=function()
-              canclick_create=true
+              canclick_create[pos]=true
             end,
           }),1050)
          else
           return false
         end
-        local pos=tab.getPosition()+1
-        createpos=pos
-        创作内容刷新(false)
+        创作内容刷新(false,pos)
       end,
 
       onTabUnselected=function(tab)
@@ -2617,17 +2614,18 @@ function 创作内容刷新(isclear)
 
       onTabReselected=function(tab)
         --选中之后再次点击即复选时触发
-        if canclick_create then
-          canclick_create=false
+        local pos=tab.getPosition()+1
+        if canclick_create[pos] then
+          canclick_create[pos]=false
           Handler().postDelayed(Runnable({
             run=function()
-              canclick_create=true
+              canclick_create[pos]=true
             end,
           }),1050)
          else
           return false
         end
-        创作内容刷新(true)
+        创作内容刷新(true,pos)
       end,
     });
 
@@ -2699,10 +2697,11 @@ function 创作内容刷新(isclear)
       end
     })
 
+    thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
     thissr.setColorSchemeColors({转0x(primaryc)});
     thissr.setOnRefreshListener({
       onRefresh=function()
-        创作内容刷新(true)
+        创作内容刷新(true,pos)
         Handler().postDelayed(Runnable({
           run=function()
             thissr.setRefreshing(false);
@@ -2722,7 +2721,7 @@ function 创作内容刷新(isclear)
       onScroll=function(view,a,b,c)
         if a+b==c and 可以加载创作内容[pos] then
           可以加载创作内容[pos]=false
-          创作内容刷新()
+          创作内容刷新(nil,pos)
           thissr.setRefreshing(true)
           System.gc()
           Handler().postDelayed(Runnable({
@@ -2790,7 +2789,7 @@ function getuserinfo()
       local 名字=data.name
       local 头像=data.avatar_url
       local 签名=data.headline
-      local uid=data.id--用tointeger不行数值太大了会
+      local uid=data.id
       activity.setSharedData("idx",uid)
       侧滑头.onClick=function()
         activity.newActivity("people",{uid})
@@ -2885,6 +2884,28 @@ getuserinfo()
 function onActivityResult(a,b,c)
   if b==100 then
     getuserinfo()
+
+    local position=page_home.getCurrentItem()
+    local pos=position
+    if this.getSharedData("开启想法") ~="true" then
+      pos=pos+1
+    end
+    if position == 0 then
+      pos=position
+      主页刷新(false)
+    end
+    if pos == 1 then
+      想法刷新(false)
+    end
+
+    if pos == 3 then
+      if not(getLogin()) then
+        提示("请登录后使用本功能")
+       else
+        关注刷新(nil,false)
+      end
+    end
+
    elseif b==1200 then --夜间模式开启
     设置主题()
    elseif b==200 then

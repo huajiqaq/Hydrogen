@@ -49,7 +49,7 @@ function 刷新()
           底部内容=底部内容.." 已关注"
         end
         local 活动="由 "..v.creator.name.." 创建"
-        local mc_id=tointeger(v.id)
+        local mc_id=(v.id)
         if 预览内容==false or 预览内容=="" then
           预览内容="无介绍"
         end

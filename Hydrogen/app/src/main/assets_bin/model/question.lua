@@ -93,7 +93,7 @@ function base_question:next(callback)
            else
             self.mdata[v.id]=v --(概率需要(如果以后需要扩张功能的话))
             self.data[#self.data+1]=v
-            self.data[#self.data].id=tointeger(self.data[#self.data].id)
+            self.data[#self.data].id=(self.data[#self.data].id)
             if self.resultfunc then self.resultfunc(v) end
           end
         end

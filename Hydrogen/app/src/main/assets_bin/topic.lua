@@ -173,19 +173,19 @@ function 精华刷新(istab)
           local excerpt=name.." : "..excerpt_data
           if v.target.type=="answer" then
             title=v.target.question.title
-            id=tointeger(v.target.question.id) or "null"
-            id=id.."分割"..tointeger(v.target.id)
+            id=(v.target.question.id) or "null"
+            id=id.."分割"..(v.target.id)
            elseif v.target.type=="question" then
             local title=v.target.title
-            local id=tointeger(v.target.id)
-            local answer_count=tointeger(v.target.answer_count).."个回答"
-            local follower_count=tointeger(v.target.follower_count).."人关注"
-            id="问题分割"..tointeger(v.target.id)
+            local id=(v.target.id)
+            local answer_count=(v.target.answer_count).."个回答"
+            local follower_count=(v.target.follower_count).."人关注"
+            id="问题分割"..(v.target.id)
             madapter.Adapter.add{all_title=title,all_follower_count=follower_count,all_answer_count=answer_count,best_id=id}
             continue
            elseif v.target.type=="article" then
             title=v.target.title
-            id="文章分割"..tointeger(v.target.id)
+            id="文章分割"..(v.target.id)
 
            elseif v.target.type=="zvideo" then
             title=v.target.title
@@ -202,30 +202,33 @@ function 精华刷新(istab)
               excerpt=name.." : "..excerpt_data
             end
             id="视频分割"..videourl
-           elseif v.type=="pin" then
-            local excerpt_data=v.target.excerpt or ""
-            title=v.title
+           elseif v.target.type=="pin" then
+            title=v.target.content[1].title
             if title==nil or title==""
               title="一个想法"
             end
-            id="想法分割"..tointeger(v.target.id)
+            id="想法分割"..v.target.id
           end
 
-          local voteup_count=tointeger(v.target.voteup_count) or tointeger(v.target.counter.applaud)
-          local comment_count=tointeger(v.target.comment_count) or tointeger(v.target.counter.comment)
+          pcall(function()
+            excerpt=Html.fromHtml(v.target.content[1].content)
+          end)
+
+          local voteup_count=(v.target.voteup_count) or (v.target.like_count) or (v.target.counter.applaud)
+          local comment_count=(v.target.comment_count) or (v.target.comment_count) or (v.target.counter.comment)
           madapter.Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
          elseif v.target.type=="topic_sticky_module" then
           if v.target.data then
 
             for q,w in ipairs(v.target.data) do
-              local voteup_count=tointeger(w.target.voteup_count)
-              local comment_count=tointeger(w.target.comment_count)
+              local voteup_count=(w.target.voteup_count)
+              local comment_count=(w.target.comment_count)
               if w.target.type=="answer" then
                 title=w.target.question.title
-                id=tointeger(w.target.question.id).."分割"..tointeger(w.target.id)
+                id=(w.target.question.id).."分割"..(w.target.id)
                elseif w.target.type=="article" then
                 title=w.target.title
-                id="文章分割"..tointeger(w.target.id)
+                id="文章分割"..(w.target.id)
 
                elseif w.target.type=="zvideo" then
                 xpcall(function()
@@ -239,8 +242,8 @@ function 精华刷新(istab)
                 id="视频分割"..videourl
                elseif w.target.type=="question" then
                 title=w.target.title
-                voteup_count=tointeger(w.target.answer_count)
-                id="问题分割"..tointeger(w.target.id)
+                voteup_count=(w.target.answer_count)
+                id="问题分割"..(w.target.id)
               end
               madapter.Adapter.add{best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
             end
@@ -316,21 +319,22 @@ mmpop={
   }
 }
 
-canclick_topic=true
+canclick_topic={true,true,true,true}
 TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
   onTabSelected=function(tab)
     --选择时触发
-    if canclick_topic then
-      canclick_topic=false
+    local pos=tab.getPosition()
+    local mpos=tab.getPosition()+1
+    if canclick_topic[mpos] then
+      canclick_topic[mpos]=false
       Handler().postDelayed(Runnable({
         run=function()
-          canclick_topic=true
+          canclick_topic[mpos]=true
         end,
       }),1050)
      else
       return false
     end
-    local pos=tab.getPosition()
     if pos==0 then
      else
       精华刷新(true)

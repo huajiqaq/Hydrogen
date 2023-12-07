@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.241
+versionCode=0.3
 layout_dir="layout/item_layout/"
 
 
@@ -412,16 +412,6 @@ function 沉浸状态栏()
   activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 end
 
-function activity背景颜色(color)
-  _window = activity.getWindow();
-  _window.setBackgroundDrawable(ColorDrawable(color));
-  _wlp = _window.getAttributes();
-  _wlp.gravity = Gravity.BOTTOM;
-  _wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
-  _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;
-  _window.setAttributes(_wlp);
-end
-
 function 转0x(j,isAndroid)
   if #j==7 then
     jj=j:match("#(.+)")
@@ -500,7 +490,11 @@ end
 
 function 加载js(id,js)
   if js~=nil then
-    id.evaluateJavascript(js,nil)
+    id.post{
+      run=function()
+        id.evaluateJavascript(js,nil)
+      end
+    }
   end
 end
 
@@ -1454,7 +1448,7 @@ function 加入收藏夹(回答id,收藏类型)
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
-  local list,dialog_lay,lp,lq,tip_text,add_button,add_text,cp,lay,Choice_dialog,adp
+  local list,dialog_lay,lp,lq,add_button,add_text,cp,lay,Choice_dialog,adp
   import "android.widget.LinearLayout$LayoutParams"
   list=ListView(activity).setFastScrollEnabled(true)
   dialog_lay=LinearLayout(activity)
@@ -1465,11 +1459,6 @@ function 加入收藏夹(回答id,收藏类型)
   lp.gravity = Gravity.RIGHT|Gravity.CENTER
   lq=LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
   lq.gravity = Gravity.CENTER
-
-  tip_text=TextView(activity)
-  .setText("待选中收藏夹")
-  .setTypeface(字体("product"))
-  .setLayoutParams(lq);
 
   add_button=ImageView(activity).setImageBitmap(loadbitmap(图标("add")))
   .setColorFilter(转0x(textc))
@@ -1485,7 +1474,9 @@ function 加入收藏夹(回答id,收藏类型)
     新建收藏夹(function(mytext,myid)
       adp.insert(0,{
         mytext=mytext,
-        myid=myid
+        myid=myid,
+        status={Checked=false},
+        oristatus=false
       })
       activity.setResult(1600)
     end)
@@ -1493,17 +1484,37 @@ function 加入收藏夹(回答id,收藏类型)
   end
 
   cp=TextView(activity)
-  lay=LinearLayout(activity).setOrientation(1).addView(tip_text).addView(dialog_lay).addView(cp).addView(list)
+  lay=LinearLayout(activity).setOrientation(1).addView(dialog_lay).addView(cp).addView(list)
   Choice_dialog=AlertDialog.Builder(activity)--创建对话框
   .setTitle("选择路径")
   .setPositiveButton("确认",{
     onClick=function()
-      zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..选中收藏夹,head,function(code,json)
+      local dotab={
+        add={},
+        remove={}
+      }
+      for k, v in pairs(adp.getData()) do
+        local oristatus=v.oristatus
+        local status=v.status.Checked
+        if oristatus~=status then
+          if status==true then
+            table.insert(dotab.add,v.myid)
+           elseif status==false then
+            table.insert(dotab.remove,v.myid)
+          end
+        end
+      end
+      local addstr=urlEncode(table.concat(dotab.add,","))
+      local removestr=urlEncode(table.concat(dotab.remove,","))
+      if addstr=="" and removestr=="" then
+        return
+      end
+      zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..addstr.."&remove_collections="..removestr,head,function(code,json)
         canload=true
         if code==200 then
-          提示("收藏成功")
+          提示("成功")
          else
-          提示("收藏失败")
+          提示("失败")
         end
       end)
   end})
@@ -1513,26 +1524,42 @@ function 加入收藏夹(回答id,收藏类型)
 
   local item={
     LinearLayout,
-    orientation="vertical",
+    orientation="horizontal",
     layout_width="fill",
     {
-      TextView,
-      id="mytext",
-      layout_width="match_parent",
-      layout_height="wrap_content",
-      textSize="16sp",
-      gravity="center_vertical",
-      Typeface=字体("product-Bold");
-      paddingStart=64,
-      paddingEnd=64,
-      minHeight=192
+      LinearLayout;
+      layout_weight=1;
+      {
+        TextView,
+        id="mytext",
+        layout_width="wrap",
+        layout_height="wrap_content",
+        textSize="16sp",
+        gravity="center_vertical",
+        Typeface=字体("product-Bold");
+        paddingStart=64,
+        paddingEnd=64,
+        minHeight=192
+      },
+      {
+        TextView,
+        id="myid",
+        layout_width="0dp",
+        layout_height="0dp",
+      };
     },
     {
-      TextView,
-      id="myid",
-      layout_width="0dp",
-      layout_height="0dp",
-    },
+      LinearLayout,
+      layout_gravity="center_vertical",
+      layout_marginRight="10dp";
+      {
+        CheckBox;
+        id="status";
+        gravity="center_vertical",
+        focusable=false;
+        clickable=false;
+      };
+    };
   }
 
   adp=LuaAdapter(activity,item)
@@ -1540,24 +1567,38 @@ function 加入收藏夹(回答id,收藏类型)
 
 
   list.onItemClick=function(l,v,p,s)--列表点击事件
-    tip_text.Text="当前选中收藏夹："..v.Tag.mytext.Text
-    选中收藏夹=v.Tag.myid.Text
+    if v.Tag.status.Checked then
+      l.adapter.getData()[s].status["Checked"]=false
+     else
+      l.adapter.getData()[s].status["Checked"]=true
+    end
+    l.adapter.notifyDataSetChanged()--更新列表
   end
 
-  local collections_url= "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20"
+  local nextutl
+  local function 收藏列表刷新()
+    local collections_url= nextutl or "https://www.zhihu.com/api/v4/collections/contents/"..收藏类型.."/"..回答id
+    zHttp.get(collections_url,head,function(code,content)
+      if code==200 then
+        adp.setNotifyOnChange(true)
+        for k,v in ipairs(luajson.decode(content).data) do
+          adp.add({
+            mytext=v.title,
+            myid=tostring((v.id)),
+            status={Checked=v.is_favorited},
+            oristatus=v.is_favorited
+          })
+        end
 
-  zHttp.get(collections_url,head,function(code,content)
-    if code==200 then
-      adp.setNotifyOnChange(true)
-      for k,v in ipairs(luajson.decode(content).data) do
-        adp.add({
-          mytext=v.title,
-          myid=tostring(tointeger(v.id))
-        })
+        if luajson.decode(content).paging.is_end==false then
+          nextutl=luajson.decode(content).paging.next
+          return 收藏列表刷新()
+        end
+
       end
-
-    end
-  end)
+    end)
+  end
+  收藏列表刷新()
 end
 
 function 新建收藏夹(callback)
@@ -1818,20 +1859,29 @@ function 加入专栏(回答id,收藏类型)
     选中专栏=v.Tag.myid.Text
   end
 
-  local collections_url= "https://api.zhihu.com/members/"..activity.getSharedData("idx").."/owned-columns?type="..收藏类型.."&id="..回答id
+  local nextutl
+  local function 专栏列表刷新()
+    local collections_url= nextutl or "https://api.zhihu.com/members/"..activity.getSharedData("idx").."/owned-columns?type="..收藏类型.."&id="..回答id
 
-  zHttp.get(collections_url,postapphead,function(code,content)
-    if code==200 then
-      adp.setNotifyOnChange(true)
-      for k,v in ipairs(luajson.decode(content).data) do
-        adp.add({
-          mytext=v.title,
-          myid=v.id
-        })
+    zHttp.get(collections_url,apphead,function(code,content)
+      if code==200 then
+        adp.setNotifyOnChange(true)
+        for k,v in ipairs(luajson.decode(content).data) do
+          adp.add({
+            mytext=v.title,
+            myid=v.id
+          })
+        end
+
+        if luajson.decode(content).paging and luajson.decode(content).paging.is_end==false then
+          nextutl=luajson.decode(content).paging.next
+          return 专栏列表刷新()
+        end
+
       end
-
-    end
-  end)
+    end)
+  end
+  专栏列表刷新()
 end
 
 import "android.graphics.drawable.GradientDrawable"

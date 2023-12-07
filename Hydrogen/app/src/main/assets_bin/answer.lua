@@ -30,7 +30,7 @@ comment.onClick=function()
     if mview.data.id==nil then
       return 提示("加载中")
     end
-    activity.newActivity("comment",{tointeger(mview.data.id),"answers",_title.Text,mview.ids.username.Text})
+    activity.newActivity("comment",{(mview.data.id),"answers",_title.Text,mview.ids.username.Text})
     end,function()
     提示("请稍等")
   end)
@@ -233,7 +233,7 @@ function 数据添加(t,b)
       webview下载文件(链接, UA, 相关信息, 类型, 大小)
   end})
 
-  回答id=tointeger(b.id)
+  回答id=(b.id)
   点赞状态[回答id]=(b.relationship.voting==1 and {true} or {false})[1]
   感谢状态[回答id]=b.relationship.is_thanked
 
@@ -250,7 +250,7 @@ function 数据添加(t,b)
   t.content.removeView(t.content.getChildAt(0))
   t.content.setWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
-      if url~=("https://www.zhihu.com/appview/answer/"..tointeger(b.id).."") then
+      if url~=("https://www.zhihu.com/appview/answer/"..(b.id).."") then
         检查链接(url)
         view.stopLoading()
         view.goBack()
@@ -349,7 +349,7 @@ function 数据添加(t,b)
   }))
 
 
-  t.content.loadUrl("https://www.zhihu.com/appview/answer/"..tointeger(b.id).."")
+  t.content.loadUrl("https://www.zhihu.com/appview/answer/"..(b.id).."")
   t.content.setVisibility(0)
 
 
@@ -410,9 +410,9 @@ function 加载页(mviews,pos,isleftadd,isload)
 
         if mviews.data and mviews.data.voteup_count and 重表状态==false and not(isload) then
 
-          vote_count.Text=tointeger(mviews.data.voteup_count)..""
-          thanks_count.Text=tointeger(mviews.data.thanks_count)..""
-          comment_count.Text=tointeger(mviews.data.comment_count)..""
+          vote_count.Text=(mviews.data.voteup_count)..""
+          thanks_count.Text=(mviews.data.thanks_count)..""
+          comment_count.Text=(mviews.data.comment_count)..""
         end
 
         数据添加(mviews.ids,cb) --添加数据
@@ -452,7 +452,7 @@ end
 function 首次设置()
   defer local question_base=answer
   :getinfo(回答id,function(tab)
-    all_answer.Text="点击查看全部"..tointeger(tab.answer_count).."个回答 >"
+    all_answer.Text="点击查看全部"..(tab.answer_count).."个回答 >"
     问题id=tab.id
     if tab.answer_count==1 then
       回答容器.isleft=true
@@ -553,17 +553,17 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           if mviews.data and mviews.data.id then
             回答id=mviews.data.id
             if mviews.data.voteup_count then
-              vote_count.Text=tointeger(mviews.data.voteup_count)..""
-              thanks_count.Text=tointeger(mviews.data.thanks_count)..""
-              comment_count.Text=tointeger(mviews.data.comment_count)..""
+              vote_count.Text=(mviews.data.voteup_count)..""
+              thanks_count.Text=(mviews.data.thanks_count)..""
+              comment_count.Text=(mviews.data.comment_count)..""
              else
               local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
               zHttp.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
                 if a==200 then
                   mviews.data=luajson.decode(b).data[1]
-                  vote_count.Text=tointeger(mviews.data.voteup_count)..""
-                  thanks_count.Text=tointeger(mviews.data.thanks_count)..""
-                  comment_count.Text=tointeger(mviews.data.comment_count)..""
+                  vote_count.Text=(mviews.data.voteup_count)..""
+                  thanks_count.Text=(mviews.data.thanks_count)..""
+                  comment_count.Text=(mviews.data.comment_count)..""
                 end
               end)
             end
@@ -613,6 +613,9 @@ ll.background=answerDrawable
 
 function onDestroy()
   for i=1,#数据表 do
+    数据表[i].ids.content.clearCache(true)
+    数据表[i].ids.content.clearFormData()
+    数据表[i].ids.content.clearHistory()
     数据表[i].ids.content.destroy()
     System.gc()
   end
@@ -757,7 +760,7 @@ task(1,function()
             return
           end
 
-          url="https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")
+          url="https://www.zhihu.com/answer/"..url:match("answer/(.+)")
 
           activity.newActivity("huida",{url,nil,true})
 
