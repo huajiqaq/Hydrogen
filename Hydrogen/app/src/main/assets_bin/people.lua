@@ -341,6 +341,7 @@ local base_people=require "model.people":new(people_id)
   大头像=data.avatar_url_template
   local 签名=data.headline
   用户id=data.id
+  people_id=data.id
 
   if 签名=="" then
     签名="无签名"

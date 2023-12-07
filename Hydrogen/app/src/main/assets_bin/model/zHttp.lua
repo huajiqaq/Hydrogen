@@ -1,6 +1,6 @@
 zHttp = {}
 
-function zHttp.setcallback(code,content,raw,headers,url,head,callback,func)
+function zHttp.setcallback(code,content,raw,headers,url,head,callback,func,data)
   if code==403 then
     canload=false
     local _ = pcall(function()
@@ -46,11 +46,9 @@ function zHttp.setcallback(code,content,raw,headers,url,head,callback,func)
     if decoded_content.error and decoded_content.error.message then
       提示(decoded_content.error.message)
     end
-   elseif code==302 then
-    if headers.Location[0] then
-      zHttp[func](headers.Location[0],head,callback)
-      return 
-    end
+   elseif headers.Location and headers.Location[0] then
+    zHttp.request(headers.Location[0],func,data,head,callback)
+    return
   end
   callback(code,content)
 end
@@ -86,13 +84,13 @@ end
 function zHttp.post(url,data,head,callback)
   if canload==false then return false end
   Http.post(url,data,head,function(code,content,raw,headers)
-    zHttp.setcallback(code,content,raw,headers,url,head,callback,"post")
+    zHttp.setcallback(code,content,raw,headers,url,head,callback,"post",data)
   end)
 end
 
 function zHttp.put(url,data,head,callback)
   if canload==false then return false end
   Http.put(url,data,head,function(code,content,raw,headers)
-    zHttp.setcallback(code,content,raw,headers,url,head,callback,"put")
+    zHttp.setcallback(code,content,raw,headers,url,head,callback,"put",data)
   end)
 end

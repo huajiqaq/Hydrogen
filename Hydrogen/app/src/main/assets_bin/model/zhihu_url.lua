@@ -113,18 +113,8 @@ function 检查链接(url,b)
     newLuaActivity("column",{videoid,"视频"})
    elseif url:find("zhihu.com/people") or url:find("zhihu.com/org") then
     if b then return true end
-    local people_name=url:getUrlArg("/people/")
-    local head = {
-      ["cookie"] = CookieManager.getInstance().getCookie("https://www.zhihu.com/");
-    }
-    zHttp.get(url,head,function(code,content)
-      if code==200 then
-        local peopleid=content:match('":{"id":"(.-)","urlToken')
-        newLuaActivity("people",{peopleid,true})
-       elseif code==401 then
-        Toast.makeText(activity, "请登录后查看用户",Toast.LENGTH_SHORT).show()
-      end
-    end)
+    local people_name=url:getUrlArg("/people/") or url:getUrlArg("/org/")
+    newLuaActivity("people",{people_name,true})
    elseif url:find("zhihu.com/roundtable/") then
     if b then return true end
     newLuaActivity("column",{url:getUrlArg("/roundtable/"),"圆桌"})

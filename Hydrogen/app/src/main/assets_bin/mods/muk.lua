@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.3
+versionCode=0.31
 layout_dir="layout/item_layout/"
 
 
@@ -2304,11 +2304,13 @@ function 清理内存()
 
     local function getDirSize(tab,path)
       if File(path).isDirectory() then
+        if File(path).canWrite()==false then
+          return
+        end
         local a=luajava.astable(File(path).listFiles() or {})
 
         for k,v in pairs(a) do
           if v.isDirectory() then
-            getDirSize(tab,tostring(v))
            else
             tab[1]=tab[1]+v.length()
           end
@@ -2319,16 +2321,15 @@ function 清理内存()
       end
     end
 
-    local dar=datadir.."/cache"
+    local dar
+    if this.getSharedData("禁止生成缓存") then
+      dar=datadir.."/cache/WebView"
+     else
+      dar=datadir.."/cache"
+    end
+
     getDirSize(tmp,dar)
     getDirSize(tmp,imagetmp)
-
-    local a1,a2=File(datadir.."/database/webview.db"),File(datadir.."/database/webviewCache.db")
-    pcall(function()
-      tmp[1]=tmp[1]+(a1.length() or 0)+(a2.length() or 0)
-      a1.delete()
-      a2.delete()
-    end)
 
     m = tmp[1]
     if m == 0 then
@@ -2679,3 +2680,43 @@ end
 if Build.VERSION.SDK_INT >= 21 then
   activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(转0x(backgroundc,true));
 end
+
+function 文件处理()
+
+  local function 文件判断(path)
+    return File(path).exists() and File(path).canWrite()==false
+  end
+
+
+  local cachemode=this.getSharedData("禁止生成缓存")
+  if cachemode~="true" then
+    return
+  end
+
+  import "androidx.core.content.ContextCompat"
+
+  local datadir=tostring(ContextCompat.getDataDir(activity))
+  local mcache=datadir.."/cache/WebView"
+  local mmcache=datadir.."/app_webview/BrowserMetrics-spare.pma"
+  local mmmcache=datadir.."/app_webview/Default"
+  if 文件判断(mcache)==false then
+    LuaUtil.rmDir(File(mcache))
+    创建多级文件夹(mcache)
+    File(mcache).setWritable(false,false)
+  end
+
+  if 文件判断(mmcache)==false then
+    删除文件(mmcache)
+    创建文件(mmcache)
+    File(mmcache).setWritable(false,false)
+  end
+
+  if 文件判断(mmmcache)==false then
+    LuaUtil.rmDir(File(mmmcache))
+    创建多级文件夹(mmmcache)
+    File(mmmcache).setWritable(false,false)
+  end
+
+end
+
+文件处理()
