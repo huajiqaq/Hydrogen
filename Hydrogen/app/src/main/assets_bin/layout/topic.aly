@@ -83,10 +83,10 @@
       };
     };
     {
-      RelativeLayout;
-      layout_width="-1";
-      layout_height="48dp";
-      background="#00000000";
+      LinearLayout;
+      layout_width="fill";
+      layout_height="fill";
+      orientation="vertical",
       {
         TabLayout,
         background=backgroundc;
@@ -97,18 +97,18 @@
         tabGravity=TabLayout.GRAVITY_FILL,
         layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)
       };
-    };
-    {
-      LinearLayout;
-      orientation="vertical";
-      layout_height="-1";
-      layout_width="-1";
       {
-        ViewPager;
-        layout_height="-1",
-        id="topic_page",
+        LinearLayout;
+        orientation="vertical";
+        layout_height="-1";
         layout_width="-1";
-        layout_weight="1";
+        {
+          ViewPager;
+          layout_height="-1",
+          id="topic_page",
+          layout_width="-1";
+          layout_weight="1";
+        };
       };
     };
   };

@@ -116,8 +116,11 @@ end}
 
 
 function onDestroy()
+  login_web.destroy()
+end
+
+function onStop()
   login_web.clearCache(true)
   login_web.clearFormData()
   login_web.clearHistory()
-  login_web.destroy()
 end

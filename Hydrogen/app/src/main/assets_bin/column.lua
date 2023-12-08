@@ -110,14 +110,6 @@ end
 
 _title.Text="加载中"
 
-
-if getLogin() then
-  zHttp.post("https://api.zhihu.com/usertask-core/action/read_content",'{"content_id":"'..result..'","content_type":"ANSWER","action_time":'..os.time()..'}',postapphead,function(code,content)
-    if code==200 then
-    end
-  end)
-end
-
 function 刷新()
   content.BackgroundColor=转0x("#00000000",true);
   content.setVisibility(8)
@@ -397,10 +389,13 @@ end})
 --退出时去除webview的内存
 
 function onDestroy()
+  content.destroy()
+end
+
+function onStop()
   content.clearCache(true)
   content.clearFormData()
   content.clearHistory()
-  content.destroy()
 end
 
 --pop

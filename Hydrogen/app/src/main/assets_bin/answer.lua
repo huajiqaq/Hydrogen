@@ -130,10 +130,6 @@ function 数据添加(t,b)
   t.content.setHorizontalScrollBarEnabled(false);
   t.content.setVerticalScrollBarEnabled(false);
 
-  zHttp.post("https://api.zhihu.com/usertask-core/action/read_content",'{"content_id":"'..b.id..'","content_type":"ANSWER","action_time":'..os.time()..'}',postapphead,function(code,content)
-    if code==200 then
-    end
-  end)
 
   if activity.getSharedData("标题简略化")~="true" then
     _title.Text=b.question.title:gsub("/",[[ 或 ]])
@@ -613,10 +609,16 @@ ll.background=answerDrawable
 
 function onDestroy()
   for i=1,#数据表 do
+    数据表[i].ids.content.destroy()
+    System.gc()
+  end
+end
+
+function onStop()
+  for i=1,#数据表 do
     数据表[i].ids.content.clearCache(true)
     数据表[i].ids.content.clearFormData()
     数据表[i].ids.content.clearHistory()
-    数据表[i].ids.content.destroy()
     System.gc()
   end
 end

@@ -54,7 +54,6 @@ data = {
 
   {__type=4,subtitle="自动清理缓存",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("自动清理缓存"))}},
   {__type=4,subtitle="禁用大部分缓存",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("禁用缓存"))}},
-  {__type=4,subtitle="禁止生成缓存",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("禁止生成缓存"))}},
   {__type=3,subtitle="清理软件缓存",image=图标("")},
 
   {__type=1,title="页面设置"},
@@ -164,40 +163,6 @@ tab={
   end,
   清理软件缓存=function()
     clear()
-  end,
-  禁止生成缓存=function()
-
-    import "androidx.core.content.ContextCompat"
-    local datadir=tostring(ContextCompat.getDataDir(activity))
-    local mcache=datadir.."/cache/WebView"
-    local mmcache=datadir.."/app_webview/BrowserMetrics-spare.pma"
-    local mmmcache=datadir.."/app_webview/Default"
-
-    if this.getSharedData("禁止生成缓存")=="true" then
-      AlertDialog.Builder(this)
-      .setTitle("提示")
-      .setMessage("开启后 将会修改webview缓存目录写入权限来防止在软件内写入缓存")
-      .setPositiveButton("我知道了",nil)
-      .show()
-
-      LuaUtil.rmDir(File(mcache))
-      创建多级文件夹(mcache)
-      File(mcache).setWritable(false,false)
-
-      删除文件(mmcache)
-      创建文件(mmcache)
-      File(mmcache).setWritable(false,false)
-
-      LuaUtil.rmDir(File(mmmcache))
-      创建多级文件夹(mmmcache)
-      File(mmmcache).setWritable(false,false)
-      
-     else
-      删除文件(mcache)
-      删除文件(mmcache)
-      删除文件(mmmcache)
-      提示("关闭成功")
-    end
   end,
 
   关于=function()

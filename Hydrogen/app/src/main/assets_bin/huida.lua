@@ -416,3 +416,9 @@ function onDestroy()
   liulan.clearHistory()
   liulan.destroy()
 end
+
+function onStop()
+  liulan.clearCache(true)
+  liulan.clearFormData()
+  liulan.clearHistory()
+end

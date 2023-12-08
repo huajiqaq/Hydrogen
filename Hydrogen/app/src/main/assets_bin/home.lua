@@ -3050,7 +3050,7 @@ function onKeyDown(code,event)
   local now = os.time()
   if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
     --监听返回键
-    if a.pop.isShowing() then
+    if a and a.pop.isShowing() then
       --如果菜单显示，关闭菜单并阻止返回键
       a.pop.dismiss()
       return true

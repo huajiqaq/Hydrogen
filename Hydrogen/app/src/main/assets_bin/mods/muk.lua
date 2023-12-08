@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.31
+versionCode=0.32
 layout_dir="layout/item_layout/"
 
 
@@ -1744,6 +1744,9 @@ function 新建收藏夹(callback)
   .setNeutralButton("取消",{onClick=function()
       --加载一个空白页
       collection_webview.loadUrl("about:blank");
+      collection_webview.clearCache(true)
+      collection_webview.clearFormData()
+      collection_webview.clearHistory()
       --移除webview
       collection_webview.removeAllViews();
       --销毁webview自身
@@ -1977,32 +1980,6 @@ function 替换文件字符串(路径,要替换的字符串,替换成的字符�
   end
 end
 
-function 获取参数(url,callback)
-  local 请求url="https://x-zse-96.huajicloud.ml/api"
-  local 判断url="https://www.zhihu.com"
-  if url:find(判断url) then
-    请求参数= url:match("zhihu.com(.+)")
-   elseif url:find("https://api.zhihu.com") then
-    请求参数="/api/v4"..url:match("zhihu.com(.+)")
-    url=判断url..请求参数
-  end
-  加密前数据="101_3_3.0+"..请求参数.."+"..获取Cookie("https://www.zhihu.com/"):match("d_c0=(.-);")
-  md5化数据=string.lower(MD5(加密前数据))
-
-
-  Http.post(请求url,md5化数据,head,function(code,content)
-    if code==200 then
-      zHttp.get(url,app_head,function(codee,contentt)
-        if codee==200 then
-          callback(contentt)
-        end
-      end)
-     elseif code==500
-      return print("出错")
-    end
-  end)
-end
-
 function urlEncode(s)
   s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
   return string.gsub(s, " ", " ")
@@ -2123,26 +2100,22 @@ import "androidx.core.content.ContextCompat"
 
 --1毫秒后添加 防止加载失败
 task(1,function()
-
-  --停留30秒时才添加 防止不必要的清理
-  task(30000,function()
-    local old_onDestroy=onDestroy
-    function onDestroy()
-      if old_onDestroy~=nil then
-        old_onDestroy()
-      end
-      old_onDestroy=nil
-
-      --判断是否为主线程
-      if Looper.myLooper() == Looper.getMainLooper() then
-        --清理内存缓存
-        Glide.get(this).clearMemory();
-      end
-
-      collectgarbage("collect")
-      System.gc()
+  local old_onDestroy=onDestroy
+  function onDestroy()
+    if old_onDestroy~=nil then
+      old_onDestroy()
     end
-  end)
+    old_onDestroy=nil
+
+    --判断是否为主线程
+    if Looper.myLooper() == Looper.getMainLooper() then
+      --清理内存缓存
+      Glide.get(this).clearMemory();
+    end
+
+    collectgarbage("collect")
+    System.gc()
+  end
 
   islogin=getLogin()
 
@@ -2322,11 +2295,7 @@ function 清理内存()
     end
 
     local dar
-    if this.getSharedData("禁止生成缓存") then
-      dar=datadir.."/cache/WebView"
-     else
-      dar=datadir.."/cache"
-    end
+    dar=datadir.."/cache"
 
     getDirSize(tmp,dar)
     getDirSize(tmp,imagetmp)
@@ -2681,42 +2650,32 @@ if Build.VERSION.SDK_INT >= 21 then
   activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(转0x(backgroundc,true));
 end
 
-function 文件处理()
 
-  local function 文件判断(path)
-    return File(path).exists() and File(path).canWrite()==false
-  end
-
-
-  local cachemode=this.getSharedData("禁止生成缓存")
-  if cachemode~="true" then
-    return
-  end
-
-  import "androidx.core.content.ContextCompat"
-
-  local datadir=tostring(ContextCompat.getDataDir(activity))
-  local mcache=datadir.."/cache/WebView"
-  local mmcache=datadir.."/app_webview/BrowserMetrics-spare.pma"
-  local mmmcache=datadir.."/app_webview/Default"
-  if 文件判断(mcache)==false then
-    LuaUtil.rmDir(File(mcache))
-    创建多级文件夹(mcache)
-    File(mcache).setWritable(false,false)
-  end
-
-  if 文件判断(mmcache)==false then
-    删除文件(mmcache)
-    创建文件(mmcache)
-    File(mmcache).setWritable(false,false)
-  end
-
-  if 文件判断(mmmcache)==false then
-    LuaUtil.rmDir(File(mmmcache))
-    创建多级文件夹(mmmcache)
-    File(mmmcache).setWritable(false,false)
-  end
-
+local cachemode=this.getSharedData("禁止生成缓存")
+if cachemode=="true" then
+  mytip_dia=AlertDialog.Builder(this)
+  .setTitle("提示")
+  .setMessage("已开启 禁止生成缓存 该选项可能会导致一些问题 请点击下方关闭 关闭后 你的登录状态将会变为未登录")
+  .setCancelable(false)
+  .setPositiveButton("我知道了",{onClick=function()
+      local datadir=tostring(ContextCompat.getDataDir(activity))
+      local mcache=datadir.."/cache"
+      local mmcache=datadir.."/app_webview"
+      删除文件(mcache)
+      删除文件(mmcache)
+      this.setSharedData("禁止生成缓存",nil)
+      清除所有cookie()
+      activity.setSharedData("signdata",nil)
+      activity.setSharedData("idx",nil)
+      activity.setSharedData("udid",nil)
+      提示("已清除,即将重启")
+      task(200,function()
+        import "android.os.Process"
+        local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activity.startActivity(intent);
+        Process.killProcess(Process.myPid());
+      end)
+  end})
+  .show()
 end
-
-文件处理()

@@ -522,6 +522,7 @@ end)
      else
       预览内容="无"
     end
+    预览内容=Html.fromHtml(预览内容)
    elseif v.target.type=="zvideo" then
     xpcall(function()
       videourl=v.target.video.playlist.sd.url
@@ -684,6 +685,7 @@ function 其他(isclear)
 
           点赞数=(v.reaction_count)
           评论数=(v.comment_count)
+          预览内容=Html.fromHtml(预览内容)
          elseif v.type=="zvideo" then
           活动=活动 or "发布了视频"
           xpcall(function()
@@ -812,6 +814,7 @@ function checktitle(str)
           标题=v.object.author.name.."发布了想法"
           问题id="想法分割"..v.object.id
           预览内容=v.object.content[1].content
+          预览内容=Html.fromHtml(预览内容)
          elseif v.object.type=="zvideo" then
           活动="发布了视频"
           xpcall(function()
@@ -828,7 +831,7 @@ function checktitle(str)
           问题id="文章分割"..(v.object.id)
           标题=v.object.title
         end
-        people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+        people_adp.add{people_action=活动,people_art=Html.fromHtml(预览内容),people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=Html.fromHtml(标题),people_image=头像}
         people_adp.notifyDataSetChanged()
       end
     end)

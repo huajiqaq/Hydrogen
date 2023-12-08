@@ -319,7 +319,7 @@ mmpop={
   }
 }
 
-canclick_topic={true,true,true,true}
+canclick_topic={true,true,true,true,true}
 TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
   onTabSelected=function(tab)
     --选择时触发

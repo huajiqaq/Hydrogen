@@ -71,7 +71,7 @@ function 刷新()
         问题id="文章分割"..(v.object.id)
         标题=v.object.title
       end
-      history_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+      history_list.Adapter.add{people_action=活动,people_art=Html.fromHtml(预览内容),people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=Html.fromHtml(标题),people_image=头像}
       history_list.Adapter.notifyDataSetChanged()
     end
   end)
