@@ -392,10 +392,12 @@ function onDestroy()
   content.destroy()
 end
 
-function onStop()
-  content.clearCache(true)
-  content.clearFormData()
-  content.clearHistory()
+if this.getSharedData("禁用缓存")=="true" then
+  function onStop()
+    content.clearCache(true)
+    content.clearFormData()
+    content.clearHistory()
+  end
 end
 
 --pop

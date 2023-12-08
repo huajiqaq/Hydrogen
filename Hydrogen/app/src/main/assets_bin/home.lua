@@ -2106,7 +2106,7 @@ end
 可以加载关注内容={}
 follow_content_isend={}
 follow_content_nexturl={}
-canclick_follow_content={true,true}
+canclick_follow_content={true,true,true,true,true,true,true}
 
 function 关注内容刷新(isclear,pos)
 

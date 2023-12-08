@@ -417,8 +417,10 @@ function onDestroy()
   liulan.destroy()
 end
 
-function onStop()
-  liulan.clearCache(true)
-  liulan.clearFormData()
-  liulan.clearHistory()
+if this.getSharedData("禁用缓存")=="true" then
+  function onStop()
+    liulan.clearCache(true)
+    liulan.clearFormData()
+    liulan.clearHistory()
+  end
 end

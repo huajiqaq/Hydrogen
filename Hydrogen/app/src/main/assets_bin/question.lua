@@ -307,8 +307,11 @@ task(1,function()
               Elevation="0";
               {
                 LinearLayout;
+                onClick=function()
+                end;
                 padding="4dp",
                 orientation="horizontal";
+                id="star",
                 {
                   ImageView;
                   colorFilter=textc,
@@ -466,7 +469,7 @@ task(1,function()
     end
   }
   波纹({fh,_more},"圆主题")
-  波纹({discussion,view,description,follow,open},"方自适应")
+  波纹({discussion,view,description,follow,open,star},"方自适应")
 end)
 
 question_list.adapter=question_adp
@@ -799,10 +802,12 @@ function onDestroy()
   show.destroy()
 end
 
-function onStop()
-  show.clearCache(true)
-  show.clearFormData()
-  show.clearHistory()
+if this.getSharedData("禁用缓存")=="true" then
+  function onStop()
+    show.clearCache(true)
+    show.clearFormData()
+    show.clearHistory()
+  end
 end
 
 task(1,function()

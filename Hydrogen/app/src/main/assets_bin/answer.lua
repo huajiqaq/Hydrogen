@@ -614,12 +614,14 @@ function onDestroy()
   end
 end
 
-function onStop()
-  for i=1,#数据表 do
-    数据表[i].ids.content.clearCache(true)
-    数据表[i].ids.content.clearFormData()
-    数据表[i].ids.content.clearHistory()
-    System.gc()
+if this.getSharedData("禁用缓存")=="true" then
+  function onStop()
+    for i=1,#数据表 do
+      数据表[i].ids.content.clearCache(true)
+      数据表[i].ids.content.clearFormData()
+      数据表[i].ids.content.clearHistory()
+      System.gc()
+    end
   end
 end
 

@@ -319,17 +319,16 @@ mmpop={
   }
 }
 
-canclick_topic={true,true,true,true,true}
+canclick_topic={true,true,true,true}
 TopictabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
   onTabSelected=function(tab)
     --选择时触发
     local pos=tab.getPosition()
-    local mpos=tab.getPosition()+1
-    if canclick_topic[mpos] then
-      canclick_topic[mpos]=false
+    if canclick_topic[pos] then
+      canclick_topic[pos]=false
       Handler().postDelayed(Runnable({
         run=function()
-          canclick_topic[mpos]=true
+          canclick_topic[pos]=true
         end,
       }),1050)
      else
