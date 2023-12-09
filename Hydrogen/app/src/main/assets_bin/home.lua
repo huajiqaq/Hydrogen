@@ -2898,6 +2898,14 @@ function onActivityResult(a,b,c)
       想法刷新(false)
     end
 
+    if pos == 2 then
+      import "model.hot"
+      hotdata=hot:new()
+      hotdata:getPartition(function()
+        热榜刷新(false)
+      end)
+    end
+
     if pos == 3 then
       if not(getLogin()) then
         提示("请登录后使用本功能")

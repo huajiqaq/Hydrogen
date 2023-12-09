@@ -8,7 +8,8 @@ window.onload = function () {
         style = document.createElement('style');
         style.innerHTML = '.TheaterRoomHeader-temperature{pointer-events:none !important}'
         style.innerHTML += '.TheaterToolbar{display:none !important}'
-        style.innerHTML += '.TheaterMessageList{pointer-events:none !important; margin-bottom:10px !important}'
+        style.innerHTML += '.TheaterMessageList{margin-bottom:10px !important}'
+        style.innerHTML += '.TheaterMessage{pointer-events:none !important}'
         style.innerHTML += '.Theater-core{max-height:unset !important; height:100vh !important}'
         document.head.appendChild(style)
 
