@@ -93,6 +93,7 @@ task(1,function()
               CardBackgroundColor=cardedge;
               StrokeColor=cardedge;
               StrokeWidth=dp2px(1),
+              Visibility=8;
               onClick=function()
                 if 用户id then
                   activity.newActivity("people",{用户id})
@@ -746,6 +747,8 @@ function 加载数据()
       _follow.text="未关注"
     end
 
+    _root.Visibility=0
+
     a=MUKPopu(mpop)
 
     loadglide(people_image,tab.author.avatar_url)
@@ -772,7 +775,7 @@ question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
     local open=activity.getSharedData("内部浏览器查看回答")
     if open=="false" then
-      activity.newActivity("answer",{question_id,tostring(v.Tag.question_id.Text),question_base:getChild((v.Tag.question_id.Text))})
+      activity.newActivity("answer",{question_id,tostring(v.Tag.question_id.Text)})
      else
       activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.question_id.Text)})
     end

@@ -1633,6 +1633,7 @@ function 关注刷新(isclear,isprev,num)
           if not 预览内容 then
             预览内容="无底部内容"
            elseif 预览内容~="[视频]" then
+            local 关注作者名称= v.target.author or 关注作者名称
             预览内容=关注作者名称.." : "..预览内容
           end
           madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
@@ -3076,6 +3077,51 @@ function onKeyDown(code,event)
     end
   end
 end
+
+
+function onKeyDown(keyCode, event)
+  if this.getSharedData("音量键选择tab")~="true" then
+    return false
+  end
+  local allcount=HometabLayout.getTabCount()
+  if page_home.getCurrentItem()~=0 or allcount<1 then
+    return false
+  end
+  if keyCode==KeyEvent.KEYCODE_VOLUME_UP then
+    mcount=HometabLayout.getSelectedTabPosition()+1
+    --音量键up
+    return true;
+   elseif keyCode== KeyEvent.KEYCODE_VOLUME_DOWN then
+    mcount=HometabLayout.getSelectedTabPosition()-1
+    --音量键down
+    return true;
+  end
+end
+
+function onKeyUp(keyCode, event)
+  if this.getSharedData("音量键选择tab")~="true" then
+    return false
+  end
+  local allcount=HometabLayout.getTabCount()
+  if page_home.getCurrentItem()~=0 or allcount<1 then
+    return false
+  end
+  if keyCode==KeyEvent.KEYCODE_VOLUME_UP or keyCode== KeyEvent.KEYCODE_VOLUME_DOWN then
+    if mcount<0 then
+      提示("前面没内容了")
+      return
+    end
+    if mcount== allcount then
+      提示("后面没内容了")
+      return
+    end
+    local tab=HometabLayout.getTabAt(mcount);
+    tab.select()
+    mcount=nil
+    return true;
+  end
+end
+
 
 data=...
 function onCreate()

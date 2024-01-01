@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.331
+versionCode=0.4
 layout_dir="layout/item_layout/"
 
 
@@ -1245,7 +1245,7 @@ function MUKPopu(t)
             if _==false then
               提示(merror)
              else
-              提示("执行成功")
+              --              提示("执行成功")
             end
           end
       end})

@@ -16,7 +16,89 @@ import "android.webkit.ValueCallback"
 import "com.google.android.material.progressindicator.LinearProgressIndicator"
 问题id,回答id,问题对象,是否记录历史记录,在线页数=...
 
-activity.setContentView(loadlayout("layout/answer"))
+local 是否加载滑动跟随=this.getSharedData("回答底栏设置滑动跟随")
+
+if 是否加载滑动跟随~="true" then
+  activity.setContentView(loadlayout("layout/answer_nomove"))
+  function 设置滑动跟随()
+    return true
+  end
+  function monPageScrollStateChanged(state)
+  end
+ else
+  activity.setContentView(loadlayout("layout/answer"))
+
+  --new 0.1102 精准测量高度
+  task(1,function()
+    local location,底栏坐标,悬浮按钮坐标
+    location = int[2];
+    ll.getLocationOnScreen(location)
+    底栏坐标=location[1]
+    location = int[2];
+    comment.getLocationOnScreen(location)
+    悬浮按钮坐标=location[1]
+    底栏高度=ll.height
+    悬浮按钮高度差=底栏坐标-悬浮按钮坐标
+  end)
+
+
+  function 设置滑动跟随(t)
+    t.onScrollChange=function(view,x,y,lx,ly)
+      if y<=2 then--解决滑到顶了还是没有到顶的bug
+        llb.y=0
+        comment_parent.y=0
+        return
+      end
+      if t.canScrollVertically(1)~=true then--解决滑倒底了还是没到底的bug new 0.1102
+        llb.y=底栏高度+悬浮按钮高度差
+        comment_parent.y=底栏高度+悬浮按钮高度差
+      end
+      if ly>y then --上次滑动y大于这次y就是向上滑
+        if llb.y<=0 or math.abs(y-ly)>=底栏高度 then --这个or为了防止快速大滑动 new 0.1103更改 精准测量
+          --if llb.y<=0 or math.abs(y-ly)>=dp2px(56) then --这个or为了防止快速大滑动
+          llb.y=0
+          comment_parent.y=0
+         else
+          llb.y=llb.y-math.abs(y-ly)
+          comment_parent.y=comment_parent.y-math.abs(y-ly)
+        end
+       else
+        if llb.y<=底栏高度+悬浮按钮高度差 then --精准测量高度差 防止无法隐藏全部的bug new 0.1102
+          --if llb.y<=dp2px(56)+dp2px(26) then --没到底就向底移动(上滑)，+26dp是悬浮球高
+          llb.y=llb.y+math.abs(y-ly)
+          comment_parent.y=comment_parent.y+math.abs(y-ly)
+        end
+      end
+    end
+  end
+
+  function monPageScrollStateChanged(state)
+    if state==1 then
+      ValueAnimator.ofFloat({comment_parent.y,dp2px(56)+dp2px(26)})
+      .setDuration(200)
+      .setRepeatCount(0)
+      .addUpdateListener{
+        onAnimationUpdate=function(a)
+          local x=a.getAnimatedValue()
+          llb.y=x
+          comment_parent.y=x
+        end
+      }.start()
+     elseif state==2 then
+      ValueAnimator.ofFloat({comment_parent.y,0})
+      .setDuration(200)
+      .setRepeatCount(0)
+      .addUpdateListener{
+        onAnimationUpdate=function(a)
+          local x=a.getAnimatedValue()
+          llb.y=x
+          comment_parent.y=x
+        end
+      }.start()
+    end
+  end
+
+end
 
 波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 波纹({all_root},"方自适应")
@@ -25,66 +107,17 @@ import "model.answer"
 
 comment.onClick=function()
   xpcall(function()
-    local mcount=pg.getCurrentItem()
-    local mview=数据表[pg.adapter.getItem(mcount).id]
-    if mview.data.id==nil then
+    local pos=pg.getCurrentItem()
+    local mview=数据表[pg.adapter.getItem(pos).id]
+    local 回答id=mview.data.id
+    if 回答id==nil then
       return 提示("加载中")
     end
-    activity.newActivity("comment",{(mview.data.id),"answers",_title.Text,mview.ids.username.Text})
+    activity.newActivity("comment",{(回答id),"answers",_title.Text,mview.ids.username.Text})
     end,function()
     提示("请稍等")
   end)
 end;
-
---new 0.1102 精准测量高度
-task(1,function()
-  local location,底栏坐标,悬浮按钮坐标
-  location = int[2];
-  ll.getLocationOnScreen(location)
-  底栏坐标=location[1]
-  location = int[2];
-  comment.getLocationOnScreen(location)
-  悬浮按钮坐标=location[1]
-  底栏高度=ll.height
-  悬浮按钮高度差=底栏坐标-悬浮按钮坐标
-end)
-
-local 是否加载滑动跟随=this.getSharedData("回答底栏不设置滑动跟随")
-
-local function 设置滑动跟随(t)
-  if 是否加载滑动跟随=="true" then
-    return false
-  end
-  t.onScrollChange=function(view,x,y,lx,ly)
-    if y<=2 then--解决滑到顶了还是没有到顶的bug
-      llb.y=0
-      comment_parent.y=0
-      return
-    end
-    if t.canScrollVertically(1)~=true then--解决滑倒底了还是没到底的bug new 0.1102
-      llb.y=底栏高度+悬浮按钮高度差
-      comment_parent.y=底栏高度+悬浮按钮高度差
-    end
-    if ly>y then --上次滑动y大于这次y就是向上滑
-      if llb.y<=0 or math.abs(y-ly)>=底栏高度 then --这个or为了防止快速大滑动 new 0.1103更改 精准测量
-        --if llb.y<=0 or math.abs(y-ly)>=dp2px(56) then --这个or为了防止快速大滑动
-        llb.y=0
-        comment_parent.y=0
-       else
-        llb.y=llb.y-math.abs(y-ly)
-        comment_parent.y=comment_parent.y-math.abs(y-ly)
-      end
-     else
-      if llb.y<=底栏高度+悬浮按钮高度差 then --精准测量高度差 防止无法隐藏全部的bug new 0.1102
-        --if llb.y<=dp2px(56)+dp2px(26) then --没到底就向底移动(上滑)，+26dp是悬浮球高
-        llb.y=llb.y+math.abs(y-ly)
-        comment_parent.y=comment_parent.y+math.abs(y-ly)
-      end
-    end
-  end
-end
-
-
 
 
 回答容器=answer:new(问题id)
@@ -229,9 +262,21 @@ function 数据添加(t,b)
       webview下载文件(链接, UA, 相关信息, 类型, 大小)
   end})
 
-  回答id=(b.id)
+  local 回答id=(b.id)
   点赞状态[回答id]=(b.relationship.voting==1 and {true} or {false})[1]
   感谢状态[回答id]=b.relationship.is_thanked
+
+  if 点赞状态[回答id] then
+    vote_count.setTextColor(转0x(primaryc))
+   else
+    vote_count.setTextColor(转0x(stextc))
+  end
+
+  if 感谢状态[回答id] then
+    thanks_count.setTextColor(转0x(primaryc))
+   else
+    thanks_count.setTextColor(转0x(stextc))
+  end
 
   if 是否记录历史记录 and not(已记录) then
     初始化历史记录数据(true)
@@ -267,12 +312,6 @@ function 数据添加(t,b)
         t.progress=nil
       end
       屏蔽元素(view,{".AnswerReward"})
-      if 问题id then
-        zHttp.get("https://api.zhihu.com/api/v1/blue_page/blue_box?scene=QA&behavior=LOOK&keyword=&token="..回答id.."&parentToken="..问题id,apphead,function(code,content)
-          if code==200 then
-          end
-        end)
-      end
 
       if b.content:find("video%-box") then
         if not(getLogin()) then
@@ -416,10 +455,14 @@ function 加载页(mviews,pos,isleftadd,isload)
         mviews.load=true
 
         if not(isload) then
-          if this.getSharedData("回答预加载(beta)")=="true" then
-            mpos=pos+1
-            local mviews=数据表[pg.adapter.getItem(mpos).id]
-            加载页(mviews,mpos,false,true)
+          if this.getSharedData("回答预加载(beta)")=="true" and isloaded then
+            if not(isleftadd) then
+              local mviews=数据表[pg.adapter.getItem(pos+1).id]
+              加载页(mviews,pos+1,false,true)
+             else
+              local mviews=数据表[pg.adapter.getItem(pos-1).id]
+              加载页(mviews,pos-1,true,true)
+            end
           end
          else
           if not(isleftadd) then
@@ -436,8 +479,76 @@ function 加载页(mviews,pos,isleftadd,isload)
               data={},
               ids=id表[pg.adapter.getItemCount()],
             }
-
+           else
+            --调整pageinfo 防止数据对不上
+            local mviews=数据表[pg.adapter.getItem(pos+1).id]
+            回答容器.pageinfo=mviews.pageinfo
+            回答容器.isleft=(#回答容器.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
+            回答容器.isright=(#回答容器.pageinfo.next_answer_ids>0 and {false} or {true})[1]
+            --再新建一页 防止误触右滑事件
+            id表[pg.adapter.getItemCount()+1]={}
+            local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
+            pg.adapter.insert(加入view,0)
+            数据表[加入view.id]={
+              data={},
+              ids=id表[pg.adapter.getItemCount()],
+            }
           end
+
+          function mviews.loadfun()
+            if not(isleftadd) then
+              if 回答容器.isright then
+                mviews.loadfun=nil
+                return
+              end
+
+              id表[pg.adapter.getItemCount()+1]={}
+              local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
+              pg.adapter.add(加入view)
+
+
+              数据表[加入view.id]={
+                data={},
+                ids=id表[pg.adapter.getItemCount()],
+              }
+
+              local mviews=数据表[pg.adapter.getItem(pos+1).id]
+              if mviews.load==true then
+                mviews.loadfun=nil
+                return
+              end
+              加载页(mviews,pos+1,false,true)
+             else
+              if 回答容器.isleft then
+                mviews.loadfun=nil
+                return
+              end
+              id表[pg.adapter.getItemCount()+1]={}
+
+              local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
+
+              pg.adapter.insert(加入view,0)
+
+              数据表[加入view.id]={
+                data={},
+                ids=id表[pg.adapter.getItemCount()],
+              }
+              local pos=pg.getCurrentItem()+1
+              local mviews=数据表[pg.adapter.getItem(pos-1).id]
+              if mviews.load==true then
+                mviews.loadfun=nil
+                return
+              end
+              加载页(mviews,pos-1,true,true)
+            end
+
+            mviews.loadfun=nil
+          end
+
+          if isloaded~=true then
+            isloaded=true
+          end
+
         end
 
       end
@@ -484,6 +595,8 @@ for i=1,2 do
     ids=id表[pg.adapter.getItemCount()],
   }
 end
+
+isloaded=false
 
 pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
   onPageScrolled=function(pos,positionOffset,positionOffsetPixels)
@@ -545,13 +658,30 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
           --暂时没用的参数
           回答容器.now=pageinfodata.index
 
+          if mviews.loadfun then
+            mviews.loadfun()
+          end
+
           --判断更新底栏数据
           if mviews.data and mviews.data.id then
-            回答id=mviews.data.id
             if mviews.data.voteup_count then
               vote_count.Text=(mviews.data.voteup_count)..""
               thanks_count.Text=(mviews.data.thanks_count)..""
               comment_count.Text=(mviews.data.comment_count)..""
+
+              local 回答id=mviews.data.id
+              if 点赞状态[回答id] then
+                vote_count.setTextColor(转0x(primaryc))
+               else
+                vote_count.setTextColor(转0x(stextc))
+              end
+
+              if 感谢状态[回答id] then
+                thanks_count.setTextColor(转0x(primaryc))
+               else
+                thanks_count.setTextColor(转0x(stextc))
+              end
+
              else
               local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
               zHttp.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
@@ -560,6 +690,19 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
                   vote_count.Text=(mviews.data.voteup_count)..""
                   thanks_count.Text=(mviews.data.thanks_count)..""
                   comment_count.Text=(mviews.data.comment_count)..""
+
+                  if 点赞状态[回答id] then
+                    vote_count.setTextColor(转0x(primaryc))
+                   else
+                    vote_count.setTextColor(转0x(stextc))
+                  end
+
+                  if 感谢状态[回答id] then
+                    thanks_count.setTextColor(转0x(primaryc))
+                   else
+                    thanks_count.setTextColor(转0x(stextc))
+                  end
+
                 end
               end)
             end
@@ -574,32 +717,7 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
 
   end,
 
-  onPageScrollStateChanged=function(state)--监听页面滑动
-    if state==1 then
-      ValueAnimator.ofFloat({comment_parent.y,dp2px(56)+dp2px(26)})
-      .setDuration(200)
-      .setRepeatCount(0)
-      .addUpdateListener{
-        onAnimationUpdate=function(a)
-          local x=a.getAnimatedValue()
-          llb.y=x
-          comment_parent.y=x
-        end
-      }.start()
-     elseif state==2 then
-      ValueAnimator.ofFloat({comment_parent.y,0})
-      .setDuration(200)
-      .setRepeatCount(0)
-      .addUpdateListener{
-        onAnimationUpdate=function(a)
-          local x=a.getAnimatedValue()
-          llb.y=x
-          comment_parent.y=x
-        end
-      }.start()
-    end
-
-  end
+  onPageScrollStateChanged=monPageScrollStateChanged
 })
 
 
@@ -628,6 +746,12 @@ end
 local voteup_data={}
 
 voteup.onClick=function()
+  local pos=pg.getCurrentItem()
+  local mview=数据表[pg.adapter.getItem(pos).id]
+  local 回答id=mview.data.id
+  if 回答id==nil then
+    return 提示("加载中")
+  end
   if not voteup_data[回答id] then
     local addvoteup,removevoteup
     if 点赞状态[回答id] then
@@ -642,8 +766,6 @@ voteup.onClick=function()
       [2]=removevoteup
     }
   end
-  local pos=pg.getCurrentItem()
-  local mviews=数据表[pg.adapter.getItem(pos).id]
   if not 点赞状态[回答id] then
     zHttp.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"up"}',posthead,function(code,content)
       if code==200 then
@@ -651,7 +773,8 @@ voteup.onClick=function()
         点赞状态[回答id]=true
         local data=luajson.decode(content)
         vote_count.text=voteup_data[回答id][1]
-        mviews.data.voteup_count=vote_count.text
+        mview.data.voteup_count=vote_count.text
+        vote_count.setTextColor(转0x(primaryc))
        elseif code==401 then
         提示("请登录后使用本功能")
       end
@@ -663,7 +786,8 @@ voteup.onClick=function()
         点赞状态[回答id]=false
         local data=luajson.decode(content)
         vote_count.text=voteup_data[回答id][2]
-        mviews.data.voteup_count=vote_count.text
+        mview.data.voteup_count=vote_count.text
+        vote_count.setTextColor(转0x(stextc))
        elseif code==401 then
         提示("请登录后使用本功能")
       end
@@ -674,6 +798,12 @@ end
 local thank_data={}
 
 thank.onClick=function()
+  local pos=pg.getCurrentItem()
+  local mview=数据表[pg.adapter.getItem(pos).id]
+  local 回答id=mview.data.id
+  if 回答id==nil then
+    return 提示("加载中")
+  end
   if not thank_data[回答id] then
     local addthank,removethank
     if 感谢状态[回答id] then
@@ -688,8 +818,6 @@ thank.onClick=function()
       [2]=removethank
     }
   end
-  local pos=pg.getCurrentItem()
-  local mviews=数据表[pg.adapter.getItem(pos).id]
   if not 感谢状态[回答id] then
     zHttp.post("https://www.zhihu.com/api/v4/zreaction",'{"content_type":"answers","content_id":"'..回答id..'","action_type":"emojis","action_value":"red_heart"}',posthead,function(code,content)
       if code==200 then
@@ -697,7 +825,8 @@ thank.onClick=function()
         感谢状态[回答id]=true
         local data=luajson.decode(content)
         thanks_count.text=thank_data[回答id][1]
-        mviews.data.thanks_count=thanks_count.text
+        mview.data.thanks_count=thanks_count.text
+        thanks_count.setTextColor(转0x(primaryc))
        elseif code==401 then
         提示("请登录后使用本功能")
       end
@@ -709,7 +838,8 @@ thank.onClick=function()
         感谢状态[回答id]=false
         local data=luajson.decode(content)
         thanks_count.text=thank_data[回答id][2]
-        mviews.data.thanks_count=thanks_count.text
+        mview.data.thanks_count=thanks_count.text
+        thanks_count.setTextColor(转0x(stextc))
        elseif code==401 then
         提示("请登录后使用本功能")
       end
@@ -773,6 +903,13 @@ task(1,function()
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
 
+          local pos=pg.getCurrentItem()
+          local mview=数据表[pg.adapter.getItem(pos).id]
+          local 回答id=mview.data.id
+          if 回答id==nil then
+            return 提示("加载中")
+          end
+
           activity.newActivity("comment",{回答id,"answers"})
 
         end
@@ -819,6 +956,14 @@ task(1,function()
 
       {
         src=图标("book"),text="举报",onClick=function()
+
+          local pos=pg.getCurrentItem()
+          local mview=数据表[pg.adapter.getItem(pos).id]
+          local 回答id=mview.data.id
+          if 回答id==nil then
+            return 提示("加载中")
+          end
+
           local url="https://www.zhihu.com/report?id="..回答id.."&type=answer"
           activity.newActivity("huida",{url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
         end

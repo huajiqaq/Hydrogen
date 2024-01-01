@@ -39,29 +39,6 @@ function base_question:setSortBy(tab)
   return self
 end
 
-function base_question:getChild(id) --获取传输类
-  local child={ --子对象属性
-    nextUrl=self.nextUrl,
-    is_end=self.is_end,
-    sortby=self.sortby or "default",
-  }
-  if id==nil then --如果不指定id
-    child.data=self.data
-
-   else --不然的话把id之前的删除了
-    local index
-    for k,v in pairs(self.data) do
-      if v.id==id then
-        index=k
-        break
-      end
-    end
-    child.data=table.clone(self.data)
-    child.now=index
-  end
-  return luajson.encode(child)
-end
-
 function base_question:setresultfunc(tab)
   self.resultfunc=tab
   return self
