@@ -343,21 +343,7 @@ if mtype:find("收藏") then
         local 标题=v.title
         local 预览内容=v.description
         local 底部内容=v.play_count.."个播放"
-        xpcall(function()
-          videourl=v.video.playlist.sd.url
-          end,function()
-          videourl=v.video.playlist.ld.url
-          end,function()
-          videourl=v.video.playlist.hd.url
-        end)
-        xpcall(function()
-          videourl=v.video.playlist.sd.url
-          end,function()
-          videourl=v.video.playlist.ld.url
-          end,function()
-          videourl=v.video.playlist.hd.url
-        end)
-        链接="视频分割"..videourl
+        链接="视频分割"..v.id
         if 预览内容==false or 预览内容=="" then
           预览内容="无介绍"
         end
@@ -451,7 +437,7 @@ if mtype:find("收藏") then
     if tostring(v.Tag.链接.Text):find("视频合集分割") then
       activity.newActivity("followed",{tostring(v.Tag.链接.Text):match("视频合集分割(.+)"),mtype,title,tz,true})
      elseif tostring(v.Tag.链接.Text):find("视频分割") then
-      activity.newActivity("huida",{tostring(v.Tag.链接.Text):match("视频分割(.+)"),"视频",true})
+      activity.newActivity("column",{tostring(v.Tag.链接.Text):match("视频分割(.+)"),"视频"})
      elseif tostring(v.Tag.链接.Text):find("专栏分割") then
       activity.newActivity("people_column",{tostring(v.Tag.链接.Text):match("专栏分割(.+)")})
      elseif tostring(v.Tag.链接.Text):find("话题分割") then

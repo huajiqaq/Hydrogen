@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
 
-versionCode=0.4
+versionCode=0.41
 layout_dir="layout/item_layout/"
 
 
@@ -358,10 +358,12 @@ function 主题(str)
     textc="#FFCBCBCB"
     --stextc="#666666"
     stextc="#808080"
-    backgroundc="#ff191919"
+    --   backgroundc="#ff191919"
     oribarbackgroundc="#ef191919"
     barbackgroundc=android.res.color.attr.colorBackground&0xFFFFFF+0xFF000000*0.8
-    cardbackc="#ff212121"
+    --   cardbackc="#ff212121"
+    backgroundc="#FF000000"
+    cardbackc="#FF000000"
     viewshaderc="#80000000"
     grayc="#212121"
     ripplec="#559E9E9E"

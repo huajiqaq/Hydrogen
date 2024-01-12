@@ -57,14 +57,7 @@ function 刷新()
         预览内容=v.object.content[1].content
        elseif v.object.type=="zvideo" then
         活动="发布了视频"
-        xpcall(function()
-          videourl=v.object.video.playlist.sd.url
-          end,function()
-          videourl=v.object.video.playlist.ld.url
-          end,function()
-          videourl=v.object.video.playlist.hd.url
-        end)
-        问题id="视频分割"..videourl
+        问题id="视频分割"..v.object.id
         标题=v.object.title
        else
         活动="发表了文章"

@@ -524,14 +524,7 @@ end)
     end
     预览内容=Html.fromHtml(预览内容)
    elseif v.target.type=="zvideo" then
-    xpcall(function()
-      videourl=v.target.video.playlist.sd.url
-      end,function()
-      videourl=v.target.video.playlist.ld.url
-      end,function()
-      videourl=v.target.video.playlist.hd.url
-    end)
-    问题id="视频分割"..videourl
+    问题id="视频分割"..v.target.id
     标题=v.target.title
    else
     问题id="文章分割"..(v.target.id)
@@ -688,14 +681,7 @@ function 其他(isclear)
           预览内容=Html.fromHtml(预览内容)
          elseif v.type=="zvideo" then
           活动=活动 or "发布了视频"
-          xpcall(function()
-            videourl=v.video.playlist.sd.url
-            end,function()
-            videourl=v.video.playlist.ld.url
-            end,function()
-            videourl=v.video.playlist.hd.url
-          end)
-          问题id="视频分割"..videourl
+          问题id="视频分割"..v.id
           标题=v.title
          else
           活动=活动 or "发布了文章"
@@ -817,14 +803,7 @@ function checktitle(str)
           预览内容=Html.fromHtml(预览内容)
          elseif v.object.type=="zvideo" then
           活动="发布了视频"
-          xpcall(function()
-            videourl=v.object.video.playlist.sd.url
-            end,function()
-            videourl=v.object.video.playlist.ld.url
-            end,function()
-            videourl=v.object.video.playlist.hd.url
-          end)
-          问题id="视频分割"..videourl
+          问题id="视频分割"..v.object.id
           标题=v.object.title
          else
           活动="发表了文章"
@@ -853,7 +832,7 @@ people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
      elseif tostring(v.Tag.people_question.text):find("想法分割") then
       activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("想法分割(.+)"),"想法"})
      elseif tostring(v.Tag.people_question.Text):find("视频分割") then
-      activity.newActivity("huida",{tostring(v.Tag.people_question.Text):match("视频分割(.+)")})
+      activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("视频分割(.+)"),"视频"})
      elseif tostring(v.Tag.people_question.Text):find("专栏分割") then
       activity.newActivity("people_column",{tostring(v.Tag.people_question.Text):match("专栏分割(.+)专栏标题"),tostring(v.Tag.people_question.Text):match("专栏标题(.+)")})
      elseif tostring(v.Tag.people_question.Text):find("更多") then

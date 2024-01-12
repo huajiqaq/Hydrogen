@@ -39,7 +39,7 @@ task(1,function()
     },
     {
       CardView;
-      CardBackgroundColor=cardedge,
+      CardBackgroundColor=backgroundc,
       Elevation="0";
       radius="0dp";
       layout_margin="0dp",
@@ -51,7 +51,7 @@ task(1,function()
         CardView;
         CardElevation="0dp";
         CardBackgroundColor=backgroundc;
-        Radius="0dp";
+        radius="0dp";
         layout_margin=cardmargin;
         layout_width="-1";
         layout_height="-1";

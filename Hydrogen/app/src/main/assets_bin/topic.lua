@@ -118,7 +118,7 @@ function 精华刷新(istab)
 
           activity.newActivity("column",{tostring(v.Tag.best_id.Text):match("文章分割(.+)"),tostring(v.Tag.best_id.Text):match("分割(.+)")})
          elseif tostring(v.Tag.best_id.text):find("视频分割") then
-          activity.newActivity("huida",{tostring(v.Tag.best_id.Text):match("视频分割(.+)")})
+          activity.newActivity("column",{tostring(v.Tag.best_id.Text):match("视频分割(.+)"),"视频"})
          elseif tostring(v.Tag.best_id.text):find("问题分割") then
           activity.newActivity("question",{tostring(v.Tag.best_id.Text):match("问题分割(.+)")})
          elseif tostring(v.Tag.best_id.text):find("想法分割") then
@@ -189,19 +189,11 @@ function 精华刷新(istab)
 
            elseif v.target.type=="zvideo" then
             title=v.target.title
-            xpcall(function()
-              videourl=v.target.video.playlist.sd.url
-              end,function()
-              videourl=v.target.video.playlist.ld.url
-              end,function()
-              videourl=v.target.video.playlist.hd.url
-            end)
-
             if excerpt_data=="" then
               local excerpt_data="[视频]"
               excerpt=name.." : "..excerpt_data
             end
-            id="视频分割"..videourl
+            id="视频分割"..v.target.id
            elseif v.target.type=="pin" then
             title=v.target.content[1].title
             if title==nil or title==""
@@ -231,15 +223,8 @@ function 精华刷新(istab)
                 id="文章分割"..(w.target.id)
 
                elseif w.target.type=="zvideo" then
-                xpcall(function()
-                  videourl=w.target.video.playlist.sd.url
-                  end,function()
-                  videourl=w.target.video.playlist.ld.url
-                  end,function()
-                  videourl=w.target.video.playlist.hd.url
-                end)
                 title=w.target.title
-                id="视频分割"..videourl
+                id="视频分割"..w.target.id
                elseif w.target.type=="question" then
                 title=w.target.title
                 voteup_count=(w.target.answer_count)
