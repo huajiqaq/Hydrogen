@@ -26,6 +26,42 @@ if not 文件是否存在(内置存储文件("Download")) then
   end)
 end
 
+if Build.VERSION.SDK_INT >=30 then
+
+  if activity.getSharedData("安卓11迁移文件夹0.01")~="true" then
+    local tishi=AlertDialog.Builder(this)
+    .setTitle("提示")
+    .setMessage("检测到系统版本大于安卓10 由于安卓的限制 导致无法保存文件在带有特殊字符串的文件夹 但应用私有目录无限制 你必须迁移文件才能使用本功能 请点击下方立即迁移 迁移后 卸载软件或清除软件数据也会删除对应保存的数据 为了应对 你可以在软件设置中手动管理文件")
+    .setCancelable(false)
+    .setPositiveButton("立即迁移",nil)
+    .setNegativeButton("暂不迁移",{onClick=function() this.finish() end})
+    .show()
+    tishi.getButton(tishi.BUTTON_POSITIVE).onClick=function()
+      local result=get_write_permissions(true)
+      if result~=true then
+        return false
+      end
+
+      local 默认文件夹=Environment.getExternalStorageDirectory().toString().."/Hydrogen"
+      local 私有目录=activity.getExternalFilesDir(nil).toString()
+      if 文件夹是否存在(默认文件夹) then
+        if not 文件夹是否存在(私有目录) then
+          创建文件夹(私有目录)
+        end
+        if not 文件夹是否存在(私有目录.."/Hydrogen") then
+          创建文件夹(私有目录.."/Hydrogen")
+        end
+        File(默认文件夹).renameTo(File(私有目录.."/Hydrogen"))
+      end
+      activity.setSharedData("安卓11迁移文件夹0.01","true")
+      tishi.dismiss()
+      提示("迁移成功")
+    end
+
+    tishi.findViewById(android.R.id.message).TextIsSelectable=true
+  end
+end
+
 notedata={}
 noteadp=LuaAdapter(activity,notedata,local_item)
 local_listview.setAdapter(noteadp)
@@ -291,71 +327,6 @@ task(1,function()
       end},
       {src=图标("email"),text="反馈",onClick=function()
           activity.newActivity("feedback")
-      end},
-      {src=图标("info"),text="导入/导出教程",onClick=function()
-          if Build.VERSION.SDK_INT <30 then
-            return 提示("该功能只提供安卓10以上版本使用")
-          end
-
-          AlertDialog.Builder(this)
-          .setTitle("提示")
-          .setMessage("提示:在最新版本中 已经废除自定义目录的设置 自定义目录只是设置了默认导入/导出目录 并不是设置保存本地文件的默认路径 如果在老版本设置自定义目录后导出文件后 在新版本导入会导入新版本无法导入 你可以在老版本软件内点击自定义目录选择/sdcard 来解决该问题\n导入:首先 你需要先在软件内点击导出 之后导入即可\n导出:点击导出即可")
-          .setPositiveButton("我知道了",nil)
-          .setCancelable(false)
-          .show()
-
-      end},
-      {src=图标("info"),text="导入",onClick=function()
-          if Build.VERSION.SDK_INT <30 then
-            return 提示("该功能只提供安卓10以上版本使用")
-          end
-
-          local result=get_write_permissions(true)
-          if result~=true then
-            return false
-          end
-
-          local sdcarddir=Environment.getExternalStorageDirectory().toString()
-          local filesdir=activity.getExternalFilesDir(nil).toString()
-          local path=sdcarddir
-          local path=path.."/Hydrogen.zip"
-          if 文件是否存在(path) then
-            task(function()
-              local path=sdcarddir
-              local path=path.."/Hydrogen.zip"
-              local filesdir=activity.getExternalFilesDir(nil).toString()
-              ZipUtil.unzip(path,filesdir.."/Hydrogen")
-            end)
-            删除文件(path)
-            提示("导入成功")
-           else
-            return 提示("导入失败 请检查是否导出或误删文件")
-          end
-
-      end},
-      {src=图标("info"),text="导出",onClick=function()
-          if Build.VERSION.SDK_INT <30 then
-            return 提示("该功能只提供安卓10以上版本使用")
-          end
-
-          local result=get_write_permissions(true)
-          if result~=true then
-            return false
-          end
-
-          local path=sdcarddir
-
-          if 文件夹是否存在(path)~=true then
-            创建文件夹(path)
-          end
-
-          task(function()
-            local sdcarddir=Environment.getExternalStorageDirectory().toString()
-            local filesdir=activity.getExternalFilesDir(nil).toString()
-            local path=sdcarddir
-            ZipUtil.zip(filesdir.."/Hydrogen",path)
-          end)
-          提示("导出成功,导出文件在"..path.."/Hydrogen.zip")
       end},
       {src=图标("info"),text="问题",onClick=function()
           Snakebar("文件保存在"..内置存储("Hydrogen/download"))

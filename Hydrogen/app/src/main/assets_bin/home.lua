@@ -606,7 +606,7 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
       if not(getLogin()) then
         提示("请登录后使用本功能")
        else
-        关注刷新(nil,false)
+        关注刷新(nil,nil,false)
       end
     end
 
@@ -1304,400 +1304,231 @@ function 热榜刷新(isclear)
   end
 end
 
+reslove_homefollow={}
+local function moments_feed(v,adapter)
+  local 关注作者头像
+  xpcall(function()
+    关注作者头像=v.target.author.avatar_url
+    end,function()
+    关注作者头像=v.source.actor.avatar_url
+  end)
+  local 点赞数=(v.target.voteup_count)
+  local 评论数=(v.target.comment_count)
+  local 标题=v.target.title
+  local 作者名称=v.source.actor.name
+  local 动作=作者名称..v.source.action_text
+  local 时间=时间戳(v.source.action_time)
+  local 预览内容=v.target.excerpt
+  if v.target.type=="answer" then
+    问题id等=(v.target.question.id) or "null"
+    问题id等=问题id等.."分割"..(v.target.id)
+    标题=v.target.question.title
+   elseif v.target.type=="question" then
+    问题id等="问题分割"..(v.target.id)
+    标题=v.target.title
+   elseif v.target.type=="article"
+    问题id等="文章分割"..(v.target.id)
+    标题=v.target.title
+   elseif v.target.type=="pin"
+    问题id等="想法分割"..(v.target.id)
+    标题=v.target.title
+   elseif v.target.type=="moments_pin"
+    if 标题==nil or 标题=="" then
+      标题="一个想法"
+    end
+    问题id等="想法分割"..v.target.id
+    点赞数=(v.target.reaction_count)
+
+    if #v.target.content>0 then
+      预览内容=v.target.content[1].content
+     else
+      预览内容="无"
+    end
+
+    if 预览内容=="" then
+      if v.target.content[2].type=="image" then
+        预览内容="[图片]"
+      end
+    end
+   elseif v.target.type=="zvideo"
+    问题id等="视频分割"..(v.target.id)
+    标题=v.target.title
+    if 预览内容==nil or 预览内容=="" then
+      预览内容="[视频]"
+    end
+   elseif v.target.type=="moments_drama" then
+    问题id等="直播分割"..(v.target.id)
+    标题=v.target.title
+    if 预览内容==nil or 预览内容=="" then
+      预览内容="[直播]"
+    end
+  end
+  if 预览内容~="[视频]" then
+    预览内容=作者名称.." : "..预览内容
+  end
+  adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+end
+
+local function feed_item_index_group(v,adapter)
+  local 关注作者头像=v.actors[1].avatar_url
+  local 关注作者名称=v.actors[1].name
+  local 动作=关注作者名称..v.action_text
+
+  -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
+  local 数据=get_number_and_following(v.target.desc)
+  local 点赞数=数据[1]
+  local 评论数=数据[3]
+  local 标题=v.target.title
+  local 时间=时间戳(v.action_time)
+  local 预览内容=v.target.digest
+  local 作者名称=v.target.author
+  if v.target.type=="answer" then
+    问题id等=(questonid) or "null"
+    问题id等=问题id等.."分割"..(v.target.id)
+    标题=v.target.title
+   elseif v.target.type=="question" then
+    问题id等="问题分割"..(v.target.id)
+    标题=v.target.title
+   elseif v.target.type=="article"
+    问题id等="文章分割"..(v.target.id)
+    标题=v.target.title
+   elseif v.target.type=="pin"
+    问题id等="想法分割"..(v.target.id)
+    标题=v.target.title
+   elseif v.target.type=="zvideo"
+    问题id等="视频分割"..(v.target.id)
+    标题=v.target.title
+    if 预览内容==nil or 预览内容=="" then
+      预览内容="[视频]"
+    end
+   elseif v.target.type=="drama" then
+    问题id等="直播分割"..(v.target.id)
+    标题=v.target.title
+    if 预览内容==nil or 预览内容=="" then
+      预览内容="[直播]"
+    end
+  end
+  if not 预览内容 then
+    预览内容="无底部内容"
+   elseif 预览内容~="[视频]" then
+    local 关注作者名称= v.target.author or 关注作者名称
+    预览内容=关注作者名称.." : "..预览内容
+  end
+  adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+end
+
+local function item_group_card(v,adapter)
+  local 关注作者头像=v.actor.avatar_url
+  local 关注作者名称=v.actor.name
+  local 动作=关注作者名称..v.action_text
+  if v.action_text=="关注了用户" then
+    return false
+  end
+  for _,q in ipairs(v.data) do
+    -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
+    local 数据=get_number_and_following(q.desc)
+    local 点赞数=数据[1]
+    local 评论数=数据[3]
+    local 标题=q.title
+    local 时间=时间戳(v.action_time)
+    local 预览内容=q.digest
+    local 作者名称=q.author
+    if q.type=="answer" then
+      问题id等="null"
+      问题id等=问题id等.."分割"..(q.id)
+      标题=q.title
+     elseif q.type=="question" then
+      问题id等="问题分割"..(q.id)
+      标题=q.title
+     elseif q.type=="article"
+      问题id等="文章分割"..(q.id)
+      标题=q.title
+     elseif q.type=="pin"
+      问题id等="想法分割"..(q.id)
+      标题=q.title
+     elseif q.type=="zvideo"
+      问题id等="视频分割"..(q.id)
+      标题=q.title
+      if 预览内容==nil or 预览内容=="" then
+        预览内容="[视频]"
+      end
+     elseif q.type=="drama" then
+      问题id等="直播分割"..(q.id)
+      标题=q.title
+      if 预览内容==nil or 预览内容=="" then
+        预览内容="[直播]"
+      end
+     elseif q.type=="roundtable" then
+      问题id等="圆桌分割"..(q.id)
+    end
+    if 预览内容~="[视频]" then
+      if 预览内容 then
+        预览内容=作者名称.." : "..预览内容
+       else
+        预览内容="无预览内容"
+      end
+    end
+    adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+  end
+end
+
+reslove_homefollow={moments_feed=moments_feed,feed_item_index_group=feed_item_index_group,item_group_card=item_group_card}
+
+
 followapphead = table.clone(apphead)
 followapphead["x-moments-ab-param"] = "follow_tab=1";
-moments_tab={
-  [1]={
-    prev=false,
-    nexturl=false,
-    isend=false,
-  },
-  [2]={
-    prev=false,
-    nexturl=false,
-    isend=false,
-  },
-  [3]={
-    prev=false,
-    nexturl=false,
-    isend=false,
-  }
+
+
+local conf={
+  view=fpage,
+  tabview=followTab,
+  bindstr="follow",
+  addcanclick=true,
+  needlogin=true
 }
 
-canclick_follow={true,true,true}
-
-initpage(fpage,"follow",3)
-followTab.setupWithViewPager(fpage)
+MyPageTool:new(conf)
 local followTable={"精选","最新","想法"}
+follow_pageTool:addPage(2,followTable)
 
---setupWithViewPager设置的必须手动设置text
-for i=1, #followTable do
-  local itemnum=i-1
-  local tab=followTab.getTabAt(itemnum)
-  tab.setText(followTable[i]);
-end
-
-followTab.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
-  onTabSelected=function(tab)
-    if not(getLogin()) then
-      return 提示("请登录后使用本功能")
+local mconf={
+  itemc=获取适配器项目布局("home/home_following"),
+  onclick=function(parent,v,pos,id)
+    点击事件判断(v.Tag.follow_id.text,v.Tag.follow_title.Text)
+  end,
+  onlongclick=nil,
+  defurl={
+    "https://api.zhihu.com/moments_v3?feed_type=recommend",
+    "https://api.zhihu.com/moments_v3?feed_type=timeline",
+    "https://api.zhihu.com/moments_v3?feed_type=pin"
+  },
+  head=followapphead,
+  func=function(v,pos,adapter)
+    local data
+    if v.type=="moments_feed" then
+      reslove_homefollow.moments_feed(v,adapter)
+     elseif v.type=="feed_item_index_group" then
+      reslove_homefollow.feed_item_index_group(v,adapter)
+     elseif v.type=="item_group_card" then
+      reslove_homefollow.item_group_card(v,adapter)
+     elseif v.type=="recommend_user_card_list" then
+      --推荐关注用户
+     elseif v.type=="moments_recommend_followed_group"
+      --用户推荐卡片
     end
-    --选择时触发
-    local pos=tab.getPosition()+1
-    if canclick_follow[pos] then
-      canclick_follow[pos]=false
-      Handler().postDelayed(Runnable({
-        run=function()
-          canclick_follow[pos]=true
-        end,
-      }),1050)
+    if data then
+      return data
      else
       return false
     end
-    关注刷新(nil,false,pos)
   end,
+  funcstr="关注刷新"
+}
 
-  onTabUnselected=function(tab)
-    --未选择时触发
-  end,
-
-  onTabReselected=function(tab)
-    --选中之后再次点击即复选时触发
-    local pos=tab.getPosition()+1
-    if not(getLogin()) then
-      return 提示("请登录后使用本功能")
-    end
-    if canclick_follow[pos] then
-      canclick_follow[pos]=false
-      Handler().postDelayed(Runnable({
-        run=function()
-          canclick_follow[pos]=true
-        end,
-      }),1050)
-     else
-      return false
-    end
-    关注刷新(true,true,pos)
-  end,
-});
+follow_pageTool:createfunc(mconf)
+follow_pageTool:setOnTabListener()
 
 
-
-function 关注刷新(isclear,isprev,num)
-  -- origin15.19 更改
-  if num==nil then
-    num=1
-  end
-  if isprev then
-    moments_tab[num]["isprev"]=true
-  end
-
-  local follow_isprev=moments_tab[num]["isprev"]
-
-  local alltype={"recommend","timeline","pin"}
-  local thispage,thissr=getpage(fpage,"follow",num,3)
-
-  if followTab.getTabCount()==0 then
-
-  end
-
-  可以加载关注={true,true,true}
-  if isclear or not(thispage.adapter) then
-
-    if thispage.adapter then
-      thispage.setOnScrollListener(nil)
-      luajava.clear(thispage.adapter)
-      thispage.adapter=nil
-    end
-
-    --关注布局
-    follow_itemc=获取适配器项目布局("home/home_following")
-
-    if follow_isprev~=true then
-      moments_tab[num]={
-        prev=false,
-        nexturl=false,
-      }
-    end
-
-    thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-    thissr.setColorSchemeColors({转0x(primaryc)});
-    thissr.setOnRefreshListener({
-      onRefresh=function()
-        关注刷新(true,true,num)
-        Handler().postDelayed(Runnable({
-          run=function()
-            thissr.setRefreshing(false);
-          end,
-        }),1000)
-      end,
-    });
-
-    可以加载关注[num]=true
-    moments_tab[num]["isend"]=false
-
-    thispage.setOnItemClickListener(AdapterView.OnItemClickListener{
-      onItemClick=function(parent,v,pos,id)
-        local open=activity.getSharedData("内部浏览器查看回答")
-        if tostring(v.Tag.follow_id.text):find("问题分割") then
-          activity.newActivity("question",{tostring(v.Tag.follow_id.Text):match("问题分割(.+)"),true})
-         elseif tostring(v.Tag.follow_id.text):find("文章分割") then
-          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("文章分割(.+)"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-         elseif tostring(v.Tag.follow_id.text):find("视频分割") then
-          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("视频分割(.+)"),"视频"})
-         elseif tostring(v.Tag.follow_id.text):find("想法分割") then
-          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("想法分割(.+)"),"想法"})
-         elseif tostring(v.Tag.follow_id.text):find("直播分割") then
-          activity.newActivity("column",{tostring(v.Tag.follow_id.Text):match("直播分割(.+)"),"直播"})
-
-
-
-         else
-          保存历史记录(v.Tag.follow_title.Text,v.Tag.follow_id.Text,50)
-
-          if open=="false" then
-            activity.newActivity("answer",{tostring(v.Tag.follow_id.Text):match("(.+)分割"),tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-           else
-            activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-          end
-        end
-      end
-    })
-
-    local qqadpqy=MyLuaAdapter(activity,follow_itemc)
-    thispage.Adapter=qqadpqy
-
-    thispage.setOnScrollListener{
-      onScroll=function(view,a,b,c)
-        if a+b==c and 可以加载关注[num] then
-          关注刷新(false,false,num)
-          System.gc()
-          thissr.setRefreshing(true)
-          可以加载关注[num]=false
-          Handler().postDelayed(Runnable({
-            run=function()
-              thissr.setRefreshing(false);
-            end,
-          }),1000)
-        end
-      end
-    }
-
-    return
-   elseif isclear==nil and thispage.adapter then
-    if moments_tab[num].isend then
-      return 提示("没有新内容了")
-    end
-    return false
-
-  end
-
-  if moments_tab[num].isend then
-    return 提示("已经到底了")
-  end
-
-  local posturl
-  if follow_isprev then
-    posturl = moments_tab[num].prev
-   else
-    posturl = moments_tab[num].nexturl
-  end
-
-  local posturl= posturl or "https://api.zhihu.com/moments_v3?feed_type="..alltype[num]
-
-  if not(getLogin()) then
-    return 提示("请登录后使用本功能")
-  end
-
-  local madapter=thispage.Adapter
-
-  zHttp.get(posturl,followapphead,function(code,content)
-    if code==200 then
-      moments_tab[num]["isprev"]=false
-      local data=luajson.decode(content)
-
-      moments_tab[num].isend=data.paging.is_end
-      moments_tab[num].prev=data.paging.previous
-      moments_tab[num].nexturl=data.paging.next
-
-      if moments_tab[num].isend==false then
-        可以加载关注[num]=true
-       elseif moments_tab[num].isend then
-        提示("没有新内容了")
-      end
-
-      for k,v in ipairs(data.data) do
-        if v.type=="moments_feed" then
-          local 关注作者头像
-          xpcall(function()
-            关注作者头像=v.target.author.avatar_url
-            end,function()
-            关注作者头像=v.source.actor.avatar_url
-          end)
-          local 点赞数=(v.target.voteup_count)
-          local 评论数=(v.target.comment_count)
-          local 标题=v.target.title
-          local 作者名称=v.source.actor.name
-          local 动作=作者名称..v.source.action_text
-          local 时间=时间戳(v.source.action_time)
-          local 预览内容=v.target.excerpt
-          if v.target.type=="answer" then
-            问题id等=(v.target.question.id) or "null"
-            问题id等=问题id等.."分割"..(v.target.id)
-            标题=v.target.question.title
-           elseif v.target.type=="question" then
-            问题id等="问题分割"..(v.target.id)
-            标题=v.target.title
-           elseif v.target.type=="article"
-            问题id等="文章分割"..(v.target.id)
-            标题=v.target.title
-           elseif v.target.type=="pin"
-            问题id等="想法分割"..(v.target.id)
-            标题=v.target.title
-           elseif v.target.type=="moments_pin"
-            if 标题==nil or 标题=="" then
-              标题="一个想法"
-            end
-            问题id等="想法分割"..v.target.id
-            点赞数=(v.target.reaction_count)
-
-            if #v.target.content>0 then
-              预览内容=v.target.content[1].content
-             else
-              预览内容="无"
-            end
-
-            if 预览内容=="" then
-              if v.target.content[2].type=="image" then
-                预览内容="[图片]"
-              end
-            end
-           elseif v.target.type=="zvideo"
-            问题id等="视频分割"..(v.target.id)
-            标题=v.target.title
-            if 预览内容==nil or 预览内容=="" then
-              预览内容="[视频]"
-            end
-           elseif v.target.type=="moments_drama" then
-            问题id等="直播分割"..(v.target.id)
-            标题=v.target.title
-            if 预览内容==nil or 预览内容=="" then
-              预览内容="[直播]"
-            end
-          end
-          if 预览内容~="[视频]" then
-            预览内容=作者名称.." : "..预览内容
-          end
-          madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
-
-         elseif v.type=="feed_item_index_group" then
-
-          local 关注作者头像=v.actors[1].avatar_url
-          local 关注作者名称=v.actors[1].name
-          local 动作=关注作者名称..v.action_text
-
-          -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
-          local 数据=get_number_and_following(v.target.desc)
-          local 点赞数=(数据[1]) or 数据[1]
-          local 评论数=(数据[3]) or 数据[3]
-          local 标题=v.target.title
-          local 时间=时间戳(v.action_time)
-          local 预览内容=v.target.digest
-          local 作者名称=v.target.author
-          if v.target.type=="answer" then
-            问题id等=(questonid) or "null"
-            问题id等=问题id等.."分割"..(v.target.id)
-            标题=v.target.title
-           elseif v.target.type=="question" then
-            问题id等="问题分割"..(v.target.id)
-            标题=v.target.title
-           elseif v.target.type=="article"
-            问题id等="文章分割"..(v.target.id)
-            标题=v.target.title
-           elseif v.target.type=="pin"
-            问题id等="想法分割"..(v.target.id)
-            标题=v.target.title
-           elseif v.target.type=="zvideo"
-            问题id等="视频分割"..(v.target.id)
-            标题=v.target.title
-            if 预览内容==nil or 预览内容=="" then
-              预览内容="[视频]"
-            end
-           elseif v.target.type=="drama" then
-            问题id等="直播分割"..(v.target.id)
-            标题=v.target.title
-            if 预览内容==nil or 预览内容=="" then
-              预览内容="[直播]"
-            end
-          end
-          if not 预览内容 then
-            预览内容="无底部内容"
-           elseif 预览内容~="[视频]" then
-            local 关注作者名称= v.target.author or 关注作者名称
-            预览内容=关注作者名称.." : "..预览内容
-          end
-          madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
-         elseif v.type=="item_group_card" then
-          local 关注作者头像=v.actor.avatar_url
-          local 关注作者名称=v.actor.name
-          local 动作=关注作者名称..v.action_text
-          if v.action_text=="关注了用户" then
-            return false
-          end
-          for e,q in ipairs(v.data) do
-            -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
-            local 数据=get_number_and_following(q.desc)
-            local 点赞数=(数据[1]) or 数据[1]
-            local 评论数=(数据[3]) or 数据[3]
-            local 标题=q.title
-            local 时间=时间戳(v.action_time)
-            local 预览内容=q.digest
-            local 作者名称=q.author
-            if q.type=="answer" then
-              问题id等="null"
-              问题id等=问题id等.."分割"..(q.id)
-              标题=q.title
-             elseif q.type=="question" then
-              问题id等="问题分割"..(q.id)
-              标题=q.title
-             elseif q.type=="article"
-              问题id等="文章分割"..(q.id)
-              标题=q.title
-             elseif q.type=="pin"
-              问题id等="想法分割"..(q.id)
-              标题=q.title
-             elseif q.type=="zvideo"
-              问题id等="视频分割"..(q.id)
-              标题=q.title
-              if 预览内容==nil or 预览内容=="" then
-                预览内容="[视频]"
-              end
-             elseif v.target.type=="drama" then
-              问题id等="直播分割"..(v.target.id)
-              标题=v.target.title
-              if 预览内容==nil or 预览内容=="" then
-                预览内容="[直播]"
-              end
-            end
-            if 预览内容~="[视频]" then
-              if q.type=="question" then
-                预览内容="无预览内容"
-               else
-                预览内容=关注作者名称.." : "..预览内容
-              end
-            end
-            madapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
-          end
-
-         elseif v.type=="recommend_user_card_list" then
-          --推荐关注用户
-         elseif v.type=="moments_recommend_followed_group"
-          --用户推荐卡片
-        end
-      end
-    end
-  end)
-end
 
 function 想法刷新(isclear)
 
@@ -1826,20 +1657,9 @@ function 想法刷新(isclear)
 
 end
 
-可以加载收藏={}
-collection_isend={}
-collection_nexturl={}
-canclick_collection={true,true}
+function 加载收藏view()
 
-
-function 收藏刷新(isclear,pos)
-
-  if pos==nil then
-    pos=1
-  end
-  local thispage,thissr=getpage(page,"collection",pos,2)
-
-  local alldo={
+  reslove_home_collection={
     function(v)
       return
       {
@@ -1884,510 +1704,86 @@ function 收藏刷新(isclear,pos)
     end,
   }
 
-  local oriurl={
-    "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20",
-    "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/following_collections?offset=0"
+  local conf={
+    view=page,
+    tabview=CollectiontabLayout,
+    bindstr="collection",
+    addcanclick=true,
+    needlogin=true
   }
 
-  if CollectiontabLayout.getTabCount()==0 then
-    CollectiontabLayout.setupWithViewPager(page)
-    local CollectionTable={"我的","关注"}
-    --setupWithViewPager设置的必须手动设置text
-    for i=1, #CollectionTable do
-      local itemnum=i-1
-      local tab=CollectiontabLayout.getTabAt(itemnum)
-      tab.setText(CollectionTable[i]);
-    end
-    CollectiontabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
-      onTabSelected=function(tab)
-        --选择时触发
-        local pos=tab.getPosition()+1
-        if canclick_collection[pos] then
-          canclick_collection[pos]=false
-          Handler().postDelayed(Runnable({
-            run=function()
-              canclick_collection[pos]=true
-            end,
-          }),1050)
-         else
-          return false
-        end
-        收藏刷新(false,pos)
+  MyPageTool:new(conf)
+  local CollectionTable={"我的","关注"}
+  collection_pageTool:addPage(2,CollectionTable)
+
+  local mconf={
+    itemc={
+      multiple=true,
+      [1]=获取适配器项目布局("home/home_collections"),
+      [2]=获取适配器项目布局("home/home_shared_collections")
+    },
+    onclick={
+      function(parent,v,pos,id)
+        activity.newActivity("collections",{v.Tag.collections_id.Text})
       end,
-
-      onTabUnselected=function(tab)
-        --未选择时触发
+      function(parent,v,pos,id)
+        if v.Tag.mc_id.text=="local" then
+          activity.newActivity("collections_tj")
+          return
+        end
+        activity.newActivity("collections",{v.Tag.mc_id.Text,true})
       end,
-
-      onTabReselected=function(tab)
-        --选中之后再次点击即复选时触发
-        local pos=tab.getPosition()+1
-        if canclick_collection[pos] then
-          canclick_collection[pos]=false
-          Handler().postDelayed(Runnable({
-            run=function()
-              canclick_collection[pos]=true
-            end,
-          }),1050)
-         else
-          return false
-        end
-        收藏刷新(true,pos)
-      end,
-    });
-
-  end
-
-  if thispage.adapter and isclear==false then
-    return
-  end
-  if not(thispage.adapter) or isclear then
-
-    if thispage.adapter then
-      thispage.setOnScrollListener(nil)
-      luajava.clear(thispage.adapter)
-      thispage.adapter=nil
-    end
-
-    local allitemc={获取适配器项目布局("home/home_collections"),获取适配器项目布局("home/home_shared_collections")}
-    local allonclick={
-      AdapterView.OnItemClickListener{
-        onItemClick=function(parent,v,pos,id)
-          activity.newActivity("collections",{v.Tag.collections_id.Text})
-        end
-      },
-      AdapterView.OnItemClickListener{
-        onItemClick=function(parent,v,pos,id)
-          if v.Tag.mc_id.text=="local" then
-            activity.newActivity("collections_tj")
-            return
-          end
-          activity.newActivity("collections",{v.Tag.mc_id.Text,true})
-        end
-      },
-    }
-
-    local allonlongclick={
-      AdapterView.OnItemLongClickListener{
-        onItemLongClick=function(id,v,zero,one)
-          local collections_id=v.Tag.collections_id.text
-          双按钮对话框("删除收藏夹","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
-            zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
-              if code==200 then
-                提示("已删除")
-                id.adapter.remove(zero)
-               else
-                提示("删除失败")
-              end
-            end)
-            an.dismiss()
-          end,function(an)an.dismiss()end)
-          return true
-      end},
-      AdapterView.OnItemLongClickListener{
-        onItemLongClick=function(id,v,zero,one)
-          local collections_id=v.Tag.mc_id.text
-          if collections_id=="local" then
-            提示("不支持操作此收藏夹")
-            return true
-          end
-          双按钮对话框("取关该收藏夹","取消关注该收藏夹？该操作不可撤消！","是的","点错了",function(an)
-            zHttp.delete("https://api.zhihu.com/collections/"..collections_id.."/followers/"..activity.getSharedData("idx"),head,function(code,json)
-              if code==200 then
-                提示("已取关")
-                id.adapter.remove(zero)
-               else
-                提示("删除失败")
-              end
-            end)
-            an.dismiss()
-          end,function(an)an.dismiss()end)
-          return true
-        end
-      },
-    }
-
-
-    local alladd={
-      {"null"},
-      {
-        mc_image="https://picx.zhimg.com/50/v2-abed1a8c04700ba7d72b45195223e0ff_xl.jpg",
-        mc_name={
-          text="为你推荐"
-        },
-        mc_title={
-          text="推荐关注收藏夹"
-        },
-        mc_follower={
-          text=""
-        },
-        mc_id={
-          text="local",
-        },
-        background={foreground=Ripple(nil,转0x(ripplec),"方")},
-      },
-    }
-
-
-    thispage.setOnItemClickListener(allonclick[pos])
-    thispage.setOnItemLongClickListener(allonlongclick[pos])
-
-    thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-    thissr.setColorSchemeColors({转0x(primaryc)});
-    thissr.setOnRefreshListener({
-      onRefresh=function()
-        收藏刷新(true,pos)
-        Handler().postDelayed(Runnable({
-          run=function()
-            thissr.setRefreshing(false);
-          end,
-        }),1000)
-
-      end,
-    });
-
-    thispage.adapter=MyLuaAdapter(activity,allitemc[pos])
-    local madapter=thispage.Adapter
-
-    if alladd[pos][1]~="null" then
-      table.insert(madapter.getData(),alladd[pos])
-    end
-
-    可以加载收藏[pos]=true
-    collection_isend[pos]=false
-    collection_nexturl[pos]=false
-
-    thispage.setOnScrollListener{
-      onScroll=function(view,a,b,c)
-        if a+b==c and 可以加载收藏[pos] then
-          可以加载收藏[pos]=false
-          收藏刷新(nil,pos)
-          thissr.setRefreshing(true)
-          System.gc()
-          Handler().postDelayed(Runnable({
-            run=function()
-              thissr.setRefreshing(false);
-            end,
-          }),1000)
-        end
-      end
-    }
-
-    return
-  end
-  local dofun=alldo[pos]
-
-  local madapter=thispage.Adapter
-
-  local collections_url= collection_nexturl[pos] or oriurl[pos]
-  zHttp.get(collections_url,head,function(code,content)
-    if code==200 then
-      local data=luajson.decode(content)
-      collection_isend[pos]=data.paging.is_end
-      collection_nexturl[pos]=data.paging.next
-      if collection_isend[pos]==false then
-        可以加载收藏[pos]=true
-       elseif collection_isend[pos] then
-        提示("没有新内容了")
-      end
-      for k,v in ipairs(data.data) do
-        madapter.add(dofun(v))
-      end
-
-     else
-      提示("获取收藏列表失败")
-    end
-  end)
-  return
-
-end
-
-
-
-可以加载关注内容={}
-follow_content_isend={}
-follow_content_nexturl={}
-canclick_follow_content={true,true,true,true,true,true,true}
-
-function 关注内容刷新(isclear,pos)
-
-  if pos==nil then
-    pos=1
-  end
-
-  local thispage,thissr=getpage(followpage,"follow_content",pos,7)
-
-  local alldo={
-    function (v)
-      local 标题=v.title
-      local 链接="问题分割"..v.id
-      local 底部内容=v.answer_count.."个回答 · "..v.follower_count.."个关注"
-      if 预览内容==false or 预览内容=="" then
-        预览内容="无介绍"
-      end
-      return {标题=标题,底部内容=底部内容,链接=链接,mc_title=标题}
-    end,
-    function(v)
-      return
-      {
-        mc_image=v.creator.avatar_url,
-        mc_name={
-          text="由 "..v.creator.name.." 创建"
-        },
-        mc_title={
-          text=v.title
-        },
-        mc_follower={
-          text=math.floor(v.follower_count).."人关注"
-        },
-        mc_id={
-          text=tostring(v.id),
-        },
-        background={foreground=Ripple(nil,转0x(ripplec),"方")},
-      }
-    end,
-    function (v)
-      local 标题=v.name
-      local 预览内容=v.excerpt
-      local 链接="话题分割"..v.id
-      local 底部内容="无"
-      if 预览内容==false or 预览内容=="" then
-        预览内容="无介绍"
-      end
-      return {标题=标题,文章=预览内容,链接=链接,mc_title=标题}
-    end,
-    function (v)
-      local 标题=v.title
-      local 预览内容=v.description
-      local 链接="专栏分割"..v.id
-      local 底部内容=v.items_count.."篇内容 · "..v.voteup_count.."个赞同"
-      if 预览内容==false or 预览内容=="" then
-        预览内容="无介绍"
-      end
-      return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
-    end,
-    function (v)
-      if v.type=="people" then
-        local 头像=v.avatar_url
-        local 名字=v.name
-        local 签名=v.headline
-        local 用户id=v.id
-        local 文本
-        if 签名=="" then
-          签名="无签名"
-        end
-        if v.is_following then
-          文本="取关";
-         else
-          文本="关注";
-        end
-        return {
-          people_image=头像,
-          username=名字,
-          userheadline=签名,
-          people_id=用户id,
-          following={
-            Text=文本,
-            onClick=function(view)
-              local rootview=view.getParent().getParent().getParent().getParent()
-              local 用户id=rootview.Tag.people_id.text
-              if view.Text=="关注"
-                zHttp.post("https://api.zhihu.com/people/"..用户id.."/followers","",posthead,function(a,b)
-                  if a==200 then
-                    view.Text="取关";
-                    提示("关注成功")
-                   elseif a==500 then
-                    提示("请登录后使用本功能")
-                  end
-                end)
-               elseif view.Text=="取关"
-                zHttp.delete("https://api.zhihu.com/people/"..用户id.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
-                  if a==200 then
-                    view.Text="关注";
-                    提示("取关成功")
-                  end
-                end)
-               else
-                提示("加载中")
-              end
+    },
+    onlongclick={
+      function(parent,v,pos,id)
+        local collections_id=v.Tag.collections_id.text
+        双按钮对话框("删除收藏夹","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
+          zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
+            if code==200 then
+              提示("已删除")
+              id.adapter.remove(zero)
+             else
+              提示("删除失败")
             end
-          },
-        }
-      end
-    end,
-    function(v)
-      local 标题=v.title
-      local 预览内容=v.subtitle.content
-      local url=v.url
-      local 链接="专题分割"..url:match("special/(.+)")
-      local 底部内容=v.footline.content
-      if 预览内容==false or 预览内容=="" then
-        预览内容="无介绍"
-      end
-      return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
-    end,
-    function(v)
-      local 标题=v.title
-      local 预览内容=v.subtitle.content
-      local url=v.url
-      local 链接="圆桌分割"..url:match("roundtable/(.+)")
-      local 底部内容=v.footline.content
-      if 预览内容==false or 预览内容=="" then
-        预览内容="无介绍"
-      end
-      return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
-    end
-  }
-
-  local oritype={"following_questions","following_collections","following_topics","following_columns","followees","following_news_specials","following_roundtables"}
-
-  if followtabLayout.getTabCount()==0 then
-    followtabLayout.setupWithViewPager(followpage)
-    local followTable={"问题","收藏夹","话题","专栏","用户","专题","圆桌"}
-    --setupWithViewPager设置的必须手动设置text
-    for i=1, #followTable do
-      local itemnum=i-1
-      local tab=followtabLayout.getTabAt(itemnum)
-      tab.setText(followTable[i]);
-    end
-    local mtype=followtabLayout.getTabAt(pos-1).text
-    followtabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
-      onTabSelected=function(tab)
-        --选择时触发
-        local pos=tab.getPosition()+1
-        if canclick_follow_content[pos] then
-          canclick_follow_content[pos]=false
-          Handler().postDelayed(Runnable({
-            run=function()
-              canclick_follow_content[pos]=true
-            end,
-          }),1050)
-         else
-          return false
-        end
-        local pos=tab.getPosition()+1
-        关注内容刷新(false,pos)
+          end)
+          an.dismiss()
+        end,function(an)an.dismiss()end)
+        return true
       end,
-
-      onTabUnselected=function(tab)
-        --未选择时触发
-      end,
-
-      onTabReselected=function(tab)
-        --选中之后再次点击即复选时触发
-        local pos=tab.getPosition()+1
-        if canclick_follow_content[pos] then
-          canclick_follow_content[pos]=false
-          Handler().postDelayed(Runnable({
-            run=function()
-              canclick_follow_content[pos]=true
-            end,
-          }),1050)
-         else
-          return false
-        end
-        关注内容刷新(true,pos)
-      end,
-    });
-
-  end
-
-  if thispage.adapter and isclear==false then
-    return
-  end
-  if not(thispage.adapter) or isclear then
-
-    if thispage.adapter then
-      thispage.setOnScrollListener(nil)
-      luajava.clear(thispage.adapter)
-      thispage.adapter=nil
-    end
-
-    local colltab=获取适配器项目布局("home/home_shared_collections")
-    local itemc=获取适配器项目布局("simple/card")
-    --预览内容删除
-    local question_itemc=table.clone(itemc)
-    question_itemc[2][2][3][3]=nil
-    --底部内容删除
-    local topic_itemc=table.clone(itemc)
-    topic_itemc[2][2][3][4]=nil
-    local peo_itemc=获取适配器项目布局("people/people_list")
-    local allitemc={question_itemc,colltab,topic_itemc,itemc,peo_itemc,itemc,itemc}
-
-    local onclick=AdapterView.OnItemClickListener{
-      onItemClick=function(l,v,c,b)
-        if tostring(v.Tag.链接.Text):find("视频合集分割") then
-          activity.newActivity("huida",{tostring(v.Tag.链接.Text):match("视频分割(.+)"),"视频",true})
-         elseif tostring(v.Tag.链接.Text):find("视频分割") then
-          activity.newActivity("followed",{v.Tag.链接.Text})
-         elseif tostring(v.Tag.链接.Text):find("专栏分割") then
-          activity.newActivity("people_column",{tostring(v.Tag.链接.Text):match("专栏分割(.+)")})
-         elseif tostring(v.Tag.链接.Text):find("话题分割") then
-          activity.newActivity("topic",{tostring(v.Tag.链接.Text):match("话题分割(.+)")})
-         elseif tostring(v.Tag.链接.Text):find("问题分割") then
-          activity.newActivity("question",{tostring(v.Tag.链接.Text):match("问题分割(.+)")})
-         elseif tostring(v.Tag.链接.Text):find("圆桌分割") then
-          activity.newActivity("column",{tostring(v.Tag.链接.Text):match("圆桌分割(.+)"),"圆桌"})
-         elseif tostring(v.Tag.链接.Text):find("专题分割") then
-          activity.newActivity("column",{tostring(v.Tag.链接.Text):match("专题分割(.+)"),"专题"})
-
-        end
-      end
-    }
-
-
-    thispage.setOnItemClickListener(onclick)
-
-    thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-    thissr.setColorSchemeColors({转0x(primaryc)});
-    thissr.setOnRefreshListener({
-      onRefresh=function()
-        关注内容刷新(true,pos)
-        Handler().postDelayed(Runnable({
-          run=function()
-            thissr.setRefreshing(false);
-          end,
-        }),1000)
-
-      end,
-    });
-
-    thispage.adapter=MyLuaAdapter(activity,allitemc[pos])
-    local madapter=thispage.Adapter
-
-    if pos==2 then
-      thispage.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
-        onItemLongClick=function(id,v,zero,one)
-          local collections_id=v.Tag.mc_id.text
-          if collections_id=="local" then
-            提示("不支持操作此收藏夹")
-            return true
-          end
-          双按钮对话框("取关该收藏夹","取消关注该收藏夹？该操作不可撤消！","是的","点错了",function(an)
-            zHttp.delete("https://api.zhihu.com/collections/"..collections_id.."/followers/"..activity.getSharedData("idx"),head,function(code,json)
-              if code==200 then
-                提示("已取关")
-                id.adapter.remove(zero)
-               else
-                提示("删除失败")
-              end
-            end)
-            an.dismiss()
-          end,function(an)an.dismiss()end)
+      function(parent,v,pos,id)
+        local collections_id=v.Tag.mc_id.text
+        if collections_id=="local" then
+          提示("不支持操作此收藏夹")
           return true
         end
-      })
-      thispage.setOnItemClickListener(AdapterView.OnItemClickListener{
-        onItemClick=function(parent,v,pos,id)
-          if v.Tag.mc_id.text=="local" then
-            activity.newActivity("collections_tj")
-            return
-          end
-          activity.newActivity("collections",{v.Tag.mc_id.Text,true})
-        end
-      })
-
-      table.insert(madapter.getData(), {
+        双按钮对话框("取关该收藏夹","取消关注该收藏夹？该操作不可撤消！","是的","点错了",function(an)
+          zHttp.delete("https://api.zhihu.com/collections/"..collections_id.."/followers/"..activity.getSharedData("idx"),head,function(code,json)
+            if code==200 then
+              提示("已取关")
+              id.adapter.remove(zero)
+             else
+              提示("删除失败")
+            end
+          end)
+          an.dismiss()
+        end,function(an)an.dismiss()end)
+        return true
+      end
+    },
+    defurl={
+      "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20",
+      "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/following_collections?offset=0"
+    },
+    head=head,
+    func=function(v,pos,adapter)
+      local data= reslove_home_collection[pos](v)
+      if data then
+        adapter.add(data)
+      end
+    end,
+    addtab={
+      nil,
+      {
         mc_image="https://picx.zhimg.com/50/v2-abed1a8c04700ba7d72b45195223e0ff_xl.jpg",
         mc_name={
           text="为你推荐"
@@ -2402,136 +1798,272 @@ function 关注内容刷新(isclear,pos)
           text="local",
         },
         background={foreground=Ripple(nil,转0x(ripplec),"方")},
-      })
-    end
+      },
+    },
+    funcstr="收藏刷新"
+  }
 
-    if pos==5 then
-      thispage.onItemClick=function(l,v,c,b)
-        activity.newActivity("people",{v.Tag.people_id.text})
-      end
-    end
+  collection_pageTool:createfunc(mconf)
+  collection_pageTool:setOnTabListener()
 
-    可以加载关注内容[pos]=true
-    follow_content_isend[pos]=false
-    follow_content_nexturl[pos]=false
-
-    thispage.setOnScrollListener{
-      onScroll=function(view,a,b,c)
-        if a+b==c and 可以加载关注内容[pos] then
-          可以加载关注内容[pos]=false
-          关注内容刷新(nil,pos)
-          thissr.setRefreshing(true)
-          System.gc()
-          Handler().postDelayed(Runnable({
-            run=function()
-              thissr.setRefreshing(false);
-            end,
-          }),1000)
+  --关注
+  function 加载关注view()
+    reslove_home_follow_content={
+      function (v)
+        local 标题=v.title
+        local 链接="问题分割"..v.id
+        local 底部内容=v.answer_count.."个回答 · "..v.follower_count.."个关注"
+        if 预览内容==false or 预览内容=="" then
+          预览内容="无介绍"
         end
+        return {标题=标题,底部内容=底部内容,链接=链接,mc_title=标题}
+      end,
+      function(v)
+        return
+        {
+          mc_image=v.creator.avatar_url,
+          mc_name={
+            text="由 "..v.creator.name.." 创建"
+          },
+          mc_title={
+            text=v.title
+          },
+          mc_follower={
+            text=math.floor(v.follower_count).."人关注"
+          },
+          mc_id={
+            text=tostring(v.id),
+          },
+          background={foreground=Ripple(nil,转0x(ripplec),"方")},
+        }
+      end,
+      function (v)
+        local 标题=v.name
+        local 预览内容=v.excerpt
+        local 链接="话题分割"..v.id
+        local 底部内容="无"
+        if 预览内容==false or 预览内容=="" then
+          预览内容="无介绍"
+        end
+        return {标题=标题,文章=预览内容,链接=链接,mc_title=标题}
+      end,
+      function (v)
+        local 标题=v.title
+        local 预览内容=v.description
+        local 链接="专栏分割"..v.id
+        local 底部内容=v.items_count.."篇内容 · "..v.voteup_count.."个赞同"
+        if 预览内容==false or 预览内容=="" then
+          预览内容="无介绍"
+        end
+        return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
+      end,
+      function (v)
+        if v.type=="people" then
+          local 头像=v.avatar_url
+          local 名字=v.name
+          local 签名=v.headline
+          local 用户id=v.id
+          local 文本
+          if 签名=="" then
+            签名="无签名"
+          end
+          if v.is_following then
+            文本="取关";
+           else
+            文本="关注";
+          end
+          return {
+            people_image=头像,
+            username=名字,
+            userheadline=签名,
+            people_id=用户id,
+            following={
+              Text=文本,
+              onClick=function(view)
+                local rootview=view.getParent().getParent().getParent().getParent()
+                local 用户id=rootview.Tag.people_id.text
+                if view.Text=="关注"
+                  zHttp.post("https://api.zhihu.com/people/"..用户id.."/followers","",posthead,function(a,b)
+                    if a==200 then
+                      view.Text="取关";
+                      提示("关注成功")
+                     elseif a==500 then
+                      提示("请登录后使用本功能")
+                    end
+                  end)
+                 elseif view.Text=="取关"
+                  zHttp.delete("https://api.zhihu.com/people/"..用户id.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
+                    if a==200 then
+                      view.Text="关注";
+                      提示("取关成功")
+                    end
+                  end)
+                 else
+                  提示("加载中")
+                end
+              end
+            },
+          }
+        end
+      end,
+      function(v)
+        local 标题=v.title
+        local 预览内容=v.subtitle.content
+        local url=v.url
+        local 链接="专题分割"..url:match("special/(.+)")
+        local 底部内容=v.footline.content
+        if 预览内容==false or 预览内容=="" then
+          预览内容="无介绍"
+        end
+        return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
+      end,
+      function(v)
+        local 标题=v.title
+        local 预览内容=v.subtitle.content
+        local url=v.url
+        local 链接="圆桌分割"..url:match("roundtable/(.+)")
+        local 底部内容=v.footline.content
+        if 预览内容==false or 预览内容=="" then
+          预览内容="无介绍"
+        end
+        return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
       end
     }
-
-    return
   end
-  local dofun=alldo[pos]
 
-  if not getLogin() then
-    提示("请登录后使用本功能")
-    return
+  local conf={
+    view=followpage,
+    tabview=followtabLayout,
+    bindstr="follow_content",
+    addcanclick=true,
+    needlogin=true
+  }
+
+  MyPageTool:new(conf)
+  local followTable={"问题","收藏夹","话题","专栏","用户","专题","圆桌"}
+  follow_content_pageTool:addPage(2,followTable)
+
+  local colltab=获取适配器项目布局("home/home_shared_collections")
+  local itemc=获取适配器项目布局("simple/card")
+  --预览内容删除
+  local question_itemc=table.clone(itemc)
+  question_itemc[2][2][3][3]=nil
+  --底部内容删除
+  local topic_itemc=table.clone(itemc)
+  topic_itemc[2][2][3][4]=nil
+  local peo_itemc=获取适配器项目布局("people/people_list")
+
+  local monclick=function(parent,v,pos,id)
+    return 点击事件判断(v.Tag.链接.Text)
   end
-  local madapter=thispage.Adapter
-  local collections_url= follow_content_nexturl[pos] or "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/"..oritype[pos].."?limit=10"
-  zHttp.get(collections_url,apphead,function(code,content)
-    if code==200 then
-      local data=luajson.decode(content)
-      follow_content_isend[pos]=data.paging.is_end
-      follow_content_nexturl[pos]=data.paging.next
-      if follow_content_isend[pos]==false then
-        可以加载关注内容[pos]=true
-       elseif follow_content_isend[pos] then
-        提示("没有新内容了")
-      end
-      for k,v in ipairs(data.data) do
-        madapter.add(dofun(v))
-      end
 
-     else
-      提示("获取关注列表失败")
-    end
-  end)
-  return
+  local mconf={
+    itemc={
+      multiple=true,
+      [1]=question_itemc,
+      [2]=colltab,
+      [3]=topic_itemc,
+      [4]=itemc,
+      [5]=peo_itemc,
+      [6]=itemc,
+      [7]=itemc
+    },
+    onclick={
+      monclick,
+      function(parent,v,pos,id)
+        if v.Tag.mc_id.text=="local" then
+          activity.newActivity("collections_tj")
+          return
+        end
+        activity.newActivity("collections",{v.Tag.mc_id.Text,true})
+      end,
+      monclick,
+      monclick,
+      function(l,v,c,b)
+        activity.newActivity("people",{v.Tag.people_id.text})
+      end,
+      monclick,
+      monclick
+    },
+    onlongclick={
+      nil,
+      function(id,v,zero,one)
+        local collections_id=v.Tag.mc_id.text
+        if collections_id=="local" then
+          提示("不支持操作此收藏夹")
+          return true
+        end
+        双按钮对话框("取关该收藏夹","取消关注该收藏夹？该操作不可撤消！","是的","点错了",function(an)
+          zHttp.delete("https://api.zhihu.com/collections/"..collections_id.."/followers/"..activity.getSharedData("idx"),head,function(code,json)
+            if code==200 then
+              提示("已取关")
+              id.adapter.remove(zero)
+             else
+              提示("删除失败")
+            end
+          end)
+          an.dismiss()
+        end,function(an)an.dismiss()end)
+        return true
+      end,
+      nil,
+      nil,
+      nil,
+      nil,
+      nil
+    },
+    defurl={
+      "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_questions".."?limit=10",
+      "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_collections".."?limit=10",
+      "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_topics".."?limit=10",
+      "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_columns".."?limit=10",
+      "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."followees".."?limit=10",
+      "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_news_specials".."?limit=10",
+      "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_roundtables".."?limit=10",
+    },
+    head=apphead,
+    func=function(v,pos,adapter)
+      local data= reslove_home_follow_content[pos](v)
+      if data then
+        adapter.add(data)
+      end
+    end,
+    addtab={
+      nil,
+      {
+        mc_image="https://picx.zhimg.com/50/v2-abed1a8c04700ba7d72b45195223e0ff_xl.jpg",
+        mc_name={
+          text="为你推荐"
+        },
+        mc_title={
+          text="推荐关注收藏夹"
+        },
+        mc_follower={
+          text=""
+        },
+        mc_id={
+          text="local",
+        },
+        background={foreground=Ripple(nil,转0x(ripplec),"方")},
+      },
+      nil,
+      nil,
+      nil,
+      nil,
+      nil
+    },
+    funcstr="关注内容刷新"
+  }
 
+  follow_content_pageTool:createfunc(mconf)
+  follow_content_pageTool:setOnTabListener()
 end
 
-可以加载创作内容={}
-create_content_isend={}
-create_content_nexturl={}
-canclick_create={true,true,true,true,true,true,true}
+--创作内容
 
-function 创作内容点击判断(pos)
-  if pos==3 then
-    setmyToolip(_ask,"创建想法")
-    _ask.onClick=function()
-      if not(getLogin()) then
-        return 提示("你可能需要登录")
-      end
-      task(20,function()
-        activity.newActivity("huida",{"https://www.zhihu.com/","想法",true})
-      end)
-    end
-   elseif pos==5 then
-    setmyToolip(_ask,"创建文章")
-    _ask.onClick=function()
-      if not(getLogin()) then
-        return 提示("你可能需要登录")
-      end
-      task(20,function()
-        activity.newActivity("huida",{"https://zhuanlan.zhihu.com/write","专栏",true})
-      end)
-    end
-   elseif pos==6 then
-    setmyToolip(_ask,"创建视频")
-    _ask.onClick=function()
-      if not(getLogin()) then
-        return 提示("你可能需要登录")
-      end
-      task(20,function()
-        activity.newActivity("huida",{"https://www.zhihu.com/zvideo/upload-video","视频",true})
-      end)
-    end
-   elseif pos==7 then
-    setmyToolip(_ask,"创建专栏")
-    _ask.onClick=function()
-      if not(getLogin()) then
-        return 提示("你可能需要登录")
-      end
-      task(20,function()
-        activity.newActivity("huida",{"https://www.zhihu.com/column/request","新建专栏","null"})
-      end)
-    end
-   else
-    setmyToolip(_ask,"提问")
-    _ask.onClick=function()
-      if not(getLogin()) then
-        return 提示("你可能需要登录")
-      end
-      task(20,function()
-      activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true}) end)
-    end
-  end
-end
+function 加载创作内容view()
 
-function 创作内容刷新(isclear,pos)
-
-  if pos==nil then
-    pos=1
-  end
-
-  创作内容点击判断(pos)
-
-  local thispage,thissr=getpage(createpage,"create",pos,7)
-
-  function reslove_create (v)
+  function reslove_homecreate (v)
     local 标题
     local 链接
     local 预览内容
@@ -2580,190 +2112,130 @@ function 创作内容刷新(isclear,pos)
   end
 
 
-  local oritype={"creators/creations/v2/all","creators/creations/v2/answer","creators/creations/v2/pin","creators/creations/v2/question","creators/creations/v2/article","creators/creations/v2/zvideo","people/"..activity.getSharedData("idx").."/column-contributions?include=data%5B*%5D.column.followers%2Carticles_count&offset=0&limit=20"}
+  local conf={
+    view=createpage,
+    tabview=createtabLayout,
+    bindstr="create",
+    addcanclick=true,
+    needlogin=true
+  }
 
-  if createtabLayout.getTabCount()==0 then
-    createtabLayout.setupWithViewPager(createpage)
-    local createTable={"全部","回答","想法","提问","文章","视频","专栏"}
-    --setupWithViewPager设置的必须手动设置text
-    for i=1, #createTable do
-      local itemnum=i-1
-      local tab=createtabLayout.getTabAt(itemnum)
-      tab.setText(createTable[i]);
-    end
-    local mtype=createtabLayout.getTabAt(pos-1).text
-    createtabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
-      onTabSelected=function(tab)
-        --选择时触发
-        local pos=tab.getPosition()+1
-        if canclick_create[pos] then
-          canclick_create[pos]=false
-          Handler().postDelayed(Runnable({
-            run=function()
-              canclick_create[pos]=true
-            end,
-          }),1050)
-         else
-          return false
-        end
-        创作内容刷新(false,pos)
-      end,
+  MyPageTool:new(conf)
+  local createTable={"全部","回答","想法","提问","文章","视频","专栏"}
+  create_pageTool:addPage(2,createTable)
 
-      onTabUnselected=function(tab)
-        --未选择时触发
-      end,
 
-      onTabReselected=function(tab)
-        --选中之后再次点击即复选时触发
-        local pos=tab.getPosition()+1
-        if canclick_create[pos] then
-          canclick_create[pos]=false
-          Handler().postDelayed(Runnable({
-            run=function()
-              canclick_create[pos]=true
-            end,
-          }),1050)
-         else
-          return false
-        end
-        创作内容刷新(true,pos)
-      end,
-    });
 
-  end
-
-  if thispage.adapter and isclear==false then
-    return
-  end
-  if not(thispage.adapter) or isclear then
-
-    if thispage.adapter then
-      thispage.setOnScrollListener(nil)
-      luajava.clear(thispage.adapter)
-      thispage.adapter=nil
-    end
-
-    local itemc=获取适配器项目布局("simple/card")
-    local allitemc={itemc,itemc,itemc,itemc,itemc,itemc,itemc}
-
-    local onclick=AdapterView.OnItemClickListener{
-      onItemClick=function(l,v,c,b)
-        if tostring(v.Tag.链接.Text):find("问题分割") then
-          activity.newActivity("question",{tostring(v.Tag.链接.Text):match("问题分割(.+)")})
-         elseif tostring(v.Tag.链接.Text):find("回答分割") then
-          activity.newActivity("answer",{"null",tostring(v.Tag.链接.Text):match("回答分割(.+)")})
-         elseif tostring(v.Tag.链接.Text):find("想法分割") then
-          activity.newActivity("column",{tostring(v.Tag.链接.Text):match("想法分割(.+)"),"想法"})
-         elseif tostring(v.Tag.链接.Text):find("文章分割") then
-          activity.newActivity("column",{tostring(v.Tag.链接.Text):match("文章分割(.+)")})
-         elseif tostring(v.Tag.链接.Text):find("视频分割") then
-          activity.newActivity("column",{tostring(v.Tag.链接.Text):match("视频分割(.+)"),"视频"})
-         elseif tostring(v.Tag.链接.Text):find("专栏分割") then
-          activity.newActivity("huida",{"https://www.zhihu.com/column/"..tostring(v.Tag.链接.Text):match("专栏分割(.+)"),"我的专栏"})
-        end
+  local mconf={
+    itemc=获取适配器项目布局("simple/card"),
+    onclick=function(l,v,c,b)
+      return 点击事件判断(v.Tag.链接.Text)
+    end,
+    onlongclick=function(id,v,zero,one)
+      local murl
+      if tostring(v.Tag.链接.Text):find("问题分割") then
+        murl="https://www.zhihu.com/question/"..tostring(v.Tag.链接.Text):match("问题分割(.+)").."/write"
+       elseif tostring(v.Tag.链接.Text):find("回答分割") then
+        murl="https://www.zhihu.com/api/v4/answers/"..tostring(v.Tag.链接.Text):match("回答分割(.+)")
+       elseif tostring(v.Tag.链接.Text):find("专栏分割") then
+        murl="https://zhuanlan.zhihu.com/api/columns/"..tostring(v.Tag.链接.Text):match("专栏分割(.+)")
+       elseif tostring(v.Tag.链接.Text):find("想法分割") then
+        murl="https://www.zhihu.com/api/v4/pins/"..tostring(v.Tag.链接.Text):match("想法分割(.+)")
+       elseif tostring(v.Tag.链接.Text):find("文章分割") then
+        murl="https://www.zhihu.com/api/v4/articles/"..tostring(v.Tag.链接.Text):match("文章分割(.+)")
+       elseif tostring(v.Tag.链接.Text):find("视频分割") then
+        murl="https://www.zhihu.com/api/v4/zvideos/"..tostring(v.Tag.链接.Text):match("视频分割(.+)")
       end
-    }
+      双按钮对话框("删除该内容","取消删除？该操作不可撤消！","是的","点错了",function(an)
+        zHttp.delete(murl,head,function(code,json)
+          if code==200 then
+            提示("删除成功")
+            id.adapter.remove(zero)
+           else
+            提示("删除失败")
+          end
+        end)
+        an.dismiss()
+      end,function(an)an.dismiss()end)
+      return true
+    end,
+    defurl={
+      "https://api.zhihu.com/".."creators/creations/v2/all".."?limit=10",
+      "https://api.zhihu.com/".."creators/creations/v2/answer".."?limit=10",
+      "https://api.zhihu.com/".."creators/creations/v2/pin".."?limit=10",
+      "https://api.zhihu.com/".."creators/creations/v2/question".."?limit=10",
+      "https://api.zhihu.com/".."creators/creations/v2/article".."?limit=10",
+      "https://api.zhihu.com/".."creators/creations/v2/zvideo".."?limit=10",
+      "https://api.zhihu.com/".."people/"..activity.getSharedData("idx").."/column-contributions?include=data%5B*%5D.column.followers%2Carticles_count&offset=0&limit=20",
+    },
+    head=apphead,
+    func=function(v,pos,adapter)
+      local data= reslove_homecreate(v)
+      if data then
+        adapter.add(data)
+      end
+    end,
+    dofunc=function(pos)
+      创作内容点击判断(pos)
+    end,
+    funcstr="创作内容刷新"
+  }
 
+  create_pageTool:createfunc(mconf)
+  create_pageTool:setOnTabListener()
 
-    thispage.setOnItemClickListener(onclick)
-
-    thispage.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
-      onItemLongClick=function(id,v,zero,one)
-        local murl
-        if tostring(v.Tag.链接.Text):find("问题分割") then
-          murl="https://www.zhihu.com/question/"..tostring(v.Tag.链接.Text):match("问题分割(.+)").."/write"
-         elseif tostring(v.Tag.链接.Text):find("回答分割") then
-          murl="https://www.zhihu.com/api/v4/answers/"..tostring(v.Tag.链接.Text):match("回答分割(.+)")
-         elseif tostring(v.Tag.链接.Text):find("专栏分割") then
-          murl="https://zhuanlan.zhihu.com/api/columns/"..tostring(v.Tag.链接.Text):match("专栏分割(.+)")
-         elseif tostring(v.Tag.链接.Text):find("想法分割") then
-          murl="https://www.zhihu.com/api/v4/pins/"..tostring(v.Tag.链接.Text):match("想法分割(.+)")
-         elseif tostring(v.Tag.链接.Text):find("文章分割") then
-          murl="https://www.zhihu.com/api/v4/articles/"..tostring(v.Tag.链接.Text):match("文章分割(.+)")
-         elseif tostring(v.Tag.链接.Text):find("视频分割") then
-          murl="https://www.zhihu.com/api/v4/zvideos/"..tostring(v.Tag.链接.Text):match("视频分割(.+)")
+  function 创作内容点击判断(pos)
+    if pos==3 then
+      setmyToolip(_ask,"创建想法")
+      _ask.onClick=function()
+        if not(getLogin()) then
+          return 提示("你可能需要登录")
         end
-        双按钮对话框("删除该内容","取消删除？该操作不可撤消！","是的","点错了",function(an)
-          zHttp.delete(murl,head,function(code,json)
-            if code==200 then
-              提示("删除成功")
-              id.adapter.remove(zero)
-             else
-              提示("删除失败")
-            end
-          end)
-          an.dismiss()
-        end,function(an)an.dismiss()end)
-        return true
+        task(20,function()
+          activity.newActivity("huida",{"https://www.zhihu.com/","想法",true})
+        end)
       end
-    })
-
-    thissr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
-    thissr.setColorSchemeColors({转0x(primaryc)});
-    thissr.setOnRefreshListener({
-      onRefresh=function()
-        创作内容刷新(true,pos)
-        Handler().postDelayed(Runnable({
-          run=function()
-            thissr.setRefreshing(false);
-          end,
-        }),1000)
-
-      end,
-    });
-
-    thispage.adapter=MyLuaAdapter(activity,allitemc[pos])
-
-    可以加载创作内容[pos]=true
-    create_content_isend[pos]=false
-    create_content_nexturl[pos]=false
-
-    thispage.setOnScrollListener{
-      onScroll=function(view,a,b,c)
-        if a+b==c and 可以加载创作内容[pos] then
-          可以加载创作内容[pos]=false
-          创作内容刷新(nil,pos)
-          thissr.setRefreshing(true)
-          System.gc()
-          Handler().postDelayed(Runnable({
-            run=function()
-              thissr.setRefreshing(false);
-            end,
-          }),1000)
+     elseif pos==5 then
+      setmyToolip(_ask,"创建文章")
+      _ask.onClick=function()
+        if not(getLogin()) then
+          return 提示("你可能需要登录")
         end
+        task(20,function()
+          activity.newActivity("huida",{"https://zhuanlan.zhihu.com/write","专栏",true})
+        end)
       end
-    }
-
-    return
-  end
-
-  if not getLogin() then
-    提示("请登录后使用本功能")
-    return
-  end
-
-  local madapter=thispage.adapter
-
-  local collections_url= create_content_nexturl[pos] or "https://api.zhihu.com/"..oritype[pos].."?limit=10"
-  zHttp.get(collections_url,apphead,function(code,content)
-    if code==200 then
-      local data=luajson.decode(content)
-      create_content_isend[pos]=data.paging.is_end
-      create_content_nexturl[pos]=data.paging.next
-      if create_content_isend[pos]==false then
-        可以加载创作内容[pos]=true
-       elseif create_content_isend[pos] then
-        提示("没有新内容了")
+     elseif pos==6 then
+      setmyToolip(_ask,"创建视频")
+      _ask.onClick=function()
+        if not(getLogin()) then
+          return 提示("你可能需要登录")
+        end
+        task(20,function()
+          activity.newActivity("huida",{"https://www.zhihu.com/zvideo/upload-video","视频",true})
+        end)
       end
-      for k,v in ipairs(data.data) do
-        madapter.add(reslove_create(v))
+     elseif pos==7 then
+      setmyToolip(_ask,"创建专栏")
+      _ask.onClick=function()
+        if not(getLogin()) then
+          return 提示("你可能需要登录")
+        end
+        task(20,function()
+          activity.newActivity("huida",{"https://www.zhihu.com/column/request","新建专栏","null"})
+        end)
       end
-
      else
-      提示("获取创作列表失败")
+      setmyToolip(_ask,"提问")
+      _ask.onClick=function()
+        if not(getLogin()) then
+          return 提示("你可能需要登录")
+        end
+        task(20,function()
+        activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true}) end)
+      end
     end
-  end)
-  return
+  end
 
 end
 
@@ -2778,6 +2250,12 @@ local starthome=this.getSharedData("starthome")
 
 --从home_list取出启动页
 page_home.setCurrentItem(home_list[starthome],false)
+
+function 成功登录回调()
+  加载收藏view()
+  加载关注view()
+  加载创作内容view()
+end
 
 function getuserinfo()
 
@@ -2806,6 +2284,7 @@ function getuserinfo()
 
       zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code,content)
         if code==200 then
+          成功登录回调()
           HometabLayout.setVisibility(0)
           local decoded_content = luajson.decode(content)
           table.insert(decoded_content.selected_sections, 1, {
@@ -2911,7 +2390,7 @@ function onActivityResult(a,b,c)
       if not(getLogin()) then
         提示("请登录后使用本功能")
        else
-        关注刷新(nil,false)
+        关注刷新(nil,nil,false)
       end
     end
 
@@ -3019,7 +2498,7 @@ Http.get(update_api,head,function(code,content)
     .setMessage("检测版本失败 如若是网络问题 请找到网络信号良好的地方使用 如果检查网络后不是网络问题 请打开官网更新 或前往项目页查看往下滑查看最新下载链接 如果开源项目页没了 软件就是寄了")
     .setCancelable(false)
     .setPositiveButton("官网",nil)
-    .setNeutralButton("退出软件",nil)
+    .setNeutralButton("忽略",nil)
     .setNegativeButton("项目页",nil)
     .show()
     myupdatedialog.findViewById(android.R.id.message).TextIsSelectable=true
@@ -3030,7 +2509,7 @@ Http.get(update_api,head,function(code,content)
       浏览器打开("https://gitee.com/huajicloud/hydrogen")
     end
     myupdatedialog.getButton(myupdatedialog.BUTTON_NEUTRAL).onClick=function()
-      activity.finish()
+      myupdatedialog.dismiss()
     end
 
   end
@@ -3054,6 +2533,7 @@ task(1,function()
   })
 end)
 
+
 lastclick = os.time() - 2
 function onKeyDown(code,event)
   local now = os.time()
@@ -3076,10 +2556,7 @@ function onKeyDown(code,event)
       return true
     end
   end
-end
 
-
-function onKeyDown(keyCode, event)
   if this.getSharedData("音量键选择tab")~="true" then
     return false
   end
@@ -3087,41 +2564,29 @@ function onKeyDown(keyCode, event)
   if page_home.getCurrentItem()~=0 or allcount<1 then
     return false
   end
-  if keyCode==KeyEvent.KEYCODE_VOLUME_UP then
+  --音量键up
+  if code==KeyEvent.KEYCODE_VOLUME_UP then
     mcount=HometabLayout.getSelectedTabPosition()+1
-    --音量键up
-    return true;
-   elseif keyCode== KeyEvent.KEYCODE_VOLUME_DOWN then
-    mcount=HometabLayout.getSelectedTabPosition()-1
-    --音量键down
-    return true;
-  end
-end
-
-function onKeyUp(keyCode, event)
-  if this.getSharedData("音量键选择tab")~="true" then
-    return false
-  end
-  local allcount=HometabLayout.getTabCount()
-  if page_home.getCurrentItem()~=0 or allcount<1 then
-    return false
-  end
-  if keyCode==KeyEvent.KEYCODE_VOLUME_UP or keyCode== KeyEvent.KEYCODE_VOLUME_DOWN then
-    if mcount<0 then
-      提示("前面没内容了")
-      return
-    end
     if mcount== allcount then
       提示("后面没内容了")
-      return
+      return true
     end
     local tab=HometabLayout.getTabAt(mcount);
     tab.select()
-    mcount=nil
+    return true;
+    --音量键down
+   elseif code== KeyEvent.KEYCODE_VOLUME_DOWN then
+    mcount=HometabLayout.getSelectedTabPosition()-1
+    if mcount<0 then
+      提示("前面没内容了")
+      return true
+    end
+    local tab=HometabLayout.getTabAt(mcount);
+    tab.select()
     return true;
   end
-end
 
+end
 
 data=...
 function onCreate()
@@ -3146,31 +2611,4 @@ if not(this.getSharedData("hometip0.02")) then
     .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("hometip0.02","true") end})
     .show()
   end)
-end
-
-
-if Build.VERSION.SDK_INT >=30 then
-
-  if activity.getSharedData("安卓11迁移文件夹0.01")~="true" then
-    local 默认文件夹=Environment.getExternalStorageDirectory().toString().."/Hydrogen"
-    local 私有目录=activity.getExternalFilesDir(nil).toString()
-    if not 文件夹是否存在(私有目录) then
-      创建文件夹(私有目录)
-    end
-    if not 文件夹是否存在(私有目录.."/Hydrogen") then
-      创建文件夹(私有目录.."/Hydrogen")
-    end
-    if Environment.isExternalStorageManager()==true then
-      File(默认文件夹).renameTo(File(私有目录.."/Hydrogen"))
-    end
-    if activity.getSharedData("安卓11迁移文件夹")~="true" then
-      local tishi=AlertDialog.Builder(this)
-      .setTitle("提示")
-      .setMessage("检测到你的软件版本大于安卓10 由于安卓的限制 导致无法保存文件在带有特殊字符串的文件夹 但应用私有目录无限制 所以 软件已自动将文件夹迁移到软件的在android/data的目录内 但迁移后 卸载软件或清除软件数据也会删除对应保存的数据 为了应对 在本地列表的菜单的功能中支持导入/导出android/data的文件")
-      .setCancelable(false)
-      .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("安卓11迁移文件夹0.01","true") end})
-      .show()
-      tishi.findViewById(android.R.id.message).TextIsSelectable=true
-    end
-  end
 end

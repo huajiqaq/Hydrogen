@@ -18,10 +18,71 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
+--将AlertDialog全部替换为md风格弹窗
+AlertDialog={}
+AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.MaterialAlertDialogBuilder"
 
-versionCode=0.41
+MyPageTool = require "views/MyPageTool"
+
+versionCode=0.42
 layout_dir="layout/item_layout/"
 
+-- 定义一个函数，用于从字符串中获取数字和后续内容
+function get_number_and_following(str)
+  -- 定义一个空的table，用于存放结果
+  local result = {}
+  -- 使用正则表达式匹配数字和后续内容，直到遇到空格或字符串结束
+  for s in string.gmatch(str, "%-?%d+%.?%d?[^%s]*") do
+    -- 将匹配到的内容插入到table中
+    table.insert(result, s)
+  end
+  -- 返回table
+  return result
+end
+
+function numtostr(num)
+  if num>10000 then
+    num=tostring(math.floor(num/10000)).."万"
+  end
+  return tostring(num)
+end
+
+function 点击事件判断(myid,title)
+  local open=activity.getSharedData("内部浏览器查看回答")
+  if tostring(myid):find("问题分割") then
+    activity.newActivity("question",{tostring(myid):match("问题分割(.+)"),true})
+   elseif tostring(myid):find("文章分割") then
+    activity.newActivity("column",{tostring(myid):match("文章分割(.+)"),tostring(myid):match("分割(.+)")})
+   elseif tostring(myid):find("视频分割") then
+    activity.newActivity("column",{tostring(myid):match("视频分割(.+)"),"视频"})
+   elseif tostring(myid):find("想法分割") then
+    activity.newActivity("column",{tostring(myid):match("想法分割(.+)"),"想法"})
+   elseif tostring(myid):find("直播分割") then
+    activity.newActivity("column",{tostring(myid):match("直播分割(.+)"),"直播"})
+   elseif tostring(myid):find("圆桌分割") then
+    activity.newActivity("column",{tostring(myid):match("圆桌分割(.+)"),"圆桌"})
+   elseif tostring(myid):find("专题分割") then
+    activity.newActivity("column",{tostring(myid):match("专题分割(.+)"),"专题"})
+   elseif tostring(myid):find("视频合集分割") then
+    activity.newActivity("huida",{tostring(myid):match("视频分割(.+)"),"视频",true})
+   elseif tostring(myid):find("话题分割") then
+    activity.newActivity("topic",{tostring(myid):match("话题分割(.+)")})
+   elseif tostring(myid):find("用户分割") then
+    activity.newActivity("people",{tostring(myid):match("用户分割(.+)")})
+   elseif tostring(myid):find("专栏分割") then
+    activity.newActivity("huida",{"https://www.zhihu.com/column/"..tostring(myid):match("专栏分割(.+)"),"我的专栏"})
+
+   else
+    if title then
+      保存历史记录(title,myid,50)
+    end
+    if open=="false" then
+      activity.newActivity("answer",{tostring(myid):match("(.+)分割"),tostring(myid):match("分割(.+)")})
+     else
+      activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(myid):match("分割(.+)")})
+    end
+  end
+end
 
 if this.getSharedData("调式模式")=="true" then
   this.setDebug(true)
@@ -667,7 +728,7 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
         layout_height=-2;
         gravity="right|center";
         {
-          MaterialButton_TextButton;
+          MaterialButton_OutlinedButton;
           layout_marginTop="16dp";
           layout_marginLeft="16dp";
           layout_marginRight="16dp";
@@ -686,7 +747,7 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
           layout_weight=1;
         };
         {
-          MaterialButton_TextButton;
+          MaterialButton_OutlinedButton;
           textColor=转0x(stextc);
           text=qx;
           id="qxnr_c";
@@ -799,7 +860,7 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
         layout_height=-2;
         gravity="right|center";
         {
-          MaterialButton_TextButton;
+          MaterialButton_OutlinedButton;
           textColor=转0x(stextc);
           text=qx;
           id="qxnr_c";
@@ -1818,14 +1879,16 @@ function 加入专栏(回答id,收藏类型)
   .setTitle("选择路径")
   .setPositiveButton("确认",{
     onClick=function()
-      zHttp.post("https://api.zhihu.com/"..收藏类型.."s/"..回答id.."/republish",'{"action":"create","column":"'..选中专栏..'"}',apphead,function(code,json)
-        canload=true
-        if code==200 then
-          提示("成功")
-         else
-          提示("失败")
-        end
-      end)
+      if 选中专栏 then
+        zHttp.post("https://api.zhihu.com/"..收藏类型.."s/"..回答id.."/republish",'{"action":"create","column":"'..选中专栏..'"}',apphead,function(code,json)
+          canload=true
+          if code==200 then
+            提示("成功")
+           else
+            提示("失败")
+          end
+        end)
+      end
   end})
   .setNegativeButton("取消",nil)
   .setView(lay)
@@ -2555,98 +2618,6 @@ function ChoicePath(StartPath,callback)
   SetItem(StartPath)
 end
 
--- 定义一个函数，用于从字符串中获取数字和后续内容
-function get_number_and_following(str)
-  -- 定义一个空的table，用于存放结果
-  local result = {}
-  -- 使用正则表达式匹配数字和后续内容，直到遇到空格或字符串结束
-  for s in string.gmatch(str, "%-?%d+%.?%d?[^%s]*") do
-    -- 将匹配到的内容插入到table中
-    table.insert(result, s)
-  end
-  -- 返回table
-  return result
-end
-
-function getpage(view,str,num,allnum,onlylist,orinum)
-  if view.adapter==nil or view.adapter.getCount()<allnum then
-    if view.adapter and view.adapter.getCount()<allnum then
-      allnum=allnum-view.adapter.getCount()
-    end
-    initpage(view,str,allnum,onlylist,orinum)
-  end
-  if orinum then
-    num=orinum+num
-  end
-  if onlylist then
-    local list=str.."list".."_"..tostring(num)
-    return _G[list]
-   else
-    local sr=str.."sr".."_"..tostring(num)
-    local list=str.."list".."_"..tostring(num)
-    return _G[list],_G[sr]
-  end
-end
-
-function initpage(view,str,allnum,onlylist,orinum)
-  if orinum==nil then
-    orinum=0
-  end
-  local pagadp=view.adapter or SWKLuaPagerAdapter()
-
-  if onlylist then
-    for i=1+orinum,allnum do
-
-      local list=str.."list".."_"..tostring(i)
-      local addview=
-      {
-        ListView;
-        DividerHeight="0",
-        layout_width="fill";
-        id=list,
-        layout_height="fill";
-        nestedScrollingEnabled=true,
-      };
-
-      pagadp.add(loadlayout(addview))
-      pagadp.notifyDataSetChanged()
-    end
-   else
-    for i=1+orinum,allnum do
-      local list=str.."list".."_"..tostring(i)
-      local sr=str.."sr".."_"..tostring(i)
-      local addview={
-        SwipeRefreshLayout;
-        id=sr;
-        layout_height="fill";
-        layout_width="fill";
-        {
-          ListView;
-          DividerHeight="0",
-          layout_width="fill";
-          id=list,
-          layout_height="fill";
-          nestedScrollingEnabled=true,
-        };
-      }
-
-      pagadp.add(loadlayout(addview))
-      pagadp.notifyDataSetChanged()
-    end
-  end
-
-  if view.adapter==nil then
-    view.setAdapter(pagadp)
-  end
-
-end
-
-function numtostr(num)
-  if num>10000 then
-    num=tostring(math.floor(num/10000)).."万"
-  end
-  return tostring(num)
-end
 
 if Build.VERSION.SDK_INT >= 21 then
   activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(转0x(backgroundc,true));
