@@ -92,8 +92,9 @@ end
 
 --由于更新字号必须要刷新view实现 所以写在onResume是没用的
 local currentFontScale = this.getResources().getConfiguration().fontScale;
-local newFontScale = tonumber(activity.getSharedData("font_size"))/20;
-if currentFontScale ~= newFontScale then
+local newFontScale = tonumber(activity.getSharedData("font_size"));
+if newFontScale and currentFontScale ~= newFontScale then
+  newFontScale = newFontScale/20;
   configuration = this.getResources().getConfiguration();
   configuration.fontScale = newFontScale;
   metrics = this.getResources().getDisplayMetrics();
