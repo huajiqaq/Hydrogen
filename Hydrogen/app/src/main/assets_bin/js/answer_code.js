@@ -1,4 +1,5 @@
-const allpre_element = document.querySelectorAll(".ztext pre")
+const allpre_elements = document.querySelectorAll(".ztext pre");
+
 // 防抖函数
 function debounce(func, wait) {
     let timeout;
@@ -8,8 +9,7 @@ function debounce(func, wait) {
     };
 }
 
-// 20毫秒不操作 且判断大于滑动宽度就自动判断为结束
-const checkIfScrolledToEndDebounced = debounce(function (element) {
+function checkIfScrolledToEnd(element) {
     const scrollWidth = element.scrollWidth;
     const clientWidth = element.clientWidth;
     const scrollLeft = element.scrollLeft;
@@ -17,19 +17,34 @@ const checkIfScrolledToEndDebounced = debounce(function (element) {
     if ((scrollLeft + clientWidth) >= scrollWidth) {
         console.log('结束滑动');
     }
-}, 20); // 防抖延迟时间（毫秒）
+    return scrollWidth <= clientWidth;
+}
 
+const debouncedCheckIfScrolledToEnd = debounce(checkIfScrolledToEnd, 20);
 
+for (let index = 0; index < allpre_elements.length; index++) {
+    const element = allpre_elements[index];
 
-for (let index = 0; index < allpre_element.length; index++) {
-    const element = allpre_element[index];
+    if (checkIfScrolledToEnd(element)) {
+        continue;
+    }
+
+    let startX;
 
     element.addEventListener('touchstart', function (event) {
+        startX = event.touches[0].clientX;
         console.log("开始滑动");
     });
 
     element.addEventListener('touchmove', function (event) {
-        checkIfScrolledToEndDebounced(); // 触发防抖函数
+        const currentX = event.touches[0].clientX;
+        const isScrollingHorizontally = Math.abs(currentX - startX) > 5; // 设置一个阈值来判断是否为水平滑动
+
+        if (isScrollingHorizontally === false) {
+            console.log("结束滑动（非水平滑动）");
+        } else {
+            debouncedCheckIfScrolledToEnd(element); // 触发防抖函数
+        }
     });
 
     element.addEventListener('touchend', function (event) {
@@ -39,5 +54,4 @@ for (let index = 0; index < allpre_element.length; index++) {
     element.addEventListener('touchcancel', function (event) {
         console.log("结束滑动");
     });
-
 }

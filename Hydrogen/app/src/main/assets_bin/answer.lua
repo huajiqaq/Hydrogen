@@ -254,6 +254,7 @@ function 数据添加(t,b)
     .setDatabaseEnabled(true)
   end
 
+  t.content.BackgroundColor=转0x("#00000000",true);
   t.content.setDownloadListener({
     onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
       webview下载文件(链接, UA, 相关信息, 类型, 大小)
@@ -368,7 +369,7 @@ function 数据添加(t,b)
   local msrcroll=t.msrcroll
   local webview=t.content
   t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
-    onProgressChanged=function(super,view,url,favicon)
+    onProgressChanged=function(view,url,favicon)
       if 全局主题值=="Night" then
         黑暗页(view)
       end
@@ -389,15 +390,17 @@ function 数据添加(t,b)
         pg.setUserInputEnabled(true);
       end
     end,
-    onShowCustomView=function(z,a,b)
-      v=a
-      t.msrcroll.setVisibility(8)
+    onShowCustomView=function(view,url)
+      this.addContentView(view, WindowManager.LayoutParams(-1, -1))
+      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+      kkoo=view
       activity.getWindow().getDecorView().setSystemUiVisibility(5639)
-      activity.getDecorView().addView(v)
     end,
-    onHideCustomView=function()
-      t.msrcroll.setVisibility(0)
-      activity.getDecorView().removeView(v)
+    onHideCustomView=function(view,url)
+      kkoo.getParent().removeView(kkoo.setForeground(nil).setVisibility(8))
+      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+      content.setVisibility(0)
+      kkoo=nil
       activity.getWindow().getDecorView().setSystemUiVisibility(8208)
     end
   }))

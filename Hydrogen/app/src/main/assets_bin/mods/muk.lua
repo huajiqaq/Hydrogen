@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.431
+versionCode=0.44
 layout_dir="layout/item_layout/"
 
 -- 定义一个函数，用于从字符串中获取数字和后续内容
@@ -90,14 +90,42 @@ if this.getSharedData("调式模式")=="true" then
   this.setDebug(false)
 end
 
-onResume=function()
-  local res =this.getResources();
-  local config = res.getConfiguration();
-  config.fontScale=tonumber(activity.getSharedData("font_size"))/20
-  res.updateConfiguration(config,res.getDisplayMetrics());
+--由于更新字号必须要刷新view实现 所以写在onResume是没用的
+local currentFontScale = this.getResources().getConfiguration().fontScale;
+local newFontScale = tonumber(activity.getSharedData("font_size"))/20;
+if currentFontScale ~= newFontScale then
+  configuration = this.getResources().getConfiguration();
+  configuration.fontScale = newFontScale;
+  metrics = this.getResources().getDisplayMetrics();
+  this.getContext().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+  metrics.scaledDensity = configuration.fontScale * metrics.density;
+  this.getResources().updateConfiguration(configuration, metrics);
 end
 
-onStart=onResume
+
+function debounce(func,delay)
+  -- 声明局部变量存储Handler和Runnable
+  local handler = nil
+  local runnable = nil
+  -- 创建并返回一个新的防抖处理函数
+  return function(...)
+    -- 如果已有等待执行的任务，则移除它
+    if handler and runnable then
+      handler.removeCallbacks(runnable)
+    end
+    local args={...}
+    -- 创建或重置Runnable，封装要执行的回调函数
+    runnable = Runnable({
+      run = function()
+        func(unpack(args)) -- 执行真正的回调函数
+        runnable = nil
+      end
+    })
+    -- 创建或复用Handler，并发送延迟消息
+    handler = handler or Handler()
+    handler.postDelayed(runnable, delay) -- delay参数是毫秒
+  end
+end
 
 function tokb(m)
   if m<=1024 then

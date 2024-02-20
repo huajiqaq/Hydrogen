@@ -36,6 +36,7 @@ data = {
         onValueChange=function(_,a,b)
           activity.setResult(1200,nil)
           activity.setSharedData("font_size",(b).."")
+          mytip()
         end,
       },
       wrapSelectorWheel=false,
@@ -68,6 +69,22 @@ data = {
   {__type=4,subtitle="允许加载代码",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
 
 }
+
+
+mytip = debounce(function()
+  双按钮对话框("提示","更改字号后 推荐重启App获得更好的体验","暂不重启","立即重启",function(an)
+    关闭对话框(an)
+    end,function(an)
+    关闭对话框(an)
+    task(200,function()
+      import "android.os.Process"
+      local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      activity.startActivity(intent);
+      Process.killProcess(Process.myPid());
+    end)
+  end)
+end,1000)
 
 
 tab={
@@ -531,22 +548,3 @@ settings_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     (tab[tostring(v.Tag.subtitle.Text)] or function()end) (tab)
     adp.notifyDataSetChanged()--更新列表
 end})
-
-
-if this.getSharedData("更新设置字体设置")=="true" then
-  this.setSharedData("更新设置字体设置",nil)
-  activity.setResult(1200,nil)
-end
-
-
-function onActivityResult(a,b,c)
-  if b==1200 then
-    local res =this.getResources();
-    local config = res.getConfiguration();
-    if config.fontScale~=tonumber(this.getSharedData("font_size"))/20 then
-      this.setSharedData("更新设置字体设置","true")
-      activity.recreate()
-    end
-    activity.setResult(1200,nil)
-  end
-end
