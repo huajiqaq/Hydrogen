@@ -8,7 +8,7 @@ function debounce(func, wait) {
     };
 }
 
-// 500毫秒不操作 且判断大于滑动宽度就自动判断为结束
+// 20毫秒不操作 且判断大于滑动宽度就自动判断为结束
 const checkIfScrolledToEndDebounced = debounce(function (element) {
     const scrollWidth = element.scrollWidth;
     const clientWidth = element.clientWidth;
