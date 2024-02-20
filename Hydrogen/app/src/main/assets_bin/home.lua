@@ -1002,9 +1002,15 @@ drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
         if not(getLogin()) then
           return 提示("你可能需要登录")
         end
+        if collection_pageTool==nil then
+          提示("收藏加载中")
+          return true
+        end
         新建收藏夹(function(mytext,myid,ispublic)
 
-          list4.adapter.insert(1,{
+          local thispage=collection_pageTool:getItem(1)
+
+          thispage.adapter.insert(0,{
             collections_title={
               text=mytext,
             },
@@ -1735,7 +1741,7 @@ function 加载收藏view()
       end,
     },
     onlongclick={
-      function(parent,v,pos,id)
+      function(id,v,zero,one)
         local collections_id=v.Tag.collections_id.text
         双按钮对话框("删除收藏夹","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
           zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
@@ -1750,7 +1756,7 @@ function 加载收藏view()
         end,function(an)an.dismiss()end)
         return true
       end,
-      function(parent,v,pos,id)
+      function(id,v,zero,one)
         local collections_id=v.Tag.mc_id.text
         if collections_id=="local" then
           提示("不支持操作此收藏夹")

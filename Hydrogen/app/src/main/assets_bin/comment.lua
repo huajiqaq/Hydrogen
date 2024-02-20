@@ -50,6 +50,47 @@ local function setstyle(styleee)
   end
 end
 
+function 发送评论(send_text,当前回复人)
+  local mytext
+  local postdata
+  local 请求链接
+  local 评论类型
+  local 评论id
+  local 回复id
+
+  local 回复id=当前回复人 or ""
+
+  local unicode=require "unicode"
+
+  local mytext=unicode.encode(send_text)
+
+  if _title.text=="对话列表" then
+    --防止在对话列表内回复id为空
+    if 回复id=="" then
+      回复id=comment_id
+    end
+    --将类型和id改为原来的 防止报404
+    评论类型 = oricomment_type
+    评论id = oricomment_id
+   else
+    评论类型 = comment_type
+    评论id = comment_id
+  end
+
+  postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
+  请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
+
+
+  search_base=require "model.dohttp"
+  :new(请求链接)
+  :setresultfunc(function(data)
+    commentid=nil
+    提示("发送成功 如若想看到自己发言请刷新数据")
+    edit.Text=""
+  end)
+  :getData("post",postdata)
+end
+
 function 多选菜单(v)
   local rootview=v.getParent().getParent().getParent().getParent().getParent()
   if 踩tab[rootview.Tag.comment_id.text]==true then
@@ -105,9 +146,50 @@ function 多选菜单(v)
     end},
     {"查看主页",function()
         activity.newActivity("people",{rootview.Tag.comment_author_id.text})
-    end},
-
+    end}
   }
+
+  if isstart then
+    local comment_view=rootview.Tag.comment_id
+    local authortext=rootview.Tag.comment_author.Text
+    local addtab={"回复评论",function()
+        local editDialog=AlertDialog.Builder(this)
+        .setTitle("回复"..authortext.."发送的评论")
+        .setView(loadlayout({
+          LinearLayout;
+          layout_height="fill";
+          layout_width="fill";
+          orientation="vertical";
+          {
+            TextView;
+            TextIsSelectable=true;
+            layout_marginTop="10dp";
+            layout_marginLeft="10dp",
+            layout_marginRight="10dp",
+            Text='请输入回复内容';
+            Typeface=字体("product-Medium");
+          },
+          {
+            EditText;
+            layout_width="match";
+            layout_height="match";
+            layout_marginTop="5dp";
+            layout_marginLeft="10dp",
+            layout_marginRight="10dp",
+            id="edit";
+            Typeface=字体("product");
+          }
+        }))
+        .setPositiveButton("确定", {onClick=function()
+            local commentid=comment_view.Text
+            local sendtext=edit.Text
+            发送评论(sendtext,commentid)
+        end})
+        .setNegativeButton("取消", nil)
+        .show()
+    end}
+    table.insert(mtab,addtab)
+  end
 
   local pop=showPopMenu(mtab)
   pop.showAtLocation(rootview, Gravity.NO_GRAVITY, downx, downy);
@@ -481,58 +563,6 @@ function onActivityResult(a,b,c)
 end
 
 send.onClick=function()
-  local send_text=edit.Text
-  local mytext
-  local postdata
-  local 请求链接
-  local 评论类型
-  local 评论id
-  local 回复id
-
-  local 回复id=当前回复人 or ""
-
-  local unicode=require "unicode"
-
-  local mytext=unicode.encode(send_text)
-
-  if _title.text=="对话列表" then
-    --防止在对话列表内回复id为空
-    if 回复id=="" then
-      回复id=comment_id
-    end
-    --将类型和id改为原来的 防止报404
-    评论类型 = oricomment_type
-    评论id = oricomment_id
-   else
-    评论类型 = comment_type
-    评论id = comment_id
-  end
-
-  postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
-  请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
-
-
-  search_base=require "model.dohttp"
-  :new(请求链接)
-  :setresultfunc(function(data)
-    commentid=nil
-    提示("发送成功 如若想看到自己发言请刷新数据")
-    edit.Text=""
-  end)
-  :getData("post",postdata)
-end
-
-send.onLongClick=function()
-  当前回复人 =nil
-  提示("清除选中成功")
-end
-
-
-if activity.getSharedData("评论提示0.01") ==nil and isstart=="true" then
-  AlertDialog.Builder(this)
-  .setTitle("小提示")
-  .setCancelable(false)
-  .setMessage("以下的提示非常重要！ 选中后 如果想取消选定回复 请长按发送按钮 如不取消选定回复 将会一直回复当前选定人哦 不过选定的人当回复发送成功一次 将会清除选中")
-  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("评论提示0.01","true") end})
-  .show()
+  local sendtext=edit.Text
+  发送评论(sendtext)
 end

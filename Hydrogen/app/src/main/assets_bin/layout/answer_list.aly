@@ -3,11 +3,13 @@
   id="msrcroll",
   layout_height="fill";
   fillViewport="true";
+  
   {
     LinearLayout;
     layout_width="-1";
     layout_height="-2";
     orientation="vertical";
+    id="rr";
     {
       MaterialCardView;
       layout_gravity="center";
@@ -64,12 +66,14 @@
       LinearLayout,
       layout_width="-1";
       layout_height="-1";
+      id="kk";
       {
         LuaWebView,
         id="content",
         layout_width="-1";
         layout_height="-2";
         Visibility=8,
+        nestedScrollingEnabled="true";
       };
       {
         LinearProgressIndicator;

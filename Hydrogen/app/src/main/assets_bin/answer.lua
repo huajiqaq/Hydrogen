@@ -163,7 +163,6 @@ function 数据添加(t,b)
   t.content.setHorizontalScrollBarEnabled(false);
   t.content.setVerticalScrollBarEnabled(false);
 
-
   if activity.getSharedData("标题简略化")~="true" then
     _title.Text=b.question.title:gsub("/",[[ 或 ]])
    else
@@ -217,9 +216,7 @@ function 数据添加(t,b)
   }
 
   t.msrcroll.smoothScrollTo(0,0)
-
   设置滑动跟随(t.msrcroll)
-
 
   t.content
   .getSettings()
@@ -303,6 +300,7 @@ function 数据添加(t,b)
         t.progress.setVisibility(0)
       end
       等待doc(view)
+
       加载js(view,获取js("zhihugif"))
     end,
     onPageFinished=function(view,url,favicon)
@@ -312,6 +310,9 @@ function 数据添加(t,b)
         t.progress=nil
       end
       屏蔽元素(view,{".AnswerReward"})
+
+      加载js(view,获取js("answer_code"))
+
 
       if b.content:find("video%-box") then
         if not(getLogin()) then
@@ -364,10 +365,28 @@ function 数据添加(t,b)
 
   t.content.addJSInterface(z,"androlua")
 
-  t.content.setWebChromeClient(luajava.override(WebChromeClient,{
+  local msrcroll=t.msrcroll
+  local webview=t.content
+  t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     onProgressChanged=function(super,view,url,favicon)
       if 全局主题值=="Night" then
         黑暗页(view)
+      end
+    end,
+    onConsoleMessage=function(consoleMessage)
+      --打印控制台信息
+      if consoleMessage.message():find("开始滑动") then
+        msrcroll.onTouch=function()
+          return true
+        end
+        webview.requestDisallowInterceptTouchEvent(true)
+        pg.setUserInputEnabled(false);
+       elseif consoleMessage.message():find("结束滑动") then
+        msrcroll.onTouch=function()
+          return false
+        end
+        webview.requestDisallowInterceptTouchEvent(false)
+        pg.setUserInputEnabled(true);
       end
     end,
     onShowCustomView=function(z,a,b)

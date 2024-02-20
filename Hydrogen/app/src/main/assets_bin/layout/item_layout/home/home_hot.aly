@@ -70,9 +70,9 @@
             };
           };
           {
-            CardView;
+            MaterialCardView;
             Elevation='0';
-            radius='4dp';
+            layout_marginRight="5dp";
             layout_gravity="center_vertical",
             CardBackgroundColor=cardbackroundc,
             {
