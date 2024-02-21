@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.45
+versionCode=0.46
 layout_dir="layout/item_layout/"
 
 -- 定义一个函数，用于从字符串中获取数字和后续内容

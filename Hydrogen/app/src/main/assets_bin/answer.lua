@@ -16,89 +16,8 @@ import "android.webkit.ValueCallback"
 import "com.google.android.material.progressindicator.LinearProgressIndicator"
 问题id,回答id,问题对象,是否记录历史记录,在线页数=...
 
-local 是否加载滑动跟随=this.getSharedData("回答底栏设置滑动跟随")
-
-if 是否加载滑动跟随~="true" then
-  activity.setContentView(loadlayout("layout/answer_nomove"))
-  function 设置滑动跟随()
-    return true
-  end
-  function monPageScrollStateChanged(state)
-  end
- else
-  activity.setContentView(loadlayout("layout/answer"))
-
-  --new 0.1102 精准测量高度
-  task(1,function()
-    local location,底栏坐标,悬浮按钮坐标
-    location = int[2];
-    ll.getLocationOnScreen(location)
-    底栏坐标=location[1]
-    location = int[2];
-    comment.getLocationOnScreen(location)
-    悬浮按钮坐标=location[1]
-    底栏高度=ll.height
-    悬浮按钮高度差=底栏坐标-悬浮按钮坐标
-  end)
-
-
-  function 设置滑动跟随(t)
-    t.onScrollChange=function(view,x,y,lx,ly)
-      if y<=2 then--解决滑到顶了还是没有到顶的bug
-        llb.y=0
-        comment_parent.y=0
-        return
-      end
-      if t.canScrollVertically(1)~=true then--解决滑倒底了还是没到底的bug new 0.1102
-        llb.y=底栏高度+悬浮按钮高度差
-        comment_parent.y=底栏高度+悬浮按钮高度差
-      end
-      if ly>y then --上次滑动y大于这次y就是向上滑
-        if llb.y<=0 or math.abs(y-ly)>=底栏高度 then --这个or为了防止快速大滑动 new 0.1103更改 精准测量
-          --if llb.y<=0 or math.abs(y-ly)>=dp2px(56) then --这个or为了防止快速大滑动
-          llb.y=0
-          comment_parent.y=0
-         else
-          llb.y=llb.y-math.abs(y-ly)
-          comment_parent.y=comment_parent.y-math.abs(y-ly)
-        end
-       else
-        if llb.y<=底栏高度+悬浮按钮高度差 then --精准测量高度差 防止无法隐藏全部的bug new 0.1102
-          --if llb.y<=dp2px(56)+dp2px(26) then --没到底就向底移动(上滑)，+26dp是悬浮球高
-          llb.y=llb.y+math.abs(y-ly)
-          comment_parent.y=comment_parent.y+math.abs(y-ly)
-        end
-      end
-    end
-  end
-
-  function monPageScrollStateChanged(state)
-    if state==1 then
-      ValueAnimator.ofFloat({comment_parent.y,dp2px(56)+dp2px(26)})
-      .setDuration(200)
-      .setRepeatCount(0)
-      .addUpdateListener{
-        onAnimationUpdate=function(a)
-          local x=a.getAnimatedValue()
-          llb.y=x
-          comment_parent.y=x
-        end
-      }.start()
-     elseif state==2 then
-      ValueAnimator.ofFloat({comment_parent.y,0})
-      .setDuration(200)
-      .setRepeatCount(0)
-      .addUpdateListener{
-        onAnimationUpdate=function(a)
-          local x=a.getAnimatedValue()
-          llb.y=x
-          comment_parent.y=x
-        end
-      }.start()
-    end
-  end
-
-end
+--new 0.46 删除滑动监听
+activity.setContentView(loadlayout("layout/answer"))
 
 波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 波纹({all_root},"方自适应")
@@ -216,7 +135,6 @@ function 数据添加(t,b)
   }
 
   t.msrcroll.smoothScrollTo(0,0)
-  设置滑动跟随(t.msrcroll)
 
   t.content
   .getSettings()
@@ -314,6 +232,10 @@ function 数据添加(t,b)
 
       加载js(view,获取js("answer_code"))
 
+      if this.getSharedData("代码块自动换行")=="true" then
+        加载js(t.content,'document.querySelectorAll(".ztext pre").forEach(p => { p.style.whiteSpace = "pre-wrap"; p.style.wordWrap = "break-word"; });')
+      end
+
 
       if b.content:find("video%-box") then
         if not(getLogin()) then
@@ -377,17 +299,13 @@ function 数据添加(t,b)
     onConsoleMessage=function(consoleMessage)
       --打印控制台信息
       if consoleMessage.message():find("开始滑动") then
-        msrcroll.onTouch=function()
-          return true
-        end
         msrcroll.requestDisallowInterceptTouchEvent(true)
         pg.setUserInputEnabled(false);
        elseif consoleMessage.message():find("结束滑动") then
-        msrcroll.onTouch=function()
-          return false
-        end
         msrcroll.requestDisallowInterceptTouchEvent(false)
         pg.setUserInputEnabled(true);
+       elseif consoleMessage.message():find("打印") then
+        print(consoleMessage.message())
       end
     end,
     onShowCustomView=function(view,url)
@@ -739,7 +657,8 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
 
   end,
 
-  onPageScrollStateChanged=monPageScrollStateChanged
+  onPageScrollStateChanged=function (state)
+  end
 })
 
 

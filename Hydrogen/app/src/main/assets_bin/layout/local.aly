@@ -96,6 +96,7 @@
     {
       ScrollView,
       id="msrcroll",
+      layout_weight=1;
       {
         LinearLayout;
         layout_width="-1";
@@ -174,14 +175,8 @@
           }
         },
       };
-    }
-  },
-  {
-    RelativeLayout,
-    layout_width="-1",
-    layout_height="-1",
-    id="llb",
-    gravity="bottom";
+    };
+
     {
       CardView;
       elevation="6dp";
@@ -335,5 +330,6 @@
         id="mark";
       };
     };
-  };
+
+  },
 };

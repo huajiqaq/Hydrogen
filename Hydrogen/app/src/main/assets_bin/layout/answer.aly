@@ -103,14 +103,8 @@
       id="pg",
       layout_width="fill";
       layout_height="fill";
-    }
-  },
-  {
-    RelativeLayout,
-    layout_width="-1",
-    layout_height="-1",
-    id="llb",
-    gravity="bottom";
+      layout_weight=1;
+    };
     {
       CardView;
       elevation="6dp";
@@ -128,6 +122,7 @@
           gravity="left|center";
           paddingLeft="8dp";
           paddingRight="8dp";
+          id="llb";
           {
             LinearLayout;
             orientation="horizontal";
@@ -269,5 +264,5 @@
         id="comment";
       };
     };
-  };
+  },
 };

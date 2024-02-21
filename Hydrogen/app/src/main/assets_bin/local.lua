@@ -191,62 +191,8 @@ end
 
 file:close()
 
-local 是否加载滑动跟随=this.getSharedData("回答底栏设置滑动跟随")
-
-if 是否加载滑动跟随~="true" then
-  activity.setContentView(loadlayout("layout/local_nomove"))
-  function 设置滑动跟随()
-    return true
-  end
- else
-  activity.setContentView(loadlayout("layout/local"))
-
-  --new 0.1102 精准测量高度
-  task(1,function()
-    local location,底栏坐标,悬浮按钮坐标
-    location = int[2];
-    ll.getLocationOnScreen(location)
-    底栏坐标=location[1]
-    location = int[2];
-    mark.getLocationOnScreen(location)
-    悬浮按钮坐标=location[1]
-    底栏高度=ll.height
-    悬浮按钮高度差=底栏坐标-悬浮按钮坐标
-  end)
-
-
-  function 设置滑动跟随(t)
-    t.onScrollChange=function(vew,x,y,lx,ly)
-      if y<=2 then--解决滑到顶了还是没有到顶的bug
-        llb.y=0
-        mark_parent.y=0
-        return
-      end
-      if t.canScrollVertically(1)~=true then--解决滑倒底了还是没到底的bug new 0.1102
-        llb.y=底栏高度+悬浮按钮高度差
-        mark_parent.y=底栏高度+悬浮按钮高度差
-      end
-      if ly>y then --上次滑动y大于这次y就是向上滑
-        if llb.y<=0 or math.abs(y-ly)>=底栏高度 then --这个or为了防止快速大滑动 new 0.1103更改 精准测量
-          --if llb.y<=0 or math.abs(y-ly)>=dp2px(56) then --这个or为了防止快速大滑动
-          llb.y=0
-          mark_parent.y=0
-         else
-          llb.y=llb.y-math.abs(y-ly)
-          mark_parent.y=mark_parent.y-math.abs(y-ly)
-        end
-       else
-        if llb.y<=底栏高度+悬浮按钮高度差 then --精准测量高度差 防止无法隐藏全部的bug new 0.1102
-          --if llb.y<=dp2px(56)+dp2px(26) then --没到底就向底移动(上滑)，+26dp是悬浮球高
-          llb.y=llb.y+math.abs(y-ly)
-          mark_parent.y=mark_parent.y+math.abs(y-ly)
-        end
-      end
-    end
-  end
-
-
-end
+--new 0.46 删除滑动监听
+activity.setContentView(loadlayout("layout/local"))
 
 _title.text=title
 

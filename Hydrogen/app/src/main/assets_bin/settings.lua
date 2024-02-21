@@ -24,10 +24,8 @@ data = {
   {__type=4,subtitle="夜间模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
 
   {__type=4,subtitle="回答预加载(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
-  {__type=4,subtitle="回答底栏设置滑动跟随",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答底栏设置滑动跟随"))}},
   {__type=4,subtitle="标题简略化",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
   {__type=4,subtitle="全屏模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
-  {__type=4,subtitle="关闭硬件加速",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("关闭硬件加速"))}},
   {__type=5,subtitle="字体大小",image=图标(""),status={
       minValue=10,
       value=tonumber(activity.getSharedData("font_size")),
@@ -41,6 +39,9 @@ data = {
       },
       wrapSelectorWheel=false,
   }},
+  {__type=4,subtitle="关闭硬件加速",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("关闭硬件加速"))}},
+  {__type=4,subtitle="代码块自动换行",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
+
 
   {__type=1,title="主页设置",image=图标("")},
 
