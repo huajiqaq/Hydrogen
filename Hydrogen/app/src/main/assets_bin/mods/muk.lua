@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.44
+versionCode=0.45
 layout_dir="layout/item_layout/"
 
 -- 定义一个函数，用于从字符串中获取数字和后续内容
@@ -92,8 +92,9 @@ end
 
 --由于更新字号必须要刷新view实现 所以写在onResume是没用的
 local currentFontScale = this.getResources().getConfiguration().fontScale;
-local newFontScale = tonumber(activity.getSharedData("font_size"))/20;
-if currentFontScale ~= newFontScale then
+local newFontScale = tonumber(activity.getSharedData("font_size"));
+if newFontScale and currentFontScale ~= newFontScale then
+  newFontScale = newFontScale/20;
   configuration = this.getResources().getConfiguration();
   configuration.fontScale = newFontScale;
   metrics = this.getResources().getDisplayMetrics();

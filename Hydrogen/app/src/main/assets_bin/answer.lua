@@ -380,13 +380,13 @@ function 数据添加(t,b)
         msrcroll.onTouch=function()
           return true
         end
-        webview.requestDisallowInterceptTouchEvent(true)
+        msrcroll.requestDisallowInterceptTouchEvent(true)
         pg.setUserInputEnabled(false);
        elseif consoleMessage.message():find("结束滑动") then
         msrcroll.onTouch=function()
           return false
         end
-        webview.requestDisallowInterceptTouchEvent(false)
+        msrcroll.requestDisallowInterceptTouchEvent(false)
         pg.setUserInputEnabled(true);
       end
     end,
