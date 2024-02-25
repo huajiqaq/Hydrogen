@@ -308,19 +308,26 @@ function 数据添加(t,b)
         print(consoleMessage.message())
       end
     end,
+
     onShowCustomView=function(view,url)
-      this.addContentView(view, WindowManager.LayoutParams(-1, -1))
+      web_video_view=view
+      savedScrollY=content.getScrollY()
+      t.msrcroll.setVisibility(8)
+      activity.getDecorView().addView(web_video_view)
       this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-      kkoo=view
-      activity.getWindow().getDecorView().setSystemUiVisibility(5639)
+      全屏()
     end,
     onHideCustomView=function(view,url)
-      kkoo.getParent().removeView(kkoo.setForeground(nil).setVisibility(8))
+      t.msrcroll.setVisibility(8)
+      activity.getDecorView().removeView(web_video_view)
       this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-      content.setVisibility(0)
-      kkoo=nil
-      activity.getWindow().getDecorView().setSystemUiVisibility(8208)
-    end
+      取消全屏()
+      Handler().postDelayed(Runnable({
+        run=function()
+          t.msrcroll.scrollTo(0, savedScrollY);
+        end,
+      }),200)
+    end,
   }))
 
 

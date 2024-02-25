@@ -9,6 +9,8 @@ import "android.animation.ValueAnimator"
 import "android.graphics.Typeface"
 import "com.androlua.LuaWebView$JsInterface"
 
+import "com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton"
+
 local result,类型,islocal,uri,simpletitle,autoname=...
 
 if 类型==nil or 类型:match("%d") then
@@ -305,17 +307,24 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
 
   end,
   onShowCustomView=function(view,url)
-    this.addContentView(view, WindowManager.LayoutParams(-1, -1))
-    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-    kkoo=view
-    activity.getWindow().getDecorView().setSystemUiVisibility(5639)
+    web_video_view=view
+    savedScrollY=content.getScrollY()
+    content.setVisibility(8)
+    activity.getDecorView().addView(web_video_view)
+    --   切换可能导致部分页面异常
+    --    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+    全屏()
   end,
   onHideCustomView=function(view,url)
-    kkoo.getParent().removeView(kkoo.setForeground(nil).setVisibility(8))
-    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     content.setVisibility(0)
-    kkoo=nil
-    activity.getWindow().getDecorView().setSystemUiVisibility(8208)
+    activity.getDecorView().removeView(web_video_view)
+    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    取消全屏()
+    Handler().postDelayed(Runnable({
+      run=function()
+        content.scrollTo(0, savedScrollY);
+      end,
+    }),200)
   end,
 
   onConsoleMessage=function(consoleMessage)
@@ -557,6 +566,21 @@ if 类型=="文章" then
   table.remove(mpop.list,2)
   table.remove(mpop.list,2)
 end
+
 task(1,function()
   a=MUKPopu(mpop)
+
+  if 类型=="文章" or 类型=="视频" then
+    fab.Visibility=0
+    local mylist=mpop.list
+    for i = 1, #mylist do
+      local myname = mylist[i].text
+      if myname:find("评论") then
+        local monclick=mylist[i].onClick
+        fab.onClick=monclick
+        break
+      end
+    end
+  
+  end
 end)

@@ -30,6 +30,9 @@ function 刷新()
       local 点赞数=(v.object.voteup_count)
       local 评论数=(v.object.comment_count)
       local 头像=v.object.author.avatar_url
+      if 无图模式 then
+        头像=logopng
+      end
       if v.object.type=="answer" then
         活动="回答了问题"
         问题id=(v.object.question.id) or "null"

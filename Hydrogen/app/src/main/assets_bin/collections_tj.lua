@@ -53,6 +53,11 @@ function 刷新()
         if 预览内容==false or 预览内容=="" then
           预览内容="无介绍"
         end
+
+        if 无图模式 then
+          头像=logopng
+        end
+
         history_list.Adapter.add{mc_action=活动,mc_art=预览内容,底部内容=底部内容,mc_question=问题id,mc_title=标题,mc_image=头像,mc_id=mc_id,isfollow=tostring(是否关注)}
       end
     end

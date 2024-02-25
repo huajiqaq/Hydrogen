@@ -107,6 +107,10 @@ function 刷新()
 
           文本=判断文本(v)
 
+          if 无图模式 then
+            头像=logopng
+          end
+
           history_list.Adapter.add{
             people_image=头像,
             username=名字,

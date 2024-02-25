@@ -75,8 +75,8 @@ zHttp.get(api,head,function(code,content)
   if code==200 then
     data=luajson.decode(content)
     _title.text=data.name
-    loadglide(_image,data.avatar_url)
-    loadglide(_bigimage,data.avatar_url)
+    loadglide(_image,data.avatar_url,false)
+    loadglide(_bigimage,data.avatar_url,false)
     if data.introduction==""then
       _excerpt.text="暂无话题描述"
      else

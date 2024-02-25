@@ -164,17 +164,24 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   end,
 
   onShowCustomView=function(view,url)
-    liulan.setVisibility(8);
-    this.addContentView(view, WindowManager.LayoutParams(-1, -1))
-    kkoo=view
-    activity.getWindow().getDecorView().setSystemUiVisibility(5639)
+    web_video_view=view
+    savedScrollY=liulan.getScrollY()
+    liulan.setVisibility(8)
+    activity.getDecorView().addView(web_video_view)
+    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+    全屏()
   end,
   onHideCustomView=function(view,url)
-    kkoo.getParent().removeView(kkoo.setForeground(nil).setVisibility(8))
     liulan.setVisibility(0)
-    kkoo=nil
-    activity.getWindow().getDecorView().setSystemUiVisibility(8208)
-  end
+    activity.getDecorView().removeView(web_video_view)
+    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    取消全屏()
+    Handler().postDelayed(Runnable({
+      run=function()
+        liulan.scrollTo(0, savedScrollY);
+      end,
+    }),200)
+  end,
 }))
 
 

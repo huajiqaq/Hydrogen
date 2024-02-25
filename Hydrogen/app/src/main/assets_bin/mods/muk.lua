@@ -24,8 +24,10 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.46
+versionCode=0.47
 layout_dir="layout/item_layout/"
+无图模式=activity.getSharedData("不加载图片")
+logopng=this.getLuaDir("logo.png")
 
 -- 定义一个函数，用于从字符串中获取数字和后续内容
 function get_number_and_following(str)
@@ -1002,6 +1004,9 @@ function 复制文本(文本)
 end
 
 function 全屏()
+  if fullopen==true then
+    return
+  end
   window = activity.getWindow();
   window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
   | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -1010,6 +1015,25 @@ function 全屏()
   xpcall(function()
     lp = window.getAttributes();
     lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+    window.setAttributes(lp);
+  end,
+  function(e)
+  end)
+  if this.getSharedData("全屏模式")=="true" then
+    fullopen=true
+  end
+end
+
+function 取消全屏()
+  if fullopen==true then
+    return
+  end
+  window = activity.getWindow();
+  window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE |View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+  window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+  xpcall(function()
+    lp = window.getAttributes();
+    lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
     window.setAttributes(lp);
   end,
   function(e)
@@ -1374,6 +1398,12 @@ end
   showPopMenu(tab,"主菜单").showAsDropDown(menu)--弹出菜单
 ]]
 function showPopMenu(tab,title)
+  local bwz
+  if 全局主题值=="Day" then
+    bwz=0x3f000000
+   else
+    bwz=0x3fffffff
+  end
   local lp = activity.getWindow().getAttributes();
   lp.alpha = 0.85;
   activity.getWindow().setAttributes(lp);
@@ -1385,7 +1415,7 @@ function showPopMenu(tab,title)
     {
       MaterialCardView;
       Elevation="0";
-      CardBackgroundColor=0xfffafafa;
+      CardBackgroundColor=backgroundc;
       StrokeWidth=0,
       layout_width="192dp";
       layout_height="-2";
@@ -1435,7 +1465,6 @@ function showPopMenu(tab,title)
       id="popadp_text";
       Typeface=Typeface.DEFAULT_BOLD,
       textColor=0xFF2196F3;
-
       layout_width="-1";
       layout_height="-1";
       textSize="14sp";
@@ -1471,7 +1500,7 @@ function showPopMenu(tab,title)
 
   for a,b in ipairs(tab) do--遍历
     view=loadlayout(Popup_list_item)--设置菜单项布局
-    view.BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x10000000}));
+    view.BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
     if type(b[2])=="function" then--one
 
       Popup_list.addView(view)--添加
@@ -2543,7 +2572,10 @@ end
 
 local glid_manage=Glide.with(this)
 local glid_manager=Glide.get(this)
-function loadglide(view,url)
+function loadglide(view,url,ischeck)
+  if 无图模式 and ischeck~=false then
+    url=logopng
+  end
   import "com.bumptech.glide.load.engine.DiskCacheStrategy"
   glid_manage
   .load(url)

@@ -1312,11 +1312,11 @@ end
 
 reslove_homefollow={}
 local function moments_feed(v,adapter)
-  local 关注作者头像
+  local 头像
   xpcall(function()
-    关注作者头像=v.target.author.avatar_url
+    头像=v.target.author.avatar_url
     end,function()
-    关注作者头像=v.source.actor.avatar_url
+    头像=v.source.actor.avatar_url
   end)
   local 点赞数=(v.target.voteup_count)
   local 评论数=(v.target.comment_count)
@@ -1372,13 +1372,16 @@ local function moments_feed(v,adapter)
   if 预览内容~="[视频]" then
     预览内容=作者名称.." : "..预览内容
   end
-  adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+  if 无图模式 then
+    头像=logopng
+  end
+  adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=头像}
 end
 
 local function feed_item_index_group(v,adapter)
-  local 关注作者头像=v.actors[1].avatar_url
-  local 关注作者名称=v.actors[1].name
-  local 动作=关注作者名称..v.action_text
+  local 头像=v.actors[1].avatar_url
+  local 名称=v.actors[1].name
+  local 动作=名称..v.action_text
 
   -- 示例 12345万 赞同 · 67890 收藏 · 123456 评论
   local 数据=get_number_and_following(v.target.desc)
@@ -1417,16 +1420,19 @@ local function feed_item_index_group(v,adapter)
   if not 预览内容 then
     预览内容="无底部内容"
    elseif 预览内容~="[视频]" then
-    local 关注作者名称= v.target.author or 关注作者名称
-    预览内容=关注作者名称.." : "..预览内容
+    local 名称= v.target.author or 名称
+    预览内容=名称.." : "..预览内容
   end
-  adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+  if 无图模式 then
+    头像=logopng
+  end
+  adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=头像}
 end
 
 local function item_group_card(v,adapter)
-  local 关注作者头像=v.actor.avatar_url
-  local 关注作者名称=v.actor.name
-  local 动作=关注作者名称..v.action_text
+  local 头像=v.actor.avatar_url
+  local 名称=v.actor.name
+  local 动作=名称..v.action_text
   if v.action_text=="关注了用户" then
     return false
   end
@@ -1474,7 +1480,10 @@ local function item_group_card(v,adapter)
         预览内容="无预览内容"
       end
     end
-    adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=关注作者头像}
+    if 无图模式 then
+      头像=logopng
+    end
+    adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=头像}
   end
 end
 
@@ -1650,6 +1659,9 @@ function 想法刷新(isclear)
           end,function()
           url=v.target.video.thumbnail
         end)
+        if 无图模式 then
+          url=logopng
+        end
         local title=v.target.excerpt
         local tzurl=v.target.url:match("pin/(.-)?")
         local num=#mytab
@@ -1690,9 +1702,15 @@ function 加载收藏view()
       }
     end,
     function(v)
+      local 图片
+      if 无图模式 then
+        图片=logopng
+       else
+        图片=v.creator.avatar_url
+      end
       return
       {
-        mc_image=v.creator.avatar_url,
+        mc_image=图片,
         mc_name={
           text="由 "..v.creator.name.." 创建"
         },
@@ -1790,7 +1808,7 @@ function 加载收藏view()
     addtab={
       nil,
       {
-        mc_image="https://picx.zhimg.com/50/v2-abed1a8c04700ba7d72b45195223e0ff_xl.jpg",
+        mc_image=logopng,
         mc_name={
           text="为你推荐"
         },
@@ -1825,9 +1843,15 @@ function 加载收藏view()
         return {标题=标题,底部内容=底部内容,链接=链接,mc_title=标题}
       end,
       function(v)
+        local 图片
+        if 无图模式 then
+          图片=logopng
+         else
+          图片=v.creator.avatar_url
+        end
         return
         {
-          mc_image=v.creator.avatar_url,
+          mc_image=图片,
           mc_name={
             text="由 "..v.creator.name.." 创建"
           },
@@ -1877,6 +1901,9 @@ function 加载收藏view()
             文本="取关";
            else
             文本="关注";
+          end
+          if 无图模式 then
+            头像=logopng
           end
           return {
             people_image=头像,
@@ -2037,7 +2064,7 @@ function 加载收藏view()
     addtab={
       nil,
       {
-        mc_image="https://picx.zhimg.com/50/v2-abed1a8c04700ba7d72b45195223e0ff_xl.jpg",
+        mc_image=logopng,
         mc_name={
           text="为你推荐"
         },
@@ -2279,7 +2306,7 @@ function getuserinfo()
       侧滑头.onClick=function()
         activity.newActivity("people",{uid})
       end
-      loadglide(头像id,头像)
+      loadglide(头像id,头像,false)
       名字id.Text=名字
       if #签名:gsub(" ","")<1 then
         签名id.Text="你还没有签名呢"
@@ -2355,7 +2382,7 @@ function getuserinfo()
         activity.newActivity("login")
       end
       HometabLayout.setVisibility(8)
-      loadglide(头像id,this.getLuaDir("logo.png"))
+      loadglide(头像id,logopng)
       名字id.Text="未登录，点击登录"
       签名id.Text="获取失败"
       sign_out.setVisibility(8)

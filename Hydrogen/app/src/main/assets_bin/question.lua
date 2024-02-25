@@ -501,13 +501,19 @@ question_base=require "model.question":new(question_id)
       end
     end
   end
+  local 图片
+  if 无图模式 then
+    图片=logopng
+   else
+    图片=tab.author.avatar_url
+  end
   question_adp.add{
     question_author=tab.author.name,
     question_voteup=(tab.voteup_count).."",
     question_comment=(tab.comment_count).."",
     question_id=(tab.id),
     question_art=tab.excerpt,
-    question_image=tab.author.avatar_url,
+    question_image=图片,
   }
 end)
 :getTag(function(name,url)

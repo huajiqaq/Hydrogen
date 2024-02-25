@@ -232,6 +232,9 @@ function 刷新()
       myspan=Html.fromHtml(内容)
     end
     踩tab[tostring((tostring(v.id)))]=v.disliked
+    if 无图模式 then
+      头像=logopng
+    end
     comment_list.Adapter.add{comment_toast={Visibility=(v.child_comment_count==0 and 8 or 0)},
       comment_id=(tostring(v.id)),
       comment_author_id=v.author.id,

@@ -94,4 +94,19 @@
       };
     };
   };
+  {
+    CoordinatorLayout,
+    layout_width="fill",
+    layout_height="fill",
+    {
+      ExtendedFloatingActionButton,
+      id="fab",
+      Visibility=8;
+      Icon=BitmapDrawable(activity.getResources(), loadbitmap(图标("message"))),
+      text="评论",
+      layout_gravity="bottom|end",
+      layout_marginBottom="20dp",
+      layout_marginEnd="16dp",
+    },
+  },
 };

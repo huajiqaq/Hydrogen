@@ -43,6 +43,9 @@ function 刷新()
         local 预览内容=v.excerpt
         local 点赞数=(v.voteup_count)
         local 评论数=(v.comment_count)
+        if 无图模式 then
+          头像=logopng
+        end
         if v.type=="answer" then
           活动="回答了问题"
           问题id=(v.question.id) or "null"

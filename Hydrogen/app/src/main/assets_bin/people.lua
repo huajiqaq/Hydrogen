@@ -482,6 +482,7 @@ local base_people=require "model.people":new(people_id)
   _title.Text=名字
   people_name.Text=名字
   people_sign.Text=签名
+
   loadglide(people_image,大头像)
 
 end)
@@ -496,6 +497,9 @@ end)
     end,function()
     头像=v.actor.avatar_url
   end)
+  if 无图模式 then
+    头像=logopng
+  end
   if v.target.type=="answer" then
     问题id=(v.target.question.id) or "null"
     问题id=问题id.."分割"..(v.target.id)
@@ -642,6 +646,9 @@ function 其他(isclear)
             end,function()
             头像=v.author.avatar_url
           end)
+          if 无图模式 then
+            头像=logopng
+          end
           活动=v.action_text or v.source.action_text
           v=v.target
         end
@@ -701,10 +708,14 @@ function moreload()
   zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab/more?tab_type=1",apphead,function(code,content)
     if code==200 then
       for i,v in ipairs(luajson.decode(content).more_tabs) do
+        local 头像=大头像
         local 活动="的更多"
         local 标题=v.title
         local 问题id="更多"..v.title
         local 添加字符串
+        if 无图模式 then
+          头像=logopng
+        end
         if v.sub_title then
           添加字符串="共有"..v.sub_title.."个内容 "
           if v.sub_title=="" then
@@ -716,7 +727,7 @@ function moreload()
         local 预览内容=添加字符串.."点击查看"
         local 点赞数="0"
         local 评论数="0"
-        people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=大头像}
+        people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
       end
     end
   end)
@@ -774,6 +785,9 @@ function checktitle(str)
         pcall(function()
           头像=v.object.author.avatar_url
         end)
+        if 无图模式 then
+          头像=logopng
+        end
         if v.object.type=="answer" then
           活动="回答了问题"
           问题id=(v.object.question.id) or "null"
