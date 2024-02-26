@@ -24,10 +24,14 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.47
+versionCode=0.471
 layout_dir="layout/item_layout/"
 无图模式=activity.getSharedData("不加载图片")
 logopng=this.getLuaDir("logo.png")
+
+function onConfigurationChanged(config)
+end
+
 
 -- 定义一个函数，用于从字符串中获取数字和后续内容
 function get_number_and_following(str)

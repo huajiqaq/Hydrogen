@@ -311,20 +311,20 @@ function 数据添加(t,b)
 
     onShowCustomView=function(view,url)
       web_video_view=view
-      savedScrollY=content.getScrollY()
+      savedScrollY= t.msrcroll.getScrollY()
       t.msrcroll.setVisibility(8)
       activity.getDecorView().addView(web_video_view)
-      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+--      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
       全屏()
     end,
     onHideCustomView=function(view,url)
-      t.msrcroll.setVisibility(8)
+      t.msrcroll.setVisibility(0)
       activity.getDecorView().removeView(web_video_view)
-      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+--      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
       取消全屏()
       Handler().postDelayed(Runnable({
         run=function()
-          t.msrcroll.scrollTo(0, savedScrollY);
+          t.msrcroll.smoothScrollTo(0, savedScrollY);
         end,
       }),200)
     end,
