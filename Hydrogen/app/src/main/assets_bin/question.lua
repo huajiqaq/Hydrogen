@@ -253,6 +253,7 @@ task(1,function()
                     openimg.setImageBitmap(loadbitmap(图标("arrow_drop_up")))
                     description_card.setVisibility(8)
                     isLoaded = 0
+                    savedScrollY= question_list.getScrollY()
                     show.loadUrl("")
                     show.BackgroundColor=转0x("#00000000",true);
                     show.setHorizontalScrollBarEnabled(false);
@@ -262,6 +263,7 @@ task(1,function()
                     openimg.setImageBitmap(loadbitmap(图标("arrow_drop_down")))
                     description_card.setVisibility(0)
                     isLoaded = 1
+                    question_list.smoothScrollToPosition(savedScrollY);
                     show.Visibility=8
                     _open.text="展开"
                   end
@@ -544,6 +546,7 @@ function 加载数据()
     description.onClick=function()
       description_card.setVisibility(8)
       isLoaded = 0
+      savedScrollY= question_list.getScrollY()
       openimg.setImageBitmap(loadbitmap(图标("arrow_drop_up")))
       _open.text="收起"
       show.loadUrl("")
@@ -621,10 +624,15 @@ function 加载数据()
         view.addJSInterface(z,"androlua")
 
         if isLoaded == 1 then
-          show.setFocusable(false)
-          show.setVisibility(0)
+          Handler().postDelayed(Runnable({
+            run=function()
+              show.setFocusable(false)
+              show.setVisibility(0)
+            end,
+          }),100)
          else
           isLoaded = 1
+          show.setVisibility(8)
           show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);
         end
 

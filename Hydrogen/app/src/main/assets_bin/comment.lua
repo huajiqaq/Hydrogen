@@ -6,7 +6,7 @@ import "android.text.method.LinkMovementMethod"
 activity.setContentView(loadlayout("layout/comment"))
 
 
-comment_id,comment_type,answer_title,answer_author,comment_count,oricomment_id,oricomment_type=...
+comment_id,comment_type,answer_title,answer_author,comment_count,oricomment_id,oricomment_type,extradata=...
 波纹({fh,_more},"圆主题")
 
 if answer_title and answer_author then
@@ -293,8 +293,11 @@ comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     if not(v.Tag) then
       return true
     end
-    if _title.text~="对话列表" and v.Tag.comment_toast.getVisibility()==0 then
-      activity.newActivity("comment",{v.Tag.comment_id.text,"comments",answer_title,answer_author,nil,comment_id,comment_type})
+    if v.Tag.comment_toast.getVisibility()==0 then
+      if _title.text=="对话列表" then
+        return 提示("当前已在该对话列表内")
+      end
+      activity.newActivity("comment",{v.Tag.comment_id.text,"comments",answer_title,answer_author,nil,comment_id,comment_type,Object(v.Tag)})
      else
       当前回复人=v.Tag.comment_id.Text
     end

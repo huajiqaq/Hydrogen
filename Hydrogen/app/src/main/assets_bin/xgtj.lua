@@ -273,3 +273,14 @@ function 修改地点()
   end)
 end
 xgdd.onClick=function() 修改地点() end
+
+qzkg.onClick=function(view)
+  if view.text=="开启全站" then
+    this.setSharedData("关闭全站","false")
+    view.Text="关闭全站"
+   else
+    this.setSharedData("关闭全站","true")
+    view.Text="开启全站"
+  end
+  提示("重启软件生效")
+end

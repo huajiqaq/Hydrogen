@@ -91,6 +91,14 @@
           Typeface=字体("product-Bold");
           onClick=function()提示("加载中 请耐心等待") end;
         };
+        {
+          MaterialButton;
+          layout_gravity="center",
+          id="qzkg";
+          textColor=backgroundc;
+          text=activity.getSharedData("关闭全站")=="true" and "开启全站" or "关闭全站";
+          Typeface=字体("product-Bold");
+        };
       };
     };
   };

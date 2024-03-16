@@ -239,12 +239,7 @@ function 数据添加(t,b)
 
       if b.content:find("video%-box") then
         if not(getLogin()) then
-          AlertDialog.Builder(this)
-          .setTitle("提示")
-          .setMessage("该回答含有视频 不登录可能无法显示视频 建议登录")
-          .setCancelable(false)
-          .setPositiveButton("我知道了",nil)
-          .show()
+          提示("该回答含有视频 不登录可能无法显示视频 建议登录")
         end
 
         加载js(view,"document.cookie='"..获取Cookie("https://www.zhihu.com/").."'")
@@ -310,17 +305,19 @@ function 数据添加(t,b)
     end,
 
     onShowCustomView=function(view,url)
+      全屏模式=true
       web_video_view=view
       savedScrollY= t.msrcroll.getScrollY()
       t.msrcroll.setVisibility(8)
       activity.getDecorView().addView(web_video_view)
---      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+      --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
       全屏()
     end,
     onHideCustomView=function(view,url)
+      全屏模式=false
       t.msrcroll.setVisibility(0)
       activity.getDecorView().removeView(web_video_view)
---      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+      --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
       取消全屏()
       Handler().postDelayed(Runnable({
         run=function()
@@ -800,6 +797,31 @@ local click=0
 mark.onClick=function()
   local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
   加入收藏夹(url:match("answer/(.+)"),"answer")
+end
+
+function onKeyDown(code,event)
+  if this.getSharedData("音量键选择tab")~="true" or 全屏模式==true then
+    return false
+  end
+  if code==KeyEvent.KEYCODE_VOLUME_UP then
+    return true;
+   elseif code== KeyEvent.KEYCODE_VOLUME_DOWN then
+    return true;
+  end
+
+end
+
+function onKeyUp(code,event)
+  if this.getSharedData("音量键选择tab")~="true" or 全屏模式==true then
+    return false
+  end
+  if code==KeyEvent.KEYCODE_VOLUME_UP then
+    pg.setCurrentItem(pg.getCurrentItem()+1)
+    return true;
+   elseif code== KeyEvent.KEYCODE_VOLUME_DOWN then
+    pg.setCurrentItem(pg.getCurrentItem()-1)
+    return true;
+  end
 end
 
 task(1,function()

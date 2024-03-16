@@ -221,8 +221,6 @@ end
 
 msrcroll.smoothScrollTo(0,0)
 
-设置滑动跟随(msrcroll)
-
 webview
 .getSettings()
 .setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
@@ -306,6 +304,15 @@ task(1,function()
           local questionid=xxx:match[[question_id="(.-)"]]
           local answerid=xxx:match[[answer_id="(.-)"]]
           activity.newActivity("answer",{questionid,answerid})
+        end
+      },
+
+      {
+        src=图标("cloud"),text="另存为pdf",onClick=function()
+          import "android.print.PrintAttributes"
+          printManager = this.getSystemService(Context.PRINT_SERVICE);
+          printAdapter = webview.createPrintDocumentAdapter();
+          printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
         end
       },
 

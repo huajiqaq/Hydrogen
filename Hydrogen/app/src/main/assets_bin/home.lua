@@ -902,13 +902,14 @@ ch_table={
   {"收藏","book"},
   {"日报","work"},
   {"消息","message"},
+  "分割线",
+  {"本地","inbox"},
+  {"一文","insert_drive_file"},
+  {"历史","history"},
+  "分割线",
   {"关注","list_alt"},
   {"创作","list_alt"},
   "分割线",
-  {"一文","insert_drive_file"},
-  {"本地","inbox"},
-  "分割线",
-  {"历史","history"},
   {"设置","settings"},
 };
 
@@ -2320,11 +2321,14 @@ function getuserinfo()
           成功登录回调()
           HometabLayout.setVisibility(0)
           local decoded_content = luajson.decode(content)
-          table.insert(decoded_content.selected_sections, 1, {
-            section_name="全站",
-            section_id=nil,
-            sub_page_id=nil,
-          })
+          if this.getSharedData("关闭全站")~="true" then
+            
+            table.insert(decoded_content.selected_sections, 1, {
+              section_name="全站",
+              section_id=nil,
+              sub_page_id=nil,
+            })
+          end
 
           if HometabLayout.getTabCount()>0 then
             for i = HometabLayout.getTabCount(), 1, -1 do

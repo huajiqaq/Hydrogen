@@ -311,13 +311,13 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     savedScrollY=content.getScrollY()
     content.setVisibility(8)
     activity.getDecorView().addView(web_video_view)
---      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+    --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     全屏()
   end,
   onHideCustomView=function(view,url)
     content.setVisibility(0)
     activity.getDecorView().removeView(web_video_view)
---      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); 
+    --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     取消全屏()
     Handler().postDelayed(Runnable({
       run=function()
@@ -439,6 +439,16 @@ if 类型=="本地" then
       {
         src=图标("cloud"),text="使用网络打开",onClick=function()
           activity.newActivity("column",{result,原类型})
+        end
+      },
+
+      {
+        src=图标("cloud"),text="另存为pdf",onClick=function()
+          import "android.print.PrintAttributes"
+
+          printManager = this.getSystemService(Context.PRINT_SERVICE);
+          printAdapter = content.createPrintDocumentAdapter();
+          printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
         end
       },
 

@@ -29,6 +29,7 @@ function base:getUrlByType(id,type)
   if type~="comments" then
     return "https://api.zhihu.com/comment_v5/"..type.."/"..id.."/root_comment?order_by="..(self.sortby or "score")
    else
+    self.needadd=true
     return "https://api.zhihu.com/comment_v5/comment/"..id.."/child_comment?order_by="..(self.sortby or "score")
   end
 end
@@ -55,6 +56,12 @@ function base:next(callback)
 
       if code==200 then
         decoded_content=luajson.decode(body)
+
+        if self.needadd then
+          table.insert(decoded_content.data,1,decoded_content.root)
+          self.needadd=false
+        end
+
         self.nextUrl=decoded_content.paging.next
         self.is_end=decoded_content.paging.is_end
         self.common_counts=(decoded_content.counts.total_counts)
