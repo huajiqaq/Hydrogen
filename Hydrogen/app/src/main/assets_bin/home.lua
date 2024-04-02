@@ -240,6 +240,7 @@ function resolve_feed(v)
    elseif v.extra.type:find("paid") then
     return
    else
+   --[[
     提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
     AlertDialog.Builder(this)
     .setTitle("小提示")
@@ -253,6 +254,7 @@ function resolve_feed(v)
     end})
     .setNegativeButton("取消",nil)
     .show()
+    ]]
     return false
   end
   local testy=v.brief

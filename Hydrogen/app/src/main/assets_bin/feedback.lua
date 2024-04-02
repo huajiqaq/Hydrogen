@@ -88,16 +88,13 @@ send.onClick=function()
   progress.setVisibility(0)
   task(300,function()
     send.setVisibility(0) progress.setVisibility(8)
-    local 单选列表={"使用Gitee Issues反馈","使用Github Issues反馈","使用腾讯问卷反馈","使用QQ反馈"}
+    local 单选列表={"使用Gitee Issues反馈","使用Github Issues反馈","使用QQ反馈"}
     local dofun={
       function()
         浏览器打开("https://gitee.com/huajicloud/Hydrogen/issues")
       end,
       function()
         浏览器打开("https://github.com/huajiqaq/Hydrogen/issues")
-      end,
-      function()
-        浏览器打开("https://wj.qq.com/s2/12762946/e7a4/")
       end,
       function()
         local uri=Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=1906327347")

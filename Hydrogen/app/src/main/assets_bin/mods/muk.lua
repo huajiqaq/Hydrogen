@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.472
+versionCode=0.50
 layout_dir="layout/item_layout/"
 无图模式=activity.getSharedData("不加载图片")
 logopng=this.getLuaDir("logo.png")
@@ -1157,6 +1157,11 @@ function 下载文件对话框(title,url,path,ex)
 
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(布局))
+
+  if myupdatedialog and myupdatedialog.isShowing() then
+    bottomSheetDialog.setCancelable(false)
+  end
+
   ao=bottomSheetDialog.show()
 
 
@@ -1181,12 +1186,14 @@ function 下载文件对话框(title,url,path,ex)
           end,function(an)
           关闭对话框(an)
         end)
-        if myupdatedialog then
+      
+        if myupdatedialog and myupdatedialog.isShowing() then
           myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).Text="立即安装"
           myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
             安装apk(path)
           end
         end
+
        else
         提示("下载完成，大小"..string.format("%0.2f",c/1024/1024).."MB，储存在："..path)
       end

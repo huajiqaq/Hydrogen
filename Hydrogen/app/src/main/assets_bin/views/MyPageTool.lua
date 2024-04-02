@@ -330,8 +330,10 @@ function Page_Tool:createfunc(mtab)
           提示("没有新内容了")
         end
 
-        for _,v in ipairs(data.data) do
-          func(v,pos,madapter)
+        if data.data then
+          for _,v in ipairs(data.data) do
+            func(v,pos,madapter)
+          end
         end
 
       end

@@ -9,6 +9,9 @@ import "com.google.android.material.materialswitch.MaterialSwitch"
 设置视图("layout/settings")
 
 
+import "com.google.android.material.slider.Slider"
+import "com.google.android.material.slider.LabelFormatter"
+
 function clear()
   清理内存()
 end
@@ -27,17 +30,19 @@ data = {
   {__type=4,subtitle="标题简略化",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
   {__type=4,subtitle="全屏模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=5,subtitle="字体大小",image=图标(""),status={
-      minValue=10,
+      valueFrom=10,
       value=tonumber(activity.getSharedData("font_size")),
-      maxValue=30,
-      OnValueChangedListener=OnValueChangeListener{
-        onValueChange=function(_,a,b)
+      valueTo=30,
+      LabelFormatter=LabelFormatter{
+        getFormattedValue=function(value)
+          local formattedNumber = string.format("%.0f", value)
           activity.setResult(1200,nil)
-          activity.setSharedData("font_size",(b).."")
+          activity.setSharedData("font_size",formattedNumber.."")
           mytip()
+          return formattedNumber.." sp"
         end,
       },
-      wrapSelectorWheel=false,
+
   }},
   {__type=4,subtitle="关闭硬件加速",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("关闭硬件加速"))}},
   {__type=4,subtitle="代码块自动换行",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
@@ -488,7 +493,6 @@ about_item={
       orientation="vertical";
       layout_height="fill";
       gravity="center_vertical";
-      layout_weight="1";
       {
         TextView;
         id="subtitle";
@@ -500,18 +504,11 @@ about_item={
 
     };
     {
-      NumberPicker;
+      Slider;
       id="status";
       focusable=true;
       clickable=true;
       layout_marginRight="16dp";
-    };
-    {
-      TextView;
-      text="sp",
-      textColor=textc,
-      textSize="14sp",
-      layout_marginRight="24dp";
     };
 
   };
