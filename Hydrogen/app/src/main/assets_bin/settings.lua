@@ -4,7 +4,6 @@ import "android.view.*"
 import "android.graphics.PorterDuffColorFilter"
 import "android.graphics.PorterDuff"
 import "mods.muk"
-import "android.widget.NumberPicker$OnValueChangeListener"
 import "com.google.android.material.materialswitch.MaterialSwitch"
 设置视图("layout/settings")
 
@@ -15,6 +14,8 @@ import "com.google.android.material.slider.LabelFormatter"
 function clear()
   清理内存()
 end
+
+mtip=false
 
 data = {
 
@@ -38,7 +39,10 @@ data = {
           local formattedNumber = string.format("%.0f", value)
           activity.setResult(1200,nil)
           activity.setSharedData("font_size",formattedNumber.."")
-          mytip()
+          if mtip==false then
+            提示("更改字号后 推荐重启App获得更好的体验")
+            mtip=true
+          end
           return formattedNumber.." sp"
         end,
       },
@@ -76,22 +80,6 @@ data = {
   {__type=4,subtitle="允许加载代码",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
 
 }
-
-
-mytip = debounce(function()
-  双按钮对话框("提示","更改字号后 推荐重启App获得更好的体验","暂不重启","立即重启",function(an)
-    关闭对话框(an)
-    end,function(an)
-    关闭对话框(an)
-    task(200,function()
-      import "android.os.Process"
-      local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-      activity.startActivity(intent);
-      Process.killProcess(Process.myPid());
-    end)
-  end)
-end,1000)
 
 
 tab={

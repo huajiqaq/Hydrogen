@@ -59,3 +59,19 @@ search_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     end
   end
 })
+
+import "android.widget.TextView$OnEditorActionListener"
+import "android.view.inputmethod.EditorInfo"
+
+t2.setOnEditorActionListener(OnEditorActionListener({
+  onEditorAction=function( v, actionId, event)
+    if (actionId == EditorInfo.IME_ACTION_SEARCH) then
+      if #(tostring(t2.text):gsub("\n",""):gsub(" ",""))<1 then
+        提示("请输入您要搜索的内容")
+       else
+        activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..t2.text})
+      end
+    end
+    return true;
+  end
+}))

@@ -46,7 +46,7 @@ function zHttp.setcallback(code,content,raw,headers,url,head,callback,func,data)
     if decoded_content.error and decoded_content.error.message then
       提示(decoded_content.error.message)
     end
-   elseif headers.Location and headers.Location[0] then
+   elseif headers and headers.Location and headers.Location[0] then
     zHttp.request(headers.Location[0],func,data,head,callback)
     return
   end

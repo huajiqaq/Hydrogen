@@ -68,6 +68,8 @@
             textSize=16,
             layout_width="fill",
             layout_height="fill",
+            singleLine="true",
+            imeOptions="actionSearch",
           },
         },
 
