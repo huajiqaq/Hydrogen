@@ -187,6 +187,11 @@ task(1,function()
               text="加载中";
               Typeface=字体("product-Bold");
               onClick=function(view)
+
+                if not(getLogin()) then
+                  return 提示("请登录后使用本功能")
+                end
+
                 if view.Text=="关注" then
                   zHttp.post("https://api.zhihu.com/people/"..用户id.."/followers","",posthead,function(a,b)
                     if a==200 then

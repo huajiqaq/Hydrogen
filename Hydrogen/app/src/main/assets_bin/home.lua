@@ -240,7 +240,7 @@ function resolve_feed(v)
    elseif v.extra.type:find("paid") then
     return
    else
-   --[[
+    --[[
     提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
     AlertDialog.Builder(this)
     .setTitle("小提示")
@@ -1338,9 +1338,6 @@ local function moments_feed(v,adapter)
    elseif v.target.type=="article"
     问题id等="文章分割"..(v.target.id)
     标题=v.target.title
-   elseif v.target.type=="pin"
-    问题id等="想法分割"..(v.target.id)
-    标题=v.target.title
    elseif v.target.type=="moments_pin"
     if 标题==nil or 标题=="" then
       标题="一个想法"
@@ -1371,6 +1368,8 @@ local function moments_feed(v,adapter)
     if 预览内容==nil or 预览内容=="" then
       预览内容="[直播]"
     end
+   elseif v.target.type=="topic" then
+    问题id等="话题分割"..( v.target.id)
   end
   if 预览内容~="[视频]" then
     预览内容=作者名称.." : "..预览内容
@@ -1404,9 +1403,12 @@ local function feed_item_index_group(v,adapter)
    elseif v.target.type=="article"
     问题id等="文章分割"..(v.target.id)
     标题=v.target.title
-   elseif v.target.type=="pin"
+   elseif v.target.type=="moments_pin"
     问题id等="想法分割"..(v.target.id)
     标题=v.target.title
+    if 标题==nil or 标题=="" then
+      标题="一个想法"
+    end
    elseif v.target.type=="zvideo"
     问题id等="视频分割"..(v.target.id)
     标题=v.target.title
@@ -1419,6 +1421,8 @@ local function feed_item_index_group(v,adapter)
     if 预览内容==nil or 预览内容=="" then
       预览内容="[直播]"
     end
+   elseif v.target.type=="topic" then
+    问题id等="话题分割"..( v.target.id)
   end
   if not 预览内容 then
     预览内容="无底部内容"
@@ -1458,9 +1462,12 @@ local function item_group_card(v,adapter)
      elseif q.type=="article"
       问题id等="文章分割"..(q.id)
       标题=q.title
-     elseif q.type=="pin"
+     elseif q.type=="moments_pin"
       问题id等="想法分割"..(q.id)
       标题=q.title
+      if 标题==nil or 标题=="" then
+        标题="一个想法"
+      end
      elseif q.type=="zvideo"
       问题id等="视频分割"..(q.id)
       标题=q.title
@@ -1475,6 +1482,8 @@ local function item_group_card(v,adapter)
       end
      elseif q.type=="roundtable" then
       问题id等="圆桌分割"..(q.id)
+     elseif q.type=="topic" then
+      问题id等="话题分割"..(q.id)
     end
     if 预览内容~="[视频]" then
       if 预览内容 then
@@ -2324,7 +2333,7 @@ function getuserinfo()
           HometabLayout.setVisibility(0)
           local decoded_content = luajson.decode(content)
           if this.getSharedData("关闭全站")~="true" then
-            
+
             table.insert(decoded_content.selected_sections, 1, {
               section_name="全站",
               section_id=nil,

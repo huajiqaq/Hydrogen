@@ -51,6 +51,11 @@ local function setstyle(styleee)
 end
 
 function 发送评论(send_text,当前回复人)
+
+  if not(getLogin()) then
+    return 提示("请登录后使用本功能")
+  end
+
   local mytext
   local postdata
   local 请求链接
@@ -110,6 +115,9 @@ function 多选菜单(v)
         提示("复制文本成功")
     end},
     {ctext,function()
+        if not(getLogin()) then
+          return 提示("请登录后使用本功能")
+        end
         if 踩tab[rootview.Tag.comment_id.text]==false
           zHttp.put("https://api.zhihu.com/comment_v5/comment/"..rootview.Tag.comment_id.Text.."/reaction/dislike",'',postapphead,function(code,content)
             if code==200 then
@@ -131,6 +139,9 @@ function 多选菜单(v)
         activity.newActivity("huida",{url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
     end},
     {"屏蔽",function()
+        if not(getLogin()) then
+          return 提示("请登录后使用本功能")
+        end
         AlertDialog.Builder(this)
         .setTitle("提示")
         .setMessage("屏蔽过后如果想查看屏蔽的所有用户 可以在软件内主页右划 点击消息 选择设置 之后打开屏蔽即可管理屏蔽 你也可以选择管理屏蔽用户 但是这样没有选择设置可设置的多 如果只想查看屏蔽的用户 推荐选择屏蔽用户管理")

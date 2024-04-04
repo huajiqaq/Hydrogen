@@ -329,6 +329,9 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
     if consoleMessage.message():find("关注分割") then
+      if not(getLogin()) then
+        return 提示("请登录后使用本功能")
+      end
       local mtext=consoleMessage.message():match("关注分割(.+)")
       if mtext:find("已关注") then
         zHttp.delete("https://api.zhihu.com/people/"..authorid.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
@@ -360,10 +363,19 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
      elseif consoleMessage.message()=="查看用户" then
       activity.newActivity("people",{authorid})
      elseif consoleMessage.message()=="收藏" then
+      if not(getLogin()) then
+        return 提示("请登录后使用本功能")
+      end
       加入收藏夹(result,mtype)
      elseif consoleMessage.message()=="申请转载" then
+      if not(getLogin()) then
+        return 提示("请登录后使用本功能")
+      end
       加入专栏(result,mtype)
      elseif consoleMessage.message():find("关注") and consoleMessage.message():find("分割") then
+      if not(getLogin()) then
+        return 提示("请登录后使用本功能")
+      end
       local mtext=consoleMessage.message():match("分割(.+)")
       local 参数
       if 类型=="圆桌" then
