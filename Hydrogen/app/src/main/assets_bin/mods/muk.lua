@@ -24,9 +24,9 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.512
+versionCode=0.513
 layout_dir="layout/item_layout/"
-无图模式=activity.getSharedData("不加载图片")
+无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir("logo.png")
 
 function onConfigurationChanged(config)
