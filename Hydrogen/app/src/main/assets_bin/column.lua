@@ -95,6 +95,10 @@ if activity.getSharedData("禁用缓存")=="true"
   .setDatabaseEnabled(true)
 end
 
+if 无图模式 then
+  content.getSettings().setBlockNetworkImage(true)
+end
+
 
 function setProgress(p)
   ValueAnimator.ofFloat({pbar.getWidth(),activity.getWidth()/100*p})

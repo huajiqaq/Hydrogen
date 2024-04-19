@@ -86,6 +86,11 @@ function 初始化()
         caart=内容,
         catitle=标题,
         background={foreground=Ripple(nil,转0x(ripplec),"方")},
+        _rootview={
+          onTouch=function(v,event)
+            downx=event.getRawX()
+            downy=event.getRawY()
+        end}
       }
       return
      elseif tab.type=="pin" then
@@ -113,6 +118,11 @@ function 初始化()
       caart=内容,
       catitle=标题,
       background={foreground=Ripple(nil,转0x(ripplec),"方")},
+      _rootview={
+        onTouch=function(v,event)
+          downx=event.getRawX()
+          downy=event.getRawY()
+      end}
     }
   end)
 end
@@ -164,31 +174,55 @@ list5.setOnItemClickListener(AdapterView.OnItemClickListener{
   end
 })
 
+function 多选菜单(v)
+  local rootview=v
+
+  local 类型
+  local id=v.Tag.cid.Text:match("分割(.+)")
+  if tostring(v.Tag.cid.text):find("回答分割") then
+    类型="answer"
+   elseif tostring(v.Tag.cid.text):find("文章分割") then
+    类型="article"
+   elseif tostring(v.Tag.cid.text):find("想法分割") then
+    类型="pin"
+   elseif tostring(v.Tag.cid.text):find("视频分割") then
+    类型="zvideo"
+  end
+
+  local mtab={
+
+    {"取消收藏",function()
+        双按钮对话框("取消收藏","取消收藏该问题？该操作不可撤消！","是的","点错了",function(an)
+          an.dismiss()
+          zHttp.delete(apiurl.."/"..id.."?content_type="..类型,head,function(code,json)
+            if code==200 then
+              提示("已删除")
+              activity.setResult(1600,nil)
+              list5.adapter.remove(zero)
+              list5.adapter.notifyDataSetChanged()
+            end
+          end)
+        end,function(an)an.dismiss()end)
+    end},
+    {"移动到其他收藏夹",function()
+        加入收藏夹(id,类型)
+    end},
+  }
+
+
+  local pop=showPopMenu(mtab)
+  pop.showAtLocation(rootview, Gravity.NO_GRAVITY, downx, downy);
+
+  return true
+end
+
+
 list5.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
   onItemLongClick=function(id,v,zero,one)
     if isfollow then
       return true
     end
-    双按钮对话框("取消收藏","取消收藏该问题？该操作不可撤消！","是的","点错了",function(an)
-      an.dismiss()
-      if tostring(v.Tag.cid.text):find("回答分割") then
-        删除类型="answer"
-       elseif tostring(v.Tag.cid.text):find("文章分割") then
-        删除类型="article"
-       elseif tostring(v.Tag.cid.text):find("想法分割") then
-        删除类型="pin"
-       elseif tostring(v.Tag.cid.text):find("视频分割") then
-        删除类型="zvideo"
-      end
-      zHttp.delete(apiurl.."/"..v.Tag.cid.Text:match("分割(.+)").."?content_type="..删除类型,head,function(code,json)
-        if code==200 then
-          提示("已删除")
-          activity.setResult(1600,nil)
-          list5.adapter.remove(zero)
-          list5.adapter.notifyDataSetChanged()
-        end
-      end)
-    end,function(an)an.dismiss()end)
+    多选菜单(v)
     return true
 end})
 

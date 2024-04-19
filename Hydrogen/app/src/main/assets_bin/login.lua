@@ -22,6 +22,7 @@ login_web
 .setDatabaseEnabled(true)
 .setCacheMode(WebSettings.LOAD_DEFAULT)
 
+
 login_web.BackgroundColor=转0x("#00000000",true)
 
 if url then
@@ -88,6 +89,12 @@ login_web.setWebViewClient{
   end,
   onPageFinished=function(view,url)
     if url:find("https://www.zhihu.com/%?utm_id") or url=="https://www.zhihu.com" then
+      if isfirst==nil then
+        isfirst=true
+        --尝试解决登录无效的问题
+        view.loadUrl("https://www.zhihu.com/")
+        return
+      end
       local myurl= 'https://www.zhihu.com/api/v4/me'
       --避免head刷新不及时
       local head = {

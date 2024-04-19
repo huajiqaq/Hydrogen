@@ -11,25 +11,6 @@ function urlDecode(s)
   return s
 end
 
-import "android.webkit.WebSettings"
-zhihu_url_Webview=LuaWebView(this)
-zhihu_url_Webview
-.getSettings()
-.setAppCacheEnabled(false)
---关闭 DOM 存储功能
-.setDomStorageEnabled(true)
---关闭 数据库 存储功能
-.setDatabaseEnabled(true)
-.setCacheMode(WebSettings.LOAD_NO_CACHE);
-zhihu_url_Webview.setWebViewClient{
-  shouldOverrideUrlLoading=function(view,url)
-    zhihu_url_Webview.clearCache(true)
-    zhihu_url_Webview.clearFormData()
-    zhihu_url_Webview.clearHistory()
-    return 检查链接(url)
-  end
-}
-
 function string:getUrlArg(arg)
   --lua对字符串进行了优化 变量为字符串时也可以调用string的其他方法
   return self:match(arg.."(.-)/%?") or self:match(arg.."(.-)/") or self:match(arg.."(.-)?") or self:match(arg.."(.+)")
@@ -41,9 +22,10 @@ function 检查链接(url,b)
   if url:find("zhihu.com/question") or url:find("zhihu.com/answer") then
 
     local answer,questions=0,0
-    if url:find("answer") then
+    if url:find("answers") then
+      questions,answer=url:match("question/(.-)/"),url:match("answers/(.-)?") or url:match("answers/(.+)")
+     elseif url:find("answer") then
       questions,answer=url:match("question/(.-)/"),url:match("answer/(.-)?") or url:match("answer/(.+)")
-     else
       questions,answer=url:match("question/(.-)?") or url:match("question/(.+)"),nil
       if b then
         return true
@@ -129,7 +111,9 @@ function 检查链接(url,b)
     this.newActivity("login")
    elseif url:find("zhihu.com/oia") then
     if b then return true end
-    zhihu_url_Webview.loadUrl(url)
+    local url=url:gsub("oia/","")
+    return 检查意图(url)
+    --zhihu_url_Webview.loadUrl(url)
    elseif url:find("https://ssl.ptlogin2.qq.com/jump") then
     if b then return true end
     activity.finish()

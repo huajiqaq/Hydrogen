@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.511
+versionCode=0.512
 layout_dir="layout/item_layout/"
 无图模式=activity.getSharedData("不加载图片")
 logopng=this.getLuaDir("logo.png")
@@ -1186,7 +1186,7 @@ function 下载文件对话框(title,url,path,ex)
           end,function(an)
           关闭对话框(an)
         end)
-      
+
         if myupdatedialog and myupdatedialog.isShowing() then
           myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).Text="立即安装"
           myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
@@ -1813,7 +1813,11 @@ function 新建收藏夹(callback)
   .setTitle("新建收藏夹页面")
   .setView(loadlayout(InputLayout))
   .setPositiveButton("确定",nil)
-  .setNegativeButton("返回",nil)
+  .setNegativeButton("返回",{onClick=function()
+    collection_webview.clearCache(true)
+    collection_webview.clearFormData()
+    collection_webview.clearHistory()
+  end})
   .setCancelable(false)
   .show()
   collection_dialog.getButton(collection_dialog.BUTTON_NEGATIVE).onClick=function()
@@ -1839,7 +1843,14 @@ function 新建收藏夹(callback)
   .setUseWideViewPort(true)
   .setBuiltInZoomControls(true)
   .setSupportZoom(true)
-  .setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36");
+  .setUserAgentString("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
+  .setBlockNetworkImage(true)
+  .setAppCacheEnabled(false)
+  --关闭 DOM 存储功能
+  .setDomStorageEnabled(true)
+  --关闭 数据库 存储功能
+  .setDatabaseEnabled(true)
+  .setCacheMode(WebSettings.LOAD_NO_CACHE);
 
   collection_webview.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     onConsoleMessage=function(consoleMessage)
@@ -2724,3 +2735,4 @@ if cachemode=="true" then
   end})
   .show()
 end
+

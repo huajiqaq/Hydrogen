@@ -172,6 +172,10 @@ function 数据添加(t,b)
     .setDatabaseEnabled(true)
   end
 
+  if 无图模式 then
+    t.content.getSettings().setBlockNetworkImage(true)
+  end
+
   t.content.BackgroundColor=转0x("#00000000",true);
   t.content.setDownloadListener({
     onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
