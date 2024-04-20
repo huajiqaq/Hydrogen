@@ -24,21 +24,25 @@ function 检查链接(url,b)
     local answer,questions=0,0
     if url:find("answers") then
       questions,answer=url:match("question/(.-)/"),url:match("answers/(.-)?") or url:match("answers/(.+)")
-     elseif url:find("answer") then
-      questions,answer=url:match("question/(.-)/"),url:match("answer/(.-)?") or url:match("answer/(.+)")
-      questions,answer=url:match("question/(.-)?") or url:match("question/(.+)"),nil
       if b then
         return true
       end
+     elseif url:find("answer") then
+      questions,answer=url:match("question/(.-)/"),url:match("answer/(.-)?") or url:match("answer/(.+)")
+      if b then
+        return true
+      end
+     else
+      if b then
+        return true
+      end
+      questions,answer=url:match("question/(.-)?") or url:match("question/(.+)"),nil
       if open=="false" then
         this.newActivity("question",{questions,true})
        else
         this.newActivity("huida",{url})
       end
       return
-    end
-    if b then
-      return true
     end
     if open=="false" then
       this.newActivity("answer",{questions,answer,nil,true})
