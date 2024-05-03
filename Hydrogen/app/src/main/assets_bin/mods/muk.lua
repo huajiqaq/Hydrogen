@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.514
+versionCode=0.515
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir("logo.png")
@@ -96,19 +96,13 @@ if this.getSharedData("调式模式")=="true" then
   this.setDebug(false)
 end
 
---由于更新字号必须要刷新view实现 所以写在onResume是没用的
-local currentFontScale = this.getResources().getConfiguration().fontScale;
-local newFontScale = tonumber(activity.getSharedData("font_size"));
-if newFontScale and currentFontScale ~= newFontScale then
-  newFontScale = newFontScale/20;
-  configuration = this.getResources().getConfiguration();
-  configuration.fontScale = newFontScale;
-  metrics = this.getResources().getDisplayMetrics();
-  this.getContext().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-  metrics.scaledDensity = configuration.fontScale * metrics.density;
-  this.getResources().updateConfiguration(configuration, metrics);
+if activity.getSharedData("font_size") then
+  --由于更新字号必须要刷新view实现 所以写在onResume是没用的
+  local res =this.getResources();
+  local config = res.getConfiguration();
+  config.fontScale=tonumber(activity.getSharedData("font_size"))/20
+  res.updateConfiguration(config,res.getDisplayMetrics());
 end
-
 
 function debounce(func,delay)
   -- 声明局部变量存储Handler和Runnable
@@ -1814,9 +1808,9 @@ function 新建收藏夹(callback)
   .setView(loadlayout(InputLayout))
   .setPositiveButton("确定",nil)
   .setNegativeButton("返回",{onClick=function()
-    collection_webview.clearCache(true)
-    collection_webview.clearFormData()
-    collection_webview.clearHistory()
+      collection_webview.clearCache(true)
+      collection_webview.clearFormData()
+      collection_webview.clearHistory()
   end})
   .setCancelable(false)
   .show()

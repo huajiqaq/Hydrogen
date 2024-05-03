@@ -12,7 +12,7 @@
 
 ## 下载
 
-如果你想要下载最新版的App 可前往[这个页面](https://myhydrogen.gitee.io)获取最新版 可通过[这个页面](https://workdrive.zoho.com.cn/folder/8ix3h3e8828db660e4e63acd5dd9e70bf591a)获取历史版本
+如果你想要下载最新版的App 可前往[这个页面](https://huajiqaq.github.io/myhydrogen)获取最新版 可通过[这个页面](https://workdrive.zoho.com.cn/folder/8ix3h3e8828db660e4e63acd5dd9e70bf591a)获取历史版本
 
 原版Hydrogen的源码供下载 **hydrogen-master.zip** 为Hydrogen最后一个版本final 7 的源码 **hydrogen目录内**为Hydrogen的后续维护版本的源码 预览或打包可能会报错 如若想解决 请下载本项目中的**要插入的dex**添加进打包的apk 安装
 

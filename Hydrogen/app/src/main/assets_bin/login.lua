@@ -28,7 +28,7 @@ login_web.BackgroundColor=转0x("#00000000",true)
 if url then
   login_web.loadUrl(url)
  else
-  login_web.loadUrl("https://www.zhihu.com/signin?next=www.zhihu.com")
+  login_web.loadUrl("https://www.zhihu.com/signin")
 end
 
 
@@ -82,7 +82,9 @@ login_web.setWebViewClient{
     end
   end,
   onPageStarted=function(view,url)
-    加载js(view,获取js("login"))
+    if url:find("https://www.zhihu.com/signin") then
+      加载js(view,获取js("login"))
+    end
     if 全局主题值=="Night" then
       黑暗模式主题(view)
     end

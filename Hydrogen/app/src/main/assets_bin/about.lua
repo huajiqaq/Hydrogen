@@ -200,7 +200,7 @@ about_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     end
 
     if v.Tag.subtitle.Text=="前往官网" then
-      浏览器打开("https://myhydrogen.gitee.io/")
+      浏览器打开("https://huajiqaq.github.io/myhydrogen")
     end
 
     if v.Tag.subtitle.Text=="提交BUG" then

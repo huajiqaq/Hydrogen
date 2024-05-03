@@ -2551,7 +2551,7 @@ Http.get(update_api,head,function(code,content)
     .show()
     myupdatedialog.findViewById(android.R.id.message).TextIsSelectable=true
     myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
-      浏览器打开("https://myhydrogen.gitee.io")
+      浏览器打开("https://huajiqaq.github.io/myhydrogen")
     end
     myupdatedialog.getButton(myupdatedialog.BUTTON_NEGATIVE).onClick=function()
       浏览器打开("https://gitee.com/huajicloud/hydrogen")
