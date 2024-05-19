@@ -1,20 +1,23 @@
 {
-  RelativeLayout;
-  layout_width="-1";
+  CoordinatorLayout;
+  id="mainLay";
+  layout_height="fill";
+  layout_width="fill";
   background=backgroundc;
-  layout_height="-1";
   {
-    LinearLayout;
-    layout_width="-1";
-    layout_height="-1";
-    orientation="vertical";
+    AppBarLayout;
+    layout_height="wrap";
+    layout_width="fill";
+    TargetElevation=0;
+    background=backgroundc;
     {
-      LinearLayout;
-      layout_width="-1";
-      layout_height="-2";
-      elevation="0";
-      background=backgroundc;
-      orientation="vertical";
+      MaterialToolbar;
+      id="toolbar";
+      layout_width="fill";
+      layout_height="56dp";
+      layout_gravity="center";
+      layout_scrollFlags="scroll|snap|enterAlways";
+
       {
         LinearLayout;
         layout_width="-1";
@@ -51,81 +54,79 @@
           Typeface=字体("product-Bold");
         };
       };
+
     };
+  };
+
+  {
+    NestedScrollView;
+    fillViewport="true";
+    layout_width="fill";
+    layout_height="fill";
+    layout_behavior="@string/appbar_scrolling_view_behavior";
 
     {
-      ScrollView;
-      layout_width="-1";
+      NoScrollListView;
       layout_height="-1";
+      layout_width="-1";
+      DividerHeight=0;
+      id="help_list";
+    };
+
+
+  };
+
+  {
+    LinearLayout;
+    layout_width="-1";
+    layout_height="-1";
+    orientation="vertical";
+    gravity="right|bottom";
+    {
+      CardView;
+      layout_height="56dp",
+      radius="28dp";
+      layout_margin="16dp";
+      layout_marginRight="32dp";
+      layout_marginBottom="32dp";
+      CardBackgroundColor=primaryc;
+      elevation="0";
+      translationZ="4dp";
+      alpha=1;
+      id="post";
       {
-        LinearLayout,
-        id="Localcomment",
-        orientation="vertical",
-        layout_width="fill",
-        layout_height="fill",
+        LinearLayout;
+        Visibility=0,
+        id="send",
+        gravity="center",
+        orientation="horizontal",
         {
-          LinearLayout,
-          id="Localcomment",
-          orientation="vertical",
-          layout_width="fill",
-          layout_height="fill",
-          background=backgroundc,
-          {
-            NoScrollListView;
-            layout_height="-1";
-            layout_width="-1";
-            DividerHeight=0;
-            id="help_list";
-          };
+          ImageView;
+          src=图标("send");
+          layout_height="24dp";
+          layout_width="24dp";
+          layout_margin="16dp";
+          layout_marginRight="12dp";
+          colorFilter=backgroundc,
+        };
+        {
+          TextView;
+          layout_marginRight="16dp";
+          text="仍要反馈问题",
+          textSize="16sp",
+          textColor=backgroundc,
         };
       };
-    };
-  };
-  {
-    CardView;
-    layout_height="56dp",
-    radius="28dp";
-    layout_margin="16dp";
-    layout_marginRight="32dp";
-    layout_alignParentRight="true";
-    layout_alignParentBottom="true";
-    layout_marginBottom="32dp";
-    CardBackgroundColor=primaryc;
-    elevation="0";
-    translationZ="4dp";
-    alpha=1;
-    id="post";
-    {
-      LinearLayout;
-      Visibility=0,
-      id="send",
-      gravity="center",
-      orientation="horizontal",
       {
-        ImageView;
-        src=图标("send");
-        layout_height="24dp";
-        layout_width="24dp";
-        layout_margin="16dp";
-        layout_marginRight="12dp";
-        colorFilter=backgroundc,
-      };
-      {
-        TextView;
-        layout_marginRight="16dp";
-        text="仍要反馈问题",
-        textSize="16sp",
-        textColor=backgroundc,
+        ProgressBar;
+        id="progress",
+        ProgressBarBackground=backgroundc,
+        Visibility=8,
+        layout_height="-1";
+        layout_width="-1";
+        padding="12dp",
       };
     };
-    {
-      ProgressBar;
-      id="progress",
-      ProgressBarBackground=backgroundc,
-      Visibility=8,
-      layout_height="-1";
-      layout_width="-1";
-      padding="12dp",
-    };
   };
+
 };

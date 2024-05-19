@@ -24,7 +24,8 @@
         layout_width="fill";
         layout_height="56dp";
         layout_gravity="center";
-        layout_scrollFlags="scroll|exitUtilCollapsed|snap";
+        layout_scrollFlags="scroll|snap|enterAlways";
+--        layout_scrollFlags="scroll|exitUtilCollapsed|snap";
 
         {
           LinearLayout;
@@ -180,6 +181,7 @@
       layout_height="wrap";
       layout_width="fill";
       layout_gravity="bottom";
+      
       {
         BottomNavigationView;
         id="bnv";

@@ -8,6 +8,7 @@ url=...
 
 activity.setContentView(loadlayout("layout/login"))
 
+设置toolbar(toolbar)
 
 波纹({fh,_info},"圆主题")
 

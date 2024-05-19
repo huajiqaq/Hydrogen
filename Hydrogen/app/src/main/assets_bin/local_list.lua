@@ -4,6 +4,8 @@ import "com.lua.*"
 
 activity.setContentView(loadlayout("layout/local_list"))
 
+设置toolbar(toolbar)
+
 初始化历史记录数据(true)
 
 

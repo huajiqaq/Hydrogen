@@ -2,7 +2,8 @@
   ScrollView,
   id="msrcroll",
   layout_height="fill";
-  fillViewport="true";  
+  fillViewport="true";
+  nestedScrollingEnabled=true,
   {
     LinearLayout;
     layout_width="-1";

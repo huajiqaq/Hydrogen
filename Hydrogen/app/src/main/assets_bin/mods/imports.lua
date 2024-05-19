@@ -81,3 +81,6 @@ import "com.google.android.material.card.MaterialCardView"
 import "com.hydrogen.adapter.MyLuaAdapter"
 import "com.hydrogen.view.NoScrollListView"
 import "com.hydrogen.view.NoScrollGridView"
+
+import "com.google.android.material.appbar.*"
+import "androidx.core.widget.NestedScrollView"

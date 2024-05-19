@@ -9,9 +9,7 @@ import "androidx.recyclerview.widget.*"
 
 import "com.google.android.material.bottomnavigation.BottomNavigationView"
 import "androidx.viewpager.widget.ViewPager"
-import "androidx.core.widget.NestedScrollView"
 import "androidx.appcompat.widget.LinearLayoutCompat"
-import "com.google.android.material.appbar.*"
 import "com.google.android.material.floatingactionbutton.FloatingActionButton"
 
 import "androidx.swiperefreshlayout.widget.*"
@@ -21,8 +19,9 @@ import "com.bumptech.glide.Glide"
 
 import "com.getkeepsafe.taptargetview.*"
 
-activity.setSupportActionBar(toolbar)
 activity.setContentView(loadlayout("layout/home"))
+
+设置toolbar(toolbar)
 
 初始化历史记录数据(true)
 
@@ -368,6 +367,7 @@ function 主页随机推荐 ()
 end
 
 
+
 function 主页刷新(isclear,isprev)
 
   if isprev then
@@ -554,6 +554,7 @@ end
 if this.getSharedData("starthome")=="推荐" then
   主页刷新(false)
 end
+
 
 homesr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
 homesr.setColorSchemeColors({转0x(primaryc)});

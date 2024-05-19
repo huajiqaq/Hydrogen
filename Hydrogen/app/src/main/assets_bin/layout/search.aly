@@ -1,14 +1,23 @@
 {
-  LinearLayout;
-  layout_height="-1";
-  layout_width="-1";
+  CoordinatorLayout;
+  id="mainLay";
+  layout_height="fill";
+  layout_width="fill";
+  background=backgroundc;
   {
-    LinearLayout;
-    layout_height="-1";
-    layout_width="-1";
-    id="_root";
-    background=backgroundc,
-    orientation="vertical";
+    AppBarLayout;
+    layout_height="wrap";
+    layout_width="fill";
+    TargetElevation=0;
+    background=backgroundc;
+    {
+      MaterialToolbar;
+      id="toolbar";
+      layout_width="fill";
+      layout_height="56dp";
+      layout_gravity="center";
+      layout_scrollFlags="scroll|snap|enterAlways";
+
     {
       LinearLayout,
       layout_width="fill",
@@ -26,13 +35,19 @@
         onClick=function()关闭页面()end;
       };
     };
-    {
-      ScrollView;
-      layout_height="-1";
-      layout_width="-1";
-      background=backgroundc,
-      VerticalScrollBarEnabled=false;
-      {
+
+    };
+  };
+
+  {
+    NestedScrollView;
+    fillViewport="true";
+    layout_width="fill";
+    layout_height="fill";
+    layout_behavior="@string/appbar_scrolling_view_behavior";
+
+
+        {
         LinearLayout;
         layout_height="-1";
         layout_width="-1";
@@ -118,6 +133,6 @@
           id="search_list",
         };
       };
-    };
   };
+
 };

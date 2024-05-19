@@ -1,128 +1,148 @@
 {
-  RelativeLayout;
-  layout_width="-1";
+  CoordinatorLayout;
+  id="mainLay";
+  layout_height="fill";
+  layout_width="fill";
   background=backgroundc;
-  layout_height="-1";
   {
-    LinearLayout;
-    layout_width="-1";
-    layout_height="-1";
-    orientation="vertical";
+    AppBarLayout;
+    layout_height="wrap";
+    layout_width="fill";
+    TargetElevation=0;
+    background=backgroundc;
     {
-      LinearLayout;
-      layout_width="-1";
-      layout_height="-2";
-      elevation="0";
-      background=backgroundc;
-      orientation="vertical";
+      MaterialToolbar;
+      id="toolbar";
+      layout_width="fill";
+      layout_height="56dp";
+      layout_gravity="center";
+      layout_scrollFlags="scroll|snap|enterAlways";
+
       {
         LinearLayout;
         layout_width="-1";
-        layout_height="56dp";
-        gravity="center|left";
+        layout_height="-2";
+        elevation="0";
+        background=backgroundc;
+        orientation="vertical";
         {
           LinearLayout;
-          orientation="horizontal";
+          layout_width="-1";
           layout_height="56dp";
-          layout_width="56dp";
-          gravity="center";
-          onClick=function()关闭页面()end;
-          {
-            ImageView;
-            ColorFilter=primaryc;
-            src=图标("arrow_back");
-            layout_height="32dp";
-            layout_width="32dp";
-            padding="4dp";
-            id="fh";
-          };
-        };
-        {
-          CardView;
-          radius="6dp";
-          CardBackgroundColor=backgroundc;
-          elevation="0dp";
-          layout_width="-1",
-          layout_weight="1",
+          gravity="center|left";
           {
             LinearLayout;
-            id="title_root",
-            layout_width="-1",
-            orientation="vertical";
-            onClick=function()
-              showpop(_more_lay,a.pop)
-            end;
+            orientation="horizontal";
+            layout_height="56dp";
+            layout_width="56dp";
+            gravity="center";
+            onClick=function()关闭页面()end;
             {
-              TextView;
-              padding="2dp",
-              textColor=primaryc;
-              textSize="20sp";
-              id="_title";
-              SingleLine=true;
-              text="随机一文",
-              ellipsize='marquee',
-              Selected=true,
-              gravity="center|left";
-              Typeface=字体("product-Bold");
+              ImageView;
+              ColorFilter=primaryc;
+              src=图标("arrow_back");
+              layout_height="32dp";
+              layout_width="32dp";
+              padding="4dp";
+              id="fh";
             };
           };
           {
-            TextView;
-            id="_more_lay";
-            layout_width="0",
-            layout_height="0",
-            layout_gravity="top";
+            CardView;
+            radius="6dp";
+            CardBackgroundColor=backgroundc;
+            elevation="0dp";
+            layout_width="-1",
+            layout_weight="1",
+            {
+              LinearLayout;
+              id="title_root",
+              layout_width="-1",
+              orientation="vertical";
+              onClick=function()
+                showpop(_more_lay,a.pop)
+              end;
+              {
+                TextView;
+                padding="2dp",
+                textColor=primaryc;
+                textSize="20sp";
+                id="_title";
+                SingleLine=true;
+                text="随机一文",
+                ellipsize='marquee',
+                Selected=true,
+                gravity="center|left";
+                Typeface=字体("product-Bold");
+              };
+            };
+            {
+              TextView;
+              id="_more_lay";
+              layout_width="0",
+              layout_height="0",
+              layout_gravity="top";
+            };
+          };
+          {
+            ImageView;
+            src=图标("refresh");
+            ColorFilter=textc;
+            layout_width="32dp",
+            layout_height="32dp",
+            padding="4dp";
+            id="_refre";
+            tooltip="刷新",
+            layout_margin="8dp";
+          };
+          {
+            ImageView;
+            src=图标("star");
+            ColorFilter=textc;
+            layout_width="32dp",
+            layout_height="32dp",
+            padding="4dp";
+            id="_star";
+            tooltip="收藏",
+            layout_margin="8dp";
+          };
+          {
+            ImageView;
+            src=图标("folder_special");
+            ColorFilter=primaryc;
+            layout_width="32dp",
+            layout_height="32dp",
+            padding="4dp";
+            id="_folder";
+            tooltip="收藏文章",
+            layout_margin="8dp";
+            onClick=function()
+              artical_page.setCurrentItem(1,false)
+            end,
           };
         };
-        {
-          ImageView;
-          src=图标("refresh");
-          ColorFilter=textc;
-          layout_width="32dp",
-          layout_height="32dp",
-          padding="4dp";
-          id="_refre";
-          tooltip="刷新",
-          layout_margin="8dp";
-        };
-        {
-          ImageView;
-          src=图标("star");
-          ColorFilter=textc;
-          layout_width="32dp",
-          layout_height="32dp",
-          padding="4dp";
-          id="_star";
-          tooltip="收藏",
-          layout_margin="8dp";
-        };
-        {
-          ImageView;
-          src=图标("folder_special");
-          ColorFilter=primaryc;
-          layout_width="32dp",
-          layout_height="32dp",
-          padding="4dp";
-          id="_folder";
-          tooltip="收藏文章",
-          layout_margin="8dp";
-          onClick=function()
-            artical_page.setCurrentItem(1,false)
-          end,
-        };
       };
+
     };
+  };
+
+  {
+    NestedScrollView;
+    fillViewport="true";
+    layout_width="fill";
+    layout_height="fill";
+    layout_behavior="@string/appbar_scrolling_view_behavior";
     {
-      LinearLayout;
-      orientation="vertical";
-      layout_height="-1";
-      layout_width="-1";
+      LinearLayoutCompat;
+      id="content";
+      layout_width="fill";
+      layout_height="fill";
       {
         ViewPager;
-        layout_height="-1",
         id="artical_page",
-        layout_width="-1";
-        layout_weight="1";
+        layout_width="fill";
+        layout_weight="fill";
+        nestedScrollingEnabled=true,
         pages={
           {
             RelativeLayout;
@@ -135,6 +155,7 @@
                 ScrollView;
                 layout_height="fill";
                 layout_width="fill";
+                nestedScrollingEnabled=true,
                 {
                   LinearLayout;
                   orientation="vertical";
@@ -177,38 +198,13 @@
                 };
               };
             };
-            {
-              LinearLayout;
-              layout_width="-1";
-              layout_height="-1";
-              orientation="vertical";
-              gravity="right|bottom";
-              {
-                CardView;
-                layout_width="56dp",
-                layout_height="56dp",
-                radius="28dp";
-                layout_margin="16dp";
-                CardBackgroundColor=backgroundc;
-                elevation="0";
-                translationZ="4dp";
-                alpha=1;
-                id="back_root";
-                {
-                  ImageView;
-                  src=图标("backspace");
-                  id="back";
-                  layout_height="-1";
-                  layout_width="-1";
-                  padding="16dp";
-                  colorFilter=primaryc;
-                };
-              };
-            };
+
+
           };
           {
             SwipeRefreshLayout,
             id="artical_list_sr",
+
             {
               ListView;
               layout_width="-1";
@@ -216,10 +212,44 @@
               id="notelist";
               DividerHeight=0;
               fastScrollEnabled=true;
+              nestedScrollingEnabled=true,
             };
           };
         };
       };
+
+
     };
   };
+
+  {
+    LinearLayout;
+    layout_width="-1";
+    layout_height="-1";
+    orientation="vertical";
+    gravity="right|bottom";
+    {
+      CardView;
+      layout_width="56dp",
+      layout_height="56dp",
+      radius="28dp";
+      layout_margin="16dp";
+      CardBackgroundColor=backgroundc;
+      elevation="0";
+      translationZ="4dp";
+      alpha=1;
+      id="back_root";
+      {
+        ImageView;
+        src=图标("backspace");
+        id="back";
+        layout_height="-1";
+        layout_width="-1";
+        padding="16dp";
+        colorFilter=primaryc;
+      };
+    };
+  };
+
+
 };

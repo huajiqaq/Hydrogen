@@ -12,6 +12,8 @@ import "androidx.recyclerview.widget.*"
 
 设置视图("layout/xgtj")
 
+设置toolbar(toolbar)
+
 波纹({fh},"圆主题")
 波纹({moren},"方自适应")
 

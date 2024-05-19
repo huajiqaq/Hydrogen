@@ -28,6 +28,7 @@ end
 if mtype:find("收藏") then
 
   activity.setContentView(loadlayout("layout/followed_collections"))
+  设置toolbar(toolbar)
 
   if title then
     if mtype:find("他") or mtype:find("她") then
@@ -157,7 +158,7 @@ if mtype:find("视频") then
 
   if issub then
     murl="https://api.zhihu.com/zvideo-collections/collections/"..id.."/include?offset=0&limit=10&include=answer"
-    
+
     function reslove(v)
       local 标题=v.title
       local 预览内容=v.description
@@ -168,10 +169,10 @@ if mtype:find("视频") then
       end
       return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
     end
-  
+
    else
     murl="https://api.zhihu.com/zvideo-collections/members/"..id.."/collections?offset=0&limit=10"
-   
+
     function reslove(v)
       local 标题=v.name
       local 预览内容=v.description
@@ -182,12 +183,12 @@ if mtype:find("视频") then
       end
       return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
     end
-  
+
   end
  else
   if mtype:find("专栏") then
     mmtype="columns"
-    
+
     function reslove(v)
       local 标题=v.title
       local 预览内容=v.description
@@ -198,12 +199,12 @@ if mtype:find("视频") then
       end
       return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
     end
-  
+
    elseif mtype:find("话题") then
     mmtype="topics"
     --底部内容删除
     itemc[2][2][3][4]=nil
-    
+
     function reslove(v)
       local 标题=v.name
       local 预览内容=v.excerpt
@@ -214,12 +215,12 @@ if mtype:find("视频") then
       end
       return {标题=标题,文章=预览内容,链接=链接,mc_title=标题}
     end
-  
+
    elseif mtype:find("问题") then
     mmtype="questions"
     --预览内容删除
     itemc[2][2][3][3]=nil
-    
+
     function reslove(v)
       local 标题=v.title
       local 链接="问题分割"..v.id
@@ -229,7 +230,7 @@ if mtype:find("视频") then
       end
       return {标题=标题,底部内容=底部内容,链接=链接,mc_title=标题}
     end
-  
+
   end
   murl="https://api.zhihu.com/people/"..id.."/following_"..mmtype.."?offset=0&limit=20"
 

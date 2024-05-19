@@ -10,6 +10,7 @@ question_id,是否记录历史记录=...
 
 设置视图("layout/question")
 
+设置toolbar(toolbar)
 
 --卡片布局
 question_itemc=获取适配器项目布局("question/question")

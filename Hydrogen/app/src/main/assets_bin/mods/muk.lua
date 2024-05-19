@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.515
+versionCode=0.516
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir("logo.png")
@@ -2730,3 +2730,8 @@ if cachemode=="true" then
   .show()
 end
 
+function 设置toolbar(toolbar)
+  toolbar.setTitle("")
+  activity.setSupportActionBar(toolbar)
+  toolbar.setContentInsetsRelative(0,0)
+end

@@ -1,20 +1,23 @@
 {
-  RelativeLayout;
-  layout_width="-1";
+  CoordinatorLayout;
+  id="mainLay";
+  layout_height="fill";
+  layout_width="fill";
   background=backgroundc;
-  layout_height="-1";
   {
-    LinearLayout;
-    layout_width="-1";
-    layout_height="-1";
-    orientation="vertical";
+    AppBarLayout;
+    layout_height="wrap";
+    layout_width="fill";
+    TargetElevation=0;
+    background=backgroundc;
     {
-      LinearLayout;
-      layout_width="-1";
-      layout_height="-2";
-      elevation="0";
-      background=backgroundc;
-      orientation="vertical";
+      MaterialToolbar;
+      id="toolbar";
+      layout_width="fill";
+      layout_height="56dp";
+      layout_gravity="center";
+      layout_scrollFlags="scroll|snap|enterAlways";
+
       {
         LinearLayout;
         layout_width="-1";
@@ -51,24 +54,26 @@
           Typeface=字体("product-Bold");
         };
       };
-    };
-    {
-      ScrollView;
-      layout_height="-1";
-      layout_width="-1";
-      {
-        LinearLayout;
-        layout_height="-1";
-        layout_width="-1";
-        orientation="vertical";
-        {
-          NoScrollListView;
-          layout_height="-1";
-          layout_width="-1";
-          DividerHeight=0;
-          id="settings_list";
-        };
-      };
+
     };
   };
+
+  {
+    NestedScrollView;
+    fillViewport="true";
+    layout_width="fill";
+    layout_height="fill";
+    layout_behavior="@string/appbar_scrolling_view_behavior";
+
+    {
+      ListView;
+      layout_height="-1";
+      layout_width="-1";
+      DividerHeight=0;
+      id="settings_list";
+      nestedScrollingEnabled=true,
+    };
+
+  };
+
 };

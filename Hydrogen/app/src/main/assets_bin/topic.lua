@@ -3,6 +3,7 @@ import "mods.muk"
 import "com.google.android.material.tabs.TabLayout"
 
 activity.setContentView(loadlayout("layout/topic"))
+设置toolbar(toolbar)
 topic_id=...
 波纹({fh,page1,page2,page3},"圆主题")
 
@@ -121,7 +122,7 @@ function reslove_topic(v,adapter)
       end
       id="视频分割"..v.target.id
      elseif v.target.type=="pin" then
-      title=v.target.content[1].title
+      title=v.target.title
       if title==nil or title==""
         title="一个想法"
       end

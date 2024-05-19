@@ -4,6 +4,7 @@ import "android.view.*"
 import "mods.muk"
 
 设置视图("layout/about")
+设置toolbar(toolbar)
 
 波纹({fh},"圆主题")
 

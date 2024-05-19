@@ -24,6 +24,8 @@ activity.setContentView(loadlayout("layout/answer"))
 
 import "model.answer"
 
+设置toolbar(toolbar)
+
 comment.onClick=function()
   xpcall(function()
     local pos=pg.getCurrentItem()
@@ -81,6 +83,20 @@ function 数据添加(t,b)
 
   t.content.setHorizontalScrollBarEnabled(false);
   t.content.setVerticalScrollBarEnabled(false);
+
+  t.content.setOnGenericMotionListener({
+    onGenericMotion=function(view, event)
+      local action=event.getAction()
+      if action==MotionEvent.ACTION_SCROLL then
+
+        local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+        local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+
+        t.msrcroll.scrollTo(0, t.msrcroll.getScrollY()-scrollY*100);
+        return true
+
+      end
+  end})
 
   if activity.getSharedData("标题简略化")~="true" then
     _title.Text=b.question.title:gsub("/",[[ 或 ]])

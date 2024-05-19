@@ -6,7 +6,7 @@ import "android.graphics.PorterDuff"
 import "mods.muk"
 import "com.google.android.material.materialswitch.MaterialSwitch"
 设置视图("layout/settings")
-
+设置toolbar(toolbar)
 
 import "com.google.android.material.slider.Slider"
 import "com.google.android.material.slider.LabelFormatter"

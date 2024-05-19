@@ -194,6 +194,8 @@ file:close()
 --new 0.46 删除滑动监听
 activity.setContentView(loadlayout("layout/local"))
 
+设置toolbar(toolbar)
+
 _title.text=title
 
 
@@ -245,6 +247,20 @@ webview.removeView(webview.getChildAt(0))
 webview.setHorizontalScrollBarEnabled(false);
 webview.setVerticalScrollBarEnabled(false);
 
+webview.setOnGenericMotionListener({
+  onGenericMotion=function(view, event)
+    local action=event.getAction()
+    if action==MotionEvent.ACTION_SCROLL then
+
+      local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+      local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+
+      scrollview.scrollTo(0, scrollview.getScrollY()-scrollY*100);
+      return true
+
+    end
+end})
+
 if activity.getSharedData("禁用缓存")=="true"
   webview
   .getSettings()
@@ -272,6 +288,7 @@ webview.setWebViewClient{
 
 webview.loadUrl(myuri)
 webview.setVisibility(0)
+
 
 task(1,function()
   a=MUKPopu({

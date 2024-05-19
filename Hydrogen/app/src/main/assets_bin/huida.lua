@@ -42,6 +42,56 @@ if docode~=nil and ischeck~="null" then
  elseif check_url(liulanurl) or liulanurl:find("https://www.zhihu.com/answer/") then
   liulan.getSettings().setUserAgentString("Mozilla/5.0 (Android 9; MI ) AppleWebKit/537.36 (KHTML) Version/4.0 Chrome/74.0.3729.136 mobile SearchCraft/2.8.2 baiduboxapp/3.2.5.10")
 end
+
+task(1,function()
+  顶栏高度=toolbar.height
+end)
+
+function toolbar_func()
+
+  local layoutParams = toolbar.getLayoutParams();
+  ValueAnimator.ofFloat({layoutParams.topMargin,newYValue})
+  .setDuration(150)
+  .addUpdateListener{
+    onAnimationUpdate=function(a)
+      local x=a.getAnimatedValue()
+      local linearParams = toolbar.getLayoutParams()
+      linearParams.topMargin =x
+      toolbar.setLayoutParams(linearParams)
+    end
+  }.start()
+
+end
+
+local function 设置滑动跟随(t)
+
+  scrollpos=0
+
+  t.onScrollChange=function(view,x,y,lx,ly)
+
+    if ly>y then --上次滑动y大于这次y就是向上滑
+      scrollpos = scrollpos+math.abs(y-ly) ;
+     else
+      scrollpos = scrollpos-math.abs(y-ly) ;
+    end
+
+    --上正 下负
+    if scrollpos>=顶栏高度 then
+      newYValue = 0 ;
+      toolbar_func()
+      scrollpos=newYValue
+     elseif scrollpos<=0-顶栏高度 then
+      newYValue = 0-顶栏高度 ;
+      toolbar_func()
+      scrollpos=newYValue
+    end
+
+  end
+
+end
+
+设置滑动跟随(liulan)
+
 liulan.BackgroundColor=转0x("#00000000",true);
 
 liulan.getSettings()

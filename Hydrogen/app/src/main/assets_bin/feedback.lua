@@ -2,6 +2,7 @@ require "import"
 import "mods.muk"
 
 activity.setContentView(loadlayout("layout/feedback"))
+设置toolbar(toolbar)
 波纹({fh,_more},"圆主题")
 波纹({send},"圆自适应")
 

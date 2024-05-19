@@ -6,6 +6,7 @@ collections_id,isfollow=...
 
 activity.setContentView(loadlayout("layout/collections"))
 
+设置toolbar(toolbar)
 
 apiurl="https://api.zhihu.com/collections/"..collections_id.."/contents"
 collections_url=apiurl.."?with_deleted=1&offset=0"

@@ -9,6 +9,7 @@ import "com.google.android.material.tabs.TabLayout"
 
 activity.setContentView(loadlayout("layout/people"))
 
+设置toolbar(toolbar)
 
 初始化历史记录数据(true)
 people_itemc=获取适配器项目布局("people/people")
