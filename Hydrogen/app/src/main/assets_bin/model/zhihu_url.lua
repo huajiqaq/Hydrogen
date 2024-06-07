@@ -13,11 +13,10 @@ end
 
 function string:getUrlArg(arg)
   --lua对字符串进行了优化 变量为字符串时也可以调用string的其他方法
-  return self:match(arg.."(.-)/%?") or self:match(arg.."(.-)/") or self:match(arg.."(.-)?") or self:match(arg.."(.+)")
+  return self:match(arg.."(.-)/%?") or self:match(arg.."(.-)/") or self:match(arg.."(.-)%?") or self:match(arg.."(.-)&") or self:match(arg.."(.+)")
 end
 
 function 检查链接(url,b)
-  local open=activity.getSharedData("内部浏览器查看回答")
   --  local url="https"..url:match("https(.+)")
   if url:find("zhihu.com/question") or url:find("zhihu.com/answer") then
 
@@ -37,18 +36,17 @@ function 检查链接(url,b)
         return true
       end
       questions,answer=url:match("question/(.-)?") or url:match("question/(.+)"),nil
-      if open=="false" then
-        this.newActivity("question",{questions,true})
-       else
-        this.newActivity("huida",{url})
-      end
+      this.newActivity("question",{questions,true})
       return
     end
-    if open=="false" then
-      this.newActivity("answer",{questions,answer,nil,true})
-     else
-      this.newActivity("huida",{url})
-    end
+    this.newActivity("answer",{questions,answer,nil,true})
+   elseif url:find("zhihu.com/column/republish_apply") then
+    if b then return true end
+    -- 网页端加入专栏
+    加入专栏(url:getUrlArg("id="),url:getUrlArg("type="))
+   elseif url:find("https://www.zhihu.com/account/unhuman") then
+    if b then return true end
+    activity.newActivity("huida",{url})
    elseif url:find("zhuanlan.zhihu.com/p/") then--/p/143744216
     if b then return true end
     this.newActivity("column",{url:getUrlArg("zhihu.com/p/")})
@@ -122,6 +120,10 @@ function 检查链接(url,b)
     if b then return true end
     activity.finish()
     this.newActivity("login",{url})
+   elseif url:find("zhihu.com/comment/list") then
+    if b then return true end
+    local mtype=url:match("comment/list/(.-)/")
+    activity.newActivity("comment",{url:getUrlArg(mtype.."/"),mtype.."s"})
    elseif url:find("zhihu://") then
     if b then return true end
     检查意图(url)
@@ -132,7 +134,6 @@ function 检查链接(url,b)
 end
 
 function 检查意图(url,b)
-  local open=activity.getSharedData("内部浏览器查看回答")
   if url and url:find("zhihu://") then
     if url:find "answers" then
       if b then return true end

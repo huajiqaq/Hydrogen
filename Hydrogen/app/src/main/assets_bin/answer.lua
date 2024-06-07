@@ -18,13 +18,71 @@ import "com.google.android.material.progressindicator.LinearProgressIndicator"
 
 --new 0.46 删除滑动监听
 activity.setContentView(loadlayout("layout/answer"))
+设置toolbar(toolbar)
 
 波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 波纹({all_root},"方自适应")
 
 import "model.answer"
 
-设置toolbar(toolbar)
+task(1,function()
+  顶栏高度=toolbar.height
+end)
+
+
+
+local function 设置滑动跟随(t)
+
+  if true then
+    return
+  end
+
+  t.onScrollChange=function(view,x,y,lx,ly)
+    if y<=2 then--解决滑到顶了还是没有到顶的bug
+      layoutParams = toolbar.getLayoutParams();
+      newYValue = 0 ;
+      layoutParams.topMargin = newYValue;
+      toolbar.setLayoutParams(layoutParams);
+      return
+    end
+    if t.canScrollVertically(1)~=true then--解决滑到底了还是没到底的bug
+      layoutParams = toolbar.getLayoutParams();
+      newYValue = 0-顶栏高度 ;
+      layoutParams.topMargin = newYValue;
+      toolbar.setLayoutParams(layoutParams);
+
+    end
+    if ly>y then --上次滑动y大于这次y就是向上滑
+      if toolbar.getLayoutParams().topMargin<=0 or math.abs(y-ly)>=顶栏高度 then --这个or为了防止快速大滑动
+
+        layoutParams = toolbar.getLayoutParams();
+        newYValue = 0 ;
+        layoutParams.topMargin = newYValue;
+        toolbar.setLayoutParams(layoutParams);
+
+       else
+
+        layoutParams = toolbar.getLayoutParams();
+        newYValue = layoutParams.topMargin+math.abs(y-ly) ;
+        layoutParams.topMargin = newYValue;
+        toolbar.setLayoutParams(layoutParams);
+
+      end
+     else
+      if llb.y<=顶栏高度 then --精准测量高度差 防止无法隐藏全部的bug new 0.1102
+
+        layoutParams = toolbar.getLayoutParams();
+        newYValue = layoutParams.topMargin-math.abs(y-ly) ;
+        layoutParams.topMargin = newYValue;
+        toolbar.setLayoutParams(layoutParams)
+
+      end
+    end
+  end
+
+end
+
+
 
 comment.onClick=function()
   xpcall(function()
@@ -50,6 +108,48 @@ end
 local 点赞状态={}
 local 感谢状态={}
 
+import "androidx.core.content.ContextCompat"
+local 滑动配置保存路径=tostring(ContextCompat.getDataDir(activity)).."/回答页滑动配置.conf"
+
+function 获取回答滑动位置配置()
+  local 配置文件内容=读取文件(滑动配置保存路径)
+  local 配置={}
+  pcall(function()
+    配置=luajson.decode(配置文件内容)
+  end)
+  return 配置
+end
+
+function 设置回答滑动位置配置(isremove)
+  local pos=pg.getCurrentItem()
+  local mview=数据表[pg.adapter.getItem(pos).id]
+  local 回答id=mview.data.id
+
+  local content
+  if isremove==nil then
+    local id表=mview.ids
+    local scroll=id表.mscroll.getScrollY()
+    local height=id表.userinfo.height
+    content=tostring(scroll-height)
+  end
+
+  local 配置=获取回答滑动位置配置()
+  配置[tostring(回答id)]=content
+  local 配置字符串=luajson.encode(配置)
+
+  --为空就写入为"" 更好看一点
+  if 配置字符串=="[]" then
+    配置字符串=""
+  end
+
+  写入文件(滑动配置保存路径,配置字符串)
+  return content
+end
+
+function 清空回答滑动位置配置()
+  写入文件(滑动配置保存路径,"")
+end
+
 function 数据添加(t,b)
   local detector=GestureDetector(this,{a=lambda _:_})
 
@@ -58,7 +158,7 @@ function 数据添加(t,b)
   local timeOut=200
   detector.setOnDoubleTapListener {
     onDoubleTap=function()
-      t.msrcroll.smoothScrollTo(0, 0)
+      t.mscroll.smoothScrollTo(0, 0)
       isDoubleTap=true
       task(timeOut,function()isDoubleTap=false end)
     end
@@ -77,29 +177,41 @@ function 数据添加(t,b)
     end
   end
 
+  all_root.onLongClick=function()
+    三按钮对话框("保存","是否保存当前滑动位置?","确认","取消","删除",
+    --点击第一个按钮的事件
+    function(an)
+      设置回答滑动位置配置()
+      提示("已保存")
+      an.dismiss()
+    end,
+    --点击第二个按钮事件
+    function(an)
+      an.dismiss()
+    end,
+    --点击第三个按钮事件
+    function(an)
+      设置回答滑动位置配置(true)
+      提示("已删除")
+      an.dismiss()
+    end)
+  end
+
   all_root.onTouch=function(v,e)
     return detector.onTouchEvent(e)
   end
 
+  设置滑动跟随(t.mscroll)
+
+  local ua=getua(t.content)
+  t.content.getSettings().setUserAgentString(ua)
+
+
   t.content.setHorizontalScrollBarEnabled(false);
   t.content.setVerticalScrollBarEnabled(false);
 
-  t.content.setOnGenericMotionListener({
-    onGenericMotion=function(view, event)
-      local action=event.getAction()
-      if action==MotionEvent.ACTION_SCROLL then
-
-        local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
-        local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
-
-        t.msrcroll.scrollTo(0, t.msrcroll.getScrollY()-scrollY*100);
-        return true
-
-      end
-  end})
-
   if activity.getSharedData("标题简略化")~="true" then
-    _title.Text=b.question.title:gsub("/",[[ 或 ]])
+    _title.Text=b.question.title
    else
     _title.Text="回答"
   end
@@ -150,7 +262,8 @@ function 数据添加(t,b)
     end
   }
 
-  t.msrcroll.smoothScrollTo(0,0)
+
+  t.mscroll.smoothScrollTo(0,0)
 
   t.content
   .getSettings()
@@ -193,10 +306,26 @@ function 数据添加(t,b)
   end
 
   t.content.BackgroundColor=转0x("#00000000",true);
+  t.content.requestFocus()
   t.content.setDownloadListener({
     onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
       webview下载文件(链接, UA, 相关信息, 类型, 大小)
   end})
+
+  t.content.setOnGenericMotionListener({
+    onGenericMotion=function(view, event)
+      local action=event.getAction()
+      if action==MotionEvent.ACTION_SCROLL then
+
+        local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+        local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+
+        t.mscroll.scrollTo(0, t.mscroll.getScrollY()-scrollY*100);
+        return true
+
+      end
+  end})
+
 
   local 回答id=(b.id)
   点赞状态[回答id]=(b.relationship.voting==1 and {true} or {false})[1]
@@ -221,7 +350,7 @@ function 数据添加(t,b)
   end
 
   if this.getSharedData("关闭硬件加速")=="true" then
-    t.msrcroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
+    t.mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
   end
 
   t.content.removeView(t.content.getChildAt(0))
@@ -234,13 +363,14 @@ function 数据添加(t,b)
       end
     end,
     onPageStarted=function(view,url,favicon)
+      加载js(view,获取js("native"))
       t.content.setVisibility(8)
       if t.progress~=nil then
         t.progress.setVisibility(0)
       end
       等待doc(view)
-
       加载js(view,获取js("zhihugif"))
+      加载js(view,获取js("answer_pages"))
     end,
     onPageFinished=function(view,url,favicon)
       t.content.setVisibility(0)
@@ -252,10 +382,18 @@ function 数据添加(t,b)
 
       加载js(view,获取js("answer_code"))
 
+      task(1000,function()
+        local 保存滑动位置=获取回答滑动位置配置()[tostring(b.id)] or 0
+        if tonumber(保存滑动位置)>0 then
+          local 实际滑动位置=保存滑动位置+t.userinfo.height
+          t.mscroll.smoothScrollTo(0,实际滑动位置)
+          提示("已恢复到上次滑动位置")
+        end
+      end)
+
       if this.getSharedData("代码块自动换行")=="true" then
         加载js(t.content,'document.querySelectorAll(".ztext pre").forEach(p => { p.style.whiteSpace = "pre-wrap"; p.style.wordWrap = "break-word"; });')
       end
-
 
       if b.content:find("video%-box") then
         if not(getLogin()) then
@@ -303,7 +441,7 @@ function 数据添加(t,b)
 
   t.content.addJSInterface(z,"androlua")
 
-  local msrcroll=t.msrcroll
+  local mscroll=t.mscroll
   local webview=t.content
   t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     onProgressChanged=function(view,url,favicon)
@@ -314,10 +452,10 @@ function 数据添加(t,b)
     onConsoleMessage=function(consoleMessage)
       --打印控制台信息
       if consoleMessage.message():find("开始滑动") then
-        msrcroll.requestDisallowInterceptTouchEvent(true)
+        mscroll.requestDisallowInterceptTouchEvent(true)
         pg.setUserInputEnabled(false);
        elseif consoleMessage.message():find("结束滑动") then
-        msrcroll.requestDisallowInterceptTouchEvent(false)
+        mscroll.requestDisallowInterceptTouchEvent(false)
         pg.setUserInputEnabled(true);
        elseif consoleMessage.message():find("打印") then
         print(consoleMessage.message())
@@ -327,21 +465,21 @@ function 数据添加(t,b)
     onShowCustomView=function(view,url)
       全屏模式=true
       web_video_view=view
-      savedScrollY= t.msrcroll.getScrollY()
-      t.msrcroll.setVisibility(8)
+      savedScrollY= t.mscroll.getScrollY()
+      t.mscroll.setVisibility(8)
       activity.getDecorView().addView(web_video_view)
       --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
       全屏()
     end,
     onHideCustomView=function(view,url)
       全屏模式=false
-      t.msrcroll.setVisibility(0)
+      t.mscroll.setVisibility(0)
       activity.getDecorView().removeView(web_video_view)
       --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
       取消全屏()
       Handler().postDelayed(Runnable({
         run=function()
-          t.msrcroll.smoothScrollTo(0, savedScrollY);
+          t.mscroll.smoothScrollTo(0, savedScrollY);
         end,
       }),200)
     end,
@@ -873,23 +1011,7 @@ task(1,function()
 
         end
       },
-
-      {
-        src=图标("explore"),text="内部浏览器打开",onClick=function()
-
-          local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
-
-          if url==nil then
-            提示("加载中")
-            return
-          end
-
-          url="https://www.zhihu.com/answer/"..url:match("answer/(.+)")
-
-          activity.newActivity("huida",{url,nil,true})
-
-        end
-      },
+    
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
 
@@ -965,7 +1087,7 @@ task(1,function()
           .setTitle("提示")
           .setMessage("你确认要关闭当前页的硬件加速吗 关闭后滑动可能会造成卡顿 如果当前页显示正常请不要关闭")
           .setPositiveButton("关闭",{onClick=function(v)
-              数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.msrcroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
+              数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
               数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.reload()
               提示("关闭成功")
           end})
@@ -978,12 +1100,12 @@ task(1,function()
   })
 end)
 
-if activity.getSharedData("回答提示0.03")==nil
+if activity.getSharedData("回答提示0.04")==nil
   AlertDialog.Builder(this)
   .setTitle("小提示")
   .setCancelable(false)
-  .setMessage("支持点赞 点击感谢按钮 双击标题回到顶部")
-  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.03","true") end})
+  .setMessage("你可双击标题回到顶部 长按标题来保存滑动位置(保存后下次打开会自动滑动到指定位置)")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.04","true") end})
   .show()
 end
 

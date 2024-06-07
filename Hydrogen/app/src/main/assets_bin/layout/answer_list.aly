@@ -1,6 +1,6 @@
 {
   ScrollView,
-  id="msrcroll",
+  id="mscroll",
   layout_height="fill";
   fillViewport="true";
   nestedScrollingEnabled=true,

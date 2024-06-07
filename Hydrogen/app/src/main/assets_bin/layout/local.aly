@@ -98,107 +98,12 @@
   };
 
   {
-    NestedScrollView;
-    fillViewport="true";
+    ViewPager2;
     layout_width="fill";
     layout_height="fill";
+    id="pg",
     layout_behavior="@string/appbar_scrolling_view_behavior";
-    paddingBottom="56dp",
-    id="scrollview",
-
-    {
-      LinearLayoutCompat;
-      id="content";
-      layout_width="fill";
-      layout_height="fill";
-      orientation="vertical";
-
-      {
-        ScrollView,
-        id="msrcroll",
-        layout_weight=1;
-        nestedScrollingEnabled=true,
-        {
-          LinearLayout;
-          layout_width="-1";
-          layout_height="-2";
-          orientation="vertical";
-          {
-            CardView;
-            CardElevation="0dp";
-            CardBackgroundColor=cardedge;
-            radius="8dp";
-            layout_width="-1";
-            layout_height="-2";
-            id="userinfo",
-            Visibility=0,
-            layout_margin="16dp";
-            {
-              CardView;
-              CardElevation="0dp";
-              CardBackgroundColor=backgroundc;
-              Radius=dp2px(8)-2;
-              layout_margin="2px";
-              layout_width="-1";
-              layout_height="-1";
-              {
-                CircleImageView,
-                layout_width="60dp",
-                layout_height="40dp",
-                layout_gravity="left|center",
-                src="logo.png",
-                id="usericon",
-              },
-              {
-                View,
-                layout_height="75dp",
-                id="ripple",
-              },
-              {
-                TextView,
-                text="",
-                textSize="16sp",
-                id="username",
-                Typeface=字体("product-Bold");
-                layout_marginTop="15dp",
-                layout_marginLeft="60dp",
-                gravity="left|center",
-                textColor=textc,
-              },
-              {
-                TextView,
-                text="",
-                id="userheadline",
-                Typeface=字体("product");
-                textSize="14sp",
-                layout_marginLeft="60dp",
-                layout_marginRight="5dp",
-                layout_marginTop="40dp",
-                layout_marginBottom="10dp",
-                gravity="left|bottom",
-                textColor="#FF767676",
-              },
-            };
-          };
-          {
-            LinearLayout,
-            layout_width="-1";
-            layout_height="-2";
-            {
-              LuaWebView,
-              id="webview",
-              layout_width="-1";
-              layout_height="-2";
-              Visibility=8,
-              layout_marginTop="2dp";
-              layout_marginLeft="8dp";
-              layout_marginRight="8dp";
-            }
-          },
-        };
-      };
-
-    };
+    paddingBottom="56dp";
   };
 
   {

@@ -525,7 +525,7 @@ end)
    elseif v.target.type=="collection" then
     return
    elseif v.target.type=="moments_pin" then
-    标题=v.target.author.name.."发表了想法"
+    标题=v.target.excerpt_title
     问题id="想法分割"..tostring(v.target.id)
     if #v.target.content>0 then
       预览内容=v.target.content[1].content
@@ -684,8 +684,8 @@ function 其他(isclear)
          elseif v.type=="collection" then
           return
          elseif v.type=="pin" then
-          活动=活动 or "一个想法"
-          标题=v.author.name.."发布了想法"
+          活动=活动 or "发布了想法"
+          标题="一个想法"
           问题id="想法分割"..v.id
           预览内容=v.content[1].content
 
@@ -842,7 +842,6 @@ end
 
 people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
-    local open=activity.getSharedData("内部浏览器查看回答")
     if tostring(v.Tag.people_question.text):find("文章分割") then
       activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("文章分割(.+)"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
      elseif tostring(v.Tag.people_question.text):find("话题分割") then
@@ -866,11 +865,7 @@ people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
         activity.newActivity("followed",{用户id,v.Tag.people_question.Text,people_name.Text})
       end
      else
-      if open=="false" then
-        activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)"),nil,true})
-       else
-        activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-      end
+      activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)"),nil,true})
     end
   end
 })

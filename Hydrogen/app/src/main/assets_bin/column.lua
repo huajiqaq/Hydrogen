@@ -38,13 +38,12 @@ if islocal then
    elseif 类型=="视频"
     mtype="zvideo"
     fxurl="https://www.zhihu.com/zvideo/"..result
-    followdoc='document.querySelector(".FollowButton")'
    elseif 类型=="圆桌" then
+    mtype="roundtable"
     fxurl="https://www.zhihu.com/roundtable/"..result
-    follow_content_doc='document.querySelector(".MetaArea-module-header-1S1T").childNodes[1].childNodes[1]'
    elseif 类型=="专题" then
+    mtype="special"
     fxurl="https://www.zhihu.com/special/"..result
-    follow_content_doc='document.querySelector(".FollowButton-module-root-3aFK")'
   end
 
 end
@@ -164,6 +163,10 @@ end
 
 _title.Text="加载中"
 
+local ua=getua(content)
+content.getSettings().setUserAgentString(ua)
+
+
 function 刷新()
   content.BackgroundColor=转0x("#00000000",true);
   content.setVisibility(8)
@@ -173,7 +176,7 @@ function 刷新()
         local url=luajson.decode(body)
         autoname=url.author.name
         simpletitle=url.title
-        simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
+        --simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
         if simpletitle=="" then
           simpletitle="一个文章"
         end
@@ -199,7 +202,13 @@ function 刷新()
     _title.Text="查看想法"
     zHttp.get("https://www.zhihu.com/api/v4/pins/"..result,head,function(code,content)
       simpletitle=luajson.decode(content).excerpt_title
-      simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
+      -- 查找 "|" 的位置
+      local position = simpletitle:find("|")
+      -- 如果找到了分隔符，则截取它前面的内容；否则，返回整个字符串
+      if position then
+        simpletitle = simpletitle:sub(1, position - 1)
+      end
+      --simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
       if simpletitle=="" then
         simpletitle="一个想法"
       end
@@ -228,7 +237,7 @@ function 刷新()
     _title.Text="视频"
     zHttp.get("https://www.zhihu.com/api/v4/zvideos/"..result,head,function(code,content)
       simpletitle=luajson.decode(content).title
-      simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
+      --simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
       if simpletitle=="" then
         simpletitle="一个视频"
       end
@@ -277,19 +286,21 @@ content.setWebViewClient{
 
   end,
   shouldOverrideUrlLoading=function(view,url)
+    view.stopLoading()
     if url:sub(1,4)~="http" then
       if 检查意图(url,true) then
-        view.stopLoading()
         检查意图(url)
       end
      else
+      if url:find("https://www.zhihu.com/oia/"..mtype.."/"..result) then
+        return false
+      end
       检查链接(url)
-      view.stopLoading()
-      view.goBack()
     end
   end,
   onPageStarted=function(view,url,favicon)
     --网页加载
+    加载js(view,获取js("native"))
     content.setVisibility(0)
     等待doc(view)
     if 全局主题值=="Night" then
@@ -298,18 +309,10 @@ content.setWebViewClient{
       白天主题(view)
     end
 
-    if url:find("https://www.zhihu.com/special/"..result) then
-      加载js(view,获取js("special"))
-     elseif url:find("https://www.zhihu.com/roundtable/"..result) then
-      加载js(view,获取js("roundtable"))
-     elseif url:find("https://www.zhihu.com/appview/pin/"..result) then
+    if url:find("https://www.zhihu.com/appview/pin/"..result) then
       加载js(view,获取js("pin"))
-     elseif url:find("https://www.zhihu.com/appview/p/"..result)
-      加载js(view,获取js("article"))
      elseif url:find("https://www.zhihu.com/zvideo/"..result)
       加载js(view,获取js("zvideo"))
-     elseif url:find("https://www.zhihu.com/special/"..result)
-      加载js(view,获取js("special"))
      elseif url:find("https://www.zhihu.com/theater/")
       加载js(view,获取js("drama"))
     end
@@ -380,75 +383,52 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
 
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
-    if consoleMessage.message():find("关注分割") then
-      if not(getLogin()) then
-        return 提示("请登录后使用本功能")
-      end
-      local mtext=consoleMessage.message():match("关注分割(.+)")
-      if mtext:find("已关注") then
-        zHttp.delete("https://api.zhihu.com/people/"..authorid.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
-          if a==200 then
-            if 类型=="视频" then
-              加载js(mty,followdoc..'.className="Button FollowButton ZVideo-authorFollowButton FEfUrdfMIKpQDJDqkjte Button--blue JmYzaky7MEPMFcJDLNMG"')
-              加载js(mty,followdoc..'.innerHTML='..[['<span style="display: inline-flex; align-items: center;">​<svg width="1.2em" height="1.2em" viewBox="0 0 24 24" class="Zi Zi--Plus FollowButton-icon" fill="currentColor"><path fill-rule="evenodd" d="M13.25 3.25a1.25 1.25 0 1 0-2.5 0v7.5h-7.5a1.25 1.25 0 1 0 0 2.5h7.5v7.5a1.25 1.25 0 1 0 2.5 0v-7.5h7.5a1.25 1.25 0 0 0 0-2.5h-7.5v-7.5Z" clip-rule="evenodd"></path></svg></span>关注']])
-             else
-              加载js(mty,followdoc..'.innerText="关注"')
-            end
-          end
-        end)
-       elseif mtext:find("关注") then
-        zHttp.post("https://api.zhihu.com/people/"..authorid.."/followers","",posthead,function(a,b)
-          if a==200 then
-            if 类型=="视频" then
-              加载js(mty,followdoc..'.className="Button FollowButton ZVideo-authorFollowButton FEfUrdfMIKpQDJDqkjte Button--primary Button--grey epMJl0lFQuYbC7jrwr_o ZdfrHW7Ef5ZjwFiiBJuS"')
-              加载js(mty,followdoc..'.innerText="已关注"')
-             else
-              加载js(mty,followdoc..'.innerText="已关注"')
-            end
-           elseif a==500 then
-            提示("请登录后使用本功能")
-          end
-        end)
-      end
-     elseif consoleMessage.message()=="显示评论" then
+    if consoleMessage.message()=="显示评论" then
       activity.newActivity("comment",{result,mtype.."s"})
      elseif consoleMessage.message()=="查看用户" then
       activity.newActivity("people",{authorid})
-     elseif consoleMessage.message()=="收藏" then
+     elseif consoleMessage.message():find("收藏") then
       if not(getLogin()) then
         return 提示("请登录后使用本功能")
       end
-      加入收藏夹(result,mtype)
+      local func=function() end
+      if consoleMessage.message():find("分割") then
+        func=function(count)
+          if count==0 then
+            local callbackid=tostring(consoleMessage.message()):match("收藏分割(.+)")
+            local sendobj='{"id":"'..callbackid..'","type":"success","params":{"contentType":"'..mtype..'","contentId":"'..result..'","collected":false}}'
+            加载js(content,'window.zhihuWebApp && window.zhihuWebApp.callback('..sendobj..')')
+          end
+        end
+      end
+      加入收藏夹(result,mtype,func)
      elseif consoleMessage.message()=="申请转载" then
       if not(getLogin()) then
         return 提示("请登录后使用本功能")
       end
       加入专栏(result,mtype)
-     elseif consoleMessage.message():find("关注") and consoleMessage.message():find("分割") then
+     elseif consoleMessage.message():find("关注分割") then
       if not(getLogin()) then
         return 提示("请登录后使用本功能")
       end
-      local mtext=consoleMessage.message():match("分割(.+)")
-      local 参数
-      if 类型=="圆桌" then
-        参数="roundtables"
-       elseif 类型=="专题" then
-        参数="news_specials"
-      end
-      local geturl="https://www.zhihu.com/api/v4/"..参数.."/"..result.."/followers"
-      if mtext=="已关注" then
-        zHttp.delete(geturl,head,function(code,content)
-          if code==200 or code==204 then
-            加载js(mty,follow_content_doc..'.innerText="未关注"')
+
+      local mtext=consoleMessage.message():match("关注分割(.+)")
+      if mtext:find("已关注") then
+        zHttp.delete("https://api.zhihu.com/people/"..authorid.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
+          if a==200 then
+            加载js(content,followdoc..'.innerText="关注"')
           end
         end)
-       else
-        zHttp.post(geturl,"",posthead,function(code,content)
-          if code==200 or code==204 then
-            加载js(mty,follow_content_doc..'.innerText="已关注"')
+       elseif mtext:find("关注") then
+        zHttp.post("https://api.zhihu.com/people/"..authorid.."/followers","",posthead,function(a,b)
+          if a==200 then
+            加载js(content,followdoc..'.innerText="已关注"')
+           elseif a==500 then
+            提示("请登录后使用本功能")
           end
         end)
       end
+
     end
 end}))
 

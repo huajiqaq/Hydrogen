@@ -1,6 +1,6 @@
-window.onload = function () {
+(function () {
 
-    if (document.querySelector(".MobileAppHeader")) {
+    function init() {
         if (document.querySelector(".LiveStreamPlayer-video")) {
             document.querySelector(".LiveStreamPlayer-video").controls = true;
         }
@@ -55,6 +55,8 @@ window.onload = function () {
                 });
             }
         }
-        
     }
-}
+
+    window.addEventListener("load", init)
+
+})()

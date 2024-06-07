@@ -97,7 +97,7 @@ function 发送评论(send_text,当前回复人)
 end
 
 function 多选菜单(v)
-  local rootview=v.getParent().getParent().getParent().getParent().getParent()
+  local rootview=获取listview顶部布局(v)
   if 踩tab[rootview.Tag.comment_id.text]==true then
     ctext="取消踩"
    else
@@ -259,7 +259,11 @@ function 刷新()
           downy=event.getRawY()
         end
       },
-
+      author_lay={
+        onClick=function(v)
+          activity.newActivity("people",{获取listview顶部布局(v).Tag.comment_author_id.text})
+        end
+      },
       comment_author=名字,
       comment_image=头像,
       comment_time=时间,

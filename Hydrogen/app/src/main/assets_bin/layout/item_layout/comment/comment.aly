@@ -47,6 +47,7 @@
           LinearLayout;
           orientation="horizontal";
           gravity="left|center",
+          id="author_lay";
           {
             CircleImageView;
             id="comment_image",

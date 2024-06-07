@@ -19,6 +19,7 @@ import "com.bumptech.glide.Glide"
 
 import "com.getkeepsafe.taptargetview.*"
 
+
 activity.setContentView(loadlayout("layout/home"))
 
 设置toolbar(toolbar)
@@ -127,7 +128,6 @@ page_home.setAdapter(pagadp)
 optmenu = {}
 loadmenu(bnv.getMenu(), m, optmenu, 3)
 bnv.setLabelVisibilityMode(1)
-
 
 _title.setText("主页")
 
@@ -404,7 +404,6 @@ function 主页刷新(isclear,isprev)
           end)
         end
 
-        local open=activity.getSharedData("内部浏览器查看回答")
         if tostring(v.Tag.链接2.text):find("文章分割") then
 
           activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("文章分割(.+)"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
@@ -419,15 +418,8 @@ function 主页刷新(isclear,isprev)
           activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("直播分割(.+)"),"直播"})
 
          else
-
           保存历史记录(v.Tag.标题2.Text,v.Tag.链接2.Text,50)
-
-          if open=="false" then
-
-            activity.newActivity("answer",{tostring(v.Tag.链接2.Text):match("(.+)分割"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
-           else
-            activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.链接2.Text):match("分割(.+)")})
-          end
+          activity.newActivity("answer",{tostring(v.Tag.链接2.Text):match("(.+)分割"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
         end
       end
     })
@@ -1247,7 +1239,6 @@ function 热榜刷新(isclear)
         波纹({view.hot_ripple},"圆自适应")
 
         view.content.onClick=function()
-          local open=activity.getSharedData("内部浏览器查看回答")
           if tostring(view.导向链接.text):find("文章分割") then
             activity.newActivity("column",{tostring(view.导向链接.Text):match("文章分割(.+)"),tostring(view.导向链接.Text):match("分割(.+)")})
 
@@ -1255,11 +1246,7 @@ function 热榜刷新(isclear)
             activity.newActivity("column",{tostring(view.链接2.Text):match("想法分割(.+)"),"想法"})
            else
             保存历史记录(view.标题.Text,view.导向链接.Text,50)
-            if open=="false" then
-              activity.newActivity("question",{view.导向链接.Text,nil})
-             else
-              activity.newActivity("huida",{"https://www.zhihu.com/question/"..tostring(view.导向链接.Text)})
-            end
+            activity.newActivity("question",{view.导向链接.Text,nil})
           end
         end
 
@@ -1324,7 +1311,7 @@ local function moments_feed(v,adapter)
   end)
   local 点赞数=(v.target.voteup_count)
   local 评论数=(v.target.comment_count)
-  local 标题=v.target.title
+  local 标题=v.target.title or v.target.excerpt_title
   local 作者名称=v.source.actor.name
   local 动作=作者名称..v.source.action_text
   local 时间=时间戳(v.source.action_time)
@@ -1406,7 +1393,7 @@ local function feed_item_index_group(v,adapter)
     标题=v.target.title
    elseif v.target.type=="moments_pin"
     问题id等="想法分割"..(v.target.id)
-    标题=v.target.title
+    标题=v.target.excerpt_title
     if 标题==nil or 标题=="" then
       标题="一个想法"
     end
@@ -2298,6 +2285,7 @@ local starthome=this.getSharedData("starthome")
 page_home.setCurrentItem(home_list[starthome],false)
 
 function 成功登录回调()
+  setHead()
   加载收藏view()
   加载关注view()
   加载创作内容view()
@@ -2482,11 +2470,6 @@ function onResume()
 end
 
 
-
-if not(this.getSharedData("内部浏览器查看回答")) then
-  activity.setSharedData("内部浏览器查看回答","false")
-end
-
 local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
 Http.get(update_api,head,function(code,content)
   if code==200 then
@@ -2660,4 +2643,22 @@ if not(this.getSharedData("hometip0.02")) then
     .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("hometip0.02","true") end})
     .show()
   end)
+end
+
+local packageName = this.getPackageName();
+--创建一个Intent对象，用于启动该应用的主Activity
+local launchIntent = this.getPackageManager().getLaunchIntentForPackage(packageName);
+if launchIntent ~= nil then
+  -- 获取应用的ComponentName
+  componentName = launchIntent.getComponent();
+  if componentName ~= nil then
+    --使用PackageManager清除应用图标缓存
+    packageManager = this.getPackageManager();
+    packageManager.clearPackagePreferredActivities(packageName);
+    --禁用应用图标并重新启用
+    packageManager.setComponentEnabledSetting(componentName,
+    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+    packageManager.setComponentEnabledSetting(componentName,
+    PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+  end
 end

@@ -52,7 +52,7 @@ adp=LuaAdapter(activity,itemc)
 history_list.Adapter=adp
 
 for n=1,#recordtt do
-  adp.add{history_title=recordtt[n],history_num=tostring(n)}
+  adp.add{history_title=Html.fromHtml(recordtt[n]),history_num=tostring(n)}
 end
 
 mytab={"全部","回答","想法","文章","提问","用户","视频","专栏"}
@@ -62,24 +62,24 @@ function check(str)
   if str=="全部"
 
     for n=1,#recordtt do
-      adp.add{history_title=recordtt[n],history_num=tostring(n)}
+      adp.add{history_title=Html.fromHtml(recordtt[n]),history_num=tostring(n)}
     end
    elseif str=="回答" then
     for n=1,#recordii do
       if not recordii[n]:find("想法") and not recordii[n]:find("文章") and not recordii[n]:find("视频") and not recordii[n]:find("用户") and not recordii[n]:find("专栏") and recordii[n]:find("分割") then
-        adp.add{history_title=recordtt[n],history_num=tostring(n)}
+        adp.add{history_title=Html.fromHtml(recordtt[n]),history_num=tostring(n)}
       end
     end
    elseif str=="提问" then
     for n=1,#recordii do
       if not recordii[n]:find("分割") then
-        adp.add{history_title=recordtt[n],history_num=tostring(n)}
+        adp.add{history_title=Html.fromHtml(recordtt[n]),history_num=tostring(n)}
       end
     end
    else
     for n=1,#recordii do
       if recordii[n]:find(str) then
-        adp.add{history_title=recordtt[n],history_num=tostring(n)}
+        adp.add{history_title=Html.fromHtml(recordtt[n]),history_num=tostring(n)}
       end
     end
   end
@@ -133,7 +133,7 @@ history_list.onItemLongClick=function(l,v,c,b)
 
     初始化()
     for n=1,#recordtt do
-      adp.add{history_title=recordtt[n],history_num=tostring(n)}
+      adp.add{history_title=Html.fromHtml(recordtt[n]),history_num=tostring(n)}
     end
 
 
@@ -148,7 +148,6 @@ history_list.onItemLongClick=function(l,v,c,b)
 end
 history_list.onItemClick=function(l,v,c,b)
   local clicknum=tointeger(v.Tag.history_num.text)
-  local open=activity.getSharedData("内部浏览器查看回答")
   初始化历史记录数据(true)
   保存历史记录(recordtt[clicknum],recordii[clicknum],50)
   if (recordii[clicknum]):find("文章分割") then
@@ -162,17 +161,9 @@ history_list.onItemClick=function(l,v,c,b)
    elseif (recordii[clicknum]):find("专栏分割") then
     activity.newActivity("people_column",{(recordii[clicknum]):match("专栏分割(.+)"),recordtt[clicknum]})
    elseif (recordii[clicknum]):find("分割") then
-    if open=="false" then
-      activity.newActivity("answer",{(recordii[clicknum]):match("(.+)分割"),(recordii[clicknum]):match("分割(.+)")})
-     else
-      activity.newActivity("huida",{"https://www.zhihu.com/answer/"..(recordii[clicknum]):match("分割(.+)")})
-    end
+    activity.newActivity("answer",{(recordii[clicknum]):match("(.+)分割"),(recordii[clicknum]):match("分割(.+)")})
    else
-    if open=="false" then
-      activity.newActivity("question",{(recordii[clicknum])})
-     else
-      activity.newActivity("huida",{"https://www.zhihu.com/question/"..(recordii[clicknum])})
-    end
+    activity.newActivity("question",{(recordii[clicknum])})
   end
   activity.setResult(1500,nil)
   task(300,function()

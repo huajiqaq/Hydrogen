@@ -141,6 +141,7 @@ end
 
 --不是就使用通用的布局
 activity.setContentView(loadlayout("layout/history"))
+设置toolbar(toolbar)
 if title then
   if mtype:find("他") or mtype:find("她") then
     _title.text=mtype

@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.516
+versionCode=0.517
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir("logo.png")
@@ -54,7 +54,6 @@ function numtostr(num)
 end
 
 function 点击事件判断(myid,title)
-  local open=activity.getSharedData("内部浏览器查看回答")
   if tostring(myid):find("问题分割") then
     activity.newActivity("question",{tostring(myid):match("问题分割(.+)"),true})
    elseif tostring(myid):find("文章分割") then
@@ -82,11 +81,7 @@ function 点击事件判断(myid,title)
     if title then
       保存历史记录(title,myid,50)
     end
-    if open=="false" then
-      activity.newActivity("answer",{tostring(myid):match("(.+)分割"),tostring(myid):match("分割(.+)")})
-     else
-      activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(myid):match("分割(.+)")})
-    end
+    activity.newActivity("answer",{tostring(myid):match("(.+)分割"),tostring(myid):match("分割(.+)")})
   end
 end
 
@@ -104,29 +99,44 @@ if activity.getSharedData("font_size") then
   res.updateConfiguration(config,res.getDisplayMetrics());
 end
 
-function debounce(func,delay)
-  -- 声明局部变量存储Handler和Runnable
-  local handler = nil
-  local runnable = nil
-  -- 创建并返回一个新的防抖处理函数
+local handler=Handler()
+
+---节流，delay 毫秒内只运行一次，若在 delay 毫秒内重复触发，只有一次生效
+---@param func function 事件
+---@param delay number 延迟
+---@return function runnable 节流运行
+function throttle(func,delay)
+  local args={}
+  local runnable=Runnable({run=function()
+      func(table.unpack(args,1,args.length))
+  end})
   return function(...)
-    -- 如果已有等待执行的任务，则移除它
-    if handler and runnable then
-      handler.removeCallbacks(runnable)
+    if handler.hasCallbacks(runnable) then
+      return
     end
-    local args={...}
-    -- 创建或重置Runnable，封装要执行的回调函数
-    runnable = Runnable({
-      run = function()
-        func(unpack(args)) -- 执行真正的回调函数
-        runnable = nil
-      end
-    })
-    -- 创建或复用Handler，并发送延迟消息
-    handler = handler or Handler()
-    handler.postDelayed(runnable, delay) -- delay参数是毫秒
+    args=table.pack(...)
+    handler.postDelayed(runnable,delay)
   end
 end
+
+---防抖，delay 毫秒后在执行该事件，若在 delay 毫秒内被重复触发，则重新计时
+---@param func function 事件
+---@param delay number 延迟
+---@return function runnable 防抖运行
+function debounce(func,delay)
+  local args={}
+  local runnable=Runnable({run=function()
+      func(table.unpack(args,1,args.length))
+  end})
+  return function(...)
+    if handler.hasCallbacks(runnable) then
+      handler.removeCallbacks(runnable)
+    end
+    args=table.pack(...)
+    handler.postDelayed(runnable,delay)
+  end
+end
+
 
 function tokb(m)
   if m<=1024 then
@@ -1345,7 +1355,6 @@ function MUKPopu(t)
               layout_marginRight="10dp",
               layout_width="match_parent";
               layout_gravity="center",
-              lines="1",
               ellipsize="end",
               id="edit";
             };
@@ -1570,7 +1579,7 @@ function table.join(old,add)
   end
 end
 
-function 加入收藏夹(回答id,收藏类型)
+function 加入收藏夹(回答id,收藏类型,func)
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
@@ -1619,9 +1628,19 @@ function 加入收藏夹(回答id,收藏类型)
         add={},
         remove={}
       }
+
+      local orii=0
+      local i=0
       for k, v in pairs(adp.getData()) do
         local oristatus=v.oristatus
         local status=v.status.Checked
+
+        if status==true then
+          i=i+1
+         elseif oristatus==true then
+          orii=orii+1
+        end
+
         if oristatus~=status then
           if status==true then
             table.insert(dotab.add,v.myid)
@@ -1637,10 +1656,13 @@ function 加入收藏夹(回答id,收藏类型)
       end
       zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..addstr.."&remove_collections="..removestr,head,function(code,json)
         canload=true
+        local func=func or function() end
         if code==200 then
           提示("成功")
+          func(i)
          else
           提示("失败")
+          func(orii)
         end
       end)
   end})
@@ -2334,7 +2356,14 @@ if not this.getSharedData("udid") then
 
 end
 
+
+function getua(view)
+  local user_agent="ZhihuHybrid com.zhihu.android/Futureve/9.13.0 "..view.getSettings().getUserAgentString()
+  return user_agent
+end
+
 function setHead()
+
   if this.getSharedData("signdata") then
     local jsondata=luajson.decode(this.getSharedData("signdata"))
     access_token="Bearer "..jsondata.access_token
@@ -2734,4 +2763,12 @@ function 设置toolbar(toolbar)
   toolbar.setTitle("")
   activity.setSupportActionBar(toolbar)
   toolbar.setContentInsetsRelative(0,0)
+end
+
+function 获取listview顶部布局(view)
+  local myview=view
+  while myview.Tag==nil do
+    myview=myview.getParent()
+  end
+  return myview
 end

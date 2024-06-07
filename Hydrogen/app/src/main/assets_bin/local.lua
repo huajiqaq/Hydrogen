@@ -191,6 +191,9 @@ end
 
 file:close()
 
+import "androidx.viewpager2.widget.ViewPager2"
+
+
 --new 0.46 删除滑动监听
 activity.setContentView(loadlayout("layout/local"))
 
@@ -202,6 +205,94 @@ _title.text=title
 if this.getSharedData("关闭硬件加速")=="true" then
   webview.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
 end
+
+local 加入view=loadlayout({
+  ScrollView,
+  id="mscroll",
+  nestedScrollingEnabled=true,
+  {
+    LinearLayout;
+    layout_width="-1";
+    layout_height="-2";
+    orientation="vertical";
+    {
+      CardView;
+      CardElevation="0dp";
+      CardBackgroundColor=cardedge;
+      radius="8dp";
+      layout_width="-1";
+      layout_height="-2";
+      id="userinfo",
+      Visibility=0,
+      layout_margin="16dp";
+      {
+        CardView;
+        CardElevation="0dp";
+        CardBackgroundColor=backgroundc;
+        Radius=dp2px(8)-2;
+        layout_margin="2px";
+        layout_width="-1";
+        layout_height="-1";
+        {
+          CircleImageView,
+          layout_width="60dp",
+          layout_height="40dp",
+          layout_gravity="left|center",
+          src="logo.png",
+          id="usericon",
+        },
+        {
+          View,
+          layout_height="75dp",
+          id="ripple",
+        },
+        {
+          TextView,
+          text="",
+          textSize="16sp",
+          id="username",
+          Typeface=字体("product-Bold");
+          layout_marginTop="15dp",
+          layout_marginLeft="60dp",
+          gravity="left|center",
+          textColor=textc,
+        },
+        {
+          TextView,
+          text="",
+          id="userheadline",
+          Typeface=字体("product");
+          textSize="14sp",
+          layout_marginLeft="60dp",
+          layout_marginRight="5dp",
+          layout_marginTop="40dp",
+          layout_marginBottom="10dp",
+          gravity="left|bottom",
+          textColor="#FF767676",
+        },
+      };
+    };
+    {
+      LinearLayout,
+      layout_width="-1";
+      layout_height="-2";
+      {
+        LuaWebView,
+        id="webview",
+        layout_width="-1";
+        layout_height="-2";
+        Visibility=8,
+        layout_marginTop="2dp";
+        layout_marginLeft="8dp";
+        layout_marginRight="8dp";
+      }
+    },
+  };
+})
+
+import "com.dingyi.adapter.BaseViewPage2Adapter"
+pg.adapter=BaseViewPage2Adapter(this)
+pg.adapter.add(加入view)
 
 username.text=xxx:match[[author="(.-)"]]
 userheadline.text=xxx:match[[headline="(.-)"]]
@@ -221,7 +312,7 @@ mark.onClick=function()
   end
 end
 
-msrcroll.smoothScrollTo(0,0)
+mscroll.smoothScrollTo(0,0)
 
 webview
 .getSettings()
@@ -255,7 +346,7 @@ webview.setOnGenericMotionListener({
       local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
       local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
 
-      scrollview.scrollTo(0, scrollview.getScrollY()-scrollY*100);
+      mscroll.scrollTo(0, mscroll.getScrollY()-scrollY*100);
       return true
 
     end
@@ -306,7 +397,7 @@ task(1,function()
           .setTitle("提示")
           .setMessage("你确认要关闭当前页的硬件加速吗 关闭后滑动可能会造成卡顿 如果当前页显示正常请不要关闭")
           .setPositiveButton("关闭",{onClick=function(v)
-              msrcroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
+              mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
               webview.reload()
               提示("关闭成功")
           end})

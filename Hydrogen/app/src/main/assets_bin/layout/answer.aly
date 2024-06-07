@@ -120,8 +120,7 @@
     layout_height="fill";
     id="pg",
     layout_behavior="@string/appbar_scrolling_view_behavior";
-    paddingBottom="56dp",
-
+    paddingBottom="56dp";
   };
 
   {

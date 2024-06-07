@@ -11,7 +11,7 @@ MDC_R=luajava.bindClass"com.google.android.material.R"
 
 设置视图("layout/search")
 
-设置toolbar(toolbar)
+
 
 button.onClick=function()
   if #(tostring(t2.text):gsub("\n",""):gsub(" ",""))<1 then

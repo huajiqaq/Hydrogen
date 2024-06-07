@@ -18,7 +18,6 @@ question_itemc=获取适配器项目布局("question/question")
 question_adp=MyLuaAdapter(activity,question_datas,question_itemc)
 
 
-
 task(1,function()
   question_list.addHeaderView(loadlayout({
     LinearLayout;
@@ -209,6 +208,12 @@ task(1,function()
               id="description_card";
               {
                 LinearLayout;
+                onClick=function()
+                  if description_text.text=="加载中" then
+                    return 提示("加载中")
+                  end
+                  问题详情(问题预览)
+                end;
                 id="description",
                 padding="4dp",
                 orientation="horizontal";
@@ -255,24 +260,7 @@ task(1,function()
                   if description_text.text=="加载中" then
                     return 提示("加载中")
                   end
-                  if _open.text=="展开" then
-                    openimg.setImageBitmap(loadbitmap(图标("arrow_drop_up")))
-                    description_card.setVisibility(8)
-                    isLoaded = 0
-                    savedScrollY= question_list.getScrollY()
-                    show.loadUrl("")
-                    show.BackgroundColor=转0x("#00000000",true);
-                    show.setHorizontalScrollBarEnabled(false);
-                    show.setVerticalScrollBarEnabled(false);
-                    _open.text="收起"
-                   elseif _open.text=="收起" then
-                    openimg.setImageBitmap(loadbitmap(图标("arrow_drop_down")))
-                    description_card.setVisibility(0)
-                    isLoaded = 1
-                    question_list.smoothScrollToPosition(savedScrollY);
-                    show.Visibility=8
-                    _open.text="展开"
-                  end
+                  问题详情(问题预览)
                 end;
                 id="open",
                 padding="4dp",
@@ -498,6 +486,192 @@ function 刷新()
   end)
 end
 
+function 问题详情(code)
+  local bwz
+  if 全局主题值=="Day" then
+    bwz=0x3f000000
+   else
+    bwz=0x3fffffff
+  end
+
+  import "com.google.android.material.bottomsheet.*"
+
+  local dann={
+    LinearLayout;
+    layout_width=-1;
+    layout_height=-1;
+    {
+      LinearLayout;
+      orientation="vertical";
+      layout_width=-1;
+      layout_height=-2;
+      Elevation="4dp";
+      BackgroundColor=转0x(backgroundc);
+      id="ztbj";
+      {
+        CardView;
+        layout_gravity="center",
+        CardBackgroundColor=转0x(cardedge);
+        radius="3dp",
+        Elevation="0dp";
+        layout_height="6dp",
+        layout_width="56dp",
+        layout_marginTop="12dp";
+      };
+
+      {
+        LinearLayout;
+        orientation="horizontal";
+        layout_width=-1;
+        layout_height=-1;
+
+        {
+          TextView;
+          textSize="20sp";
+          layout_marginTop="12dp";
+          layout_marginLeft="12dp";
+          layout_marginRight="12dp";
+          Text="问题详情";
+          Typeface=字体("product-Bold");
+          textColor=转0x(primaryc);
+        };
+
+        {
+          LinearLayout;
+          orientation="horizontal";
+          layout_width=-1;
+          layout_height="wrap";
+          gravity="right|center";
+          {
+            MaterialButton_OutlinedButton;
+            layout_marginLeft="12dp";
+            layout_marginRight="12dp";
+            textColor=转0x(stextc);
+            text="关闭";
+            RippleColor=ColorStateList(int[0].class{int{}},int{bwz});
+            Typeface=字体("product-Bold");
+            id="close_description_button"
+          };
+        };
+
+      };
+
+
+      {
+        LuaWebView;
+        id="show",
+        layout_width=-1;
+        layout_height=-1;
+
+      };
+    };
+  };
+
+  local bottomSheetDialog = BottomSheetDialog(this)
+  bottomSheetDialog.setContentView(loadlayout2(dann))
+  local an=bottomSheetDialog.show()
+  bottomSheetDialog.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+  bottomSheetDialog.behavior.setDraggable(false)
+  close_description_button.onClick=function()
+    an.cancel()
+  end
+
+  function imgReset()
+    show.loadUrl("javascript:(function(){" ..
+    "var objs = document.getElementsByTagName('img'); " ..
+    "for(var i=0;i<objs.length;i++) " ..
+    "{"
+    .. "var img = objs[i]; " ..
+    " img.style.maxWidth = '100%'; img.style.height = 'auto'; " ..
+    "}" ..
+    "})()")
+  end
+
+  settings = show.getSettings();
+  settings.setJavaScriptEnabled(true)
+
+  if activity.getSharedData("禁用缓存")=="true" then
+    show
+    .getSettings()
+    .setAppCacheEnabled(false)
+    --关闭 DOM 存储功能
+    .setDomStorageEnabled(false)
+    --关闭 数据库 存储功能
+    .setDatabaseEnabled(false)
+    .setCacheMode(WebSettings.LOAD_NO_CACHE);
+   else
+    show
+    .getSettings()
+    .setAppCacheEnabled(true)
+    --开启 DOM 存储功能
+    .setDomStorageEnabled(true)
+    --开启 数据库 存储功能
+    .setDatabaseEnabled(true)
+    .setCacheMode(WebSettings.LOAD_DEFAULT)
+  end
+
+  show.setOnGenericMotionListener({
+    onGenericMotion=function(view, event)
+      local action=event.getAction()
+      if action==MotionEvent.ACTION_SCROLL then
+
+        local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+        local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+        show.scrollBy(0, -scrollY*100);
+        return true
+
+      end
+  end})
+
+  show.setDownloadListener({
+    onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
+      webview下载文件(链接, UA, 相关信息, 类型, 大小)
+  end})
+
+  local z=JsInterface{
+    execute=function(b)
+      if b~=nil then
+        activity.newActivity("image",{b})
+      end
+    end
+  }
+
+  show.addJSInterface(z,"androlua")
+
+  show.setWebViewClient{
+    shouldOverrideUrlLoading=function(view,url)
+      view.stopLoading()
+      检查链接(url)
+    end,
+    onPageStarted=function(view,url,favicon)
+    end,
+    onPageFinished=function(view,url)
+
+      if 全局主题值=="Night" then
+        黑暗页(view)
+      end
+
+      imgReset()
+
+      加载js(view,获取js("zhihugif"))
+
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+
+    end,
+
+    onProgressChanged=function(view,Progress)
+    end,
+    onLoadResource=function(view,url)
+    end,
+  }
+
+  show.Visibility=8
+  show.BackgroundColor=转0x("#00000000",true);
+  show.loadDataWithBaseURL(nil,code,"text/html","utf-8",nil);
+  show.Visibility=0
+
+end
+
 
 
 question_base=require "model.question":new(question_id)
@@ -549,106 +723,9 @@ function 加载数据()
      else
       description_card.visibility=8
     end
-    description.onClick=function()
-      description_card.setVisibility(8)
-      isLoaded = 0
-      savedScrollY= question_list.getScrollY()
-      openimg.setImageBitmap(loadbitmap(图标("arrow_drop_up")))
-      _open.text="收起"
-      show.loadUrl("")
-      show.BackgroundColor=转0x("#00000000",true);
-      show.setHorizontalScrollBarEnabled(false);
-      show.setVerticalScrollBarEnabled(false);
-    end
 
-    function imgReset()
-      show.loadUrl("javascript:(function(){" ..
-      "var objs = document.getElementsByTagName('img'); " ..
-      "for(var i=0;i<objs.length;i++) " ..
-      "{"
-      .. "var img = objs[i]; " ..
-      " img.style.maxWidth = '100%'; img.style.height = 'auto'; " ..
-      "}" ..
-      "})()")
-    end
+    问题预览=tab.detail
 
-    settings = show.getSettings();
-    settings.setJavaScriptEnabled(true)
-
-    if activity.getSharedData("禁用缓存")=="true"
-      show
-      .getSettings()
-      .setAppCacheEnabled(false)
-      --关闭 DOM 存储功能
-      .setDomStorageEnabled(false)
-      --关闭 数据库 存储功能
-      .setDatabaseEnabled(false)
-      .setCacheMode(WebSettings.LOAD_NO_CACHE);
-     else
-      show
-      .getSettings()
-      .setAppCacheEnabled(true)
-      --开启 DOM 存储功能
-      .setDomStorageEnabled(true)
-      --开启 数据库 存储功能
-      .setDatabaseEnabled(true)
-      .setCacheMode(WebSettings.LOAD_DEFAULT)
-    end
-
-    show.setDownloadListener({
-      onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
-        webview下载文件(链接, UA, 相关信息, 类型, 大小)
-    end})
-
-    show.setWebViewClient{
-      shouldOverrideUrlLoading=function(view,url)
-        view.stopLoading()
-        检查链接(url)
-      end,
-      onPageStarted=function(view,url,favicon)
-      end,
-      onPageFinished=function(view,url)
-
-        if 全局主题值=="Night" then
-          黑暗页(view)
-        end
-
-        imgReset()
-
-        加载js(view,获取js("zhihugif"))
-
-        view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-
-        local z=JsInterface{
-          execute=function(b)
-            if b~=nil then
-              activity.newActivity("image",{b})
-            end
-          end
-        }
-
-        view.addJSInterface(z,"androlua")
-
-        if isLoaded == 1 then
-          Handler().postDelayed(Runnable({
-            run=function()
-              show.setFocusable(false)
-              show.setVisibility(0)
-            end,
-          }),100)
-         else
-          isLoaded = 1
-          show.setVisibility(8)
-          show.loadDataWithBaseURL(nil,tab.detail,"text/html","utf-8",nil);
-        end
-
-      end,
-
-      onProgressChanged=function(view,Progress)
-      end,
-      onLoadResource=function(view,url)
-      end,
-    }
 
     mpop={
       tittle="问题",
@@ -793,13 +870,7 @@ end
 
 question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
-    local open=activity.getSharedData("内部浏览器查看回答")
-    if open=="false" then
-      activity.newActivity("answer",{question_id,tostring(v.Tag.question_id.Text)})
-     else
-      activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.question_id.Text)})
-    end
-
+    activity.newActivity("answer",{question_id,tostring(v.Tag.question_id.Text)})
   end
 })
 

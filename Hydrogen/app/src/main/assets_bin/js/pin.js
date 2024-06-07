@@ -1,27 +1,34 @@
-window.onload = function () {
-    //防止图片显示不正确
-    var style
-    style = document.createElement('style');
-    style.innerHTML = '.css-10ti98u{display:none !important}'
-    document.head.appendChild(style);
-    if (document.querySelector(".ToolbarButton--collect")) {
-        var ele = document.querySelector(".Toolbar-functionButtons")
-        ele.childNodes[1].outerHTML = ele.childNodes[1].outerHTML
-        ele.childNodes[1].addEventListener('click', function () {
-            console.log("收藏")
-        });
-        ele.childNodes[2].addEventListener('click', function () {
-            console.log("显示评论")
-        });
+(function () {
 
-        ele.childNodes[3].addEventListener('click', function (e) {
-            console.log("查看用户")
-            e.stopPropagation();
-        },true);
+    function init() {
+        let jsonstr = document.getElementById("js-initialData").innerText
+        let json = JSON.parse(jsonstr).initialState.briefs
+        let id = Object.values(json.entityId2ContentIdMap)[0]
+        let jsondata = json[id]
+        let videodata = jsondata.video
+        if (videodata) {
+            if (videodata.playlist) {
 
-        document.querySelector(".Toolbar-customizedArea").addEventListener('click', function () {
-            console.log("显示评论")
-        });
+                let element = document.querySelector(".RichText").childNodes[0];
 
+                var style
+                style = document.createElement('style');
+                style.innerHTML = '.css-0 > *:first-child{padding-top:unset !important}'
+                document.head.appendChild(style);
+
+
+                let playurl = Object.values(videodata.playlist)[0].url
+
+                var div = document.createElement('div');
+                div.innerHTML = '<video controls="" style="width: 100%;height: 100%;"><source src="' + playurl + '" type="video/mp4"></video>'
+
+                // 在目标元素之前插入新元素
+                element.parentNode.insertBefore(div, element);
+
+            }
+        }
     }
-}
+
+    window.addEventListener("load", init)
+
+})()

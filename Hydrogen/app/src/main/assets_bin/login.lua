@@ -37,6 +37,7 @@ login_web.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onConsoleMessage=function(consoleMessage)
     if consoleMessage.message():find("sign_data=")
       activity.setSharedData("signdata",consoleMessage.message():match("sign_data=(.+)"))
+      设置Cookie("https://www.zhihu.com/",luajson.decode(activity.getSharedData("signdata")).cookie)--设置Cookie
     end
   end,
   onProgressChanged=function(view,Progress)

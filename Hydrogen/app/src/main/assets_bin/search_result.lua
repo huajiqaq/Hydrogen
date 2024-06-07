@@ -83,7 +83,6 @@ end
 
 
 history_list.onItemClick=function(l,v,c,b)
-  local open=activity.getSharedData("内部浏览器查看回答")
   if tostring(v.Tag.people_question.text):find("文章分割") then
     activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("文章分割(.+)"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
    elseif tostring(v.Tag.people_question.text):find("话题分割") then
@@ -97,12 +96,8 @@ history_list.onItemClick=function(l,v,c,b)
    elseif tostring(v.Tag.people_question.Text):find("专栏分割") then
     activity.newActivity("people_column",{tostring(v.Tag.people_question.Text):match("专栏分割(.+)专栏标题"),tostring(v.Tag.people_question.Text):match("专栏标题(.+)")})
    else
-    if open=="false" then
-      保存历史记录(v.Tag.people_title.Text,v.Tag.people_url.Text,50)
-      activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
-     else
-      activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.follow_id.Text):match("分割(.+)")})
-    end
+    保存历史记录(v.Tag.people_title.Text,v.Tag.people_url.Text,50)
+    activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
   end
 end
 

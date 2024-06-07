@@ -154,10 +154,6 @@ list5.setOnScrollListener{
 
 list5.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
-
-    local open=activity.getSharedData("内部浏览器查看回答")
-
-
     if tostring(v.Tag.cid.text):find("文章分割") then
       activity.newActivity("column",{tostring(v.Tag.cid.Text):match("文章分割(.+)")})
      elseif tostring(v.Tag.cid.text):find("想法分割") then
@@ -166,16 +162,12 @@ list5.setOnItemClickListener(AdapterView.OnItemClickListener{
       activity.newActivity("column",{tostring(v.Tag.cid.Text):match("视频分割(.+)"),"视频"})
      else
       保存历史记录(v.Tag.catitle.Text,v.Tag.cid.Text,50)
-      if open=="false" then
-        activity.newActivity("answer",{tostring(v.Tag.cid.Text):match("(.+)回答分割"),tostring(v.Tag.cid.Text):match("回答分割(.+)")})
-       else
-        activity.newActivity("huida",{"https://www.zhihu.com/answer/"..tostring(v.Tag.cid.Text):match("分割(.+)")})
-      end
+      activity.newActivity("answer",{tostring(v.Tag.cid.Text):match("(.+)回答分割"),tostring(v.Tag.cid.Text):match("回答分割(.+)")})
     end
   end
 })
 
-function 多选菜单(v)
+function 多选菜单(v,zero)
   local rootview=v
 
   local 类型
@@ -206,7 +198,13 @@ function 多选菜单(v)
         end,function(an)an.dismiss()end)
     end},
     {"移动到其他收藏夹",function()
-        加入收藏夹(id,类型)
+        加入收藏夹(id,类型,function(count)
+          if count==0 then
+            activity.setResult(1600,nil)
+            list5.adapter.remove(zero)
+            list5.adapter.notifyDataSetChanged()
+          end
+        end)
     end},
   }
 
@@ -223,7 +221,7 @@ list5.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
     if isfollow then
       return true
     end
-    多选菜单(v)
+    多选菜单(v,zero)
     return true
 end})
 
