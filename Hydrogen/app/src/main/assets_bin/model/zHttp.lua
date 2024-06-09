@@ -2,12 +2,12 @@ zHttp = {}
 
 function zHttp.setcallback(code,content,raw,headers,url,head,callback,func,data)
   if code==403 then
-    canload=false
     local _ = pcall(function()
       decoded_content=luajson.decode(content)
     end)
     if decoded_content.error and decoded_content.error.message and decoded_content.error.redirect then
       if not mytip_dia or mytip_dia.isShowing()~=true then
+        canload=false
         mytip_dia=AlertDialog.Builder(this)
         .setTitle("提示")
         .setMessage(decoded_content.error.message)

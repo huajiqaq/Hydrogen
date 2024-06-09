@@ -114,7 +114,7 @@ if mtype:find("收藏") then
       "https://api.zhihu.com/people/"..id.."/collections_v2?offset=0&limit=20",
       "https://api.zhihu.com/people/"..id.."/following_collections?offset=0"
     },
-    head=head,
+    head="head",
 
     func=function(v,pos,adapter)
       local data= reslove_home_collection[pos](v)

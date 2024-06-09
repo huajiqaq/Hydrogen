@@ -143,9 +143,11 @@ versionName=tostring(appinfo.versionName)
 data = {}
 adp=LuaMultiAdapter(this,data,about_item)
 adp.add{__type=2,image=图标(""),subtitle="当前版本",message=versionName.."("..versionCode..")"}
+adp.add{__type=3,image=图标(""),subtitle="更新日志"}
 adp.add{__type=3,image=图标(""),subtitle="前往官网"}
 adp.add{__type=2,image=图标(""),subtitle="提交BUG",message="提出建议或反馈"}
 adp.add{__type=3,image=图标(""),subtitle="开源地址"}
+
 
 about_list.setAdapter(adp)
 
@@ -200,6 +202,10 @@ about_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       check_update()
     end
 
+    if v.Tag.subtitle.Text=="更新日志" then
+      浏览器打开("https://huajiqaq.github.io/myhydrogen/update.html")
+    end
+
     if v.Tag.subtitle.Text=="前往官网" then
       浏览器打开("https://huajiqaq.github.io/myhydrogen")
     end
@@ -207,6 +213,7 @@ about_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     if v.Tag.subtitle.Text=="提交BUG" then
       activity.newActivity("feedback")
     end
+
     if v.Tag.subtitle.Text=="开源地址" then
       浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
     end

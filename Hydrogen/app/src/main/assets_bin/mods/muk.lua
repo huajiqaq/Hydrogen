@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.517
+versionCode=0.518
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir("logo.png")
@@ -610,7 +610,7 @@ end
 
 function 屏蔽元素(id,tab)
   for i,v in pairs(tab) do
-    加载js(id,[[let doc=document.createElement('style');doc.innerHTML=']]..v..[[{display:none !important}';document.head.appendChild(doc);]])
+    加载js(id,[[(function(){ let doc=document.createElement('style');doc.innerHTML=']]..v..[[{display:none !important}';document.head.appendChild(doc)})()]])
   end
 end
 
@@ -808,16 +808,17 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
     };
   };
 
+  local tmpview={}
   local bottomSheetDialog = BottomSheetDialog(this)
-  bottomSheetDialog.setContentView(loadlayout2(dann))
+  bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
   local an=bottomSheetDialog.show()
-  dsnr_c.onClick=function()
+  tmpview.dsnr_c.onClick=function()
     dsnr(an)
   end;
-  qxnr_c.onClick=function()
+  tmpview.qxnr_c.onClick=function()
     qxnr(an)
   end;
-  qdnr_c.onClick=function()
+  tmpview.qdnr_c.onClick=function()
     qdnr(an)
   end;
 end
@@ -921,13 +922,14 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
     };
   };
 
+  local tmpview={}
   local bottomSheetDialog = BottomSheetDialog(this)
-  bottomSheetDialog.setContentView(loadlayout2(dann))
+  bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
   local an=bottomSheetDialog.show()
-  qxnr_c.onClick=function()
+  tmpview.qxnr_c.onClick=function()
     qxnr(an)
   end;
-  qdnr_c.onClick=function()
+  tmpview.qdnr_c.onClick=function()
     qdnr(an)
   end;
 end
@@ -1159,6 +1161,7 @@ function 下载文件对话框(title,url,path,ex)
     },
   }
 
+
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout(布局))
 
@@ -1237,8 +1240,18 @@ end
 function 浏览器打开(pageurl)
   import "android.content.Intent"
   import "android.net.Uri"
-  viewIntent = Intent("android.intent.action.VIEW",Uri.parse(pageurl))
-  activity.startActivity(viewIntent)
+  local viewIntent = Intent("android.intent.action.VIEW",Uri.parse(pageurl))
+  _=pcall(function()
+    activity.startActivity(viewIntent)
+  end)
+  if _==false then
+    AlertDialog.Builder(this)
+    .setTitle("提示")
+    .setCancelable(false)
+    .setMessage("无法找到浏览器 无法打开链接 请安装浏览器后重试")
+    .setPositiveButton("我知道了",nil)
+    .show()
+  end
 end
 
 
@@ -1655,7 +1668,6 @@ function 加入收藏夹(回答id,收藏类型,func)
         return
       end
       zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..addstr.."&remove_collections="..removestr,head,function(code,json)
-        canload=true
         local func=func or function() end
         if code==200 then
           提示("成功")
@@ -1977,7 +1989,6 @@ function 加入专栏(回答id,收藏类型)
     onClick=function()
       if 选中专栏 then
         zHttp.post("https://api.zhihu.com/"..收藏类型.."s/"..回答id.."/republish",'{"action":"create","column":"'..选中专栏..'"}',apphead,function(code,json)
-          canload=true
           if code==200 then
             提示("成功")
            else

@@ -26,7 +26,6 @@ local views={}
 
 mls=luajson.decode(ls)
 
-
 local now=mls[tostring(table.size(mls)-1)]
 
 now_count.text=((now)+1)..""

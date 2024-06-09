@@ -403,6 +403,9 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
       end
       --如果是在对话列表里
      else
+      if v.Tag.comment_toast.Visibility==0 then
+        return 提示("在对话列表内无法收藏本评论")
+      end
       写入内容='author="'..对话用户..'"'
       写入内容=写入内容.."\n"
       写入内容=写入内容..'content="'..对话内容..'"'

@@ -256,7 +256,7 @@ local mconf={
     "https://api.zhihu.com/v5.1/topics/"..topic_id.."/feeds/".."top_zvideo",
     "https://api.zhihu.com/v5.1/topics/"..topic_id.."/feeds/".."top_question",
   },
-  head=head,
+  head="head",
   func=function(v,pos,adapter)
     reslove_topic(v,adapter)
   end,

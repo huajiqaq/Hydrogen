@@ -75,7 +75,8 @@ data = {
   {__type=3,subtitle="关于",image=图标("")},
   {__type=3,subtitle="管理/android/data存储",image=图标("")},
   {__type=3,subtitle="手动填写token",image=图标("")},
-  {__type=4,subtitle="音量键选择tab",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("音量键选择tab"))}},
+  {__type=4,subtitle="音量键切换",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("音量键选择tab"))}},
+  {__type=4,subtitle="显示虚拟滑动按键",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("显示虚拟滑动按键"))}},
   {__type=4,subtitle="显示报错信息",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
   {__type=4,subtitle="允许加载代码",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
 

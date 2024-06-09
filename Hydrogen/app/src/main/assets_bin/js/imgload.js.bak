@@ -14,7 +14,7 @@
                 t[z] = getsrc(tag[z]);
             }
             if (tag[z].src == ele_src) {
-                t[tag.length] = z;
+                t[tag.length] = getsrc(tag[z]);
             }
         };
         return t

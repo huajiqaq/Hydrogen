@@ -6,6 +6,7 @@
   background=backgroundc;
   {
     AppBarLayout;
+    id="appbar",
     layout_height="wrap";
     layout_width="fill";
     TargetElevation=0;
@@ -122,6 +123,8 @@
     layout_behavior="@string/appbar_scrolling_view_behavior";
     paddingBottom="56dp";
   };
+
+
 
   {
     CoordinatorLayout;
@@ -290,5 +293,52 @@
       };
     };
   },
+
+  {
+    LinearLayout;
+    layout_width="-1";
+    layout_height="-1";
+    orientation="vertical";
+    gravity="right|bottom";
+    id="bottom_parent",
+    Visibility=8,
+    {
+      CardView;
+      layout_width="wrap",
+      layout_height="wrap",
+      radius="28dp";
+      y="-200dp",
+      CardBackgroundColor=barbackgroundc;
+      layout_marginRight="5dp";
+      elevation="0";
+      alpha=1,
+      {
+        LinearLayout,
+        layout_width="-1",
+        layout_height="-1",
+        gravity="center";
+        orientation="vertical",
+        padding="0dp";
+        {
+          ImageView;
+          src=图标("arrow_drop_up");
+          ColorFilter=primaryc;
+          layout_width="40dp",
+          layout_height="40dp",
+          id="up_button";
+        };
+        {
+          ImageView;
+          src=图标("arrow_drop_down");
+          ColorFilter=primaryc;
+          layout_width="40dp",
+          layout_height="40dp",
+          id="down_button";
+        };
+      };
+    };
+  },
+
+
 
 };

@@ -315,7 +315,7 @@ function Page_Tool:createfunc(mtab)
 
     local madapter=thispage.adapter
 
-    zHttp.get(posturl,head,function(code,content)
+    zHttp.get(posturl,_G[head],function(code,content)
       if code==200 then
         pagedata[pos]["isprev"]=false
         local data=luajson.decode(content)

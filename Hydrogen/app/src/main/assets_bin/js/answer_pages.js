@@ -1,6 +1,12 @@
 (function () {
-
     function init() {
+
+        var style
+        style = document.createElement('style');
+        // 优化figure下的figure
+        style.innerHTML = '.RichText figure > figure{width:100% !important;margin:unset !important}'
+        document.head.appendChild(style)
+
         // 返回找到的index
         function findMatchingTextIndexInSecondElement(dom, dom1) {
             let dom_children = [...dom.children];
@@ -33,7 +39,7 @@
         let div = alldiv[alldiv.length - 1]
         let divtext = div.innerText
         if ((divtext.includes("App") || divtext.includes("app")) && divtext.includes("查看")) {
-        
+
             var tip = document.createElement('div')
             tip.className = "ExtraInfo"
             tip.innerText = "该回答为付费回答"
@@ -91,8 +97,10 @@
 
                         // index 加一为没有的元素
                         for (let i = index + 1; i < tempRichtext_children.length; i++) {
+
                             const element = tempRichtext_children[i];
-                            richtext.appendChild(element)
+                            const add_ele = richtext.appendChild(element)
+                            resolve_ele(add_ele)
                             i--
                         }
 
@@ -106,6 +114,47 @@
                         a.textContent = "🔗立即加载"
                     });
             }
+        }
+    }
+
+    function resolve_ele(ele) {
+        if (ele.tagName == "FIGURE") {
+
+            // 软件加载网页不能使用懒加载 所以就不写懒加载
+            let img = ele.querySelector("img")
+
+            if (img == null) return
+
+            const orisrc = img.src
+            const loadsrc = img.dataset.original || img.dataset.src
+
+            if (orisrc.slice(0, 10) === 'data:image') {
+
+                const figure = (ele.children[0].tagName === "FIGURE") ? ele.children[0] : ele;
+                figure.innerHTML += '<div class="ImageLoader-message">加载中...</div>'
+                // 由于上面更改innerHTMl 为了防止img元素更改 重新获取
+                img = ele.querySelector("img")
+                const errortip = "加载失败，点击重试"
+                const tip = ele.querySelector(".ImageLoader-message")
+                tip.addEventListener("click", function () {
+                    if (this.innerText != errortip) return
+                    this.innerText = "加载中..."
+                    img.src = loadsrc
+                })
+
+                img.addEventListener("load", function () {
+                    if (img.src == orisrc) return
+                    tip.remove()
+                })
+                img.addEventListener("error", function () {
+                    img.src = orisrc
+                    tip.innerText = errortip
+                })
+
+                img.src = loadsrc
+
+            }
+
         }
     }
 

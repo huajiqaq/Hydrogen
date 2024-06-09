@@ -351,6 +351,8 @@ liulan.setWebViewClient{
 
   end,
   onPageStarted=function(view,url,favicon)
+    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+
     等待doc(view)
     屏蔽元素(view,{"SignFlowHomepage-footer"})
     if url:find("zhihu.com/search") then
@@ -409,8 +411,6 @@ liulan.setWebViewClient{
     if 加载js内容 then
       加载js(view,加载js内容)
     end
-
-    加载js(view,获取js("zhihugif"))
 
     liulan.setVisibility(0)
 

@@ -194,18 +194,14 @@ file:close()
 import "androidx.viewpager2.widget.ViewPager2"
 
 
---new 0.46 删除滑动监听
 activity.setContentView(loadlayout("layout/local"))
 
 设置toolbar(toolbar)
 
 _title.text=title
 
-
-if this.getSharedData("关闭硬件加速")=="true" then
-  webview.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
-end
-
+--维持和answer.lua的统一性
+local t={}
 local 加入view=loadlayout({
   ScrollView,
   id="mscroll",
@@ -216,61 +212,57 @@ local 加入view=loadlayout({
     layout_height="-2";
     orientation="vertical";
     {
-      CardView;
-      CardElevation="0dp";
-      CardBackgroundColor=cardedge;
-      radius="8dp";
-      layout_width="-1";
+      MaterialCardView;
+      layout_gravity="center";
       layout_height="-2";
-      id="userinfo",
-      Visibility=0,
+      CardBackgroundColor=cardedge,
+      Elevation="0";
+      layout_width="-1";
       layout_margin="16dp";
+      layout_marginTop="8dp";
+      layout_marginBottom="8dp";
+      radius=cardradius;
+      StrokeColor=cardedge;
+      StrokeWidth=dp2px(1),
+      id="userinfo",
+
       {
-        CardView;
-        CardElevation="0dp";
-        CardBackgroundColor=backgroundc;
-        Radius=dp2px(8)-2;
-        layout_margin="2px";
-        layout_width="-1";
-        layout_height="-1";
-        {
-          CircleImageView,
-          layout_width="60dp",
-          layout_height="40dp",
-          layout_gravity="left|center",
-          src="logo.png",
-          id="usericon",
-        },
-        {
-          View,
-          layout_height="75dp",
-          id="ripple",
-        },
-        {
-          TextView,
-          text="",
-          textSize="16sp",
-          id="username",
-          Typeface=字体("product-Bold");
-          layout_marginTop="15dp",
-          layout_marginLeft="60dp",
-          gravity="left|center",
-          textColor=textc,
-        },
-        {
-          TextView,
-          text="",
-          id="userheadline",
-          Typeface=字体("product");
-          textSize="14sp",
-          layout_marginLeft="60dp",
-          layout_marginRight="5dp",
-          layout_marginTop="40dp",
-          layout_marginBottom="10dp",
-          gravity="left|bottom",
-          textColor="#FF767676",
-        },
-      };
+        CircleImageView,
+        layout_width="60dp",
+        layout_height="40dp",
+        layout_gravity="left|center",
+        src="logo.png",
+        id="usericon",
+      },
+      {
+        View,
+        layout_height="75dp",
+        id="ripple",
+      },
+      {
+        TextView,
+        text="",
+        textSize="16sp",
+        id="username",
+        Typeface=字体("product-Bold");
+        layout_marginTop="15dp",
+        layout_marginLeft="60dp",
+        gravity="left|center",
+        textColor=textc,
+      },
+      {
+        TextView,
+        text="",
+        id="userheadline",
+        Typeface=字体("product");
+        textSize="14sp",
+        layout_marginLeft="60dp",
+        layout_marginRight="5dp",
+        layout_marginTop="40dp",
+        layout_marginBottom="10dp",
+        gravity="left|bottom",
+        textColor="#FF767676",
+      },
     };
     {
       LinearLayout,
@@ -278,7 +270,7 @@ local 加入view=loadlayout({
       layout_height="-2";
       {
         LuaWebView,
-        id="webview",
+        id="content",
         layout_width="-1";
         layout_height="-2";
         Visibility=8,
@@ -288,33 +280,77 @@ local 加入view=loadlayout({
       }
     },
   };
-})
+},t)
 
 import "com.dingyi.adapter.BaseViewPage2Adapter"
 pg.adapter=BaseViewPage2Adapter(this)
 pg.adapter.add(加入view)
 
-username.text=xxx:match[[author="(.-)"]]
-userheadline.text=xxx:match[[headline="(.-)"]]
+t.ripple.onClick=function()
+  提示("请点击右上角「使用网络打开」打开原回答页后查看")
+end
+波纹({t.ripple},"圆自适应")
+
+if this.getSharedData("关闭硬件加速")=="true" then
+  t.mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
+end
+
+task(1,function()
+  顶栏高度=toolbar.height
+end)
+
+local function 设置滑动跟随(t)
+
+  scrollpos=0
+
+  t.onScrollChange=function(view,x,y,lx,ly)
+
+    if ly>y then --上次滑动y大于这次y就是向上滑
+      scrollpos = scrollpos+math.abs(y-ly) ;
+     else
+      scrollpos = scrollpos-math.abs(y-ly) ;
+    end
+
+    --上正 下负
+    if scrollpos>=顶栏高度 then
+      appbar.setExpanded(true);
+      scrollpos=0
+     elseif scrollpos<=0-顶栏高度 then
+      appbar.setExpanded(false);
+      scrollpos=0-顶栏高度
+    end
+
+  end
+
+end
+
+设置滑动跟随(t.mscroll)
+
+t.username.text=xxx:match[[author="(.-)"]]
+t.userheadline.text=xxx:match[[headline="(.-)"]]
+if t.userheadline.text=="" then
+  t.userheadline.text="Ta还没有签名哦~"
+end
+
 thanks_count.text=xxx:match[[thanks_count="(.-)"]]
 comment_count.text=xxx:match[[comment_count="(.-)"]]
 vote_count.text=xxx:match[[vote_count="(.-)"]]
-if userheadline.text=="" then
-  userheadline.text="Ta还没有签名哦~"
-end
 
 mark.onClick=function()
-  local 保存路径=内置存储文件("Download/"..title:gsub("/","or").."/"..username.text)
+  local 保存路径=内置存储文件("Download/"..title:gsub("/","or").."/"..t.username.text)
   if getDirSize(保存路径.."/".."fold/")==0 then
     提示("你还没有收藏评论")
    else
-    activity.newActivity("comment",{nil,"local",title,username.text})
+    activity.newActivity("comment",{nil,"local",title,t.username.text})
   end
 end
 
-mscroll.smoothScrollTo(0,0)
+波纹({mark},"圆主题")
 
-webview
+
+t.mscroll.smoothScrollTo(0,0)
+
+t.content
 .getSettings()
 .setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
 .setJavaScriptEnabled(true)--设置支持Js
@@ -334,11 +370,11 @@ webview
 .setSupportZoom(true)
 .setBuiltInZoomControls(true)
 
-webview.removeView(webview.getChildAt(0))
-webview.setHorizontalScrollBarEnabled(false);
-webview.setVerticalScrollBarEnabled(false);
+t.content.removeView(t.content.getChildAt(0))
+t.content.setHorizontalScrollBarEnabled(false);
+t.content.setVerticalScrollBarEnabled(false);
 
-webview.setOnGenericMotionListener({
+t.content.setOnGenericMotionListener({
   onGenericMotion=function(view, event)
     local action=event.getAction()
     if action==MotionEvent.ACTION_SCROLL then
@@ -346,30 +382,30 @@ webview.setOnGenericMotionListener({
       local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
       local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
 
-      mscroll.scrollTo(0, mscroll.getScrollY()-scrollY*100);
+      t.mscroll.scrollTo(0, t.mscroll.getScrollY()-scrollY*100);
       return true
 
     end
 end})
 
 if activity.getSharedData("禁用缓存")=="true"
-  webview
+  t.content
   .getSettings()
   .setAppCacheEnabled(false)
   .setCacheMode(WebSettings.LOAD_NO_CACHE);
  else
-  webview
+  t.content
   .getSettings()
   .setAppCacheEnabled(true)
   .setCacheMode(WebSettings.LOAD_DEFAULT)
 end
 
-webview.setDownloadListener({
+t.content.setDownloadListener({
   onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
     提示("本地暂不支持下载")
 end})
 
-webview.setWebViewClient{
+t.content.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)
     检查链接(url)
     view.stopLoading()
@@ -377,9 +413,8 @@ webview.setWebViewClient{
   end,
 }
 
-webview.loadUrl(myuri)
-webview.setVisibility(0)
-
+t.content.loadUrl(myuri)
+t.content.setVisibility(0)
 
 task(1,function()
   a=MUKPopu({
@@ -435,4 +470,16 @@ if activity.getSharedData("异常提示0.02")==nil
   .setMessage("如果部分回答显示不完整 可以点击右上角「关闭硬件加速」 关闭动画会卡顿 如果没有问题请不要点击 出现其他异常情况都可以尝试关闭 另外 可以在设置中一键关闭之后所有的硬件加速")
   .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("异常提示0.02","true") end})
   .show()
+end
+
+if this.getSharedData("显示虚拟滑动按键")=="true" then
+  bottom_parent.Visibility=0
+  up_button.onClick=function()
+    t.mscroll.scrollBy(0, -t.mscroll.height);
+    appbar.setExpanded(true);
+  end
+  down_button.onClick=function()
+    t.mscroll.scrollBy(0, t.mscroll.height);
+    appbar.setExpanded(false);
+  end
 end

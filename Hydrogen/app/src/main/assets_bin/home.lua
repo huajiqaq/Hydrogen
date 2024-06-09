@@ -758,46 +758,56 @@ ch_item_nochecked_background = GradientDrawable()
 .setShape(GradientDrawable.RECTANGLE)
 .setCornerRadii({0,0,dp2px(24),dp2px(24),dp2px(24),dp2px(24),0,0});
 
+--导入必要的包
+import "com.google.android.material.shape.CornerFamily";
+import "com.google.android.material.shape.ShapeAppearanceModel";
+
+shapeAppearanceModel = ShapeAppearanceModel()
+.toBuilder()
+.setTopLeftCorner(CornerFamily.ROUNDED, 0)
+.setTopRightCorner(CornerFamily.ROUNDED, dp2px(24))
+.setBottomRightCorner(CornerFamily.ROUNDED, dp2px(24))
+.setBottomLeftCorner(CornerFamily.ROUNDED, 0)
+.build();
+
+local bwz
+if 全局主题值=="Day" then
+  bwz=0x3f000000
+ else
+  bwz=0x3fffffff
+end
+
 
 --侧滑列表项目
 drawer_item={
-  {--侧滑标题 (type1)
-    LinearLayout;
-    Focusable=true;
-    layout_width="fill";
-    layout_height="wrap";
-    {
-      TextView;
-      id="title";
-      textSize="14sp";
-      textColor=primaryc;
-      layout_marginTop="8dp";
-      layout_marginLeft="16dp";
-      Typeface=字体("product");
-    };
-  };
 
-  {--侧滑项目 (type2)
+  {--侧滑项目 (type1)
     RelativeLayout;
     layout_width="-1";
     layout_height="48dp";
     BackgroundColor=backgroundc;
     {
+      --设置clickable后会和listview的冲突 所以直接每次onclick绑定了
       MaterialCardView;
+      id="cardv";
       layout_width="-1";
       layout_height="-1";
       StrokeColor=cardedge;
       CardBackgroundColor=backgroundc;
       layout_marginTop="1dp";
       layout_marginRight="8dp";
-      StrokeWidth=0,
-      Background=ch_item_nochecked_background;
+      StrokeWidth=0;
+      ShapeAppearanceModel=shapeAppearanceModel;
+      clickable=true;
+      RippleColor=ColorStateList(int[0].class{int{}},int{bwz}),
+      onClick=function(view)
+        侧滑列表点击事件(获取listview顶部布局(view))
+      end,
       {
         LinearLayout;
         layout_width="-1";
         layout_height="-1";
         gravity="center|left";
-        ripple="圆自适应";
         {
           ImageView;
           id="iv";
@@ -812,52 +822,13 @@ drawer_item={
           layout_marginLeft="16dp";
           textSize="14sp";
           Typeface=字体("product");
+          textColor=textc;
         };
       };
     };
   };
 
-  {--侧滑项目_选中项 (type3)
-    RelativeLayout;
-    layout_width="-1";
-    layout_height="48dp";
-    BackgroundColor=backgroundc;
-    {
-      MaterialCardView;
-      layout_width="-1";
-      layout_height="-1";
-      CardBackgroundColor=转0x(primaryc)-0xde000000;
-      layout_marginTop="1dp";
-      layout_marginRight="8dp";
-      StrokeWidth=0,
-      Background=ch_item_checked_background;
-      {
-        LinearLayout;
-        layout_width="-1";
-        layout_height="-1";
-        gravity="center|left";
-        ripple="圆自适应";
-        {
-          ImageView;
-          id="iv";
-          ColorFilter=primaryc;
-          layout_marginLeft="24dp";
-          layout_width="24dp";
-          layout_height="24dp";
-        };
-        {
-          TextView;
-          id="tv";
-          layout_marginLeft="16dp";
-          textSize="14sp";
-          textColor=primaryc;
-          Typeface=字体("product");
-        };
-      };
-    };
-  };
-
-  {--侧滑_分割线 (type4)
+  {--侧滑_分割线 (type2)
     LinearLayout;
     layout_width="-1";
     layout_height="-2";
@@ -874,21 +845,10 @@ drawer_item={
   };
 };
 
+-- new 0.518 重写逻辑 解决部分机型波纹绘制不正确
 
 --侧滑列表适配器
 adp=LuaMultiAdapter(activity,drawer_item)
-adp.add{__type=4}
-adp.add{__type=3,iv={src=图标("home")},tv="主页"}
-adp.add{__type=2,iv={src=图标("book")},tv="收藏"}
-adp.add{__type=2,iv={src=图标("work")},tv="日报"}
-adp.add{__type=2,iv={src=图标("bubble_chart")},tv="想法"}
-adp.add{__type=4}
-adp.add{__type=2,iv={src=图标("settings")},tv="设置"}
-adp.add{__type=4}
-adp.add{__type=2,iv={src=图标("settings")},tv="设置"}
-adp.add{__type=2,iv={src=图标("settings")},tv="测试"}
-adp.add{__type=2,iv={src=图标("bug_report")},tv="Cookie"}
-drawer_lv.setAdapter(adp)
 
 --侧滑项目
 ch_table={
@@ -896,7 +856,7 @@ ch_table={
   {"主页","home"},
   {"收藏","book"},
   {"日报","work"},
-  {"消息","message"},
+  {"更多","menu"},
   "分割线",
   {"本地","inbox"},
   {"一文","insert_drive_file"},
@@ -909,272 +869,281 @@ ch_table={
 };
 
 
+for i,v in ipairs(ch_table) do
+  if v=="分割线"then
+    adp.add{__type=2}
+   else
+    adp.add{__type=1,iv={src=图标(v[2])},tv=v[1]}
+  end
+end
+
+adp.notifyDataSetChanged()
+drawer_lv.setAdapter(adp)
 
 --侧滑列表高亮项目函数
 function ch_light(n)
-  adp.clear()
-  for i,v in ipairs(ch_table) do
-    if v=="分割线"then
-      adp.add{__type=4}
-     elseif n==v[1] then
-      adp.add{__type=3,iv={src=图标(v[2])},tv=v[1]}
-     else
-      adp.add{__type=2,iv={src=图标(v[2])},tv=v[1]}
+  for i=1,#adp.getData() do
+    local rootv=drawer_lv.getChildAt(i-1)
+    if rootv.Tag.tv then
+      if rootv.Tag.tv.text==n then
+        rootv.Tag.cardv.CardBackgroundColor=转0x(primaryc)-0xde000000
+        rootv.Tag.iv.ColorFilter=转0x(primaryc)
+        rootv.Tag.tv.textColor=转0x(primaryc)
+       else
+        rootv.Tag.cardv.CardBackgroundColor=转0x(backgroundc)
+        rootv.Tag.iv.ColorFilter=转0x(textc)
+        rootv.Tag.tv.textColor=转0x(textc)
+      end
     end
   end
 end
 
-ch_light("主页")--设置高亮项目为“主页”
+task(1,function()
+  ch_light("主页")--设置高亮项目为“主页”
+end)
+
 --侧滑列表点击事件
-drawer_lv.setOnItemClickListener(AdapterView.OnItemClickListener{
-  onItemClick=function(id,v,zero,one)
-    --项目点击事件
-    local s=v.Tag.tv.Text
+function 侧滑列表点击事件(v)
+  --项目点击事件
+  local s=v.Tag.tv.Text
 
-    if s=="退出" then--判断项目并执行代码
-      关闭页面()
-     elseif s=="主页" then
-      --setmyToolip在loadlayout中
-      setmyToolip(_ask,"提问")
-      _ask.onClick=function()
-        if not(getLogin()) then
-          return 提示("你可能需要登录")
-        end
-        task(20,function()
-          activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
-        end)
-      end
-      ch_light("主页")
-      if isstart=="true" then
-        a=MUKPopu({
-          tittle="菜单",
-          list={
-            {src=图标("email"),text="反馈",onClick=function()
-                跳转页面("feedback")
-            end},
-            {src=图标("info"),text="关于",onClick=function()
-                跳转页面("about")
-            end},
-          }
-        })
-      end
-      --显示主页viewpager
-      控件显示(page_home)
-      --显示主页底部栏
-      控件显示(bottombar)
-      控件隐藏(page_daily)
-      控件隐藏(page_follow)
-      控件隐藏(page_collections)
-      控件隐藏(page_create)
-      _title.setText("主页")
-     elseif s=="日报" then
-      setmyToolip(_ask,"提问")
-      _ask.onClick=function()
-        if not(getLogin()) then
-          return 提示("你可能需要登录")
-        end
-        task(20,function()
-          activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
-        end)
-      end
-      ch_light("日报")
-      日报刷新(false)
-      --隐藏主页viewpager
-      控件隐藏(page_home)
-      --隐藏主页底部栏
-      控件隐藏(bottombar)
-      控件隐藏(page_collections)
-      控件隐藏(page_follow)
-      控件隐藏(page_create)
-      控件可见(page_daily)
-      _title.setText("日报")
-     elseif s=="收藏" then
-      if getLogin()~=true then
-        提示("请登录后使用本功能")
-        return true
-      end
-      setmyToolip(_ask,"新建收藏夹")
-      _ask.onClick=function()
-        if not(getLogin()) then
-          return 提示("你可能需要登录")
-        end
-        if collection_pageTool==nil then
-          提示("收藏加载中")
-          return true
-        end
-        新建收藏夹(function(mytext,myid,ispublic)
-
-          local thispage=collection_pageTool:getItem(1)
-
-          thispage.adapter.insert(0,{
-            collections_title={
-              text=mytext,
-            },
-            is_lock=is_public==false and 图标("https") or nil,
-
-            collections_art={
-              text="0个内容"
-            },
-            collections_item={
-              text="0"
-            },
-            collections_follower={
-              text="0"
-            },
-            collections_id={
-              text=tostring(myid)
-
-            },
-          })
-
-        end)
-      end
-      ch_light("收藏")
-      if isstart=="true" then
-        a=MUKPopu({
-          tittle="菜单",
-          list={
-            {src=图标("search"),text="在收藏中搜索",onClick=function()
-                if not(getLogin()) then
-                  return 提示("请登录后使用本功能")
-                end
-                InputLayout={
-                  LinearLayout;
-                  orientation="vertical";
-                  Focusable=true,
-                  FocusableInTouchMode=true,
-                  {
-                    EditText;
-                    hint="输入";
-                    layout_marginTop="5dp";
-                    layout_marginLeft="10dp",
-                    layout_marginRight="10dp",
-                    layout_width="match_parent";
-                    layout_gravity="center",
-                    id="edit";
-                  };
-                };
-
-                AlertDialog.Builder(this)
-                .setTitle("请输入")
-                .setView(loadlayout(InputLayout))
-                .setPositiveButton("确定", {onClick=function() activity.newActivity("search_result",{edit.text}) end})
-                .setNegativeButton("取消", nil)
-                .show();
-            end},
-            {src=图标("email"),text="反馈",onClick=function()
-                跳转页面("feedback")
-            end},
-            {src=图标("info"),text="关于",onClick=function()
-                跳转页面("about")
-            end},
-          }
-        })
-      end
-      --隐藏主页viewpager
-      控件隐藏(page_home)
-      --隐藏主页底部栏
-      控件隐藏(bottombar)
-      控件隐藏(page_daily)
-      控件隐藏(page_follow)
-      控件隐藏(page_create)
-      控件可见(page_collections)
-      task(400,function()收藏刷新(false) end)
-      _title.setText("收藏")
-     elseif s=="关注" then
-      if getLogin()~=true then
-        提示("请登录后使用本功能")
-        return true
-      end
-      setmyToolip(_ask,"提问")
-      _ask.onClick=function()
-        if not(getLogin()) then
-          return 提示("你可能需要登录")
-        end
-        task(20,function()
-          activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
-        end)
-      end
-      ch_light("关注")
-      关注内容刷新(false)
-      --隐藏主页viewpager
-      控件隐藏(page_home)
-      --隐藏主页底部栏
-      控件隐藏(bottombar)
-      控件隐藏(page_collections)
-      控件隐藏(page_daily)
-      控件隐藏(page_create)
-      控件可见(page_follow)
-      _title.setText("我关注的")
-     elseif s=="创作" then
-      if getLogin()~=true then
-        提示("请登录后使用本功能")
-        return true
-      end
-      setmyToolip(_ask,"提问")
-      _ask.onClick=function()
-        if not(getLogin()) then
-          return 提示("你可能需要登录")
-        end
-        task(20,function()
-          activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
-        end)
-      end
-      ch_light("创作")
-      创作内容刷新(false)
-      --隐藏主页viewpager
-      控件隐藏(page_home)
-      --隐藏主页底部栏
-      控件隐藏(bottombar)
-      控件隐藏(page_collections)
-      控件隐藏(page_daily)
-      控件隐藏(page_follow)
-      控件可见(page_create)
-      _title.setText("我创作的")
-     elseif s=="本地" then
-      task(300,function()activity.newActivity("local_list")end)
-     elseif s=="debug" then
-      task(300,function()activity.newActivity("feedback")end)
-     elseif s=="设置" then
-      task(300,function()activity.newActivity("settings")end)
-     elseif s=="一文" then
-      task(300,function()activity.newActivity("artical")end)
-     elseif s=="Cookie" then
-      双按钮对话框("查看Cookie", 获取Cookie("https://www.zhihu.com/"),"复制","关闭",function(an)复制文本(获取Cookie("https://www.zhihu.com/"))提示("已复制到剪切板")关闭对话框(an)end,function(an)关闭对话框(an)end)
-     elseif s=="历史" then
-      task(300,function()activity.newActivity("history")end)
-     elseif s=="消息" then
-
+  if s=="主页" then
+    --setmyToolip在loadlayout中
+    setmyToolip(_ask,"提问")
+    _ask.onClick=function()
       if not(getLogin()) then
-        return 提示("请登录后使用本功能")
+        return 提示("你可能需要登录")
       end
       task(20,function()
-        AlertDialog.Builder(this)
-        .setTitle("请选择")
-        .setSingleChoiceItems({"通知","私信","设置","屏蔽用户管理","圆桌","专题"}, 0,{onClick=function(v,p)
-            local mtab={"https://www.zhihu.com/notifications","https://www.zhihu.com/messages","https://www.zhihu.com/settings/account","屏蔽用户管理","https://www.zhihu.com/appview/roundtable","https://www.zhihu.com/appview/special"}
-            jumpurl=mtab[p+1]
-        end})
-        .setNegativeButton("确定", {onClick=function()
-            if jumpurl=="屏蔽用户管理" then
-              jumpurl=nil
-              return activity.newActivity("people_list",{"我的屏蔽用户列表",nil,true})
-            end
-            --防止没选中 nil
-            activity.newActivity("huida",{jumpurl or "https://www.zhihu.com/notifications",true,true})
-            jumpurl=nil
-        end})
-        .show();
+        activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
       end)
-     else
-      Snakebar(s)
-
     end
-    task(1,function()
-      _drawer.closeDrawer(Gravity.LEFT)--关闭侧滑
-    end)
-end})
+    ch_light("主页")
+    if isstart=="true" then
+      a=MUKPopu({
+        tittle="菜单",
+        list={
+          {src=图标("email"),text="反馈",onClick=function()
+              跳转页面("feedback")
+          end},
+          {src=图标("info"),text="关于",onClick=function()
+              跳转页面("about")
+          end},
+        }
+      })
+    end
+    --显示主页viewpager
+    控件显示(page_home)
+    --显示主页底部栏
+    控件显示(bottombar)
+    控件隐藏(page_daily)
+    控件隐藏(page_follow)
+    控件隐藏(page_collections)
+    控件隐藏(page_create)
+    _title.setText("主页")
+   elseif s=="日报" then
+    setmyToolip(_ask,"提问")
+    _ask.onClick=function()
+      if not(getLogin()) then
+        return 提示("你可能需要登录")
+      end
+      task(20,function()
+        activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
+      end)
+    end
+    ch_light("日报")
+    日报刷新(false)
+    --隐藏主页viewpager
+    控件隐藏(page_home)
+    --隐藏主页底部栏
+    控件隐藏(bottombar)
+    控件隐藏(page_collections)
+    控件隐藏(page_follow)
+    控件隐藏(page_create)
+    控件可见(page_daily)
+    _title.setText("日报")
+   elseif s=="收藏" then
+    if getLogin()~=true then
+      提示("请登录后使用本功能")
+      return true
+    end
+    setmyToolip(_ask,"新建收藏夹")
+    _ask.onClick=function()
+      if not(getLogin()) then
+        return 提示("你可能需要登录")
+      end
+      if collection_pageTool==nil then
+        提示("收藏加载中")
+        return true
+      end
+      新建收藏夹(function(mytext,myid,ispublic)
 
+        local thispage=collection_pageTool:getItem(1)
+
+        thispage.adapter.insert(0,{
+          collections_title={
+            text=mytext,
+          },
+          is_lock=is_public==false and 图标("https") or nil,
+
+          collections_art={
+            text="0个内容"
+          },
+          collections_item={
+            text="0"
+          },
+          collections_follower={
+            text="0"
+          },
+          collections_id={
+            text=tostring(myid)
+
+          },
+        })
+
+      end)
+    end
+    ch_light("收藏")
+    if isstart=="true" then
+      a=MUKPopu({
+        tittle="菜单",
+        list={
+          {src=图标("search"),text="在收藏中搜索",onClick=function()
+              if not(getLogin()) then
+                return 提示("请登录后使用本功能")
+              end
+              InputLayout={
+                LinearLayout;
+                orientation="vertical";
+                Focusable=true,
+                FocusableInTouchMode=true,
+                {
+                  EditText;
+                  hint="输入";
+                  layout_marginTop="5dp";
+                  layout_marginLeft="10dp",
+                  layout_marginRight="10dp",
+                  layout_width="match_parent";
+                  layout_gravity="center",
+                  id="edit";
+                };
+              };
+
+              AlertDialog.Builder(this)
+              .setTitle("请输入")
+              .setView(loadlayout(InputLayout))
+              .setPositiveButton("确定", {onClick=function() activity.newActivity("search_result",{edit.text}) end})
+              .setNegativeButton("取消", nil)
+              .show();
+          end},
+          {src=图标("email"),text="反馈",onClick=function()
+              跳转页面("feedback")
+          end},
+          {src=图标("info"),text="关于",onClick=function()
+              跳转页面("about")
+          end},
+        }
+      })
+    end
+    --隐藏主页viewpager
+    控件隐藏(page_home)
+    --隐藏主页底部栏
+    控件隐藏(bottombar)
+    控件隐藏(page_daily)
+    控件隐藏(page_follow)
+    控件隐藏(page_create)
+    控件可见(page_collections)
+    task(400,function()收藏刷新(false) end)
+    _title.setText("收藏")
+   elseif s=="关注" then
+    if getLogin()~=true then
+      提示("请登录后使用本功能")
+      return true
+    end
+    setmyToolip(_ask,"提问")
+    _ask.onClick=function()
+      if not(getLogin()) then
+        return 提示("你可能需要登录")
+      end
+      task(20,function()
+        activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
+      end)
+    end
+    ch_light("关注")
+    关注内容刷新(false)
+    --隐藏主页viewpager
+    控件隐藏(page_home)
+    --隐藏主页底部栏
+    控件隐藏(bottombar)
+    控件隐藏(page_collections)
+    控件隐藏(page_daily)
+    控件隐藏(page_create)
+    控件可见(page_follow)
+    _title.setText("我关注的")
+   elseif s=="创作" then
+    if getLogin()~=true then
+      提示("请登录后使用本功能")
+      return true
+    end
+    setmyToolip(_ask,"提问")
+    _ask.onClick=function()
+      if not(getLogin()) then
+        return 提示("你可能需要登录")
+      end
+      task(20,function()
+        activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
+      end)
+    end
+    ch_light("创作")
+    创作内容刷新(false)
+    --隐藏主页viewpager
+    控件隐藏(page_home)
+    --隐藏主页底部栏
+    控件隐藏(bottombar)
+    控件隐藏(page_collections)
+    控件隐藏(page_daily)
+    控件隐藏(page_follow)
+    控件可见(page_create)
+    _title.setText("我创作的")
+   elseif s=="本地" then
+    task(300,function()activity.newActivity("local_list")end)
+   elseif s=="设置" then
+    task(300,function()activity.newActivity("settings")end)
+   elseif s=="一文" then
+    task(300,function()activity.newActivity("artical")end)
+   elseif s=="历史" then
+    task(300,function()activity.newActivity("history")end)
+   elseif s=="更多" then
+
+    if not(getLogin()) then
+      return 提示("请登录后使用本功能")
+    end
+    task(20,function()
+      AlertDialog.Builder(this)
+      .setTitle("请选择")
+      .setSingleChoiceItems({"通知","私信","设置","屏蔽用户管理","圆桌","专题"}, 0,{onClick=function(v,p)
+          local mtab={"https://www.zhihu.com/notifications","https://www.zhihu.com/messages","https://www.zhihu.com/settings/account","屏蔽用户管理","https://www.zhihu.com/appview/roundtable","https://www.zhihu.com/appview/special"}
+          jumpurl=mtab[p+1]
+      end})
+      .setNegativeButton("确定", {onClick=function()
+          if jumpurl=="屏蔽用户管理" then
+            jumpurl=nil
+            return activity.newActivity("people_list",{"我的屏蔽用户列表",nil,true})
+          end
+          --防止没选中 nil
+          activity.newActivity("huida",{jumpurl or "https://www.zhihu.com/notifications",true,true})
+          jumpurl=nil
+      end})
+      .show();
+    end)
+   else
+    Snakebar(s)
+
+  end
+  task(1,function()
+    _drawer.closeDrawer(Gravity.LEFT)--关闭侧滑
+  end)
+end
 
 
 
@@ -1517,7 +1486,7 @@ local mconf={
     "https://api.zhihu.com/moments_v3?feed_type=timeline",
     "https://api.zhihu.com/moments_v3?feed_type=pin"
   },
-  head=followapphead,
+  head="followapphead",
   func=function(v,pos,adapter)
     local data
     if v.type=="moments_feed" then
@@ -1798,7 +1767,7 @@ function 加载收藏view()
       "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/collections_v2?offset=0&limit=20",
       "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/following_collections?offset=0"
     },
-    head=head,
+    head="head",
     func=function(v,pos,adapter)
       local data= reslove_home_collection[pos](v)
       if data then
@@ -2054,7 +2023,7 @@ function 加载收藏view()
       "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_news_specials".."?limit=10",
       "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_roundtables".."?limit=10",
     },
-    head=apphead,
+    head="apphead",
     func=function(v,pos,adapter)
       local data= reslove_home_follow_content[pos](v)
       if data then
@@ -2201,7 +2170,7 @@ function 加载创作内容view()
       "https://api.zhihu.com/".."creators/creations/v2/zvideo".."?limit=10",
       "https://api.zhihu.com/".."people/"..activity.getSharedData("idx").."/column-contributions?include=data%5B*%5D.column.followers%2Carticles_count&offset=0&limit=20",
     },
-    head=apphead,
+    head="apphead",
     func=function(v,pos,adapter)
       local data= reslove_homecreate(v)
       if data then
@@ -2639,7 +2608,7 @@ if not(this.getSharedData("hometip0.02")) then
     AlertDialog.Builder(this)
     .setTitle("小提示")
     .setCancelable(false)
-    .setMessage("如想使用私信 通知 设置 查看屏蔽功能 请展开侧边栏的信息按钮")
+    .setMessage("你可点击更多来查看更多功能")
     .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("hometip0.02","true") end})
     .show()
   end)

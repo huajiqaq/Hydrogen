@@ -29,55 +29,27 @@ task(1,function()
   顶栏高度=toolbar.height
 end)
 
-
-
 local function 设置滑动跟随(t)
 
-  if true then
-    return
-  end
+  scrollpos=0
 
   t.onScrollChange=function(view,x,y,lx,ly)
-    if y<=2 then--解决滑到顶了还是没有到顶的bug
-      layoutParams = toolbar.getLayoutParams();
-      newYValue = 0 ;
-      layoutParams.topMargin = newYValue;
-      toolbar.setLayoutParams(layoutParams);
-      return
-    end
-    if t.canScrollVertically(1)~=true then--解决滑到底了还是没到底的bug
-      layoutParams = toolbar.getLayoutParams();
-      newYValue = 0-顶栏高度 ;
-      layoutParams.topMargin = newYValue;
-      toolbar.setLayoutParams(layoutParams);
 
-    end
     if ly>y then --上次滑动y大于这次y就是向上滑
-      if toolbar.getLayoutParams().topMargin<=0 or math.abs(y-ly)>=顶栏高度 then --这个or为了防止快速大滑动
-
-        layoutParams = toolbar.getLayoutParams();
-        newYValue = 0 ;
-        layoutParams.topMargin = newYValue;
-        toolbar.setLayoutParams(layoutParams);
-
-       else
-
-        layoutParams = toolbar.getLayoutParams();
-        newYValue = layoutParams.topMargin+math.abs(y-ly) ;
-        layoutParams.topMargin = newYValue;
-        toolbar.setLayoutParams(layoutParams);
-
-      end
+      scrollpos = scrollpos+math.abs(y-ly) ;
      else
-      if llb.y<=顶栏高度 then --精准测量高度差 防止无法隐藏全部的bug new 0.1102
-
-        layoutParams = toolbar.getLayoutParams();
-        newYValue = layoutParams.topMargin-math.abs(y-ly) ;
-        layoutParams.topMargin = newYValue;
-        toolbar.setLayoutParams(layoutParams)
-
-      end
+      scrollpos = scrollpos-math.abs(y-ly) ;
     end
+
+    --上正 下负
+    if scrollpos>=顶栏高度 then
+      appbar.setExpanded(true);
+      scrollpos=0
+     elseif scrollpos<=0-顶栏高度 then
+      appbar.setExpanded(false);
+      scrollpos=0-顶栏高度
+    end
+
   end
 
 end
@@ -210,6 +182,7 @@ function 数据添加(t,b)
   t.content.setHorizontalScrollBarEnabled(false);
   t.content.setVerticalScrollBarEnabled(false);
 
+
   if activity.getSharedData("标题简略化")~="true" then
     _title.Text=b.question.title
    else
@@ -306,7 +279,7 @@ function 数据添加(t,b)
   end
 
   t.content.BackgroundColor=转0x("#00000000",true);
-  t.content.requestFocus()
+  t.mscroll.requestFocus()
   t.content.setDownloadListener({
     onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
       webview下载文件(链接, UA, 相关信息, 类型, 大小)
@@ -363,13 +336,14 @@ function 数据添加(t,b)
       end
     end,
     onPageStarted=function(view,url,favicon)
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+
       加载js(view,获取js("native"))
       t.content.setVisibility(8)
       if t.progress~=nil then
         t.progress.setVisibility(0)
       end
       等待doc(view)
-      加载js(view,获取js("zhihugif"))
       加载js(view,获取js("answer_pages"))
     end,
     onPageFinished=function(view,url,favicon)
@@ -378,7 +352,7 @@ function 数据添加(t,b)
         t.progress.getParent().removeView(t.progress)
         t.progress=nil
       end
-      屏蔽元素(view,{".AnswerReward"})
+      屏蔽元素(view,{".AnswerReward",".AppViewRecommendedReading"})
 
       加载js(view,获取js("answer_code"))
 
@@ -425,7 +399,6 @@ function 数据添加(t,b)
       end
     end,
     onLoadResource=function(view,url)
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
     end,
   }
 
@@ -703,6 +676,8 @@ isloaded=false
 pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
   onPageScrolled=function(pos,positionOffset,positionOffsetPixels)
     if positionOffsetPixels==0 then
+
+      appbar.setExpanded(true);
 
       --判断页面是否在开头or结尾 是否需要添加
       if pg.adapter.getItemCount()==pos+1 then
@@ -1011,7 +986,7 @@ task(1,function()
 
         end
       },
-    
+
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
 
@@ -1122,5 +1097,25 @@ end
 function onActivityResult(a,b,c)
   if b==100 then
     activity.recreate()
+  end
+end
+
+if this.getSharedData("显示虚拟滑动按键")=="true" then
+  bottom_parent.Visibility=0
+  up_button.onClick=function()
+    local pos=pg.getCurrentItem()
+    local mview=数据表[pg.adapter.getItem(pos).id]
+    local id表=mview.ids
+    local mscroll=id表.mscroll
+    mscroll.scrollBy(0, -mscroll.height);
+    appbar.setExpanded(true);
+  end
+  down_button.onClick=function()
+    local pos=pg.getCurrentItem()
+    local mview=数据表[pg.adapter.getItem(pos).id]
+    local id表=mview.ids
+    local mscroll=id表.mscroll
+    mscroll.scrollBy(0, mscroll.height);
+    appbar.setExpanded(false);
   end
 end

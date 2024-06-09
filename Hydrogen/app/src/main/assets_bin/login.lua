@@ -86,6 +86,7 @@ login_web.setWebViewClient{
   onPageStarted=function(view,url)
     if url:find("https://www.zhihu.com/signin") then
       加载js(view,获取js("login"))
+      加载js(view,"document.cookie = 'z_c0=2|1:0|10:1717630166|4:z_c0|92:Mi4xRU52bkNRQUFBQUFBTU4tLVhybTZHQXdBQUFCZ0FsVk4xb0dJWmdEU3UxeUZ4OTM3NjREVXYxcm1DU0ZUSFBIeUFR|94b2c672aafc551bd8503d81662ba5dbf55de0e9e054f248dbee0231432e8ef3; ff_supports_webp=1; _xsrf=3mhSPpFld4Qe8V46QiIj27csHoR7nmSU; _zap=0fd30885-9969-451a-97f7-21c04146ad80; Hm_lvt_98beee57fd2ef70ccdd5ca52b9740c49=1717630298; _ga=GA1.2.380854752.1717630298; _gid=GA1.2.374219357.1717630298; Hm_lpvt_98beee57fd2ef70ccdd5ca52b9740c49=1717630344; d_c0=ADDfvl65uhhLBSL1mvx8NKlaNBqgKMw_YPs=|1717632667; KLBRSID=ed2ad9934af8a1f80db52dcb08d13344|1717632669|1717630293'")
     end
     if 全局主题值=="Night" then
       黑暗模式主题(view)

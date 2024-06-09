@@ -250,16 +250,21 @@ function 本地列表(path)
           textColor=backgroundc;
           text="关闭";
           Typeface=字体("product-Bold");
-          onClick=function()an.dismiss()end;
+          id="close_button",
         };
       };
     };
   };
-  local bottomSheetDialog = BottomSheetDialog(this)
-  bottomSheetDialog.setContentView(loadlayout(dann))
-  an=bottomSheetDialog.show()
 
-  adp=LuaAdapter(activity,item)
+  local tmpview={}
+  local bottomSheetDialog = BottomSheetDialog(this)
+  bottomSheetDialog.setContentView(loadlayout(dann,tmpview))
+  local an=bottomSheetDialog.show()
+  tmpview.close_button.onClick=function()
+    an.dismiss()
+  end;
+
+  local adp=LuaAdapter(activity,item)
 
   for v,s in pairs(luajava.astable(File(内置存储文件("Download/"..path.."/")).listFiles())) do
     adp.add({
@@ -267,6 +272,7 @@ function 本地列表(path)
     })
   end
 
+  local listview=tmpview.listview
   listview.setAdapter(adp)
 
   listview.setOnItemClickListener(AdapterView.OnItemClickListener{

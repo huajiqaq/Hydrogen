@@ -550,7 +550,7 @@ function 问题详情(code)
             text="关闭";
             RippleColor=ColorStateList(int[0].class{int{}},int{bwz});
             Typeface=字体("product-Bold");
-            id="close_description_button"
+            id="close_button"
           };
         };
 
@@ -567,14 +567,17 @@ function 问题详情(code)
     };
   };
 
+  local tmpview={}
   local bottomSheetDialog = BottomSheetDialog(this)
-  bottomSheetDialog.setContentView(loadlayout2(dann))
+  bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
   local an=bottomSheetDialog.show()
   bottomSheetDialog.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
   bottomSheetDialog.behavior.setDraggable(false)
-  close_description_button.onClick=function()
+  tmpview.close_button.onClick=function()
     an.cancel()
   end
+
+  local show=tmpview.show
 
   function imgReset()
     show.loadUrl("javascript:(function(){" ..
@@ -610,19 +613,6 @@ function 问题详情(code)
     .setCacheMode(WebSettings.LOAD_DEFAULT)
   end
 
-  show.setOnGenericMotionListener({
-    onGenericMotion=function(view, event)
-      local action=event.getAction()
-      if action==MotionEvent.ACTION_SCROLL then
-
-        local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
-        local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
-        show.scrollBy(0, -scrollY*100);
-        return true
-
-      end
-  end})
-
   show.setDownloadListener({
     onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
       webview下载文件(链接, UA, 相关信息, 类型, 大小)
@@ -646,16 +636,13 @@ function 问题详情(code)
     onPageStarted=function(view,url,favicon)
     end,
     onPageFinished=function(view,url)
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
 
       if 全局主题值=="Night" then
         黑暗页(view)
       end
 
       imgReset()
-
-      加载js(view,获取js("zhihugif"))
-
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
 
     end,
 
