@@ -645,19 +645,6 @@ function 问题详情(code)
       imgReset()
 
       加载js(view,获取js("zhihugif"))
-
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-
-      local z=JsInterface{
-        execute=function(b)
-          if b~=nil then
-            activity.newActivity("image",{b})
-          end
-        end
-      }
-
-      view.addJSInterface(z,"androlua")
-
     end,
 
     onProgressChanged=function(view,Progress)
