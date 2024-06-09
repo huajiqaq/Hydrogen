@@ -432,8 +432,8 @@ task(1,function()
           .setTitle("提示")
           .setMessage("你确认要关闭当前页的硬件加速吗 关闭后滑动可能会造成卡顿 如果当前页显示正常请不要关闭")
           .setPositiveButton("关闭",{onClick=function(v)
-              mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
-              webview.reload()
+              t.mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
+              t.content.reload()
               提示("关闭成功")
           end})
           .setNeutralButton("取消",{onClick=function(v)
@@ -454,7 +454,7 @@ task(1,function()
         src=图标("cloud"),text="另存为pdf",onClick=function()
           import "android.print.PrintAttributes"
           printManager = this.getSystemService(Context.PRINT_SERVICE);
-          printAdapter = webview.createPrintDocumentAdapter();
+          printAdapter = t.content.createPrintDocumentAdapter();
           printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
         end
       },
