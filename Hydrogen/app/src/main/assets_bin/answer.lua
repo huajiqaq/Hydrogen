@@ -336,14 +336,13 @@ function 数据添加(t,b)
       end
     end,
     onPageStarted=function(view,url,favicon)
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-
       加载js(view,获取js("native"))
       t.content.setVisibility(8)
       if t.progress~=nil then
         t.progress.setVisibility(0)
       end
       等待doc(view)
+      加载js(view,获取js("zhihugif"))
       加载js(view,获取js("answer_pages"))
     end,
     onPageFinished=function(view,url,favicon)
@@ -399,6 +398,7 @@ function 数据添加(t,b)
       end
     end,
     onLoadResource=function(view,url)
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
     end,
   }
 

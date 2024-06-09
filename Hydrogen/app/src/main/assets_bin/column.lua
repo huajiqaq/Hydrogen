@@ -318,11 +318,14 @@ content.setWebViewClient{
       加载js(view,获取js("drama"))
     end
 
+    加载js(view,获取js("zhihugif"))
+
   end,
   onPageFinished=function(view,l)
 
   end,
   onLoadResource=function(view,url)
+    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
   end,
 }
 

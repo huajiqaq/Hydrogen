@@ -412,14 +412,27 @@ liulan.setWebViewClient{
       加载js(view,加载js内容)
     end
 
+    加载js(view,获取js("zhihugif"))
+
     liulan.setVisibility(0)
 
   end,
   onLoadResource=function(view,url)
+    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
   end,
   onPageFinished=function(view,url)
 end}
 
+--设置网页图片点击事件，
+local z=JsInterface{
+  execute=function(b)
+    if b~=nil and #b>1 then
+      activity.newActivity("image",{b})
+    end
+  end
+}
+
+liulan.addJSInterface(z,"androlua")
 
 liulan.setDownloadListener({
   onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
