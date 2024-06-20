@@ -21,7 +21,8 @@ activity.setContentView(loadlayout("layout/image"))
 
 全屏()
 
-local ls=...
+local ls= this.getSharedData("imagedata")
+this.setSharedData("imagedata",nil)
 local views={}
 
 mls=luajson.decode(ls)

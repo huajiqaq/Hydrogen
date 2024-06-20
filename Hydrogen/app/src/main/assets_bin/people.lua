@@ -491,10 +491,21 @@ local base_people=require "model.people":new(people_id)
 
   loadglide(people_image,大头像)
 
+  --获取id后才开始刷新
+  add=true
+  people_list.setOnScrollListener{
+    onScroll=function(view,a,b,c)
+      if a+b==c and add then
+        刷新()
+        System.gc()
+      end
+    end
+  }
+
 end)
 
 :setresultfunc(function(v)
-  local 活动=v.source.action_text
+  local 活动=v.action_text
   local 预览内容=v.target.excerpt
   local 点赞数=(v.target.voteup_count)
   local 评论数=(v.target.comment_count)
@@ -524,15 +535,14 @@ end)
 
    elseif v.target.type=="collection" then
     return
-   elseif v.target.type=="moments_pin" then
-    标题=v.target.excerpt_title
+   elseif v.target.type=="pin" then
     问题id="想法分割"..tostring(v.target.id)
     if #v.target.content>0 then
-      预览内容=v.target.content[1].content
+      标题=v.target.content[1].title
      else
-      预览内容="无"
+      标题="一个想法"
     end
-    预览内容=Html.fromHtml(预览内容)
+    预览内容=v.target.content_html
    elseif v.target.type=="zvideo" then
     问题id="视频分割"..v.target.id
     标题=v.target.title
@@ -540,6 +550,7 @@ end)
     问题id="文章分割"..(v.target.id)
     标题=v.target.title
   end
+  预览内容=Html.fromHtml(预览内容)
   people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
 
 end)
@@ -742,19 +753,6 @@ end
 function 刷新()
   其他()
 end
-
-
-add=true
-
-
-people_list.setOnScrollListener{
-  onScroll=function(view,a,b,c)
-    if a+b==c and add then
-      刷新()
-      System.gc()
-    end
-  end
-}
 
 function nochecktitle(str)
   chobu="no搜索"

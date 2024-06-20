@@ -1,65 +1,52 @@
 (function () {
-    var tags = document.getElementsByTagName("img");
-    for (var i = 0; i < tags.length; i++) {
-        if (tags[i].parentNode.className.includes("GifPlayer")) {
-            tags[i].onclick = function (e) {
-                if (this.parentNode.className.includes("isPlaying")) {
-                    e.stopPropagation()
-                } else {
-                    const imageUrl = this.src
-                    const newImageUrl = imageUrl.replace(/(\.\w+)(\?.*)?$/, ".gif$2");
-                    this.src = newImageUrl;
-                    this.dataset.original = newImageUrl;
-                    e.stopPropagation()
-                    this.parentNode.className = this.parentNode.className + " isPlaying"
-                    for (var i = 0; i < this.parentNode.childNodes.length; i++) {
-                        if (this.parentNode.childNodes[i].tagName != "IMG") {
-                            console.log(this.parentNode.childNodes[i])
-                            this.parentNode.childNodes[i].style.display = "none"
-                            this.parentNode.childNodes[i].style.pointerEvents = "none"
-                        }
-                    }
-                    return
-                }
-                var tag = document.getElementsByTagName("img");
-                var t = {};
-                for (var z = 0; z < tag.length; z++) {
-                    if (tag[z].dataset.src) {
-                        t[z] = tag[z].dataset.original || tag[z].dataset.src
-                    } else {
-                        t[z] = tag[z].src
-                    }
-                    if (tag[z].parentNode.className.includes("GifPlayer")) {
-                        t[z] = t[z].replace(/(\.\w+)(\?.*)?$/, ".gif$2")
-                    }
-                    if (tag[z].src == this.src) {
-                        t[tag.length] = z;
-                    }
-                };
 
-                window.androlua.execute(JSON.stringify(t));
+    function getsrc(doc) {
+        if (isLocalPage()) return doc.src
+        return doc.dataset && (doc.dataset.original || doc.dataset.src) || doc.src;
+    }
+
+    function getimg(ele_src) {
+        var tag = document.getElementsByTagName("img");
+        var t = {};
+        for (var z = 0; z < tag.length; z++) {
+            if (isZhihuPage() && tag[z].parentNode.className.includes("GifPlayer")) {
+                t[z] = getsrc(tag[z]).replace(/(\.\w+)(\?.*)?$/, ".gif$2")
+            } else {
+                t[z] = getsrc(tag[z]);
             }
-            continue
-        }
-        tags[i].onclick = function () {
-            var tag = document.getElementsByTagName("img");
-            var t = {};
-            for (var z = 0; z < tag.length; z++) {
-                if (tag[z].dataset.src) {
-                    t[z] = tag[z].dataset.original || tag[z].dataset.src
-                } else {
-                    t[z] = tag[z].src
-                }
-                if (tag[z].parentNode.className.includes("GifPlayer")) {
-                    t[z] = t[z].replace(/(\.\w+)(\?.*)?$/, ".gif$2")
-                }
-                if (tag[z].src == this.src) {
-                    t[tag.length] = z;
-                }
-            };
+            if (tag[z].src == ele_src) {
+                t[tag.length] = z;
+            }
+        };
+        return t
+    }
 
-            window.androlua.execute(JSON.stringify(t));
+    function isZhihuPage() {
+        return window.location.hostname.includes('zhihu.com');
+    }
+
+    function isLocalPage() {
+        return window.location.href.startsWith("file://");
+    }
+
+    document.addEventListener('click', function (event) { // 判断点击的目标是否为img元素 
+        let doc = event.target
+        if (isZhihuPage() && doc.parentNode.className.includes("GifPlayer")) {
+            doc.src = doc.src.replace(/(\.\w+)(\?.*)?$/, ".gif$2");
+            doc.dataset.original = doc.src;
+            event.stopPropagation()
+            let children = doc.parentNode.children
+            for (var i = 0; i < children.length; i++) {
+                if (children[i].tagName != "IMG") {
+                    children[i].style.display = "none"
+                    children[i].style.pointerEvents = "none"
+                }
+            }
+            return
         }
-    };
-    return tags.length;
+        if (doc.tagName === 'IMG') {
+            window.androlua.execute(JSON.stringify(getimg(event.target.src)));
+        }
+    }, true);
+
 })();

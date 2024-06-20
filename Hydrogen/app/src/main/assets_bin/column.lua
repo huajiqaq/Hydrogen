@@ -11,7 +11,7 @@ import "com.androlua.LuaWebView$JsInterface"
 
 import "com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton"
 
-local result,类型,islocal,uri,simpletitle,autoname=...
+local result,类型,islocal,filedir,simpletitle,autoname=...
 
 if 类型==nil or 类型:match("%d") then
   类型="文章"
@@ -275,7 +275,8 @@ function 刷新()
     content.loadUrl("https://www.zhihu.com/special/"..result)
     _title.Text="专题"
    elseif 类型=="本地" then
-    content.loadUrl(uri)
+    myuri = Uri.fromFile(File(this.getLuaDir().."/mhtml2html.html")).toString();
+    content.loadUrl(myuri)
     _title.Text=simpletitle
   end
 
@@ -318,14 +319,11 @@ content.setWebViewClient{
       加载js(view,获取js("drama"))
     end
 
-    加载js(view,获取js("zhihugif"))
-
   end,
   onPageFinished=function(view,l)
 
   end,
   onLoadResource=function(view,url)
-    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
   end,
 }
 
@@ -334,7 +332,12 @@ content.setWebViewClient{
 --设置网页图片点击事件，
 local z=JsInterface{
   execute=function(b)
+    if b=="getmhtml" then
+      return 读取文件(filedir)
+    end
     if b~=nil and #b>1 then
+      --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
+      this.setSharedData("imagedata",b)
       activity.newActivity("image",{b})
     end
   end
@@ -494,6 +497,52 @@ if 类型=="本地" then
           printManager = this.getSystemService(Context.PRINT_SERVICE);
           printAdapter = content.createPrintDocumentAdapter();
           printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
+        end
+      },
+
+      {
+        src=图标("search"),text="在网页查找内容",onClick=function()
+          local editDialog=AlertDialog.Builder(this)
+          .setTitle("搜索")
+          .setView(loadlayout({
+            LinearLayout;
+            layout_height="fill";
+            layout_width="fill";
+            orientation="vertical";
+            {
+              TextView;
+              TextIsSelectable=true;
+              layout_marginTop="10dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              Text='输入搜索内容';
+              Typeface=字体("product-Medium");
+            },
+            {
+              EditText;
+              layout_width="match";
+              layout_height="match";
+              layout_marginTop="5dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              id="edit";
+              Typeface=字体("product");
+            }
+          }))
+          .setPositiveButton("搜索", {onClick=function()
+              if edit.text=="" then
+                return 提示("请输入搜索内容")
+              end
+              content.clearMatches();
+              content.findAllAsync(edit.text);
+          end})
+          .setNeutralButton("下一个",{onClick=function()
+              content.findNext(true);
+          end})
+          .setNegativeButton("上一个", {onClick=function()
+              content.findNext(false);
+          end})
+          .show()
         end
       },
 

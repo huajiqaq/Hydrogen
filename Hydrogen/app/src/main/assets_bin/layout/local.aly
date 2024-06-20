@@ -15,83 +15,150 @@
       MaterialToolbar;
       id="toolbar";
       layout_width="fill";
-      layout_height="56dp";
+      layout_height="wrap";
       layout_gravity="center";
       layout_scrollFlags="scroll|snap|enterAlways";
 
       {
         LinearLayout;
         layout_width="-1";
-        layout_height="56dp";
-        gravity="center|left";
+        layout_height="-2";
+        elevation="0";
+        id="toolbar",
+        background=backgroundc;
+        orientation="vertical";
         {
           LinearLayout;
-          orientation="horizontal";
+          layout_width="-1";
           layout_height="56dp";
-          layout_width="56dp";
-          gravity="center";
-          onClick=function()关闭页面()end;
-          {
-            ImageView;
-            ColorFilter=primaryc;
-            src=图标("arrow_back");
-            layout_height="32dp";
-            layout_width="32dp";
-            padding="4dp";
-            id="fh";
-          };
-        };
-        {
-          MaterialCardView;
-          radius=cardradius;
-          CardBackgroundColor=backgroundc;
-          elevation="0dp";
-          layout_width="-1",
-          layout_weight="1",
-          StrokeWidth=0,
+          gravity="center|left";
           {
             LinearLayout;
-            id="all_root",
-            layout_width="-1",
-            padding="2dp";
-            orientation="vertical";
-            onClick=function()
-              local questionid=xxx:match[[question_id="(.-)"]]
-              activity.newActivity("question",{questionid})
-            end;
+            orientation="horizontal";
+            layout_height="56dp";
+            layout_width="56dp";
+            gravity="center";
+            onClick=function()关闭页面()end;
             {
-              TextView;
-              textColor=primaryc;
-              textSize="18sp";
-              id="_title";
-              SingleLine=true;
-              ellipsize='marquee',
-              Selected=true,
-              gravity="center|left";
-              Typeface=字体("product-Bold");
+              ImageView;
+              ColorFilter=primaryc;
+              src=图标("arrow_back");
+              layout_height="32dp";
+              layout_width="32dp";
+              padding="4dp";
+              id="fh";
             };
           };
+          {
+            MaterialCardView;
+            radius=cardradius;
+            CardBackgroundColor=backgroundc;
+            elevation="0dp";
+            layout_width="-1",
+            layout_weight="1",
+            StrokeWidth=0,
+            {
+              LinearLayout;
+              id="all_root",
+              layout_width="-1",
+              padding="2dp";
+              orientation="vertical";
+              {
+                TextView;
+                textColor=primaryc;
+                textSize="18sp";
+                id="_title";
+                SingleLine=true;
+                ellipsize='marquee',
+                Selected=true,
+                gravity="center|left";
+                Typeface=字体("product-Bold");
+              };
+              {
+                TextView;
+                textColor=textc;
+                textSize="10sp";
+                text="点击查看全部回答 >",
+                id="all_answer";
+                gravity="center|left";
+                Typeface=字体("product-Bold");
+              };
+            };
+          };
+          {
+            ImageView;
+            src=图标("more_vert");
+            ColorFilter=primaryc;
+            layout_width="32dp",
+            layout_height="32dp",
+            padding="4dp";
+            id="_more";
+            tooltip="更多",
+            layout_margin="8dp";
+            onClick=function()
+              showpop(_more_lay,a.pop)
+            end;
+          };
+          {
+            TextView;
+            id="_more_lay";
+            layout_width="0",
+            layout_height="0",
+            layout_gravity="top";
+          };
         };
+
         {
-          ImageView;
-          src=图标("more_vert");
-          ColorFilter=primaryc;
-          layout_width="32dp",
-          layout_height="32dp",
-          padding="4dp";
-          id="_more";
-          tooltip="更多",
-          layout_margin="8dp";
-          onClick=function()
-            showpop(_more_lay,a.pop)
-          end;
-        };
-        {
-          TextView;
-          id="_more_lay";
-          layout_width="0",
-          layout_height="0",
-          layout_gravity="top";
+          MaterialCardView;
+          layout_gravity="center";
+          layout_height="-2";
+          CardBackgroundColor=cardedge,
+          Elevation="0";
+          layout_width="-1";
+          layout_margin="16dp";
+          layout_marginTop="8dp";
+          layout_marginBottom="8dp";
+          radius=cardradius;
+          StrokeColor=cardedge;
+          StrokeWidth=dp2px(1),
+          id="userinfo",
+          {
+            CircleImageView,
+            layout_width="60dp",
+            layout_height="40dp",
+            layout_gravity="left|center",
+            src="logo.png",
+            id="usericon",
+          },
+          {
+            View,
+            layout_height="75dp",
+            id="mripple",
+          },
+          {
+            TextView,
+            text="",
+            textSize="16sp",
+            id="username",
+            Typeface=字体("product-Bold");
+            layout_marginTop="15dp",
+            layout_marginLeft="60dp",
+            gravity="left|center",
+            textColor=textc,
+          },
+          {
+            TextView,
+            text="",
+            id="userheadline",
+            Typeface=字体("product");
+            textSize="14sp",
+            layout_marginLeft="60dp",
+            layout_marginRight="5dp",
+            layout_marginTop="40dp",
+            layout_marginBottom="10dp",
+            gravity="left|bottom",
+            textColor="#FF767676",
+          },
         };
       };
 

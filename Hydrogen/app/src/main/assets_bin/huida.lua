@@ -276,6 +276,52 @@ mpop={
         end
         提示("已复制网页链接到剪切板")
     end},
+    {
+      src=图标("search"),text="在网页查找内容",onClick=function()
+        local content=liulan
+        local editDialog=AlertDialog.Builder(this)
+        .setTitle("搜索")
+        .setView(loadlayout({
+          LinearLayout;
+          layout_height="fill";
+          layout_width="fill";
+          orientation="vertical";
+          {
+            TextView;
+            TextIsSelectable=true;
+            layout_marginTop="10dp";
+            layout_marginLeft="10dp",
+            layout_marginRight="10dp",
+            Text='输入搜索内容';
+            Typeface=字体("product-Medium");
+          },
+          {
+            EditText;
+            layout_width="match";
+            layout_height="match";
+            layout_marginTop="5dp";
+            layout_marginLeft="10dp",
+            layout_marginRight="10dp",
+            id="edit";
+            Typeface=字体("product");
+          }
+        }))
+        .setPositiveButton("搜索", {onClick=function()
+            if edit.text=="" then
+              return 提示("请输入搜索内容")
+            end
+            content.clearMatches();
+            content.findAllAsync(edit.text);
+        end})
+        .setNeutralButton("下一个",{onClick=function()
+            content.findNext(true);
+        end})
+        .setNegativeButton("上一个", {onClick=function()
+            content.findNext(false);
+        end})
+        .show()
+      end
+    },
 
   }
 }
@@ -412,13 +458,10 @@ liulan.setWebViewClient{
       加载js(view,加载js内容)
     end
 
-    加载js(view,获取js("zhihugif"))
-
     liulan.setVisibility(0)
 
   end,
   onLoadResource=function(view,url)
-    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
   end,
   onPageFinished=function(view,url)
 end}
@@ -427,6 +470,8 @@ end}
 local z=JsInterface{
   execute=function(b)
     if b~=nil and #b>1 then
+      --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
+      this.setSharedData("imagedata",b)
       activity.newActivity("image",{b})
     end
   end

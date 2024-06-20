@@ -43,10 +43,10 @@ local function 设置滑动跟随(t)
 
     --上正 下负
     if scrollpos>=顶栏高度 then
-      appbar.setExpanded(true);
+      appbar.setExpanded(true,false);
       scrollpos=0
      elseif scrollpos<=0-顶栏高度 then
-      appbar.setExpanded(false);
+      appbar.setExpanded(false,false);
       scrollpos=0-顶栏高度
     end
 
@@ -55,19 +55,14 @@ local function 设置滑动跟随(t)
 end
 
 
-
 comment.onClick=function()
-  xpcall(function()
-    local pos=pg.getCurrentItem()
-    local mview=数据表[pg.adapter.getItem(pos).id]
-    local 回答id=mview.data.id
-    if 回答id==nil then
-      return 提示("加载中")
-    end
-    activity.newActivity("comment",{(回答id),"answers",_title.Text,mview.ids.username.Text})
-    end,function()
-    提示("请稍等")
-  end)
+  local pos=pg.getCurrentItem()
+  local mview=数据表[pg.adapter.getItem(pos).id]
+  local 回答id=mview.data.id
+  if 回答id==nil then
+    return 提示("加载中")
+  end
+  activity.newActivity("comment",{(回答id),"answers",_title.Text,username.Text})
 end;
 
 
@@ -122,6 +117,19 @@ function 清空回答滑动位置配置()
   写入文件(滑动配置保存路径,"")
 end
 
+mripple.onClick=function()
+  local pos=pg.getCurrentItem()
+  local mview=数据表[pg.adapter.getItem(pos).id]
+  local id=mview.data.author.id
+  if id~="0" then
+    activity.newActivity("people",{id})
+   else
+    提示("回答作者已设置匿名")
+  end
+end
+
+波纹({mripple},"圆自适应")
+
 function 数据添加(t,b)
   local detector=GestureDetector(this,{a=lambda _:_})
 
@@ -130,7 +138,7 @@ function 数据添加(t,b)
   local timeOut=200
   detector.setOnDoubleTapListener {
     onDoubleTap=function()
-      t.mscroll.smoothScrollTo(0, 0)
+      t.content.scrollTo(0, 0)
       isDoubleTap=true
       task(timeOut,function()isDoubleTap=false end)
     end
@@ -173,14 +181,14 @@ function 数据添加(t,b)
     return detector.onTouchEvent(e)
   end
 
-  设置滑动跟随(t.mscroll)
+  设置滑动跟随(t.content)
 
   local ua=getua(t.content)
   t.content.getSettings().setUserAgentString(ua)
 
 
-  t.content.setHorizontalScrollBarEnabled(false);
-  t.content.setVerticalScrollBarEnabled(false);
+  t.content.setHorizontalScrollBarEnabled(true);
+  t.content.setVerticalScrollBarEnabled(true);
 
 
   if activity.getSharedData("标题简略化")~="true" then
@@ -190,53 +198,15 @@ function 数据添加(t,b)
   end
 
 
-  if b.author.name=="知乎用户" then
-    zHttp.get("https://api.zhihu.com/people/"..b.author.id.."/profile?profile_new_version=1",head,function(code,content)
-      if code==200 then
-        local data=luajson.decode(content)
-        t.userheadline.Text=data.headline
-        t.username.Text=data.name
-        loadglide(t.usericon,data.avatar_url)
-      end
-    end)
+
+  loadglide(usericon,b.author.avatar_url)
+  if b.author.headline=="" then
+    userheadline.Text="Ta还没有签名哦~"
    else
-
-    loadglide(t.usericon,b.author.avatar_url)
-
-    if b.author.headline=="" then
-      t.userheadline.Text="Ta还没有签名哦~"
-     else
-      t.userheadline.Text=b.author.headline
-    end
-
-
-
-    t.username.Text=b.author.name
-
+    userheadline.Text=b.author.headline
   end
+  username.Text=b.author.name
 
-  t.ripple.onClick=function()
-    local id=b.author.id
-    if id~="0" then
-      activity.newActivity("people",{id})
-     else
-      提示("回答作者已设置匿名")
-    end
-  end
-
-  波纹({t.ripple},"圆自适应")
-
-  t.userinfo.post{
-    run=function()
-      local linearParams = t.ripple.getLayoutParams()
-      linearParams.width =t.userinfo.width
-      linearParams.height = t.userinfo.height
-      t.ripple.setLayoutParams(linearParams)
-    end
-  }
-
-
-  t.mscroll.smoothScrollTo(0,0)
 
   t.content
   .getSettings()
@@ -279,24 +249,9 @@ function 数据添加(t,b)
   end
 
   t.content.BackgroundColor=转0x("#00000000",true);
-  t.mscroll.requestFocus()
   t.content.setDownloadListener({
     onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
       webview下载文件(链接, UA, 相关信息, 类型, 大小)
-  end})
-
-  t.content.setOnGenericMotionListener({
-    onGenericMotion=function(view, event)
-      local action=event.getAction()
-      if action==MotionEvent.ACTION_SCROLL then
-
-        local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
-        local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
-
-        t.mscroll.scrollTo(0, t.mscroll.getScrollY()-scrollY*100);
-        return true
-
-      end
   end})
 
 
@@ -322,10 +277,6 @@ function 数据添加(t,b)
     已记录=true
   end
 
-  if this.getSharedData("关闭硬件加速")=="true" then
-    t.mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
-  end
-
   t.content.removeView(t.content.getChildAt(0))
   t.content.setWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
@@ -336,13 +287,14 @@ function 数据添加(t,b)
       end
     end,
     onPageStarted=function(view,url,favicon)
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+
       加载js(view,获取js("native"))
       t.content.setVisibility(8)
       if t.progress~=nil then
         t.progress.setVisibility(0)
       end
       等待doc(view)
-      加载js(view,获取js("zhihugif"))
       加载js(view,获取js("answer_pages"))
     end,
     onPageFinished=function(view,url,favicon)
@@ -353,13 +305,12 @@ function 数据添加(t,b)
       end
       屏蔽元素(view,{".AnswerReward",".AppViewRecommendedReading"})
 
-      加载js(view,获取js("answer_code"))
-
       task(1000,function()
+        加载js(view,获取js("answer_code"))
         local 保存滑动位置=获取回答滑动位置配置()[tostring(b.id)] or 0
         if tonumber(保存滑动位置)>0 then
           local 实际滑动位置=保存滑动位置+t.userinfo.height
-          t.mscroll.smoothScrollTo(0,实际滑动位置)
+          t.content.smoothScrollTo(0,实际滑动位置)
           提示("已恢复到上次滑动位置")
         end
       end)
@@ -398,7 +349,6 @@ function 数据添加(t,b)
       end
     end,
     onLoadResource=function(view,url)
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
     end,
   }
 
@@ -407,6 +357,8 @@ function 数据添加(t,b)
   local z=JsInterface{
     execute=function(b)
       if b~=nil then
+        --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
+        this.setSharedData("imagedata",b)
         activity.newActivity("image",{b})
       end
     end
@@ -414,7 +366,6 @@ function 数据添加(t,b)
 
   t.content.addJSInterface(z,"androlua")
 
-  local mscroll=t.mscroll
   local webview=t.content
   t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     onProgressChanged=function(view,url,favicon)
@@ -425,10 +376,10 @@ function 数据添加(t,b)
     onConsoleMessage=function(consoleMessage)
       --打印控制台信息
       if consoleMessage.message():find("开始滑动") then
-        mscroll.requestDisallowInterceptTouchEvent(true)
+        webview.requestDisallowInterceptTouchEvent(true)
         pg.setUserInputEnabled(false);
        elseif consoleMessage.message():find("结束滑动") then
-        mscroll.requestDisallowInterceptTouchEvent(false)
+        webview.requestDisallowInterceptTouchEvent(false)
         pg.setUserInputEnabled(true);
        elseif consoleMessage.message():find("打印") then
         print(consoleMessage.message())
@@ -487,7 +438,7 @@ end
 
 function 加载页(mviews,pos,isleftadd,isload)
   if mviews==nil then return end
-  if #mviews.ids.username.Text==0 and mviews.load==nil then --判断是否加载过没有
+  if mviews.load==nil then --判断是否加载过没有
     回答容器:getOneData(function(cb,r)--获取1条数据
       if cb==false then
         mviews.load=nil
@@ -741,48 +692,31 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
 
           --判断更新底栏数据
           if mviews.data and mviews.data.id then
-            if mviews.data.voteup_count then
-              vote_count.Text=(mviews.data.voteup_count)..""
-              thanks_count.Text=(mviews.data.thanks_count)..""
-              comment_count.Text=(mviews.data.comment_count)..""
+            vote_count.Text=(mviews.data.voteup_count)..""
+            thanks_count.Text=(mviews.data.thanks_count)..""
+            comment_count.Text=(mviews.data.comment_count)..""
 
-              local 回答id=mviews.data.id
-              if 点赞状态[回答id] then
-                vote_count.setTextColor(转0x(primaryc))
-               else
-                vote_count.setTextColor(转0x(stextc))
-              end
-
-              if 感谢状态[回答id] then
-                thanks_count.setTextColor(转0x(primaryc))
-               else
-                thanks_count.setTextColor(转0x(stextc))
-              end
-
+            loadglide(usericon,mviews.data.author.avatar_url)
+            if mviews.data.author.headline=="" then
+              userheadline.Text="Ta还没有签名哦~"
              else
-              local include="?&include=cmment_count,voteup_count,thanks_count;voteup_count,cmment_count,thanks_count,badge[?(type=best_answerer)].topics"
-              zHttp.get("https://api.zhihu.com/answers/"..mviews.data.id..include,head,function(a,b)
-                if a==200 then
-                  mviews.data=luajson.decode(b).data[1]
-                  vote_count.Text=(mviews.data.voteup_count)..""
-                  thanks_count.Text=(mviews.data.thanks_count)..""
-                  comment_count.Text=(mviews.data.comment_count)..""
-
-                  if 点赞状态[回答id] then
-                    vote_count.setTextColor(转0x(primaryc))
-                   else
-                    vote_count.setTextColor(转0x(stextc))
-                  end
-
-                  if 感谢状态[回答id] then
-                    thanks_count.setTextColor(转0x(primaryc))
-                   else
-                    thanks_count.setTextColor(转0x(stextc))
-                  end
-
-                end
-              end)
+              userheadline.Text=mviews.data.author.headline
             end
+            username.Text=mviews.data.author.name
+
+            local 回答id=mviews.data.id
+            if 点赞状态[回答id] then
+              vote_count.setTextColor(转0x(primaryc))
+             else
+              vote_count.setTextColor(转0x(stextc))
+            end
+
+            if 感谢状态[回答id] then
+              thanks_count.setTextColor(转0x(primaryc))
+             else
+              thanks_count.setTextColor(转0x(stextc))
+            end
+
           end
 
         end
@@ -1057,20 +991,52 @@ task(1,function()
       },
 
       {
-        src=图标("build"),text="关闭硬件加速",onClick=function()
-          AlertDialog.Builder(this)
-          .setTitle("提示")
-          .setMessage("你确认要关闭当前页的硬件加速吗 关闭后滑动可能会造成卡顿 如果当前页显示正常请不要关闭")
-          .setPositiveButton("关闭",{onClick=function(v)
-              数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
-              数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.reload()
-              提示("关闭成功")
+        src=图标("search"),text="在网页查找内容",onClick=function()
+          local content=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content
+          local editDialog=AlertDialog.Builder(this)
+          .setTitle("搜索")
+          .setView(loadlayout({
+            LinearLayout;
+            layout_height="fill";
+            layout_width="fill";
+            orientation="vertical";
+            {
+              TextView;
+              TextIsSelectable=true;
+              layout_marginTop="10dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              Text='输入搜索内容';
+              Typeface=字体("product-Medium");
+            },
+            {
+              EditText;
+              layout_width="match";
+              layout_height="match";
+              layout_marginTop="5dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              id="edit";
+              Typeface=字体("product");
+            }
+          }))
+          .setPositiveButton("搜索", {onClick=function()
+              if edit.text=="" then
+                return 提示("请输入搜索内容")
+              end
+              content.clearMatches();
+              content.findAllAsync(edit.text);
           end})
-          .setNeutralButton("取消",{onClick=function(v)
+          .setNeutralButton("下一个",{onClick=function()
+              content.findNext(true);
+          end})
+          .setNegativeButton("上一个", {onClick=function()
+              content.findNext(false);
           end})
           .show()
         end
       },
+
     }
   })
 end)
@@ -1081,15 +1047,6 @@ if activity.getSharedData("回答提示0.04")==nil
   .setCancelable(false)
   .setMessage("你可双击标题回到顶部 长按标题来保存滑动位置(保存后下次打开会自动滑动到指定位置)")
   .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.04","true") end})
-  .show()
-end
-
-if activity.getSharedData("异常提示0.02")==nil
-  AlertDialog.Builder(this)
-  .setTitle("小提示")
-  .setCancelable(false)
-  .setMessage("如果部分回答显示不完整 可以点击右上角「关闭硬件加速」 关闭动画会卡顿 如果没有问题请不要点击 出现其他异常情况都可以尝试关闭 另外 可以在设置中一键关闭之后所有的硬件加速")
-  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("异常提示0.02","true") end})
   .show()
 end
 
@@ -1106,16 +1063,16 @@ if this.getSharedData("显示虚拟滑动按键")=="true" then
     local pos=pg.getCurrentItem()
     local mview=数据表[pg.adapter.getItem(pos).id]
     local id表=mview.ids
-    local mscroll=id表.mscroll
-    mscroll.scrollBy(0, -mscroll.height);
+    local content=id表.content
+    content.scrollBy(0, -content.height);
     appbar.setExpanded(true);
   end
   down_button.onClick=function()
     local pos=pg.getCurrentItem()
     local mview=数据表[pg.adapter.getItem(pos).id]
     local id表=mview.ids
-    local mscroll=id表.mscroll
-    mscroll.scrollBy(0, mscroll.height);
+    local content=id表.content
+    content.scrollBy(0, content.height);
     appbar.setExpanded(false);
   end
 end

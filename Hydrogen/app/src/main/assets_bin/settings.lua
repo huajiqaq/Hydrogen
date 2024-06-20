@@ -51,7 +51,6 @@ data = {
 
   {__type=4,subtitle="全屏模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=4,subtitle="代码块自动换行",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
-  {__type=4,subtitle="关闭硬件加速",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("关闭硬件加速"))}},
 
   {__type=1,title="主页设置",image=图标("")},
 

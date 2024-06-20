@@ -15,13 +15,10 @@ title,author=...
 波纹({all_root},"方自适应")
 
 filedir=内置存储文件("Download/"..title.."/"..author.."/mht.mht")
-
-myuri = Uri.fromFile(File(filedir)).toString();
-
 xxx=读取文件(内置存储文件("Download/"..title.."/"..author.."/detail.txt"))
 
+--new 0.5184 引入mhtml2html解析mhtml 去除大量mhtml替换逻辑
 if not(xxx:match("question_id")) then
-
 
   local function replace_string(file_name, old_string, new_string)
     -- 读取文件内容
@@ -149,7 +146,7 @@ if not(xxx:match("question_id")) then
     return
   end
   activity.finish()
-  activity.newActivity("column",{mynum,mytype,true,myuri,title,author})
+  activity.newActivity("column",{mynum,mytype,true,filedir,title,author})
   return
 end
 
@@ -198,87 +195,52 @@ activity.setContentView(loadlayout("layout/local"))
 
 设置toolbar(toolbar)
 
+
+local isDoubleTap=false
+local timeOut=200
+
+local detector=GestureDetector(this,{a=lambda _:_})
+
+detector.setOnDoubleTapListener {
+  onDoubleTap=function()
+    t.content.scrollTo(0, 0)
+    isDoubleTap=true
+    task(timeOut,function()isDoubleTap=false end)
+  end
+}
+
+all_root.onTouch=function(v,e)
+  return detector.onTouchEvent(e)
+end
+
+all_root.onClick=function(v)
+  if not isDoubleTap then
+    task(timeOut,function()
+      if not isDoubleTap then
+        local questionid=xxx:match[[question_id="(.-)"]]
+        activity.newActivity("question",{questionid})
+      end
+    end)
+  end
+end
+
+波纹({all_root},"方自适应")
+
 _title.text=title
 
 --维持和answer.lua的统一性
-local t={}
+t={}
 local 加入view=loadlayout({
-  ScrollView,
-  id="mscroll",
-  nestedScrollingEnabled=true,
+  LinearLayout,
+  layout_width="fill";
+  layout_height="fill";
+  id="root";
   {
-    LinearLayout;
+    NestedLuaWebView,
+    id="content",
     layout_width="-1";
-    layout_height="-2";
-    orientation="vertical";
-    {
-      MaterialCardView;
-      layout_gravity="center";
-      layout_height="-2";
-      CardBackgroundColor=cardedge,
-      Elevation="0";
-      layout_width="-1";
-      layout_margin="16dp";
-      layout_marginTop="8dp";
-      layout_marginBottom="8dp";
-      radius=cardradius;
-      StrokeColor=cardedge;
-      StrokeWidth=dp2px(1),
-      id="userinfo",
-
-      {
-        CircleImageView,
-        layout_width="60dp",
-        layout_height="40dp",
-        layout_gravity="left|center",
-        src="logo.png",
-        id="usericon",
-      },
-      {
-        View,
-        layout_height="75dp",
-        id="ripple",
-      },
-      {
-        TextView,
-        text="",
-        textSize="16sp",
-        id="username",
-        Typeface=字体("product-Bold");
-        layout_marginTop="15dp",
-        layout_marginLeft="60dp",
-        gravity="left|center",
-        textColor=textc,
-      },
-      {
-        TextView,
-        text="",
-        id="userheadline",
-        Typeface=字体("product");
-        textSize="14sp",
-        layout_marginLeft="60dp",
-        layout_marginRight="5dp",
-        layout_marginTop="40dp",
-        layout_marginBottom="10dp",
-        gravity="left|bottom",
-        textColor="#FF767676",
-      },
-    };
-    {
-      LinearLayout,
-      layout_width="-1";
-      layout_height="-2";
-      {
-        LuaWebView,
-        id="content",
-        layout_width="-1";
-        layout_height="-2";
-        Visibility=8,
-        layout_marginTop="2dp";
-        layout_marginLeft="8dp";
-        layout_marginRight="8dp";
-      }
-    },
+    layout_height="-1";
+    Visibility=8,
   };
 },t)
 
@@ -286,14 +248,10 @@ import "com.dingyi.adapter.BaseViewPage2Adapter"
 pg.adapter=BaseViewPage2Adapter(this)
 pg.adapter.add(加入view)
 
-t.ripple.onClick=function()
+mripple.onClick=function()
   提示("请点击右上角「使用网络打开」打开原回答页后查看")
 end
-波纹({t.ripple},"圆自适应")
-
-if this.getSharedData("关闭硬件加速")=="true" then
-  t.mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil)
-end
+波纹({mripple},"圆自适应")
 
 task(1,function()
   顶栏高度=toolbar.height
@@ -313,10 +271,10 @@ local function 设置滑动跟随(t)
 
     --上正 下负
     if scrollpos>=顶栏高度 then
-      appbar.setExpanded(true);
+      appbar.setExpanded(true,false);
       scrollpos=0
      elseif scrollpos<=0-顶栏高度 then
-      appbar.setExpanded(false);
+      appbar.setExpanded(false,false);
       scrollpos=0-顶栏高度
     end
 
@@ -324,12 +282,12 @@ local function 设置滑动跟随(t)
 
 end
 
-设置滑动跟随(t.mscroll)
+设置滑动跟随(t.content)
 
-t.username.text=xxx:match[[author="(.-)"]]
-t.userheadline.text=xxx:match[[headline="(.-)"]]
-if t.userheadline.text=="" then
-  t.userheadline.text="Ta还没有签名哦~"
+username.text=xxx:match[[author="(.-)"]]
+userheadline.text=xxx:match[[headline="(.-)"]]
+if userheadline.text=="" then
+  userheadline.text="Ta还没有签名哦~"
 end
 
 thanks_count.text=xxx:match[[thanks_count="(.-)"]]
@@ -337,18 +295,15 @@ comment_count.text=xxx:match[[comment_count="(.-)"]]
 vote_count.text=xxx:match[[vote_count="(.-)"]]
 
 mark.onClick=function()
-  local 保存路径=内置存储文件("Download/"..title:gsub("/","or").."/"..t.username.text)
+  local 保存路径=内置存储文件("Download/"..title:gsub("/","or").."/"..username.text)
   if getDirSize(保存路径.."/".."fold/")==0 then
     提示("你还没有收藏评论")
    else
-    activity.newActivity("comment",{nil,"local",title,t.username.text})
+    activity.newActivity("comment",{nil,"local",title,username.text})
   end
 end
 
 波纹({mark},"圆主题")
-
-
-t.mscroll.smoothScrollTo(0,0)
 
 t.content
 .getSettings()
@@ -371,22 +326,7 @@ t.content
 .setBuiltInZoomControls(true)
 
 t.content.removeView(t.content.getChildAt(0))
-t.content.setHorizontalScrollBarEnabled(false);
-t.content.setVerticalScrollBarEnabled(false);
 
-t.content.setOnGenericMotionListener({
-  onGenericMotion=function(view, event)
-    local action=event.getAction()
-    if action==MotionEvent.ACTION_SCROLL then
-
-      local scrollX = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
-      local scrollY = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
-
-      t.mscroll.scrollTo(0, t.mscroll.getScrollY()-scrollY*100);
-      return true
-
-    end
-end})
 
 if activity.getSharedData("禁用缓存")=="true"
   t.content
@@ -400,10 +340,30 @@ if activity.getSharedData("禁用缓存")=="true"
   .setCacheMode(WebSettings.LOAD_DEFAULT)
 end
 
+t.content.BackgroundColor=转0x("#00000000",true);
+
 t.content.setDownloadListener({
   onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
     提示("本地暂不支持下载")
 end})
+
+
+--设置网页图片点击事件，
+local z=JsInterface{
+  execute=function(b)
+    if b=="getmhtml" then
+      return 读取文件(filedir)
+    end
+    if b~=nil and #b>1 then
+      --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
+      this.setSharedData("imagedata",b)
+      activity.newActivity("image")
+    end
+  end,
+}
+
+
+t.content.addJSInterface(z,"androlua")
 
 t.content.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)
@@ -411,7 +371,24 @@ t.content.setWebViewClient{
     view.stopLoading()
     view.goBack()
   end,
+  onPageStarted=function(view,url,favicon)
+
+  end,
+  onPageFinished=function(view,l)
+    t.content.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+    if 全局主题值=="Day" then
+    end
+  end,
+  onLoadResource=function(view,url)
+  end,
 }
+
+t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
+  onProgressChanged=function(view,url,favicon)
+end}))
+
+
+myuri = Uri.fromFile(File(this.getLuaDir().."/mhtml2html.html")).toString();
 
 t.content.loadUrl(myuri)
 t.content.setVisibility(0)
@@ -459,6 +436,53 @@ task(1,function()
         end
       },
 
+      {
+        src=图标("search"),text="在网页查找内容",onClick=function()
+          local content=t.content
+          local editDialog=AlertDialog.Builder(this)
+          .setTitle("搜索")
+          .setView(loadlayout({
+            LinearLayout;
+            layout_height="fill";
+            layout_width="fill";
+            orientation="vertical";
+            {
+              TextView;
+              TextIsSelectable=true;
+              layout_marginTop="10dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              Text='输入搜索内容';
+              Typeface=字体("product-Medium");
+            },
+            {
+              EditText;
+              layout_width="match";
+              layout_height="match";
+              layout_marginTop="5dp";
+              layout_marginLeft="10dp",
+              layout_marginRight="10dp",
+              id="edit";
+              Typeface=字体("product");
+            }
+          }))
+          .setPositiveButton("搜索", {onClick=function()
+              if edit.text=="" then
+                return 提示("请输入搜索内容")
+              end
+              content.clearMatches();
+              content.findAllAsync(edit.text);
+          end})
+          .setNeutralButton("下一个",{onClick=function()
+              content.findNext(true);
+          end})
+          .setNegativeButton("上一个", {onClick=function()
+              content.findNext(false);
+          end})
+          .show()
+        end
+      },
+
     }
   })
 end)
@@ -475,11 +499,11 @@ end
 if this.getSharedData("显示虚拟滑动按键")=="true" then
   bottom_parent.Visibility=0
   up_button.onClick=function()
-    t.mscroll.scrollBy(0, -t.mscroll.height);
+    t.content.scrollBy(0, -t.content.height);
     appbar.setExpanded(true);
   end
   down_button.onClick=function()
-    t.mscroll.scrollBy(0, t.mscroll.height);
+    t.content.scrollBy(0, t.content.height);
     appbar.setExpanded(false);
   end
 end

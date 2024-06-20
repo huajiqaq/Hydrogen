@@ -621,6 +621,8 @@ function 问题详情(code)
   local z=JsInterface{
     execute=function(b)
       if b~=nil then
+        --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
+        this.setSharedData("imagedata",b)
         activity.newActivity("image",{b})
       end
     end
@@ -644,7 +646,6 @@ function 问题详情(code)
 
       imgReset()
 
-      加载js(view,获取js("zhihugif"))
     end,
 
     onProgressChanged=function(view,Progress)

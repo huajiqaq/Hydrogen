@@ -33,6 +33,7 @@ function base:getData(callback)
   zHttp.get("https://api.zhihu.com/people/"..self.id.."/profile?profile_new_version=1",head,function(code,content)
     if code==200 then
       local data=luajson.decode(content)
+      self.id=data.id
       callback(data)
      elseif luajson.decode(content).error then
       提示(luajson.decode(content).error.message)
@@ -50,10 +51,17 @@ function base:next(callback)
       nextoffset=self.nextUrl:match("?offset=(.-)&page_num")
     end
 
-    zHttp.get(self.nextUrl or "https://api.zhihu.com/moments/"..self.id.."/origin?limit=20",apphead,function(code,body)
+    zHttp.get(self.nextUrl or "https://api.zhihu.com/people/"..self.id.."/activities?limit=20",apphead,function(code,body)
 
       if code==200 then
-        self.nextUrl=luajson.decode(body).paging.next
+        local nexturl=luajson.decode(body).paging.next
+        local pos = nexturl:find("activities?")
+        if pos then
+          local nextdata=nexturl:sub(pos)
+          self.nextUrl="https://api.zhihu.com/people/"..self.id.."/"..nextdata
+         else
+          self.nexturl=nexturl
+        end
         self.is_end=luajson.decode(body).paging.is_end
         for k,v in pairs(luajson.decode(body).data) do
           if self.data[v.id] then

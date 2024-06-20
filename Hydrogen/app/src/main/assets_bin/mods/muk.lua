@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.5182
+versionCode=0.519
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir("logo.png")
@@ -293,13 +293,15 @@ function 获取Cookie(url,isckeck)
       return mdata;
     end
   end
-  local cookieManager = CookieManager.getInstance();
+  local cookieManager = CookieManager.getInstance();  
   return cookieManager.getCookie(url);
 end
 
 function 设置Cookie(url,b)
   local cookieManager = CookieManager.getInstance();
-  return cookieManager.setCookie(url,b);
+  local result=cookieManager.setCookie(url,b);
+  cookieManager.flush();
+  return result
 end
 
 function 初始化历史记录数据(save)
@@ -1005,8 +1007,9 @@ end
 function 清除所有cookie()
   local cookieManager=CookieManager.getInstance();
   cookieManager.setAcceptCookie(true);
-  cookieManager.removeSessionCookie();
-  cookieManager.removeAllCookie();
+  cookieManager.removeSessionCookies(nil);
+  cookieManager.removeAllCookies(nil);
+  cookieManager.flush();
 end
 
 function 复制文本(文本)

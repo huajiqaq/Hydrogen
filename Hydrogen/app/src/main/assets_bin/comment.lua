@@ -6,7 +6,7 @@ import "android.text.method.LinkMovementMethod"
 activity.setContentView(loadlayout("layout/comment"))
 设置toolbar(toolbar)
 
-comment_id,comment_type,answer_title,answer_author,comment_count,oricomment_id,oricomment_type,extradata=...
+comment_id,comment_type,answer_title,answer_author,comment_count,oricomment_id,oricomment_type=...
 波纹({fh,_more},"圆主题")
 
 if answer_title and answer_author then
@@ -312,7 +312,7 @@ comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       if _title.text=="对话列表" then
         return 提示("当前已在该对话列表内")
       end
-      activity.newActivity("comment",{v.Tag.comment_id.text,"comments",answer_title,answer_author,nil,comment_id,comment_type,Object(v.Tag)})
+      activity.newActivity("comment",{v.Tag.comment_id.text,"comments",answer_title,answer_author,nil,comment_id,comment_type})
      else
       当前回复人=v.Tag.comment_id.Text
     end
@@ -353,63 +353,38 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
       return true
     end
 
-    local 写入文件路径=保存路径.."/".."fold/"..对话用户.."+"..对话id
-    local 写入内容='author="'..对话用户..'"'
-    local 写入内容=写入内容.."\n"
-    local 写入内容=写入内容..'content="'..对话内容..'"'
-    local 写入内容=写入内容..'\n'
-
     if not(文件是否存在(保存路径.."/mht.mht"))then
       return 提示("先保存"..savetype.."才可以收藏评论")
     end
 
     if _title.text~="对话列表" then
-      --如果评论下没有对话列表
-      if v.Tag.comment_toast.Visibility==8 then
-        if 文件是否存在(保存路径.."/mht.mht")then
-          双按钮对话框("收藏","收藏这条评论？","是的","点错了",function(an)
-            写入文件(写入文件路径,写入内容)
-            提示("收藏成功")
-            an.dismiss()
-          end,
-          function(an)an.dismiss()end)
-        end
-        --如果评论下有对话列表
-       elseif v.Tag.comment_toast.Visibility==0 then
-        三按钮对话框("收藏","收藏这该条评论还是整个对话列表？","该评论","整个对话列表","点错了",
-        --点击第一个按钮的事件
-        function(an)
-          写入文件(写入文件路径,写入内容)
-          提示("收藏成功")
-          an.dismiss()
-        end,
-        --点击第二个按钮事件
-        function(an)
-          zHttp.get("https://api.zhihu.com/comment_v5/comment/"..对话id.."/child_comment",head,function(code,content)
-            if code==200
-              写入内容=写入内容..'jsbody='..content..'jsbodyend'
-              写入文件(写入文件路径,写入内容)
-              提示("收藏成功")
-             else
-              提示("保存失败 可能是网络原因")
-            end
-            an.dismiss()
-          end)
-        end,
-        --点击第三个按钮事件
-        function(an)
-          an.dismiss()
-        end)
-      end
-      --如果是在对话列表里
-     else
-      if v.Tag.comment_toast.Visibility==0 then
-        return 提示("在对话列表内无法收藏本评论")
-      end
-      写入内容='author="'..对话用户..'"'
-      写入内容=写入内容.."\n"
-      写入内容=写入内容..'content="'..对话内容..'"'
+
+      local 写入文件路径=保存路径.."/".."fold/"..对话id
+      local 写入内容='author="'..对话用户..'"'
+      local 写入内容=写入内容.."\n"
+      local 写入内容=写入内容..'content="'..对话内容..'"'
+
       双按钮对话框("收藏","收藏这条评论？","是的","点错了",function(an)
+        写入文件(写入文件路径,写入内容)
+        提示("收藏成功")
+        an.dismiss()
+      end,
+      function(an)an.dismiss()end)
+     else
+      --如果是在对话列表里
+      local 写入文件路径=保存路径.."/".."fold/"..comment_id
+      local 写入内容=''
+
+      双按钮对话框("收藏","收藏整条列表？","是的","点错了",function(an)
+        local alldata=comment_list.adapter.getData()
+        for i=1,#alldata do
+          local 对话用户= alldata[i].comment_author
+          local 对话内容= tostring(alldata[i].comment_art.text)
+          写入内容=写入内容..'author="'..对话用户..'"'
+          写入内容=写入内容.."\n"
+          写入内容=写入内容..'content="'..对话内容..'"'
+          写入内容=写入内容..'\n'
+        end
         写入文件(写入文件路径,写入内容)
         提示("收藏成功")
         an.dismiss()
@@ -444,37 +419,70 @@ if comment_type=="comments" then
   sadapter=LuaAdapter(activity,comment_itemc)
   local_comment_list.setAdapter(sadapter)
 
-  local data=luajson.decode(comment_id)
+  function getCommentData(filename, func)
+    local file = io.open(filename, "r")
+    local currentAuthor = nil
+    local currentContentBuffer = ""
 
-  for k,v in ipairs(data.data) do
+    for line in file:lines() do
+      -- 检查是否开始一个新的author行
+      if line:find('author="') then
+        currentAuthor = line:match('author="([^"]+)"')
+        currentContentBuffer = "" -- 重置content缓冲区
+       else
+        -- 累积content，直到找到结束引号
+        currentContentBuffer = currentContentBuffer .. line
+        local contentEndIndex = currentContentBuffer:find('"', 10) -- content从第10个字符开始
+        if contentEndIndex then
+          local currentContent = currentContentBuffer:sub(9, contentEndIndex - 1)
+          func(currentAuthor, currentContent)
+          currentAuthor = nil
+          currentContentBuffer = "" -- 处理完一对后重置缓冲区
+        end
+      end
+    end
 
-    local 内容=v.content
+    file:close()
+  end
+
+
+  getCommentData(comment_id,function(用户名,内容)
     local myspan
-
     if 内容:find("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]") then
       myspan=setstyle(Html.fromHtml(内容))
      else
       myspan=Html.fromHtml(内容)
     end
 
-    task(50,function()sadapter.add{
-        comment_author=v.author.name,
-        comment_art={
-          text=myspan,
-          MovementMethod=LinkMovementMethod.getInstance(),
-          Focusable=false,
-          onLongClick=function(v)
-            复制文本=v.Text
-            import "android.content.*"
-            activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(复制文本)
-            提示("复制文本成功")
-          end
-        },
-        comment_toast={Visibility=8}
-      }
-    end)
-  end
 
+    sadapter.add{
+      comment_author=用户名,
+      comment_art={
+        text=myspan,
+        MovementMethod=LinkMovementMethod.getInstance(),
+        Focusable=false,
+        onLongClick=function(v)
+          复制文本=v.Text
+          import "android.content.*"
+          activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(复制文本)
+          提示("复制文本成功")
+        end
+      },
+      comment_toast={Visibility=8}
+    }
+
+  end)
+
+  task(1,function()
+    local_comment_list.getChildAt(0).Tag.comment_toast.Visibility=0
+  end)
+
+  local_comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
+    onItemClick=function(id,v,zero,one)
+      if v.Tag.comment_toast.getVisibility()==0 then
+        提示("当前已在该对话列表内")
+      end
+  end})
 
  elseif comment_type=="local" then
   _title.text="保存的评论"
@@ -492,12 +500,33 @@ if comment_type=="comments" then
 
   sadapter=LuaAdapter(activity,comment_itemc)
   local_comment_list.setAdapter(sadapter)
+
+  function isAuthorMentionedMoreThanOnce(s)
+    local count = 0
+    local pos = 1
+
+    while true do
+      local findPos = string.find(s, "author", pos)
+      if findPos then
+        count = count + 1
+        pos = findPos + 1
+        if count > 1 then -- 当计数超过1时，直接返回true
+          return "true"
+        end
+       else
+        break
+      end
+    end
+
+    return "false" -- 如果循环结束还没有返回，说明计数不超过1，返回false
+  end
+
   for v,s in pairs(luajava.astable(File(保存路径.."/".."fold/").listFiles())) do
     xxx=读取文件(tostring(s))
-    name=s.Name:match('(.+)+')
+    name=xxx:match('author="([^"]*)"')
     content=xxx:match('content="(.-)"')
-    jsbody=xxx:match("jsbody%=(.+)jsbodyend")
-    id=s.Name:match('+(.+)')
+    iscomments=isAuthorMentionedMoreThanOnce(xxx)
+    id=s.Name
     sadapter.add{comment_author=name,
       comment_art={
         text=content,
@@ -509,7 +538,7 @@ if comment_type=="comments" then
         end
       },
       comment_toast={
-        Visibility=(type(jsbody)~="string" and 8 or 0)
+        Visibility=(type(iscomments)=="false" and 8 or 0)
       },
       comment_id=id
     }
@@ -520,7 +549,7 @@ if comment_type=="comments" then
   local_comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
       if v.Tag.comment_toast.getVisibility()==0 then
-        activity.newActivity("comment",{读取文件(保存路径.."/fold/"..v.Tag.comment_author.text.."+"..v.Tag.comment_id.text):match("jsbody%=(.+)jsbodyend"),"local_chat",answer_title,answer_author})
+        activity.newActivity("comment",{保存路径.."/fold/"..v.Tag.comment_id.text,"local_chat",answer_title,answer_author})
       end
   end})
 
