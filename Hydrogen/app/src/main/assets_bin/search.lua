@@ -10,7 +10,7 @@ import "com.google.android.material.textfield.TextInputEditText"
 MDC_R=luajava.bindClass"com.google.android.material.R"
 
 设置视图("layout/search")
-
+设置toolbar(toolbar)
 
 
 button.onClick=function()

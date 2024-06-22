@@ -20,7 +20,7 @@ import androidx.core.view.NestedScrollingChild3;
 import androidx.core.view.NestedScrollingChildHelper;
 import androidx.core.view.ViewCompat;
 
-// copy form https://github.com/gdutxiaoxu/NestedLuaWebView/blob/master/NestedLuaWebView/src/main/java/io/github/gdutxiaoxu/NestedLuaWebView/NestedLuaWebView.java
+// copied from https://github.com/gdutxiaoxu/NestedLuaWebView/blob/master/NestedLuaWebView/src/main/java/io/github/gdutxiaoxu/NestedLuaWebView/NestedLuaWebView.java
 public class NestedLuaWebView extends LuaWebView implements NestedScrollingChild3 {
 
     private static final String TAG = "NestedLuaWebView";

@@ -65,7 +65,8 @@
         <item name="itemIconTint">@color/jesse205_navigation_item_icon_tint</item>
         <item name="itemTextColor">@color/jesse205_navigation_item_text_color</item>
     </style>
-       <!-- 背景变白，去除阴影 -->
+
+    <!-- 背景变白，去除阴影 -->
     <style name="Widget.AndroLuaX.Material3.Light.ActionBar" parent="Widget.Material3.Light.ActionBar.Solid">
         <item name="background">?colorSurface</item>
         <item name="backgroundStacked">?colorSurface</item>
@@ -81,4 +82,5 @@
         <item name="colorControlNormal">@color/on_surface</item>
         <item name="actionMenuTextColor">@color/on_surface</item>
     </style>
+
 </resources>

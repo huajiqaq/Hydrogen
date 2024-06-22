@@ -59,6 +59,14 @@ login_web.setWebViewClient{
     end
 
     local res=false
+    --[[
+    if url:find("qq.com") then
+      view.stopLoading()
+      view.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 5.1; OPPO R9tm Build/LMY47I; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/53.0.2785.49 Mobile MQQBrowser/6.2 TBS/043128 Safari/537.36 V1_AND_SQ_7.0.0_676_YYB_D PA QQ/7.0.0.3135 NetType/4G WebP/0.3.0 Pixel/1080 Edg/125.0.0.0")
+      view.loadUrl(url)
+      return
+    end
+  ]]
     if url:find("wtloginmqq") then
       view.stopLoading()
       双按钮对话框("提示","是否使用QQ登录知乎？","是","否",

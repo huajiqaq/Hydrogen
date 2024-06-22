@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Jesse205" parent="Theme.SWKLua.Blue">
+    <style name="Theme.Jesse205" parent="AppTheme.Blue">
         <item name="colorPrimaryDark">@color/jesse205_grey</item>
         <!--安卓5.0普遍是黑色导航栏，使用黑色导航栏统一UI-->>
         <item name="android:navigationBarColor">@color/jesse205_black</item>

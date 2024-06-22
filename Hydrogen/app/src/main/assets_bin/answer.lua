@@ -20,6 +20,15 @@ import "com.google.android.material.progressindicator.LinearProgressIndicator"
 activity.setContentView(loadlayout("layout/answer"))
 设置toolbar(toolbar)
 
+local recyclerViewField = ViewPager2.getDeclaredField("mRecyclerView");
+recyclerViewField.setAccessible(true);
+local recyclerView = recyclerViewField.get(pg);
+local touchSlopField = RecyclerView.getDeclaredField("mTouchSlop");
+touchSlopField.setAccessible(true);
+local touchSlop = touchSlopField.get(recyclerView);
+touchSlopField.set(recyclerView, int(touchSlop*2));--通过获取原有的最小滑动距离 *n来增加此值
+
+
 波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 波纹({all_root},"方自适应")
 
@@ -185,10 +194,6 @@ function 数据添加(t,b)
 
   local ua=getua(t.content)
   t.content.getSettings().setUserAgentString(ua)
-
-
-  t.content.setHorizontalScrollBarEnabled(true);
-  t.content.setVerticalScrollBarEnabled(true);
 
 
   if activity.getSharedData("标题简略化")~="true" then

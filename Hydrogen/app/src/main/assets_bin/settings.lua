@@ -8,8 +8,33 @@ import "com.google.android.material.materialswitch.MaterialSwitch"
 设置视图("layout/settings")
 设置toolbar(toolbar)
 
+activity.SupportActionBar.setDisplayHomeAsUpEnabled(true)
+
+toolbar.Title="设置"
+local originalTitle = toolbar.Title
+
+import "androidx.appcompat.widget.Toolbar"
+for i=0,toolbar.getChildCount() do
+  local view = toolbar.getChildAt(i);
+  if luajava.instanceof(view,TextView) then
+    if view.getText()==originalTitle then
+      local textView = view;
+      textView.setGravity(Gravity.CENTER);
+      local params = Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.MATCH_PARENT);
+      params.gravity = Gravity.CENTER;
+      textView.setLayoutParams(params);
+      textView.setTextSize(18)
+    end
+  end
+end
+
+function onOptionsItemSelected()
+  activity.finish()
+end
+
 import "com.google.android.material.slider.Slider"
 import "com.google.android.material.slider.LabelFormatter"
+
 
 function clear()
   清理内存()
@@ -21,16 +46,16 @@ data = {
 
   {__type=1,title="浏览设置"},
 
---  {__type=4,subtitle="内部浏览器查看回答",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("内部浏览器查看回答"))}},
-  {__type=4,subtitle="自动打开剪贴板上的知乎链接",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("自动打开剪贴板上的知乎链接"))}},
+  --  {__type=4,subtitle="内部浏览器查看回答",status={Checked=Boolean.valueOf(this.getSharedData("内部浏览器查看回答"))}},
+  {__type=4,subtitle="自动打开剪贴板上的知乎链接",status={Checked=Boolean.valueOf(this.getSharedData("自动打开剪贴板上的知乎链接"))}},
 
-  {__type=4,subtitle="夜间模式追随系统",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))}},
-  {__type=4,subtitle="夜间模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
+  {__type=4,subtitle="夜间模式追随系统",status={Checked=Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))}},
+  {__type=4,subtitle="夜间模式",status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
 
-  {__type=4,subtitle="回答预加载(beta)",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
-  {__type=4,subtitle="标题简略化",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
-  {__type=4,subtitle="不加载图片",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("不加载图片"))}},
-  {__type=5,subtitle="字体大小",image=图标(""),status={
+  {__type=4,subtitle="回答预加载(beta)",status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
+  {__type=4,subtitle="标题简略化",status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
+  {__type=4,subtitle="不加载图片",status={Checked=Boolean.valueOf(this.getSharedData("不加载图片"))}},
+  {__type=5,subtitle="字体大小",status={
       valueFrom=10,
       value=tonumber(activity.getSharedData("font_size")),
       valueTo=30,
@@ -49,38 +74,47 @@ data = {
 
   }},
 
-  {__type=4,subtitle="全屏模式",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
-  {__type=4,subtitle="代码块自动换行",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
+  {__type=4,subtitle="全屏模式",status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
+  {__type=4,subtitle="代码块自动换行",status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
 
-  {__type=1,title="主页设置",image=图标("")},
+  {__type=1,title="主页设置"},
 
-  {__type=4,subtitle="开启想法",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("开启想法"))}},
-  {__type=4,subtitle="热榜关闭图片",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭图片"))}},
-  {__type=4,subtitle="热榜关闭热度",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭热度"))}},
-  {__type=3,subtitle="设置默认主页",image=图标("")},
-  {__type=3,subtitle="修改主页排序",image=图标("")},
+  {__type=4,subtitle="开启想法",status={Checked=Boolean.valueOf(this.getSharedData("开启想法"))}},
+  {__type=4,subtitle="热榜关闭图片",status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭图片"))}},
+  {__type=4,subtitle="热榜关闭热度",status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭热度"))}},
+  {__type=3,subtitle="设置默认主页"},
+  {__type=3,subtitle="修改主页排序",rightIcon={Visibility=0}},
 
 
-  {__type=1,title="缓存设置",image=图标("")},
+  {__type=1,title="缓存设置"},
 
-  {__type=4,subtitle="自动清理缓存",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("自动清理缓存"))}},
-  {__type=4,subtitle="禁用大部分缓存",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("禁用缓存"))}},
-  {__type=3,subtitle="清理软件缓存",image=图标("")},
+  {__type=4,subtitle="自动清理缓存",status={Checked=Boolean.valueOf(this.getSharedData("自动清理缓存"))}},
+  {__type=4,subtitle="禁用大部分缓存",status={Checked=Boolean.valueOf(this.getSharedData("禁用缓存"))}},
+  {__type=3,subtitle="清理软件缓存"},
 
   {__type=1,title="页面设置"},
-  {__type=3,subtitle="主题设置",image=图标("")},
+  {__type=3,subtitle="主题设置",rightIcon={Visibility=0}},
 
   {__type=1,title="其他"},
-  {__type=3,subtitle="关于",image=图标("")},
-  {__type=3,subtitle="管理/android/data存储",image=图标("")},
-  {__type=3,subtitle="手动填写token",image=图标("")},
-  {__type=4,subtitle="音量键切换",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("音量键选择tab"))}},
-  {__type=4,subtitle="显示虚拟滑动按键",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("显示虚拟滑动按键"))}},
-  {__type=4,subtitle="显示报错信息",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
-  {__type=4,subtitle="允许加载代码",image=图标(""),status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
+  {__type=3,subtitle="关于",rightIcon={Visibility=0}},
+  {__type=3,subtitle="管理/android/data存储",rightIcon={Visibility=0}},
+  {__type=3,subtitle="手动填写token"},
+  {__type=4,subtitle="音量键切换",status={Checked=Boolean.valueOf(this.getSharedData("音量键选择tab"))}},
+  {__type=4,subtitle="显示虚拟滑动按键",status={Checked=Boolean.valueOf(this.getSharedData("显示虚拟滑动按键"))}},
+  {__type=4,subtitle="显示报错信息",status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
+  {__type=4,subtitle="允许加载代码",status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
 
 }
 
+
+for k, v in ipairs(data) do
+  if type(v) == "table" then
+    local typeValue = v.__type
+    if typeValue ~= 1 and typeValue ~= 6 then
+      table.insert(data, k + 1, {__type = 6})
+    end
+  end
+end
 
 tab={
 
@@ -346,7 +380,7 @@ tab={
 波纹({fh},"圆主题")
 
 about_item={
-  {--标题
+  {--大标题 type1
     LinearLayout;
 
     layout_width="fill";
@@ -365,19 +399,11 @@ about_item={
     };
   };
 
-  {--图片,标题,简介
+  {--标题,简介 type2
     LinearLayout;
     gravity="center";
     layout_width="fill";
     layout_height="64dp";
-    {
-      ImageView;
-      layout_height="25dp";
-      id="image";
-      layout_width="25dp";
-      layout_marginLeft="15dp";
-      ColorFilter=textc;
-    };
     {
       LinearLayout;
       orientation="vertical";
@@ -404,19 +430,11 @@ about_item={
     };
   };
 
-  {--图片,标题
+  {--标题 图标 type3
     LinearLayout;
     layout_width="fill";
     layout_height="64dp";
     gravity="center_vertical";
-    {
-      ImageView;
-      layout_height="25dp";
-      id="image";
-      layout_width="25dp";
-      layout_marginLeft="15dp";
-      ColorFilter=textc;
-    };
     {
       TextView;
       id="subtitle";
@@ -424,24 +442,28 @@ about_item={
       textSize="16sp";
       textColor=textc;
       layout_marginLeft="16dp";
+      layout_weight="1";
     };
+    {
+      AppCompatImageView;
+      id="rightIcon";
+      layout_margin="16dp";
+      layout_marginLeft=0;
+      layout_width="24dp";
+      layout_height="24dp";
+      colorFilter=theme.color.textColorSecondary;
+      ImageResource=R.drawable.ic_chevron_right;
+      Visibility=8;
+    }
   };
 
 
 
-  {--图片,标题,switch
+  {--标题,switch type4
     LinearLayout;
     gravity="center_vertical";
     layout_width="fill";
     layout_height="64dp";
-    {
-      ImageView;
-      layout_height="25dp";
-      id="image";
-      layout_width="25dp";
-      layout_marginLeft="15dp";
-      ColorFilter=textc;
-    };
     {
       TextView;
       id="subtitle";
@@ -461,21 +483,14 @@ about_item={
       layout_marginRight="16dp";
     };
 
+
   };
 
-  {--图片 标题 描述 选框
+  {--标题 描述 选框 type5
     LinearLayout;
     gravity="center_vertical";
     layout_width="fill";
     layout_height="64dp";
-    {
-      ImageView;
-      layout_height="25dp";
-      id="image";
-      layout_width="25dp";
-      layout_marginLeft="15dp";
-      ColorFilter=textc;
-    };
     {
       LinearLayout;
       orientation="vertical";
@@ -498,8 +513,22 @@ about_item={
       clickable=true;
       layout_marginRight="16dp";
     };
-
   };
+
+  {--分割线 type6
+    LinearLayout;
+    layout_width="-1";
+    layout_height="-2";
+    gravity="center|left";
+    onClick=function()end;
+    {
+      TextView;
+      layout_width="-1";
+      layout_height="3px";
+      background=cardback,
+    };
+  };
+
 };
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Jesse205" parent="Theme.SWKLua.Blue">
+    <style name="Theme.Jesse205" parent="AppTheme.Blue">
         <item name="android:navigationBarColor">@color/jesse205_grey</item>
         <item name="windowLightNavigationBar">false</item>
     </style>

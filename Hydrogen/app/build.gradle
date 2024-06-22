@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.zhihu.hydrogen.x"
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 1
         versionName "new"
     }
@@ -30,11 +30,11 @@ android {
             //jniLibs.srcDirs = ['libs']
         }
     }
-    lintOptions {
+    namespace 'com.zhihu.hydrogen.x'
+    lint {
         abortOnError false
         checkReleaseBuilds false
     }
-    namespace 'com.zhihu.hydrogen.x'
 }
 
 
@@ -42,14 +42,14 @@ dependencies {
     api fileTree(dir: "libs", include: ["*.jar"])
     api project(':androlua')
     api project(':Jesse205Library')
-    api 'androidx.appcompat:appcompat:1.6.1'
-    api 'androidx.appcompat:appcompat-resources:1.6.1'
-    api 'com.google.android.material:material:1.9.0'
-    api 'androidx.viewpager2:viewpager2:1.0.0'        
+    api 'androidx.appcompat:appcompat:1.7.0'
+    api 'androidx.appcompat:appcompat-resources:1.7.0'
+    api 'com.google.android.material:material:1.12.0'
+    api 'androidx.viewpager2:viewpager2:1.1.0'
 	api "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 //	api 'com.daimajia.androidanimations:library:2.4@aar'
 //	api 'com.getkeepsafe.taptargetview:taptargetview:1.13.3'
     api 'com.google.android.flexbox:flexbox:3.0.0'
-    api 'com.github.bumptech.glide:glide:4.15.1' 
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
+    api 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 }

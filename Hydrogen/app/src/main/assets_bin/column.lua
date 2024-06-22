@@ -370,13 +370,13 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     savedScrollY=content.getScrollY()
     content.setVisibility(8)
     activity.getDecorView().addView(web_video_view)
-    --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+    --this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     全屏()
   end,
   onHideCustomView=function(view,url)
     content.setVisibility(0)
     activity.getDecorView().removeView(web_video_view)
-    --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    --this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     取消全屏()
     Handler().postDelayed(Runnable({
       run=function()

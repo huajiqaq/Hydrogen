@@ -1,105 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.SWKLua" parent="Theme.Material3.Light">
+    <style name="AppTheme" parent="Theme.Material3.Light">
         <item name="android:navigationBarColor">?colorSurface</item>
         <item name="windowLightStatusBar">true</item>
         <item name="windowLightNavigationBar">true</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">?windowLightStatusBar</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">?windowLightNavigationBar</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">
+            ?windowLightNavigationBar</item>
         <item name="android:statusBarColor">?colorSurface</item>
         <item name="colorPrimaryDark">?colorSurfaceVariant</item>
-          <item name="android:colorBackground">?colorSurface</item>
-        <item name="colorAccent">?colorPrimary</item>
-        <item name="floatingActionButtonStyle">?floatingActionButtonSecondaryStyle</item>
+        <item name="android:colorBackground">?colorSurface</item>
         <item name="actionBarStyle">@style/Widget.AndroLuaX.Material3.Light.ActionBar</item>
         <item name="actionBarTheme">@style/ThemeOverlay.AndroLuaX.Material3.ActionBar</item>
         <item name="actionModeStyle">@style/Widget.AndroLuaX.ActionMode</item>
+        <item name="floatingActionButtonStyle">?floatingActionButtonSecondaryStyle</item>
         <item name="textInputStyle">?textInputOutlinedDenseStyle</item>
-    </style>
-    <style name="Theme.Jesse205.Default" parent="Theme.SWKLua.Blue"/>
-    <style name="Theme.Jesse205.Default.DarkActionBar" parent="Theme.SWKLua.Blue"/>
-
-    <style name="Theme.Jesse205.Red" parent="Theme.SWKLua.Red">
-       
-    </style>
-    <style name="Theme.Jesse205.Red.DarkActionBar" parent="Theme.SWKLua.Red">
+        <!--波纹颜色-->
+        <item name="rippleColorPrimary">@color/jesse205_black_ripple</item>
     </style>
 
-    <style name="Theme.Jesse205.Teal" parent="Theme.SWKLua.Teal">
-       
-    </style>
-    <style name="Theme.Jesse205.Teal.DarkActionBar" parent="Theme.SWKLua.Teal">
+    <style name="Theme.Jesse205.Default" parent="AppTheme.Blue">
     </style>
 
-     <style name="Theme.Jesse205.Orange" parent="Theme.SWKLua.Orange">
-       
+    <style name="Theme.Jesse205.Red" parent="AppTheme.Red">
     </style>
-    <style name="Theme.Jesse205.Orange.DarkActionBar" parent="Theme.SWKLua.Orange">
+
+    <style name="Theme.Jesse205.Teal" parent="AppTheme.Teal">
     </style>
- <style name="Theme.Jesse205.Pink" parent="Theme.SWKLua.Pink">
-       
+
+    <style name="Theme.Jesse205.Orange" parent="AppTheme.Orange">
     </style>
-    <style name="Theme.Jesse205.Pink.DarkActionBar" parent="Theme.SWKLua.Pink">
+
+    <style name="Theme.Jesse205.Pink" parent="AppTheme.Pink">
     </style>
-        
+
 
     <!--无工具栏主题-->
-    <style name="Theme.Jesse205.Default.NoActionBar" parent="Theme.SWKLua.Blue">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-    <style name="Theme.Jesse205.Default.DarkActionBar.NoActionBar" parent="Theme.SWKLua.Blue">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.Jesse205.Red.NoActionBar" parent="Theme.SWKLua.Red">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-    <style name="Theme.Jesse205.Red.DarkActionBar.NoActionBar" parent="Theme.SWKLua.Red">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.Jesse205.Teal.NoActionBar" parent="Theme.SWKLua.Teal">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-    <style name="Theme.Jesse205.Teal.DarkActionBar.NoActionBar" parent="Theme.SWKLua.Teal">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.Jesse205.Orange.NoActionBar" parent="Theme.SWKLua.Orange">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-    <style name="Theme.Jesse205.Orange.DarkActionBar.NoActionBar" parent="Theme.SWKLua.Orange">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.Jesse205.Pink.NoActionBar" parent="Theme.SWKLua.Pink">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-    <style name="Theme.Jesse205.Pink.DarkActionBar.NoActionBar" parent="Theme.SWKLua.Pink">
+    <style name="Theme.Jesse205.Default.NoActionBar" parent="AppTheme.Blue">
         <item name="windowActionModeOverlay">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
     
- 
-    
+    <style name="Theme.Jesse205.Default.DarkActionBar.NoActionBar" parent="AppTheme.Blue">
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Jesse205.Red.NoActionBar" parent="AppTheme.Red">
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Jesse205.Teal.NoActionBar" parent="AppTheme.Teal">
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Jesse205.Orange.NoActionBar" parent="AppTheme.Orange">
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Jesse205.Pink.NoActionBar" parent="AppTheme.Pink">
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

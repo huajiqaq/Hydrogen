@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdk  33
+    compileSdk  34
 
     defaultConfig {
         //applicationId "com.androlua"
-        minSdkVersion 14
-        targetSdkVersion 33
+        minSdkVersion 21
+        targetSdkVersion 34
     }
     buildTypes {
         release {
@@ -28,15 +28,15 @@ android {
             //jniLibs.srcDirs = ['libs']
         }
     }
-    lintOptions {
+    namespace 'com.androlua'
+    lint {
         abortOnError false
         checkReleaseBuilds false
     }
-    namespace 'com.androlua'
 }
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
-    api 'androidx.appcompat:appcompat:1.6.1'
-    api 'androidx.appcompat:appcompat-resources:1.6.1'
+    api 'androidx.appcompat:appcompat:1.7.0'
+    api 'androidx.appcompat:appcompat-resources:1.7.0'
 }

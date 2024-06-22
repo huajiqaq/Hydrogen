@@ -24,7 +24,7 @@ AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.Materi
 
 MyPageTool = require "views/MyPageTool"
 
-versionCode=0.519
+versionCode=0.520
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir("logo.png")
@@ -293,7 +293,7 @@ function 获取Cookie(url,isckeck)
       return mdata;
     end
   end
-  local cookieManager = CookieManager.getInstance();  
+  local cookieManager = CookieManager.getInstance();
   return cookieManager.getCookie(url);
 end
 
@@ -1087,20 +1087,20 @@ function xdc(url,path)
   local con = ur.openConnection();
   con.setRequestProperty("Accept-Encoding", "identity");
   local co = con.getContentLength();
-  local is = con.getInputStream();
+  local its = con.getInputStream();
   local bs = byte[1024]
   local len,read=0,0
   import "java.io.FileOutputStream"
   local wj= FileOutputStream(path);
-  len = is.read(bs)
+  len = its.read(bs)
   while len~=-1 do
     wj.write(bs, 0, len);
     read=read+len
     pcall(call,"ding",read,co)
-    len = is.read(bs)
+    len = its.read(bs)
   end
   wj.close();
-  is.close();
+  its.close();
   pcall(call,"dstop",co)
 end
 function appDownload(url,path)
@@ -1386,7 +1386,11 @@ function MUKPopu(t)
 
           dialog.getButton(dialog.BUTTON_POSITIVE).onClick=function()
             local _,merror=pcall(function()
-              load(edit.Text)()
+              local func=load(edit.Text)
+              if type(func)~="function" then
+                return 提示("请检查代码输入是否正确")
+              end
+              func()
             end)
             if _==false then
               提示(merror)

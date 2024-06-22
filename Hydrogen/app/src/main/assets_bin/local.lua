@@ -224,6 +224,9 @@ all_root.onClick=function(v)
   end
 end
 
+pg.setUserInputEnabled(false) --禁止滑动
+
+
 波纹({all_root},"方自适应")
 
 _title.text=title
@@ -404,22 +407,6 @@ task(1,function()
       },
 
       {
-        src=图标("build"),text="关闭硬件加速",onClick=function()
-          AlertDialog.Builder(this)
-          .setTitle("提示")
-          .setMessage("你确认要关闭当前页的硬件加速吗 关闭后滑动可能会造成卡顿 如果当前页显示正常请不要关闭")
-          .setPositiveButton("关闭",{onClick=function(v)
-              t.mscroll.setLayerType(View.LAYER_TYPE_SOFTWARE, nil);
-              t.content.reload()
-              提示("关闭成功")
-          end})
-          .setNeutralButton("取消",{onClick=function(v)
-          end})
-          .show()
-        end
-      },
-
-      {
         src=图标("cloud"),text="使用网络打开",onClick=function()
           local questionid=xxx:match[[question_id="(.-)"]]
           local answerid=xxx:match[[answer_id="(.-)"]]
@@ -486,15 +473,6 @@ task(1,function()
     }
   })
 end)
-
-if activity.getSharedData("异常提示0.02")==nil
-  AlertDialog.Builder(this)
-  .setTitle("小提示")
-  .setCancelable(false)
-  .setMessage("如果部分回答显示不完整 可以点击右上角「关闭硬件加速」 关闭动画会卡顿 如果没有问题请不要点击 出现其他异常情况都可以尝试关闭 另外 可以在设置中一键关闭之后所有的硬件加速")
-  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("异常提示0.02","true") end})
-  .show()
-end
 
 if this.getSharedData("显示虚拟滑动按键")=="true" then
   bottom_parent.Visibility=0

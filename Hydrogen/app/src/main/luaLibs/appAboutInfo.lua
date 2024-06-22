@@ -1,29 +1,85 @@
 appInfo={
   {
     name=R.string.app_name,
-    message="很棒的软件",
+    message="一个基于androlua+开发的第三方安卓知乎客户端",
     iconResource=R.mipmap.ic_launcher,
-    browserUrl="https://jesse205.github.io/",
+    browserUrl="https://huajiqaq.github.io/myhydrogen/",
     clickable=true,
   },
 }
 
---[[检查更新
+--检查更新
 function onUpdate()
-end]]
+  if ischeck==true then
+    return MyToast("正在检测更新中")
+  end
+  ischeck=true
+  local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
+  Http.get(update_api,function(code,content)
+    if code==200 then
+      ischeck=false
+      local content_json=luajson.decode(content)
+      local content=base64dec(content_json.content)
+      updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
+      if updateversioncode > versionCode
+        then
+        local updateversionname=content:match("updateversionname%=(.+),updateversionname")
+        local update_message="发现新版本"..updateversionname.."("..updateversioncode..")"
+        updateinfo=content:match("updateinfo%=(.+),updateinfo")
+        local editDialog=AlertDialog.Builder(this)
+        .setTitle("搜索")
+        .setMessage(update_message)
+        .setPositiveButton("立即更新", {onClick=function()
+            --在mods.muk中 已经导入所以可以直接用
+            浏览器打开(updateurl)
+        end})
+        .setNegativeButton("暂不更新", nil)
+        .show()
+        updateurl=tostring(content:match("updateurl%=(.+),updateurl"))
+       else
+        MyToast("已是最新版本")
+      end
+     else
+      MyToast("检测更新失败 请检查网络连接")
+    end
+  end)
+end
 
 --开发者们
 developers={
   {
-    name="Eddie",
-    qq=2140125724,
+    name="没想到一个名字",
+    qq=1906327347,
     message="很棒的开发者",
-    url="https://b23.tv/Xp0Cc4P",
-  },
+    url="mqqwpa://im/chat?chat_type=wpa&uin=1906327347" },
 }
 
 --启用开源许可
 openSourceLicenses=true
+
+moreItem={
+  {
+    SettingsLayUtil.ITEM_NOSUMMARY;
+    title="更新日志";
+    icon=R.drawable.ic_information_outline;
+    browserUrl="https://huajiqaq.github.io/myhydrogen/update.html"
+  },
+  {
+    SettingsLayUtil.ITEM_NOSUMMARY;
+    title="提交bug";
+    icon=R.drawable.ic_information_outline;
+    func=function(view) -- 执行的函数
+      local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString().."/feedback.lua"
+      activity.newActivity(luapath)
+    end,
+  },
+  {
+    SettingsLayUtil.ITEM_NOSUMMARY;
+    title="开源地址";
+    icon=R.drawable.ic_github;
+    browserUrl="https://gitee.com/huajicloud/Hydrogen/"
+  },
+}
 
 --[[格式：
 {
@@ -42,6 +98,8 @@ openSourceLicenses=true
   --以此类推
 }
 ]]
+
+--[[
 moreItem={
   {--交流群
     SettingsLayUtil.ITEM_NOSUMMARY;
@@ -57,13 +115,13 @@ moreItem={
       },
     };
   },
-  --[[{--频道
+  {--频道
     SettingsLayUtil.ITEM_NOSUMMARY;
     title=R.string.jesse205_qqChannel;
     icon=R.drawable.ic_qq_channel;
     newPage="newApp";
     url="https://pd.qq.com/s/n51c4k";
-  },]]
+  },
   {--支持
     SettingsLayUtil.ITEM_NOSUMMARY;
     title=R.string.jesse205_supportProject;
@@ -76,13 +134,15 @@ moreItem={
       },
     };
   },
-}
+}]]
 
 --感谢名单
+--[[
 thanks={
-  --难忘的旋律={"PhotoView"},
+  难忘的旋律={"PhotoView"},
   frrrrrits={"AnimeonGo（为Edde系列应用优化提供了重要参考）"}
 }
+]]
 
 --版权信息
 --copyright="Copyright (c) 2022, Jesse205"
