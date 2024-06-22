@@ -1,0 +1,24 @@
+{
+  CoordinatorLayout;
+  id="mainLay";
+  layout_height="fill";
+  layout_width="fill";
+  {
+    LinearLayout,
+    layout_width="fill",
+    layout_height="fill",
+    orientation="vertical";
+    {
+      MaterialToolbar;
+      id="toolbar";
+      layout_width="fill";
+      layout_height="56dp";
+    };
+    {
+      MyRecyclerView;
+      layout_height="fill";
+      layout_width="fill";
+      id="recyclerView";
+    };
+  };
+};

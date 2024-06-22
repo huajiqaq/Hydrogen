@@ -1,0 +1,34 @@
+{
+  LinearLayout,
+  layout_width="fill",
+  layout_height="fill",
+  orientation="vertical";
+  {
+    MaterialToolbar;
+    id="toolbar";
+    layout_width="fill";
+    layout_height="56dp";
+  };
+  {
+    CoordinatorLayout;
+    id="mainLay";
+    layout_height="fill";
+    layout_width="fill";
+    {
+      rawget(_ENV,"FastScrollScrollView") or ScrollView;
+      layout_height="fill";
+      layout_width="fill";
+      id="scrollView";
+      fillViewport=true;
+      {
+        AppCompatTextView;
+        padding="16dp";
+        id="textView";
+        layout_height="fill";
+        layout_width="fill";
+        textIsSelectable=true;
+        textColor=theme.color.textColorPrimary;
+      };
+    };
+  };
+};

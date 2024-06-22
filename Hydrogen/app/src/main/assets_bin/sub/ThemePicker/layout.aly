@@ -1,0 +1,27 @@
+{
+  CoordinatorLayout;
+  id="mainLay";
+  layout_height="fill";
+  layout_width="fill";
+  {
+    LinearLayout,
+    layout_width="fill",
+    layout_height="fill",
+    orientation="vertical";
+    {
+      MaterialToolbar;
+      id="toolbar";
+      layout_width="fill";
+      layout_height="56dp";
+    };
+    {
+      ListView;
+      layout_height="fill";
+      layout_width="fill";
+      id="gridView";
+      DividerHeight=0;
+      layout_gravity="top|center";
+      nestedScrollingEnabled=true,
+    };
+  };
+};
