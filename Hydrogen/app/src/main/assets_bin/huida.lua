@@ -56,7 +56,6 @@ function toolbar_func()
   local layoutParams = toolbar.getLayoutParams();
   actionBarAnimator = ValueAnimator.ofFloat({layoutParams.topMargin,newYValue})
   .setDuration(150)
-  .setAutoCancel(true)
   .addUpdateListener{
     onAnimationUpdate=function(a)
       local x=a.getAnimatedValue()

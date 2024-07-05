@@ -161,6 +161,12 @@ function resolve_feed(v)
   if v.type~="common_card" then
     return false
   end
+
+  --对于推广的一些屏蔽
+  if v.deliver_type=="ZPlus" or v.promotion_extra then
+    return
+  end
+
   if #v.common_card.footline.elements==1 then
     底部内容=v.common_card.footline.elements[1].text.panel_text
    elseif #v.common_card.footline.elements==2
