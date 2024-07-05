@@ -929,7 +929,7 @@ task(1,function()
 
           local format="【%s】%s:… %s"
 
-          分享文本(string.format(format,_title.Text,数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
+          分享文本(string.format(format,_title.Text,username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
 
         end
       },
