@@ -396,9 +396,6 @@ end})
 
 
 if comment_type=="comments" then
-  if isstart=="true" then
-    send.setVisibility(0)
-  end
   _title.text="对话列表"
   刷新()
 
@@ -555,66 +552,44 @@ if comment_type=="comments" then
 
 
  else
+  刷新()
+end
+
+if not(comment_type:find("local")) then
   if isstart=="true" then
     send.setVisibility(0)
   end
-
-  刷新()
-
 end
 
-if _title.text=="对话列表" then
-  task(1,function()
-    a=MUKPopu({
-      tittle="评论",
-      list={
-        {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-            comment_base:setSortBy("ts")
-            comment_base:clear()
-            comment_adp.clear()
-            踩tab={}
-            add=true
-        end},
-        {src=图标("notes"),text="按默认顺序",onClick=function()
-            comment_base:setSortBy("score")
-            comment_base:clear()
-            comment_adp.clear()
-            踩tab={}
-            add=true
-        end},
-      }
-    })
-  end)
 
- elseif _title.text=="保存的评论" then
+task(1,function()
+  a=MUKPopu({
+    tittle="评论",
+    list={
+      {src=图标("format_align_left"),text="按时间顺序",onClick=function()
+          comment_base:setSortBy("ts")
+          comment_base:clear()
+          comment_adp.clear()
+          踩tab={}
+          add=true
+      end},
+      {src=图标("notes"),text="按默认顺序",onClick=function()
+          comment_base:setSortBy("score")
+          comment_base:clear()
+          comment_adp.clear()
+          踩tab={}
+          add=true
+      end},
+    }
+  })
+end)
+
+if comment_type:find("local") then
   task(1,function()
     a=MUKPopu({
       tittle=_title.text,
       list={
 
-      }
-    })
-  end)
-
- else
-  task(1,function()
-    a=MUKPopu({
-      tittle="评论",
-      list={
-        {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-            comment_base:setSortBy("ts")
-            comment_base:clear()
-            comment_adp.clear()
-            踩tab={}
-            add=true
-        end},
-        {src=图标("notes"),text="按默认顺序",onClick=function()
-            comment_base:setSortBy("score")
-            comment_base:clear()
-            comment_adp.clear()
-            踩tab={}
-            add=true
-        end},
       }
     })
   end)

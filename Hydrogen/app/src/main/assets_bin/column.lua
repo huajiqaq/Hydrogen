@@ -568,6 +568,11 @@ if 类型=="本地" then
           保存()
         end
       },
+      {
+        src=图标("search"),text="在网页查找内容",onClick=function()
+          webview查找文字(content)
+        end
+      },
     }
   }
  else
