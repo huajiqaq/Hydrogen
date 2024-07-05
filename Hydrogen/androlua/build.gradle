@@ -6,7 +6,8 @@ android {
     defaultConfig {
         //applicationId "com.androlua"
         minSdkVersion 21
-        targetSdkVersion 34
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 28
     }
     buildTypes {
         release {

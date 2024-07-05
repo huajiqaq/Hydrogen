@@ -73,6 +73,8 @@ data = {
       },
 
   }},
+  {__type=4,subtitle="回答单页模式",status={Checked=Boolean.valueOf(this.getSharedData("回答单页模式"))}},
+
 
   {__type=4,subtitle="全屏模式",status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=4,subtitle="代码块自动换行",status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},

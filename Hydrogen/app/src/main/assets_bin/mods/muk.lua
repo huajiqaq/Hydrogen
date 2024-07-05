@@ -12,22 +12,17 @@ import "jesse205"
 
 oldTheme=ThemeUtil.getAppTheme()
 oldDarkActionBar=getSharedData("theme_darkactionbar")
+MyPageTool = require "views/MyPageTool"
 
 --重写SwipeRefreshLayout到自定义view 原SwipeRefreshLayout和滑动组件有bug
 SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
---将AlertDialog全部替换为md风格弹窗
-AlertDialog={}
-AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.MaterialAlertDialogBuilder"
-
-MyPageTool = require "views/MyPageTool"
-
-versionCode=0.520
+versionCode=0.5202
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
-logopng=this.getLuaDir("logo.png")
+logopng=this.getLuaDir().."/logo.png"
 
 function onConfigurationChanged(config)
 end
@@ -2789,4 +2784,87 @@ function 获取listview顶部布局(view)
     myview=myview.getParent()
   end
   return myview
+end
+
+function webview查找文字(content)
+  local editDialog=AlertDialog.Builder(this)
+  .setTitle("搜索")
+  .setView(loadlayout({
+    LinearLayout;
+    layout_height="fill";
+    layout_width="fill";
+    orientation="vertical";
+    {
+      TextView;
+      TextIsSelectable=true;
+      layout_marginTop="10dp";
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
+      Text='输入搜索内容';
+      Typeface=字体("product-Medium");
+    },
+    {
+      EditText;
+      layout_width="match";
+      layout_height="match";
+      layout_marginTop="5dp";
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
+      id="edit";
+      Typeface=字体("product");
+    }
+  }))
+  .setPositiveButton("新搜索", {onClick=function()
+      if edit.text=="" then
+        return 提示("请输入搜索内容")
+      end
+      content.clearMatches();
+      content.findAllAsync(edit.text);
+  end})
+  .setNegativeButton("查找", nil)
+  .setNeutralButton("取消",nil)
+  .show()
+
+  editDialog.getButton(editDialog.BUTTON_NEGATIVE).onClick=function(view)
+
+    pop=PopupMenu(activity,view)
+    menu=pop.Menu
+    menu.add("上一个").onMenuItemClick=function(vv)
+      content.findNext(false);
+    end
+    menu.add("下一个").onMenuItemClick=function(vv)
+      content.findNext(true);
+    end
+    menu.add("取消").onMenuItemClick=function(vv)
+      content.clearMatches();
+      提示("取消成功")
+    end
+    pop.show()--显示
+
+  end
+end
+
+function webview查找文字监听(content)
+  content.setFindListener{
+    onFindResultReceived=function(
+      --当前匹配列表项的序号（从0开始）
+      activeMatchOrdinal,
+      --所有匹配关键词的个数
+      numberOfMatches,
+      --有没有查找完成
+      isDoneCounting)
+
+      if numberOfMatches==0 then
+        return 提示("未查找到该关键词")
+      end
+
+      local 状态
+      if isDoneCounting then
+        状态="成功"
+       else
+        状态="失败"
+      end
+
+      提示("查找"..状态.." 已查找第"..activeMatchOrdinal+1 .."个 ".."共有"..numberOfMatches-activeMatchOrdinal-1 .."个待查找")
+  end}
 end

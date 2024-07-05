@@ -224,6 +224,10 @@ all_root.onClick=function(v)
   end
 end
 
+--解决快速滑动出现的bug 点击停止滑动
+local AppBarLayoutBehavior=luajava.bindClass "com.hydrogen.AppBarLayoutBehavior"
+appbar.LayoutParams.behavior=AppBarLayoutBehavior(this,nil)
+
 pg.setUserInputEnabled(false) --禁止滑动
 
 
@@ -396,6 +400,9 @@ myuri = Uri.fromFile(File(this.getLuaDir().."/mhtml2html.html")).toString();
 t.content.loadUrl(myuri)
 t.content.setVisibility(0)
 
+local content=t.content
+webview查找文字监听(content)
+
 task(1,function()
   a=MUKPopu({
     tittle="回答",
@@ -426,47 +433,7 @@ task(1,function()
       {
         src=图标("search"),text="在网页查找内容",onClick=function()
           local content=t.content
-          local editDialog=AlertDialog.Builder(this)
-          .setTitle("搜索")
-          .setView(loadlayout({
-            LinearLayout;
-            layout_height="fill";
-            layout_width="fill";
-            orientation="vertical";
-            {
-              TextView;
-              TextIsSelectable=true;
-              layout_marginTop="10dp";
-              layout_marginLeft="10dp",
-              layout_marginRight="10dp",
-              Text='输入搜索内容';
-              Typeface=字体("product-Medium");
-            },
-            {
-              EditText;
-              layout_width="match";
-              layout_height="match";
-              layout_marginTop="5dp";
-              layout_marginLeft="10dp",
-              layout_marginRight="10dp",
-              id="edit";
-              Typeface=字体("product");
-            }
-          }))
-          .setPositiveButton("搜索", {onClick=function()
-              if edit.text=="" then
-                return 提示("请输入搜索内容")
-              end
-              content.clearMatches();
-              content.findAllAsync(edit.text);
-          end})
-          .setNeutralButton("下一个",{onClick=function()
-              content.findNext(true);
-          end})
-          .setNegativeButton("上一个", {onClick=function()
-              content.findNext(false);
-          end})
-          .show()
+          webview查找文字(content)
         end
       },
 

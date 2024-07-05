@@ -336,6 +336,45 @@ task(1,function()
       {src=图标("email"),text="反馈",onClick=function()
           activity.newActivity("feedback")
       end},
+      {src=图标("info"),text="导出/导入",onClick=function()
+
+          local result=get_write_permissions(true)
+          if result~=true then
+            return false
+          end
+
+          local 单选列表={"导出数据","导入数据"}
+          local dofun={
+            function()
+
+              local path=Environment.getExternalStorageDirectory().toString()
+              ZipUtil.zip(内置存储文件(""),path)
+              提示("导出成功,导出文件在"..path.."/Hydrogen.zip")
+
+            end,
+            function()
+
+              local path=Environment.getExternalStorageDirectory().toString().."/Hydrogen.zip"
+              local filesdir=activity.getExternalFilesDir(nil).toString()
+              if 文件是否存在(path) then
+                ZipUtil.unzip(path,内置存储文件(""))
+                删除文件(path)
+                提示("导入成功 已将导出文件自动删除")
+               else
+                return 提示("导入失败 请检查是否导出或误删文件")
+              end
+
+          end}
+          dialog=AlertDialog.Builder(this)
+          .setTitle("请选择")
+          .setSingleChoiceItems(单选列表,-1,{onClick=function(v,p)
+              dofun[p+1]()
+              dialog.dismiss()
+          end})
+          .setPositiveButton("关闭",nil)
+          .show()
+
+      end},
       {src=图标("info"),text="问题",onClick=function()
           Snakebar("文件保存在"..内置存储("Hydrogen/download"))
       end},

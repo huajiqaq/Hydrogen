@@ -2614,6 +2614,15 @@ if not(this.getSharedData("hometip0.02")) then
   end)
 end
 
+if not(this.getSharedData("updatetip0.01"))and Build.VERSION.SDK_INT <=28 then
+  AlertDialog.Builder(this)
+  .setTitle("小提示")
+  .setCancelable(false)
+  .setMessage("如果webview版本过低 可能导致软件基本功能无法使用 建议升级webview使用 升级方法请自行查找")
+  .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("updatetip0.01","true") end})
+  .show()
+end
+
 local packageName = this.getPackageName();
 --创建一个Intent对象，用于启动该应用的主Activity
 local launchIntent = this.getPackageManager().getLaunchIntentForPackage(packageName);

@@ -26,8 +26,11 @@ local recyclerView = recyclerViewField.get(pg);
 local touchSlopField = RecyclerView.getDeclaredField("mTouchSlop");
 touchSlopField.setAccessible(true);
 local touchSlop = touchSlopField.get(recyclerView);
-touchSlopField.set(recyclerView, int(touchSlop*2));--通过获取原有的最小滑动距离 *n来增加此值
+touchSlopField.set(recyclerView, int(touchSlop*2.5));--通过获取原有的最小滑动距离 *n来增加此值
 
+--解决快速滑动出现的bug 点击停止滑动
+local AppBarLayoutBehavior=luajava.bindClass "com.hydrogen.AppBarLayoutBehavior"
+appbar.LayoutParams.behavior=AppBarLayoutBehavior(this,nil)
 
 波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 波纹({all_root},"方自适应")
@@ -37,6 +40,7 @@ import "model.answer"
 task(1,function()
   顶栏高度=toolbar.height
 end)
+
 
 local function 设置滑动跟随(t)
 
@@ -63,7 +67,6 @@ local function 设置滑动跟随(t)
 
 end
 
-
 comment.onClick=function()
   local pos=pg.getCurrentItem()
   local mview=数据表[pg.adapter.getItem(pos).id]
@@ -73,7 +76,6 @@ comment.onClick=function()
   end
   activity.newActivity("comment",{(回答id),"answers",_title.Text,username.Text})
 end;
-
 
 回答容器=answer:new(问题id)
 
@@ -138,6 +140,10 @@ mripple.onClick=function()
 end
 
 波纹({mripple},"圆自适应")
+
+if activity.getSharedData("回答单页模式")=="true" then
+  pg.setUserInputEnabled(false);
+end
 
 function 数据添加(t,b)
   local detector=GestureDetector(this,{a=lambda _:_})
@@ -370,6 +376,8 @@ function 数据添加(t,b)
   }
 
   t.content.addJSInterface(z,"androlua")
+
+  webview查找文字监听(t.content)
 
   local webview=t.content
   t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
@@ -952,23 +960,23 @@ task(1,function()
 
           local pgids=数据表[pgnum].ids
 
-          local 保存路径=内置存储文件("Download/".._title.Text.."/"..pgids.username.Text)
+          local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
 
           if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
             创建文件夹(内置存储文件("Download/".._title.Text))
           end
 
           创建文件夹(保存路径)
-          创建文件(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/detail.txt"))
+          创建文件(内置存储文件("Download/".._title.Text.."/"..username.Text.."/detail.txt"))
           写入内容='question_id="'..问题id..'"\n'
           写入内容=写入内容..'answer_id="'..回答id..'"\n'
           写入内容=写入内容..'thanks_count="'..thanks_count.Text..'"\n'
           写入内容=写入内容..'vote_count="'..vote_count.Text..'"\n'
           写入内容=写入内容..'comment_count="'..comment_count.Text..'"\n'
-          写入内容=写入内容..'author="'..pgids.username.Text..'"\n'
-          写入内容=写入内容..'headline="'..pgids.userheadline.Text..'"\n'
+          写入内容=写入内容..'author="'..username.Text..'"\n'
+          写入内容=写入内容..'headline="'..userheadline.Text..'"\n'
           写入文件(保存路径.."/detail.txt",写入内容)
-          pgids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..pgids.username.Text.."/mht.mht"))
+          pgids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..username.Text.."/mht.mht"))
           提示("保存成功")
         end
       },
@@ -998,47 +1006,7 @@ task(1,function()
       {
         src=图标("search"),text="在网页查找内容",onClick=function()
           local content=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content
-          local editDialog=AlertDialog.Builder(this)
-          .setTitle("搜索")
-          .setView(loadlayout({
-            LinearLayout;
-            layout_height="fill";
-            layout_width="fill";
-            orientation="vertical";
-            {
-              TextView;
-              TextIsSelectable=true;
-              layout_marginTop="10dp";
-              layout_marginLeft="10dp",
-              layout_marginRight="10dp",
-              Text='输入搜索内容';
-              Typeface=字体("product-Medium");
-            },
-            {
-              EditText;
-              layout_width="match";
-              layout_height="match";
-              layout_marginTop="5dp";
-              layout_marginLeft="10dp",
-              layout_marginRight="10dp",
-              id="edit";
-              Typeface=字体("product");
-            }
-          }))
-          .setPositiveButton("搜索", {onClick=function()
-              if edit.text=="" then
-                return 提示("请输入搜索内容")
-              end
-              content.clearMatches();
-              content.findAllAsync(edit.text);
-          end})
-          .setNeutralButton("下一个",{onClick=function()
-              content.findNext(true);
-          end})
-          .setNegativeButton("上一个", {onClick=function()
-              content.findNext(false);
-          end})
-          .show()
+          webview查找文字(content)
         end
       },
 

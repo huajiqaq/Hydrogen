@@ -16,7 +16,7 @@ local phoneLanguage
 local fastImport = {
   Bitmap = "android.graphics.Bitmap",
   LayoutTransition = "android.animation.LayoutTransition",
---  StatService = "com.baidu.mobstat.StatService",
+  --  StatService = "com.baidu.mobstat.StatService",
   AppPath = "com.jesse205.app.AppPath",
   PermissionUtil = "com.jesse205.app.PermissionUtil",
   MyStyleUtil = "com.jesse205.util.MyStyleUtil",
@@ -96,6 +96,12 @@ R = luajava.bindClass(context.getPackageName() .. ".R")
 
 if activity then
   window = activity.getWindow()
+  --动态配色
+  import "com.google.android.material.color.DynamicColors"
+  DynamicColors.applyToActivitiesIfAvailable(activity.getApplication())
+  --将AlertDialog全部替换为md风格弹窗
+  AlertDialog={}
+  AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.MaterialAlertDialogBuilder"
  else
   -- 没有activity不加载主题
   notLoadTheme = true
@@ -103,7 +109,7 @@ end
 
 -- JavaAPI转LuaAPI
 local activity2luaApi = { "newActivity", "getSupportActionBar", "getSharedData", "setSharedData", "getString",
-"getPackageName" }
+  "getPackageName" }
 for _, content in ipairs(activity2luaApi) do
   _G[content] = function(...)
     return context[content](...) -- 直接赋值会出错
@@ -335,21 +341,21 @@ end
 
 -- 以下为复写事件
 function onError(title, message)
-pcall(function()
-  -- 保存到文件。有报错说明软件有问题，必须解决掉。
-  local path = "/sdcard/Androlua/crash/" .. jesse205.packageName .. ".txt"
-  local content = tostring(title) .. os.date(" %Y-%m-%d %H:%M:%S") .. "\n" .. tostring(message) .. "\n\n"
-  io.open(path, "a"):write(content):close()
-end)
--- 报错重写
-pcall(function()
-  if activity.isFinishing() then
-    print(title,message)
-   else
-    showErrorDialog(tostring(title), tostring(message)) -- 显示成对话框，解决安卓12的toast限制问题
-  end
-  return true
-end)
+  pcall(function()
+    -- 保存到文件。有报错说明软件有问题，必须解决掉。
+    local path = "/sdcard/Androlua/crash/" .. jesse205.packageName .. ".txt"
+    local content = tostring(title) .. os.date(" %Y-%m-%d %H:%M:%S") .. "\n" .. tostring(message) .. "\n\n"
+    io.open(path, "a"):write(content):close()
+  end)
+  -- 报错重写
+  pcall(function()
+    if activity.isFinishing() then
+      print(title,message)
+     else
+      showErrorDialog(tostring(title), tostring(message)) -- 显示成对话框，解决安卓12的toast限制问题
+    end
+    return true
+  end)
 end
 
 if initApp then
