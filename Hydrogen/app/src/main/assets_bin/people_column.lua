@@ -1,7 +1,6 @@
 require "import"
 import "mods.muk"
-activity.setContentView(loadlayout("layout/history"))
-设置toolbar(toolbar)
+activity.setContentView(loadlayout("layout/simple"))
 
 波纹({fh,_more},"圆主题")
 
@@ -14,13 +13,12 @@ if activity.getSharedData("标题简略化")~="true" and title then
   _title.text="专栏"
 end
 
-tabv.setVisibility(8)
 itemc=获取适配器项目布局("people/people_column")
 
 
-history_list.setDividerHeight(0)
+simple_list.setDividerHeight(0)
 adp=LuaAdapter(activity,itemc)
-history_list.Adapter=adp
+simple_list.Adapter=adp
 
 function 刷新()
   geturl=myurl or "https://api.zhihu.com/columns/"..id.."/items"
@@ -81,13 +79,13 @@ function 刷新()
           问题id="文章分割"..(v.id)
           标题=v.title
         end
-        history_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+        simple_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
       end
     end
   end)
 end
 
-history_list.onItemClick=function(l,v,c,b)
+simple_list.onItemClick=function(l,v,c,b)
   if tostring(v.Tag.people_question.text):find("文章分割") then
     activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("文章分割(.+)"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
    elseif tostring(v.Tag.people_question.text):find("话题分割") then
@@ -110,7 +108,7 @@ end
 
 add=true
 
-history_list.setOnScrollListener{
+simple_list.setOnScrollListener{
   onScroll=function(view,a,b,c)
     if a+b==c and add then
       add=false

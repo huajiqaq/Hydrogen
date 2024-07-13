@@ -1,6 +1,6 @@
 require "import"
 import "mods.muk"
-activity.setContentView(loadlayout("layout/history"))
+activity.setContentView(loadlayout("layout/simple"))
 
 波纹({fh,_more},"圆主题")
 
@@ -10,12 +10,11 @@ str=...
 
 
 _title.text="收藏搜索结果"
-tabv.setVisibility(8)
 itemc=获取适配器项目布局("search/search_result")
 
-history_list.setDividerHeight(0)
+simple_list.setDividerHeight(0)
 adp=MyLuaAdapter(activity,itemc)
-history_list.Adapter=adp
+simple_list.Adapter=adp
 
 
 function 刷新()
@@ -38,7 +37,7 @@ function 刷新()
         问题id=问题id.."分割"..(v.object.id)
         标题=v.object.question.name
        elseif v.object.type=="topic" then
-        history_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
+        simple_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
         return
        elseif v.object.type=="question" then
         活动="发布了问题"
@@ -66,8 +65,8 @@ function 刷新()
         问题id="文章分割"..(v.object.id)
         标题=v.object.title
       end
-      history_list.Adapter.add{people_action=活动,people_art=Html.fromHtml(预览内容),people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=Html.fromHtml(标题),people_image=头像}
-      history_list.Adapter.notifyDataSetChanged()
+      simple_list.Adapter.add{people_action=活动,people_art=Html.fromHtml(预览内容),people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=Html.fromHtml(标题),people_image=头像}
+      simple_list.Adapter.notifyDataSetChanged()
     end
   end)
   search_base:getData(nil,nil,function(content)
@@ -81,7 +80,7 @@ function 刷新()
 end
 
 
-history_list.onItemClick=function(l,v,c,b)
+simple_list.onItemClick=function(l,v,c,b)
   if tostring(v.Tag.people_question.text):find("文章分割") then
     activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("文章分割(.+)"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
    elseif tostring(v.Tag.people_question.text):find("话题分割") then
@@ -102,7 +101,7 @@ end
 
 add=true
 
-history_list.setOnScrollListener{
+simple_list.setOnScrollListener{
   onScroll=function(view,a,b,c)
     if a+b==c and add then
       add=false

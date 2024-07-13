@@ -1,7 +1,6 @@
 require "import"
 import "mods.muk"
-activity.setContentView(loadlayout("layout/history"))
-设置toolbar(toolbar)
+activity.setContentView(loadlayout("layout/simple"))
 
 波纹({fh,_more},"圆主题")
 
@@ -70,13 +69,12 @@ if 是否屏蔽 then
   end
 end
 
-tabv.setVisibility(8)
 itemc=获取适配器项目布局("people/people_list")
 
 
-history_list.setDividerHeight(0)
+simple_list.setDividerHeight(0)
 adp=MyLuaAdapter(activity,itemc)
-history_list.Adapter=adp
+simple_list.Adapter=adp
 
 function 刷新()
   geturl=myurl or murl
@@ -111,7 +109,7 @@ function 刷新()
             头像=logopng
           end
 
-          history_list.Adapter.add{
+          simple_list.Adapter.add{
             people_image=头像,
             username=名字,
             userheadline=签名,
@@ -129,13 +127,13 @@ function 刷新()
   end)
 end
 
-history_list.onItemClick=function(l,v,c,b)
+simple_list.onItemClick=function(l,v,c,b)
   activity.newActivity("people",{v.Tag.people_id.text})
 end
 
 add=true
 
-history_list.setOnScrollListener{
+simple_list.setOnScrollListener{
   onScroll=function(view,a,b,c)
     if a+b==c and add then
       add=false
@@ -151,13 +149,13 @@ task(1,function()
       tittle=_title.text,
       list={
         {src=图标("format_align_left"),text="全部黑名单",onClick=function()
-            history_list.Adapter.clear()
+            simple_list.Adapter.clear()
             add=true
             myurl=false
             murl="https://api.zhihu.com/settings/blocked_users?filter=all"
         end},
         {src=图标("notes"),text="瓦力黑名单",onClick=function()
-            history_list.Adapter.clear()
+            simple_list.Adapter.clear()
             add=true
             myurl=false
             murl="https://api.zhihu.com/settings/blocked_users?filter=walle"

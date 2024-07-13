@@ -28,6 +28,7 @@ end
 if mtype:find("收藏") then
 
   activity.setContentView(loadlayout("layout/followed_collections"))
+  设置toolbar(toolbar)
 
   if title then
     if mtype:find("他") or mtype:find("她") then
@@ -139,8 +140,7 @@ if mtype:find("收藏") then
 end
 
 --不是就使用通用的布局
-activity.setContentView(loadlayout("layout/history"))
-设置toolbar(toolbar)
+activity.setContentView(loadlayout("layout/simple"))
 if title then
   if mtype:find("他") or mtype:find("她") then
     _title.text=mtype
@@ -151,8 +151,7 @@ if title then
   _title.text=mtype
 end
 
-history_list.setDividerHeight(0)
-tabv.setVisibility(8)
+simple_list.setDividerHeight(0)
 itemc=获取适配器项目布局("simple/card")
 if mtype:find("视频") then
 
@@ -237,7 +236,7 @@ if mtype:find("视频") then
 end
 
 adp=LuaAdapter(activity,itemc)
-history_list.Adapter=adp
+simple_list.Adapter=adp
 
 function 刷新()
   geturl=myurl or murl
@@ -256,13 +255,13 @@ function 刷新()
         add=true
       end
       for i,v in ipairs(luajson.decode(content).data) do
-        history_list.Adapter.add(reslove(v))
+        simple_list.Adapter.add(reslove(v))
       end
     end
   end)
 end
 
-history_list.onItemClick=function(l,v,c,b)
+simple_list.onItemClick=function(l,v,c,b)
   if tostring(v.Tag.链接.Text):find("视频合集分割") then
     activity.newActivity("followed",{tostring(v.Tag.链接.Text):match("视频合集分割(.+)"),mtype,title,tz,true})
    elseif tostring(v.Tag.链接.Text):find("视频分割") then
@@ -279,7 +278,7 @@ end
 
 add=true
 
-history_list.setOnScrollListener{
+simple_list.setOnScrollListener{
   onScroll=function(view,a,b,c)
     if a+b==c and add then
       add=false

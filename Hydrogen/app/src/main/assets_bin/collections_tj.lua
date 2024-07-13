@@ -1,8 +1,6 @@
 require "import"
 import "mods.muk"
-activity.setContentView(loadlayout("layout/history"))
-
-设置toolbar(toolbar)
+activity.setContentView(loadlayout("layout/simple"))
 
 
 波纹({fh,_more},"圆主题")
@@ -12,13 +10,12 @@ activity.setContentView(loadlayout("layout/history"))
 _title.text="推荐关注收藏夹"
 
 
-tabv.setVisibility(8)
 itemc=获取适配器项目布局("collections/collection_tj")
 
 
-history_list.setDividerHeight(0)
+simple_list.setDividerHeight(0)
 adp=LuaAdapter(activity,itemc)
-history_list.Adapter=adp
+simple_list.Adapter=adp
 
 function 刷新()
   geturl=myurl or "https://api.zhihu.com/explore/collections?offset=20"
@@ -60,19 +57,19 @@ function 刷新()
           头像=logopng
         end
 
-        history_list.Adapter.add{mc_action=活动,mc_art=预览内容,底部内容=底部内容,mc_question=问题id,mc_title=标题,mc_image=头像,mc_id=mc_id,isfollow=tostring(是否关注)}
+        simple_list.Adapter.add{mc_action=活动,mc_art=预览内容,底部内容=底部内容,mc_question=问题id,mc_title=标题,mc_image=头像,mc_id=mc_id,isfollow=tostring(是否关注)}
       end
     end
   end)
 end
 
-history_list.onItemClick=function(l,v,c,b)
+simple_list.onItemClick=function(l,v,c,b)
   activity.newActivity("collections",{v.Tag.mc_id.Text,true})
 end
 
 add=true
 
-history_list.setOnScrollListener{
+simple_list.setOnScrollListener{
   onScroll=function(view,a,b,c)
     if a+b==c and add then
       add=false
