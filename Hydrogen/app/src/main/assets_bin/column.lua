@@ -52,61 +52,7 @@ end
 波纹({fh,_more},"圆主题")
 静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),pbar,"横")
 
-task(1,function()
-  顶栏高度=toolbar.height
-end)
-
-
-function toolbar_func()
-
-  if actionBarAnimator then
-    actionBarAnimator.cancel()
-  end
-
-  local layoutParams = toolbar.getLayoutParams();
-  actionBarAnimator = ValueAnimator.ofFloat({layoutParams.topMargin,newYValue})
-  .setDuration(150)
-  .addUpdateListener{
-    onAnimationUpdate=function(a)
-      local x=a.getAnimatedValue()
-      local linearParams = toolbar.getLayoutParams()
-      linearParams.topMargin =x
-      toolbar.setLayoutParams(linearParams)
-    end
-  }.start()
-
-end
-
-local function 设置滑动跟随(t)
-
-  scrollpos=0
-
-  t.onScrollChange=function(view,x,y,lx,ly)
-
-    if ly>y then --上次滑动y大于这次y就是向上滑
-      scrollpos = scrollpos+math.abs(y-ly) ;
-     else
-      scrollpos = scrollpos-math.abs(y-ly) ;
-    end
-
-    --上正 下负
-    if scrollpos>=顶栏高度 then
-      newYValue = 0 ;
-      toolbar_func()
-      scrollpos=newYValue
-     elseif scrollpos<=0-顶栏高度 then
-      newYValue = 0-顶栏高度 ;
-      toolbar_func()
-      scrollpos=newYValue
-    end
-
-  end
-
-end
-
-设置滑动跟随(mty)
 --设置webview
-
 content=mty
 
 content.getSettings()

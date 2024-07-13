@@ -330,7 +330,7 @@ tab={
 
     import "android.content.pm.PackageManager"
     intent = Intent(Intent.ACTION_GET_CONTENT)
-    intent.setType("*/*");
+    intent.setType("text/plain");
     intent.addCategory(Intent.CATEGORY_OPENABLE)
     info = this.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
     packageName = info.activityInfo.packageName;

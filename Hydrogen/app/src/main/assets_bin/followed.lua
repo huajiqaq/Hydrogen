@@ -28,7 +28,6 @@ end
 if mtype:find("收藏") then
 
   activity.setContentView(loadlayout("layout/followed_collections"))
-  设置toolbar(toolbar)
 
   if title then
     if mtype:find("他") or mtype:find("她") then

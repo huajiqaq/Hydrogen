@@ -4,7 +4,6 @@ import "android.view.*"
 import "mods.muk"
 import "android.text.method.LinkMovementMethod"
 activity.setContentView(loadlayout("layout/comment"))
-设置toolbar(toolbar)
 
 comment_id,comment_type,answer_title,answer_author,comment_count,oricomment_id,oricomment_type=...
 波纹({fh,_more},"圆主题")

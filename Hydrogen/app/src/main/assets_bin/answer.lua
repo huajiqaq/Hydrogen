@@ -56,8 +56,10 @@ local function 设置滑动跟随(t)
 
     --上正 下负
     if scrollpos>=顶栏高度 then
-      appbar.setExpanded(true,false);
-      scrollpos=0
+      if t.getScrollY()<=0 then
+        appbar.setExpanded(true,false);
+        scrollpos=0
+      end
      elseif scrollpos<=0-顶栏高度 then
       appbar.setExpanded(false,false);
       scrollpos=0-顶栏高度
@@ -1038,7 +1040,9 @@ if this.getSharedData("显示虚拟滑动按键")=="true" then
     local id表=mview.ids
     local content=id表.content
     content.scrollBy(0, -content.height);
-    appbar.setExpanded(true);
+    if content.getScrollY()<=0 then
+      appbar.setExpanded(true,false);
+    end
   end
   down_button.onClick=function()
     local pos=pg.getCurrentItem()

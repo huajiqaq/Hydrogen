@@ -1,138 +1,123 @@
 {
-  CoordinatorLayout;
-  id="mainLay";
-  layout_height="fill";
-  layout_width="fill";
-  background=backgroundc;
+  LinearLayout;
+  layout_height="-1";
+  layout_width="-1";
   {
-    AppBarLayout;
-    layout_height="wrap";
-    layout_width="fill";
-    TargetElevation=0;
-    background=backgroundc;
+    LinearLayout;
+    layout_height="-1";
+    layout_width="-1";
+    id="_root";
+    background=backgroundc,
+    orientation="vertical";
     {
-      MaterialToolbar;
-      id="toolbar";
-      layout_width="fill";
-      layout_height="56dp";
-      layout_gravity="center";
-      layout_scrollFlags="scroll|snap|enterAlways";
-
+      LinearLayout,
+      layout_width="fill",
+      layout_height="56dp",
+      gravity="center|left";
       {
-        LinearLayout,
-        layout_width="fill",
-        layout_height="56dp",
-        gravity="center|left";
-        {
-          ImageView;
-          src=图标("arrow_back");
-          ColorFilter=primaryc;
-          layout_width="32dp",
-          layout_height="32dp",
-          padding="4dp";
-          id="_back";
-          layout_margin="12dp";
-          onClick=function()关闭页面()end;
-        };
+        ImageView;
+        src=图标("arrow_back");
+        ColorFilter=primaryc;
+        layout_width="32dp",
+        layout_height="32dp",
+        padding="4dp";
+        id="_back";
+        layout_margin="12dp";
+        onClick=function()关闭页面()end;
       };
-
     };
-  };
-
-  {
-    NestedScrollView;
-    fillViewport="true";
-    layout_width="fill";
-    layout_height="fill";
-    layout_behavior="@string/appbar_scrolling_view_behavior";
-
-
     {
-      LinearLayout;
+      ScrollView;
       layout_height="-1";
       layout_width="-1";
-      orientation="vertical";
+      background=backgroundc,
+      VerticalScrollBarEnabled=false;
       {
-        TextView;
-        text="Search";
-        textColor=primaryc;
-        textSize="32sp";
-        id="_title";
-        SingleLine=true;
-        layout_width="-1",
-        gravity="center|left";
-        paddingLeft="72dp";
-        padding="24dp";
-        paddingBottom="48dp";
-        Typeface=字体("product-Bold");
-      };
-      {
-        TextInputLayout,
-        id="t1",
-        hint="请在这里输入内容",
-        layout_height="wrap",
-        layout_marginLeft="56dp";
-        layout_marginRight="56dp";
-        layout_marginBottom="16dp";
-        boxBackgroundMode=TextInputLayout.BOX_BACKGROUND_OUTLINE,
-        layout_width="fill",
-        {
-          TextInputEditText,
-          id="t2",
-          style=MDC_R.style.Widget_Material3_TextInputEditText_OutlinedBox_Dense,
-          textSize=16,
-          layout_width="fill",
-          layout_height="fill",
-          singleLine="true",
-          imeOptions="actionSearch",
-        },
-      },
-
-      {
-        CardView;
-        layout_width="56dp";
-        layout_height="56dp";
-        radius=(56/2).."dp";
-        CardBackgroundColor=backgroundc;
-        elevation="2dp";
-        layout_gravity="center",
-        {
-          ImageView;
-          layout_width="-1";
-          layout_height="-1";
-          ColorFilter=primaryc;
-          padding="16dp",
-          src=图标("search");
-          id="button";
-          contentDescription="搜索",
-          layout_gravity="center";
-        };
-      };
-
-      {
-        TextView;
-        text="热门搜索";
-        textColor=primaryc;
-        textSize="14sp";
-        id="_title";
-        SingleLine=true;
-        layout_width="-1",
-        gravity="center|left";
-        paddingLeft="28dp";
-        paddingTop="8dp",
-        Typeface=字体("product-Bold");
-      };
-
-      {
-        NoScrollGridView;
-        layout_marginTop="14dp";
-        layout_width="-1";
-        NumColumns=2;
-        layout_margin="8dp",
+        LinearLayout;
         layout_height="-1";
-        id="search_list",
+        layout_width="-1";
+        orientation="vertical";
+        {
+          TextView;
+          text="Search";
+          textColor=primaryc;
+          textSize="32sp";
+          id="_title";
+          SingleLine=true;
+          layout_width="-1",
+          gravity="center|left";
+          paddingLeft="72dp";
+          padding="24dp";
+          paddingBottom="48dp";
+          Typeface=字体("product-Bold");
+        };
+        {
+          TextInputLayout,
+          id="t1",
+          hint="请在这里输入内容",
+          layout_height="wrap",
+          layout_marginLeft="56dp";
+          layout_marginRight="56dp";
+          layout_marginBottom="16dp";
+          boxBackgroundMode=TextInputLayout.BOX_BACKGROUND_OUTLINE,
+          layout_width="fill",
+          {
+            TextInputEditText,
+            id="t2",
+            style=MDC_R.style.Widget_Material3_TextInputEditText_OutlinedBox_Dense,
+            textSize=16,
+            layout_width="fill",
+            layout_height="fill",
+            singleLine="true",
+            imeOptions="actionSearch",
+          },
+        },
+
+        {
+          CardView;
+          layout_width="56dp";
+          layout_height="56dp";
+          radius=(56/2).."dp";
+          CardBackgroundColor=backgroundc;
+          elevation="2dp";
+          layout_gravity="center",
+          {
+            ImageView;
+            layout_width="-1";
+            layout_height="-1";
+            ColorFilter=primaryc;
+            padding="16dp",
+            src=图标("search");
+            id="button";
+            contentDescription="搜索",
+            layout_gravity="center";
+          };
+        };
+
+        {
+          TextView;
+          text="热门搜索";
+          textColor=primaryc;
+          textSize="14sp";
+          id="_title";
+          SingleLine=true;
+          layout_width="-1",
+          gravity="center|left";
+          paddingLeft="28dp";
+          paddingTop="8dp",
+          Typeface=字体("product-Bold");
+        };
+
+        {
+          NoScrollGridView;
+          layout_marginTop="14dp";
+          layout_width="-1";
+          NumColumns=2;
+          layout_margin="8dp",
+          layout_height="-1";
+          id="search_list",
+        };
       };
     };
   };
-
 };

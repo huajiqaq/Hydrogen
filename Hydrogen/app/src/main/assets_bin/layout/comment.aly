@@ -1,23 +1,20 @@
 {
-  CoordinatorLayout;
-  id="mainLay";
-  layout_height="fill";
-  layout_width="fill";
+  RelativeLayout;
+  layout_width="-1";
   background=backgroundc;
+  layout_height="-1";
   {
-    AppBarLayout;
-    layout_height="wrap";
-    layout_width="fill";
-    TargetElevation=0;
-    background=backgroundc;
+    LinearLayout;
+    layout_width="-1";
+    layout_height="-1";
+    orientation="vertical";
     {
-      MaterialToolbar;
-      id="toolbar";
-      layout_width="fill";
-      layout_height="56dp";
-      layout_gravity="center";
-      layout_scrollFlags="scroll|snap|enterAlways";
-
+      LinearLayout;
+      layout_width="-1";
+      layout_height="-2";
+      elevation="0";
+      background=backgroundc;
+      orientation="vertical";
       {
         LinearLayout;
         layout_width="-1";
@@ -75,23 +72,14 @@
           layout_gravity="top";
         };
       };
-
     };
-  };
-  {
-    NestedScrollView;
-    fillViewport="true";
-    layout_width="fill";
-    layout_height="fill";
-    paddingBottom="56dp",
-    id="scrollview";
-    layout_behavior="@string/appbar_scrolling_view_behavior";
-    {
-      LinearLayoutCompat;
-      id="content";
-      layout_width="fill";
-      layout_height="fill";
-      orientation="vertical";
+    {--滚动布局下必须有线性竖直布
+      LinearLayout,
+      id="Internetnet",
+      orientation="vertical",
+      layout_width="fill",
+      layout_height="fill",
+      background=backgroundc,
       {
         GridView;
         layout_width="-1";
@@ -99,71 +87,76 @@
         layout_height="-1";
         id="comment_list";
         layout_weight=1;
-        nestedScrollingEnabled=true,
       };
 
       {
-        NoScrollListView;
-        layout_width="-1",
-        DividerHeight=0;
-        id="local_comment_list";
-      };
-      {
-        NoScrollListView;
-        layout_width="-1",
-        DividerHeight=0;
-        id="comment_local_list";
-
-      };
-    };
-
-  };
-
-  {
-    CoordinatorLayout;
-    id="bottombar";
-    layout_height="56dp";
-    layout_width="fill";
-    layout_gravity="bottom";
-
-    {
-      MaterialCardView;
-      layout_width="fill";
-      StrokeWidth=0,
-      radius=cardradius;
-      CardBackgroundColor=barbackgroundc;
-      id="inputLay";
-      --开启动画可能造成卡顿
-      --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-      {
-        LinearLayout;
+        MaterialCardView;
         layout_width="fill";
-        layout_height="fill";
-        gravity="center";
-        Focusable=true;
-        FocusableInTouchMode=true;
+        StrokeWidth=0,
+        radius=cardradius;
+        CardBackgroundColor=barbackgroundc;
+        id="inputLay";
         --开启动画可能造成卡顿
         --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         {
-          EditText;
-          id="edit";
-          layout_weight=1;
-          layout_marginLeft="16dp";
-          layout_margin="8dp";
-          maxLines=10;
-          hint="输入评论";
+          LinearLayout;
+          layout_width="fill";
+          layout_height="fill";
+          gravity="center";
+          Focusable=true;
+          FocusableInTouchMode=true;
+          --开启动画可能造成卡顿
+          --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+          {
+            EditText;
+            id="edit";
+            layout_weight=1;
+            layout_marginLeft="16dp";
+            layout_margin="8dp";
+            maxLines=10;
+            hint="输入评论";
+          };
+          {
+            MaterialButton;
+            layout_marginRight="10dp";
+            id="send";
+            textColor=backgroundc;
+            text="发送";
+            Typeface=字体("product-Bold");
+          };
         };
+      };
+
+    };
+    {
+      LinearLayout,
+      id="Localcomment",
+      orientation="vertical",
+      layout_width="fill",
+      layout_height="fill",
+      background=backgroundc,
+      {
+        ScrollView,
+        layout_width="fill",
+        layout_height="fill",
         {
-          MaterialButton;
-          layout_marginRight="10dp";
-          id="send";
-          textColor=backgroundc;
-          text="发送";
-          Typeface=字体("product-Bold");
-         
+          LinearLayout,
+          orientation="vertical",
+          background=backgroundc,
+          {
+            NoScrollListView;
+            layout_width="-1",
+            DividerHeight=0;
+            id="local_comment_list";
+          };
+          {
+            NoScrollListView;
+            layout_width="-1",
+            DividerHeight=0;
+            id="comment_local_list";
+          };
         };
       };
     };
-  };
-
+  },
 };

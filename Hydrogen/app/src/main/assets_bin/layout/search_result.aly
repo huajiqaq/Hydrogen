@@ -1,23 +1,20 @@
 {
-  CoordinatorLayout;
-  id="mainLay";
-  layout_height="fill";
-  layout_width="fill";
+  RelativeLayout;
+  layout_width="-1";
   background=backgroundc;
+  layout_height="-1";
   {
-    AppBarLayout;
-    layout_height="wrap";
-    layout_width="fill";
-    TargetElevation=0;
-    background=backgroundc;
+    LinearLayout;
+    layout_width="-1";
+    layout_height="-1";
+    orientation="vertical";
     {
-      MaterialToolbar;
-      id="toolbar";
-      layout_width="fill";
-      layout_height="56dp";
-      layout_gravity="center";
-      layout_scrollFlags="scroll|snap|enterAlways";
-
+      LinearLayout;
+      layout_width="-1";
+      layout_height="-2";
+      elevation="0";
+      background=backgroundc;
+      orientation="vertical";
       {
         LinearLayout;
         layout_width="-1";
@@ -75,27 +72,27 @@
           layout_gravity="top";
         };
       };
-
     };
-  };
-
-  {
-    NestedScrollView;
-    fillViewport="true";
-    layout_width="fill";
-    layout_height="fill";
-    layout_behavior="@string/appbar_scrolling_view_behavior";
-
     {
-      ListView;
-      layout_width="fill";
-      dividerHeight="0",
-      background=backgroundc,
-      layout_height="fill";
-      id="search_list";
-      nestedScrollingEnabled=true,
+      LinearLayout;
+      layout_width="-1";
+      layout_height="-2";
+      orientation="vertical";
+      {
+        LinearLayout,
+        orientation="vertical",
+        layout_width="fill",
+        layout_height="fill",
+        background=backgroundc,
+        {
+          ListView;
+          layout_width="fill";
+          dividerHeight="0",
+          background=backgroundc,
+          layout_height="fill";
+          id="search_list";
+        };
+      }
     };
-
   };
-
 };

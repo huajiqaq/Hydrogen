@@ -1,7 +1,6 @@
 require "import"
 import "mods.muk"
 activity.setContentView(loadlayout("layout/history"))
-设置toolbar(toolbar)
 
 波纹({fh,_more},"圆主题")
 

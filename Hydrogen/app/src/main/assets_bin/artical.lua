@@ -5,8 +5,6 @@ import "androidx.swiperefreshlayout.widget.*"
 
 activity.setContentView(loadlayout("layout/artical"))
 
-设置toolbar(toolbar)
-
 波纹({fh,_star,_refre,_folder},"圆主题")
 波纹({title_root,back},"方主题")
 

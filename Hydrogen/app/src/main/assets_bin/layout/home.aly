@@ -25,8 +25,7 @@
         layout_height="56dp";
         layout_gravity="center";
         layout_scrollFlags="scroll|snap|enterAlways";
-        --        layout_scrollFlags="scroll|exitUtilCollapsed|snap";
-
+        --layout_scrollFlags="scroll|exitUtilCollapsed|snap";
         {
           LinearLayout;
           layout_width="32dp";

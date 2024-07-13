@@ -8,8 +8,6 @@ url=...
 
 activity.setContentView(loadlayout("layout/login"))
 
-设置toolbar(toolbar)
-
 波纹({fh,_info},"圆主题")
 
 login_web.removeView(login_web.getChildAt(0))
@@ -53,18 +51,23 @@ login_web.setWebViewClient{
   end,
   shouldOverrideUrlLoading=function(view,url)
 
+    if url:sub(1,4)~="http" then
+      return
+    end
+
     if not view.getUrl():find("https://www.zhihu.com/%?utm_id") and view.getUrl()~="https://www.zhihu.com/" then
       login_web.setVisibility(8)
       progress.setVisibility(0)
     end
-    
+
+
     if url:find("qq.com") then
       view.stopLoading()
       view.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 5.1; OPPO R9tm Build/LMY47I; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/53.0.2785.49 Mobile MQQBrowser/6.2 TBS/043128 Safari/537.36 V1_AND_SQ_7.0.0_676_YYB_D PA QQ/7.0.0.3135 NetType/4G WebP/0.3.0 Pixel/1080 Edg/125.0.0.0")
       view.loadUrl(url)
       return
     end
-  
+
   end,
   onPageStarted=function(view,url)
     if url:find("https://www.zhihu.com/signin") then

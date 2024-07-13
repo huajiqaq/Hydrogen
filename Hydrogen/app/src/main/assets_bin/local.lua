@@ -264,6 +264,12 @@ task(1,function()
   顶栏高度=toolbar.height
 end)
 
+
+
+task(1,function()
+  顶栏高度=toolbar.height
+end)
+
 local function 设置滑动跟随(t)
 
   scrollpos=0
@@ -278,8 +284,10 @@ local function 设置滑动跟随(t)
 
     --上正 下负
     if scrollpos>=顶栏高度 then
-      appbar.setExpanded(true,false);
-      scrollpos=0
+      if t.getScrollY()<=0 then
+        appbar.setExpanded(true,false);
+        scrollpos=0
+      end
      elseif scrollpos<=0-顶栏高度 then
       appbar.setExpanded(false,false);
       scrollpos=0-顶栏高度
@@ -445,10 +453,12 @@ if this.getSharedData("显示虚拟滑动按键")=="true" then
   bottom_parent.Visibility=0
   up_button.onClick=function()
     t.content.scrollBy(0, -t.content.height);
-    appbar.setExpanded(true);
+    if t.content.getScrollY()==0 then
+      appbar.setExpanded(true,false);
+    end
   end
   down_button.onClick=function()
     t.content.scrollBy(0, t.content.height);
-    appbar.setExpanded(false);
+    appbar.setExpanded(false,false);
   end
 end
