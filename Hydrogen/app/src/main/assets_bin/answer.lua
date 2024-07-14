@@ -43,30 +43,13 @@ end)
 
 
 local function 设置滑动跟随(t)
-
-  scrollpos=0
-
-  t.onScrollChange=function(view,x,y,lx,ly)
-
-    if ly>y then --上次滑动y大于这次y就是向上滑
-      scrollpos = scrollpos+math.abs(y-ly) ;
+  t.onGenericMotion=function(view,x,y,lx,ly)
+    if t.getScrollY()<=0 then
+      appbar.setExpanded(true);
      else
-      scrollpos = scrollpos-math.abs(y-ly) ;
+      appbar.setExpanded(false);
     end
-
-    --上正 下负
-    if scrollpos>=顶栏高度 then
-      if t.getScrollY()<=0 then
-        appbar.setExpanded(true,false);
-        scrollpos=0
-      end
-     elseif scrollpos<=0-顶栏高度 then
-      appbar.setExpanded(false,false);
-      scrollpos=0-顶栏高度
-    end
-
   end
-
 end
 
 comment.onClick=function()
@@ -1050,6 +1033,6 @@ if this.getSharedData("显示虚拟滑动按键")=="true" then
     local id表=mview.ids
     local content=id表.content
     content.scrollBy(0, content.height);
-    appbar.setExpanded(false);
+    appbar.setExpanded(false,false);
   end
 end
