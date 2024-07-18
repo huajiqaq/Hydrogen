@@ -17,10 +17,6 @@ for i=0,toolbar.getChildCount() do
   if luajava.instanceof(view,TextView) then
     if view.getText()==originalTitle then
       local textView = view;
-      textView.setGravity(Gravity.CENTER);
-      local params = Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.MATCH_PARENT);
-      params.gravity = Gravity.CENTER;
-      textView.setLayoutParams(params);
       textView.setTextSize(18)
     end
   end

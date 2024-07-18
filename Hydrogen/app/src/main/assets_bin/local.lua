@@ -292,16 +292,24 @@ thanks_count.text=xxx:match[[thanks_count="(.-)"]]
 comment_count.text=xxx:match[[comment_count="(.-)"]]
 vote_count.text=xxx:match[[vote_count="(.-)"]]
 
-mark.onClick=function()
+comment.onClick=function()
   local 保存路径=内置存储文件("Download/"..title:gsub("/","or").."/"..username.text)
   if getDirSize(保存路径.."/".."fold/")==0 then
     提示("你还没有收藏评论")
    else
     activity.newActivity("comment",{nil,"local",title,username.text})
   end
+end;
+
+function 网络打开提示()
+  提示("请点击右上角「使用网络打开」打开原回答页后进行该操作")
 end
 
-波纹({mark},"圆主题")
+mark.onClick=网络打开提示
+thank.onClick=网络打开提示
+voteup.onClick=网络打开提示
+
+波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 
 t.content
 .getSettings()

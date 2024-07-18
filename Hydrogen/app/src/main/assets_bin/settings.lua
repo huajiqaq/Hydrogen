@@ -19,10 +19,6 @@ for i=0,toolbar.getChildCount() do
   if luajava.instanceof(view,TextView) then
     if view.getText()==originalTitle then
       local textView = view;
-      textView.setGravity(Gravity.CENTER);
-      local params = Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.MATCH_PARENT);
-      params.gravity = Gravity.CENTER;
-      textView.setLayoutParams(params);
       textView.setTextSize(18)
     end
   end
@@ -351,7 +347,8 @@ tab={
   end,
 
 
-  显示报错信息=function()
+  显示报错信息=function(index)
+    print(index)
     if this.getSharedData("调式模式")~="false" then
       this.setSharedData("调式模式","false")
       sta=1
@@ -363,9 +360,14 @@ tab={
       .setMessage("开启后会提示一些错误信息 在一定程度上会影响阅读")
       .setCancelable(false)
       .setPositiveButton("开启",{onClick=function()
-          this.setSharedData("调式模式","true") 提示("成功！重启App生效")
+          this.setSharedData("调式模式","true")
+          提示("成功！重启App生效")
       end})
-      .setNeutralButton("取消",{onClick=function() this.setSharedData("调式模式","false") data[#data-1].status["Checked"]=false adp.notifyDataSetChanged() end})
+      .setNeutralButton("取消",{onClick=function()
+          this.setSharedData("调式模式","false")
+          data[index+1].status["Checked"]=false
+          adp.notifyDataSetChanged()
+      end})
       .show()
      else
       this.setSharedData("调式模式","false")
@@ -563,6 +565,6 @@ settings_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       end
 
     end
-    (tab[tostring(v.Tag.subtitle.Text)] or function()end) (tab)
+    (tab[tostring(v.Tag.subtitle.Text)] or function()end) (zero)
     adp.notifyDataSetChanged()--更新列表
 end})

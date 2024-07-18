@@ -400,15 +400,8 @@ if comment_type=="comments" then
 
  elseif comment_type=="local_chat" then
   _title.text="对话列表"
-
-  local paddingstart=scrollview.getPaddingStart()
-  local paddingtop=scrollview.getPaddingTop()
-  local paddingend=scrollview.getPaddingEnd()
-  scrollview.setPaddingRelative(paddingstart,paddingtop,paddingend,0);
-
-  bottombar.setVisibility(8)
-  comment_list.setVisibility(8)
-  comment_local_list.setVisibility(0)
+  Internetnet.setVisibility(8)
+  Localcomment.setVisibility(0)
 
   comment_itemc=获取适配器项目布局("comment/comments_reply")
 
@@ -482,14 +475,7 @@ if comment_type=="comments" then
 
  elseif comment_type=="local" then
   _title.text="保存的评论"
-
-  local paddingstart=scrollview.getPaddingStart()
-  local paddingtop=scrollview.getPaddingTop()
-  local paddingend=scrollview.getPaddingEnd()
-  scrollview.setPaddingRelative(paddingstart,paddingtop,paddingend,0);
-
-  bottombar.setVisibility(8)
-  comment_list.setVisibility(8)
+  Internetnet.setVisibility(8)
   local_comment_list.setVisibility(0)
 
   comment_itemc=获取适配器项目布局("comment/comments_reply")

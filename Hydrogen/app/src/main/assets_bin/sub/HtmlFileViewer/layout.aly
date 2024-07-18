@@ -8,6 +8,7 @@
     id="toolbar";
     layout_width="fill";
     layout_height="56dp";
+    titleCentered="true"
   };
   {
     CoordinatorLayout;

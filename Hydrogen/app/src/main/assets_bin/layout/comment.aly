@@ -149,12 +149,6 @@
             DividerHeight=0;
             id="local_comment_list";
           };
-          {
-            NoScrollListView;
-            layout_width="-1",
-            DividerHeight=0;
-            id="comment_local_list";
-          };
         };
       };
     };
