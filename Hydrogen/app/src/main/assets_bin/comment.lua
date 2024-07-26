@@ -97,7 +97,7 @@ end
 
 function 多选菜单(v)
   local rootview=获取listview顶部布局(v)
-  if 踩tab[rootview.Tag.id内容text]==true then
+  if 踩tab[rootview.Tag.id内容.text]==true then
     ctext="取消踩"
    else
     ctext="踩评论"
@@ -117,24 +117,24 @@ function 多选菜单(v)
         if not(getLogin()) then
           return 提示("请登录后使用本功能")
         end
-        if 踩tab[rootview.Tag.id内容text]==false
-          zHttp.put("https://api.zhihu.com/comment_v5/comment/"..rootview.Tag.id内容Text.."/reaction/dislike",'',postapphead,function(code,content)
+        if 踩tab[rootview.Tag.id内容.text]==false
+          zHttp.put("https://api.zhihu.com/comment_v5/comment/"..rootview.Tag.id内容.Text.."/reaction/dislike",'',postapphead,function(code,content)
             if code==200 then
               提示("踩成功")
-              踩tab[rootview.Tag.id内容text]=true
+              踩tab[rootview.Tag.id内容.text]=true
             end
           end)
          else
-          zHttp.delete("https://api.zhihu.com/comment_v5/comment/"..rootview.Tag.id内容Text.."/reaction/dislike",postapphead,function(code,content)
+          zHttp.delete("https://api.zhihu.com/comment_v5/comment/"..rootview.Tag.id内容.Text.."/reaction/dislike",postapphead,function(code,content)
             if code==200 then
               提示("取消踩成功")
-              踩tab[rootview.Tag.id内容text]=false
+              踩tab[rootview.Tag.id内容.text]=false
             end
           end)
         end
     end},
     {"举报",function()
-        local url="https://www.zhihu.com/report?id="..rootview.Tag.id内容Text.."&type=comment"
+        local url="https://www.zhihu.com/report?id="..rootview.Tag.id内容.Text.."&type=comment"
         activity.newActivity("huida",{url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
     end},
     {"屏蔽",function()
@@ -160,7 +160,7 @@ function 多选菜单(v)
   }
 
   if isstart then
-    local comment_view=rootview.Tag.comment_id
+    local comment_view=rootview.Tag.id内容
     local authortext=rootview.Tag.标题.Text
     local addtab={"回复评论",function()
         local editDialog=AlertDialog.Builder(this)
@@ -245,8 +245,8 @@ function 刷新()
     if 无图模式 then
       头像=logopng
     end
-    comment_list.Adapter.add{底部内容={Visibility=(v.child_comment_count==0 and 8 or 0)},
-      comment_id=(tostring(v.id)),
+    comment_list.Adapter.add{提示内容={Visibility=(v.child_comment_count==0 and 8 or 0)},
+      id内容=(tostring(v.id)),
       标题_id=v.author.id,
       预览内容={
         text=myspan,
@@ -265,7 +265,7 @@ function 刷新()
       },
       标题=名字,
       图像=头像,
-      底部内容=时间,
+      时间=时间,
       isme=(v.is_author==true and "true" or "false")
     }
 
@@ -306,13 +306,13 @@ comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     if not(v.Tag) then
       return true
     end
-    if v.Tag.底部内容.getVisibility()==0 then
+    if v.Tag.提示内容.getVisibility()==0 then
       if _title.text=="对话列表" then
         return 提示("当前已在该对话列表内")
       end
-      activity.newActivity("comment",{v.Tag.id内容text,"comments",answer_title,answer_author,nil,comment_id,comment_type})
+      activity.newActivity("comment",{v.Tag.id内容.text,"comments",answer_title,answer_author,nil,comment_id,comment_type})
      else
-      当前回复人=v.Tag.id内容Text
+      当前回复人=v.Tag.id内容.Text
     end
 end})
 
@@ -324,7 +324,7 @@ comment_list.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
     end
 
     local commenttype
-    local 对话id=v.Tag.id内容text
+    local 对话id=v.Tag.id内容.text
     local 对话用户=v.Tag.标题.text
     local 对话内容=v.Tag.预览内容.text
     if v.Tag.isme.text=="true" then
@@ -456,18 +456,18 @@ if comment_type=="comments" then
           提示("复制文本成功")
         end
       },
-      底部内容={Visibility=8}
+      提示内容={Visibility=8}
     }
 
   end)
 
   task(1,function()
-    local_comment_list.getChildAt(0).Tag.底部内容.Visibility=0
+    local_comment_list.getChildAt(0).Tag.提示内容.Visibility=0
   end)
 
   local_comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
-      if v.Tag.底部内容.getVisibility()==0 then
+      if v.Tag.提示内容.getVisibility()==0 then
         提示("当前已在该对话列表内")
       end
   end})
@@ -518,7 +518,7 @@ if comment_type=="comments" then
           提示("复制文本成功")
         end
       },
-      底部内容={
+      提示内容={
         Visibility=(type(iscomments)=="false" and 8 or 0)
       },
       id内容=id
@@ -529,8 +529,8 @@ if comment_type=="comments" then
 
   local_comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
-      if v.Tag.底部内容.getVisibility()==0 then
-        activity.newActivity("comment",{保存路径.."/fold/"..v.Tag.id内容text,"local_chat",answer_title,answer_author})
+      if v.Tag.提示内容.getVisibility()==0 then
+        activity.newActivity("comment",{保存路径.."/fold/"..v.Tag.id内容.text,"local_chat",answer_title,answer_author})
       end
   end})
 

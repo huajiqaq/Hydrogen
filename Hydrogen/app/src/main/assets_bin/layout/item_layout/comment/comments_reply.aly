@@ -18,7 +18,7 @@
     {
       TextView;
       textSize="0sp";
-      id="comment_id",
+      id="id内容",
     };
     {
       LinearLayout;
@@ -41,7 +41,7 @@
             TextView;
             layout_marginLeft="8dp",
             textSize="14sp";
-            id="comment_author",
+            id="标题",
             Typeface=字体("product-Bold");
             textColor=textc;
           };
@@ -55,7 +55,7 @@
             TextView;
             Typeface=字体("product");
             textColor=stextc;
-            id="comment_art",
+            id="预览内容",
             textSize="12sp";
           };
         };
@@ -71,7 +71,7 @@
             TextView;
             Typeface=字体("product");
             textColor=stextc;
-            id="comment_toast",
+            id="提示内容",
             textSize="12sp";
             gravity="left";
             text="查看对话列表",
@@ -83,7 +83,7 @@
             Typeface=字体("product");
             textColor=stextc;
             textSize="12sp";
-            id="comment_time",
+            id="时间",
           };
         };
       };

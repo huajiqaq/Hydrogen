@@ -89,7 +89,7 @@
               TextView;
               Typeface=字体("product");
               textColor=stextc;
-              id="comment_toast",
+              id="提示内容",
               textSize="12sp";
               gravity="left";
               text="查看对话列表",
