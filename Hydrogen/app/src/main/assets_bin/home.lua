@@ -264,7 +264,7 @@ function resolve_feed(v)
   end
   local testy=v.brief
   local testk='"t"'
-  return {底部内容=底部内容,标题2=标题,文章2=预览内容,链接2=问题id等,testy=testy,testk=testk,
+  return {底部内容=底部内容,标题=标题,预览内容=预览内容,id内容=问题id等,testy=testy,testk=testk,
     rootview={
       onTouch=function(v,event)
         downx=event.getRawX()
@@ -391,7 +391,7 @@ function 主页刷新(isclear,isprev)
     homeapphead["x-feed-prefetch"]="1"
     homeapphead1["x-close-recommend"]=nil
 
-    local yxuan_adpqy=LuaAdapter(activity,itemc2)
+    local yxuan_adpqy=MyLuaAdapter(activity,itemc2)
     list2.adapter=yxuan_adpqy
 
     list2.setOnItemClickListener(AdapterView.OnItemClickListener{
@@ -410,23 +410,8 @@ function 主页刷新(isclear,isprev)
           end)
         end
 
-        if tostring(v.Tag.链接2.text):find("文章分割") then
+        点击事件判断(v.Tag.id内容.text,v.Tag.标题.Text)
 
-          activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("文章分割(.+)"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
-
-         elseif tostring(v.Tag.链接2.text):find("想法分割") then
-          activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("想法分割(.+)"),"想法"})
-
-         elseif tostring(v.Tag.链接2.text):find("视频分割") then
-          activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("视频分割(.+)"),"视频"})
-
-         elseif tostring(v.Tag.链接2.text):find("直播分割") then
-          activity.newActivity("column",{tostring(v.Tag.链接2.Text):match("直播分割(.+)"),"直播"})
-
-         else
-          保存历史记录(v.Tag.标题2.Text,v.Tag.链接2.Text,50)
-          activity.newActivity("answer",{tostring(v.Tag.链接2.Text):match("(.+)分割"),tostring(v.Tag.链接2.Text):match("分割(.+)")})
-        end
       end
     })
 
@@ -434,21 +419,21 @@ function 主页刷新(isclear,isprev)
       onItemLongClick=function(parent, v, pos,id)
         local mytype
         local myid
-        if tostring(v.Tag.链接2.text):find("文章分割") then
+        if tostring(v.Tag.id内容.text):find("文章分割") then
           mytype="article"
-          myid=tostring(v.Tag.链接2.Text):match("文章分割(.+)")
-         elseif tostring(v.Tag.链接2.text):find("想法分割") then
+          myid=tostring(v.Tag.id内容.Text):match("文章分割(.+)")
+         elseif tostring(v.Tag.id内容.text):find("想法分割") then
           mytype="pin"
-          myid=tostring(v.Tag.链接2.Text):match("想法分割(.+)")
-         elseif tostring(v.Tag.链接2.text):find("视频分割") then
+          myid=tostring(v.Tag.id内容.Text):match("想法分割(.+)")
+         elseif tostring(v.Tag.id内容.text):find("视频分割") then
           mytype="zvideo"
-          myid=tostring(v.Tag.链接2.Text):match("视频分割(.+)")
-         elseif tostring(v.Tag.链接2.text):find("直播分割") then
+          myid=tostring(v.Tag.id内容.Text):match("视频分割(.+)")
+         elseif tostring(v.Tag.id内容.text):find("直播分割") then
           mytype="drama"
-          myid=tostring(v.Tag.链接2.Text):match("直播分割(.+)")
+          myid=tostring(v.Tag.id内容.Text):match("直播分割(.+)")
          else
           mytype="answer"
-          myid=tostring(v.Tag.链接2.Text):match("分割(.+)")
+          myid=tostring(v.Tag.id内容.Text):match("分割(.+)")
         end
         zHttp.get("https://api.zhihu.com/negative-feedback/panel?scene_code=RECOMMEND&content_type="..mytype.."&content_token="..myid,apphead,function(code,content)
           if code==200 then
@@ -638,12 +623,12 @@ function 日报刷新(isclear)
 
     itemc3=获取适配器项目布局("home/home_daily")
     thisdata=1
-    local yuxun_adpqy=LuaAdapter(activity,itemc3)
+    local yuxun_adpqy=MyLuaAdapter(activity,itemc3)
     list1.Adapter=yuxun_adpqy
     news={}
     list1.setOnItemClickListener(AdapterView.OnItemClickListener{
       onItemClick=function(parent,v,pos,id)
-        activity.newActivity("huida",{v.Tag.导向链接3.Text})
+        activity.newActivity("huida",{v.Tag.id内容.Text})
       end
 
     })
@@ -717,7 +702,7 @@ function 日报刷新(isclear)
     end
 
     for k,v in ipairs(luajson.decode(content).stories) do
-      table.insert(yuxun_adpqy.getData(),{标题3=v.title,导向链接3=v.url})
+      table.insert(yuxun_adpqy.getData(),{标题=v.title,id内容=v.url})
       task(1,function() yuxun_adpqy.notifyDataSetChanged()end)
     end
   end)
@@ -987,21 +972,21 @@ function 侧滑列表点击事件(v)
         local thispage=collection_pageTool:getItem(1)
 
         thispage.adapter.insert(0,{
-          collections_title={
+          标题={
             text=mytext,
           },
           is_lock=is_public==false and 图标("https") or nil,
 
-          collections_art={
+          预览内容={
             text="0个内容"
           },
-          collections_item={
+          评论数={
             text="0"
           },
-          collections_follower={
+          作者名={
             text="0"
           },
-          collections_id={
+          id内容={
             text=tostring(myid)
 
           },
@@ -1210,18 +1195,17 @@ function 热榜刷新(isclear)
           view.热度.text=tostring(data.热度)
         end
         view.排行.text=tostring(data.排行)
-        view.导向链接.text=data.导向链接
+        view.id内容.text=data.id内容
         波纹({view.hot_ripple},"圆自适应")
 
         view.content.onClick=function()
-          if tostring(view.导向链接.text):find("文章分割") then
-            activity.newActivity("column",{tostring(view.导向链接.Text):match("文章分割(.+)"),tostring(view.导向链接.Text):match("分割(.+)")})
-
-           elseif tostring(view.导向链接.text):find("想法分割") then
-            activity.newActivity("column",{tostring(view.链接2.Text):match("想法分割(.+)"),"想法"})
-           else
-            保存历史记录(view.标题.Text,view.导向链接.Text,50)
-            activity.newActivity("question",{view.导向链接.Text,nil})
+          if tostring(view.id内容.text):find("文章分割") then
+            activity.newActivity("column",{tostring(view.id内容.Text):match("文章分割(.+)"),tostring(view.id内容.Text):match("分割(.+)")})
+           elseif tostring(view.id内容.text):find("想法分割") then
+            activity.newActivity("column",{tostring(view.id内容.Text):match("想法分割(.+)"),"想法"})
+           elseif not(view.id内容.text):find("分割") then
+            保存历史记录(view.标题.Text,view.id内容.Text,50)
+            activity.newActivity("question",{view.id内容.Text,nil})
           end
         end
 
@@ -1259,12 +1243,16 @@ function 热榜刷新(isclear)
             local tab=luajson.decode(content).data
 
             for i=1,#tab do
-              local 标题,热度,排行,导向链接=tab[i].target.title,tab[i].detail_text,i,(tab[i].target.id)..""
+              local 标题,热度,排行,id内容=tab[i].target.title,tab[i].detail_text,i,"问题分割"..(tab[i].target.id)
               local 热榜图片=tab[i].children[1].thumbnail
-              if tab[i].target.type=="article" then
-                导向链接="文章分割"..(tab[i].target.id)
+              if tab[i].target.type=="question" then
+                id内容=tostring((tab[i].target.id))
+               elseif tab[i].target.type=="article" then
+                id内容="文章分割"..(tab[i].target.id)
+               elseif tab[i].target.type=="pin" then
+                id内容="想法分割"..(tab[i].target.id)
               end
-              table.insert(myhotdata,{标题=标题,热度=热度,排行=排行,导向链接=导向链接,热图片={src=热榜图片,Visibility=#热榜图片>0 and 0 or 8}})
+              table.insert(myhotdata,{标题=标题,热度=热度,排行=排行,id内容=id内容,热图片={src=热榜图片,Visibility=#热榜图片>0 and 0 or 8}})
             end
             热榜adp.notifyDataSetChanged()
            else
@@ -1276,7 +1264,7 @@ function 热榜刷新(isclear)
   end
 end
 
-reslove_homefollow={}
+resolve_homefollow={}
 local function moments_feed(v,adapter)
   local 头像
   xpcall(function()
@@ -1340,7 +1328,7 @@ local function moments_feed(v,adapter)
   if 无图模式 then
     头像=logopng
   end
-  adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=头像}
+  adapter.add{点赞数=点赞数,标题=标题,预览内容=Html.fromHtml(预览内容),评论数=评论数,id内容=问题id等,动作=动作,时间=时间,图像=头像}
 end
 
 local function feed_item_index_group(v,adapter)
@@ -1396,7 +1384,7 @@ local function feed_item_index_group(v,adapter)
   if 无图模式 then
     头像=logopng
   end
-  adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=头像}
+  adapter.add{点赞数=点赞数,标题=标题,预览内容=Html.fromHtml(预览内容),评论数=评论数,id内容=问题id等,动作=动作,时间=时间,图像=头像}
 end
 
 local function item_group_card(v,adapter)
@@ -1458,11 +1446,11 @@ local function item_group_card(v,adapter)
     if 无图模式 then
       头像=logopng
     end
-    adapter.add{follow_voteup=点赞数,follow_title=标题,follow_art=Html.fromHtml(预览内容),follow_comment=评论数,follow_id=问题id等,follow_name=动作,follow_time=时间,follow_image=头像}
+    adapter.add{点赞数=点赞数,标题=标题,预览内容=Html.fromHtml(预览内容),评论数=评论数,id内容=问题id等,动作=动作,时间=时间,图像=头像}
   end
 end
 
-reslove_homefollow={moments_feed=moments_feed,feed_item_index_group=feed_item_index_group,item_group_card=item_group_card}
+resolve_homefollow={moments_feed=moments_feed,feed_item_index_group=feed_item_index_group,item_group_card=item_group_card}
 
 
 followapphead = table.clone(apphead)
@@ -1484,7 +1472,7 @@ follow_pageTool:addPage(2,followTable)
 local mconf={
   itemc=获取适配器项目布局("home/home_following"),
   onclick=function(parent,v,pos,id)
-    点击事件判断(v.Tag.follow_id.text,v.Tag.follow_title.Text)
+    点击事件判断(v.Tag.id内容.text,v.Tag.标题.Text)
   end,
   onlongclick=nil,
   defurl={
@@ -1496,11 +1484,11 @@ local mconf={
   func=function(v,pos,adapter)
     local data
     if v.type=="moments_feed" then
-      reslove_homefollow.moments_feed(v,adapter)
+      resolve_homefollow.moments_feed(v,adapter)
      elseif v.type=="feed_item_index_group" then
-      reslove_homefollow.feed_item_index_group(v,adapter)
+      resolve_homefollow.feed_item_index_group(v,adapter)
      elseif v.type=="item_group_card" then
-      reslove_homefollow.item_group_card(v,adapter)
+      resolve_homefollow.item_group_card(v,adapter)
      elseif v.type=="recommend_user_card_list" then
       --推荐关注用户
      elseif v.type=="moments_recommend_followed_group"
@@ -1561,9 +1549,9 @@ function 想法刷新(isclear)
         dm=DisplayMetrics()
         activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 
-        loadglide(view.img,url)
+        loadglide(view.图像,url)
 
-        view.tv.Text=StringHelper.Sub(mytab[position+1].title,1,20,"...")
+        view.预览内容.Text=StringHelper.Sub(mytab[position+1].title,1,20,"...")
 
         --子项目点击事件
         view.it.onClick=function(v)
@@ -1652,25 +1640,25 @@ end
 
 function 加载收藏view()
 
-  reslove_home_collection={
+  resolve_home_collection={
     function(v)
       return
       {
-        collections_title={
+        标题={
           text=v.title,
         },
         is_lock=v.is_public==false and 图标("https") or nil,
 
-        collections_art={
+        预览内容={
           text=""..(v.item_count).."个内容"
         },
-        collections_item={
+        评论数={
           text=math.floor(v.comment_count)..""
         },
-        collections_follower={
+        作者名={
           text=(v.follower_count)..""
         },
-        collections_id={
+        id内容={
           text=tostring(v.id)
 
         },
@@ -1685,17 +1673,17 @@ function 加载收藏view()
       end
       return
       {
-        mc_image=图片,
-        mc_name={
+        图像=图片,
+        预览内容={
           text="由 "..v.creator.name.." 创建"
         },
-        mc_title={
+        标题={
           text=v.title
         },
-        mc_follower={
+        关注数={
           text=math.floor(v.follower_count).."人关注"
         },
-        mc_id={
+        id内容={
           text=tostring(v.id),
         },
         background={foreground=Ripple(nil,转0x(ripplec),"方")},
@@ -1723,19 +1711,19 @@ function 加载收藏view()
     },
     onclick={
       function(parent,v,pos,id)
-        activity.newActivity("collections",{v.Tag.collections_id.Text})
+        activity.newActivity("collections",{v.Tag.id内容.Text})
       end,
       function(parent,v,pos,id)
-        if v.Tag.mc_id.text=="local" then
+        if v.Tag.id内容.text=="local" then
           activity.newActivity("collections_tj")
           return
         end
-        activity.newActivity("collections",{v.Tag.mc_id.Text,true})
+        activity.newActivity("collections",{v.Tag.id内容.Text,true})
       end,
     },
     onlongclick={
       function(id,v,zero,one)
-        local collections_id=v.Tag.collections_id.text
+        local collections_id=v.Tag.id内容.text
         双按钮对话框("删除收藏夹","删除收藏夹？该操作不可撤消！","是的","点错了",function(an)
           zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
             if code==200 then
@@ -1750,7 +1738,7 @@ function 加载收藏view()
         return true
       end,
       function(id,v,zero,one)
-        local collections_id=v.Tag.mc_id.text
+        local collections_id=v.Tag.id内容.text
         if collections_id=="local" then
           提示("不支持操作此收藏夹")
           return true
@@ -1775,7 +1763,7 @@ function 加载收藏view()
     },
     head="head",
     func=function(v,pos,adapter)
-      local data= reslove_home_collection[pos](v)
+      local data= resolve_home_collection[pos](v)
       if data then
         adapter.add(data)
       end
@@ -1783,17 +1771,17 @@ function 加载收藏view()
     addtab={
       nil,
       {
-        mc_image=logopng,
-        mc_name={
+        图像=logopng,
+        预览内容={
           text="为你推荐"
         },
-        mc_title={
+        标题={
           text="推荐关注收藏夹"
         },
-        mc_follower={
+        关注数={
           text=""
         },
-        mc_id={
+        id内容={
           text="local",
         },
         background={foreground=Ripple(nil,转0x(ripplec),"方")},
@@ -1807,7 +1795,7 @@ function 加载收藏view()
 
   --关注
   function 加载关注view()
-    reslove_home_follow_content={
+    resolve_home_follow_content={
       function (v)
         local 标题=v.title
         local 链接="问题分割"..v.id
@@ -1815,7 +1803,7 @@ function 加载收藏view()
         if 预览内容==false or 预览内容=="" then
           预览内容="无介绍"
         end
-        return {标题=标题,底部内容=底部内容,链接=链接,mc_title=标题}
+        return {标题=标题,底部内容=底部内容,id内容=链接,标题=标题}
       end,
       function(v)
         local 图片
@@ -1826,17 +1814,17 @@ function 加载收藏view()
         end
         return
         {
-          mc_image=图片,
-          mc_name={
+          图像=图片,
+          预览内容={
             text="由 "..v.creator.name.." 创建"
           },
-          mc_title={
+          标题={
             text=v.title
           },
-          mc_follower={
+          关注数={
             text=math.floor(v.follower_count).."人关注"
           },
-          mc_id={
+          id内容={
             text=tostring(v.id),
           },
           background={foreground=Ripple(nil,转0x(ripplec),"方")},
@@ -1850,7 +1838,7 @@ function 加载收藏view()
         if 预览内容==false or 预览内容=="" then
           预览内容="无介绍"
         end
-        return {标题=标题,文章=预览内容,链接=链接,mc_title=标题}
+        return {标题=标题,预览内容=预览内容,id内容=链接,标题=标题}
       end,
       function (v)
         local 标题=v.title
@@ -1860,7 +1848,7 @@ function 加载收藏view()
         if 预览内容==false or 预览内容=="" then
           预览内容="无介绍"
         end
-        return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
+        return {标题=标题,预览内容=预览内容,底部内容=底部内容,id内容=链接,标题=标题}
       end,
       function (v)
         if v.type=="people" then
@@ -1881,15 +1869,15 @@ function 加载收藏view()
             头像=logopng
           end
           return {
-            people_image=头像,
-            username=名字,
-            userheadline=签名,
-            people_id=用户id,
+            图像=头像,
+            标题=名字,
+            预览内容=签名,
+            id内容=用户id,
             following={
               Text=文本,
               onClick=function(view)
                 local rootview=view.getParent().getParent().getParent().getParent()
-                local 用户id=rootview.Tag.people_id.text
+                local 用户id=rootview.Tag.id内容.text
                 if view.Text=="关注"
                   zHttp.post("https://api.zhihu.com/people/"..用户id.."/followers","",posthead,function(a,b)
                     if a==200 then
@@ -1923,7 +1911,7 @@ function 加载收藏view()
         if 预览内容==false or 预览内容=="" then
           预览内容="无介绍"
         end
-        return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
+        return {标题=标题,预览内容=预览内容,底部内容=底部内容,id内容=链接,标题=标题}
       end,
       function(v)
         local 标题=v.title
@@ -1934,7 +1922,7 @@ function 加载收藏view()
         if 预览内容==false or 预览内容=="" then
           预览内容="无介绍"
         end
-        return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
+        return {标题=标题,预览内容=预览内容,底部内容=底部内容,id内容=链接}
       end
     }
   end
@@ -1962,7 +1950,7 @@ function 加载收藏view()
   local peo_itemc=获取适配器项目布局("people/people_list")
 
   local monclick=function(parent,v,pos,id)
-    return 点击事件判断(v.Tag.链接.Text)
+    return 点击事件判断(v.Tag.id内容.Text)
   end
 
   local mconf={
@@ -1979,16 +1967,16 @@ function 加载收藏view()
     onclick={
       monclick,
       function(parent,v,pos,id)
-        if v.Tag.mc_id.text=="local" then
+        if v.Tag.id内容.text=="local" then
           activity.newActivity("collections_tj")
           return
         end
-        activity.newActivity("collections",{v.Tag.mc_id.Text,true})
+        activity.newActivity("collections",{v.Tag.id内容.Text,true})
       end,
       monclick,
       monclick,
       function(l,v,c,b)
-        activity.newActivity("people",{v.Tag.people_id.text})
+        activity.newActivity("people",{v.Tag.id内容.text})
       end,
       monclick,
       monclick
@@ -1996,7 +1984,7 @@ function 加载收藏view()
     onlongclick={
       nil,
       function(id,v,zero,one)
-        local collections_id=v.Tag.mc_id.text
+        local collections_id=v.Tag.id内容.text
         if collections_id=="local" then
           提示("不支持操作此收藏夹")
           return true
@@ -2031,7 +2019,7 @@ function 加载收藏view()
     },
     head="apphead",
     func=function(v,pos,adapter)
-      local data= reslove_home_follow_content[pos](v)
+      local data= resolve_home_follow_content[pos](v)
       if data then
         adapter.add(data)
       end
@@ -2039,17 +2027,17 @@ function 加载收藏view()
     addtab={
       nil,
       {
-        mc_image=logopng,
-        mc_name={
+        图像=logopng,
+        预览内容={
           text="为你推荐"
         },
-        mc_title={
+        标题={
           text="推荐关注收藏夹"
         },
-        mc_follower={
+        关注数={
           text=""
         },
-        mc_id={
+        id内容={
           text="local",
         },
         background={foreground=Ripple(nil,转0x(ripplec),"方")},
@@ -2071,7 +2059,7 @@ end
 
 function 加载创作内容view()
 
-  function reslove_homecreate (v)
+  function resolve_homecreate (v)
     local 标题
     local 链接
     local 预览内容
@@ -2107,14 +2095,14 @@ function 加载创作内容view()
         end
       end
 
-      return {标题=标题,底部内容=底部内容,链接=链接,文章=预览内容}
+      return {标题=标题,底部内容=底部内容,id内容=链接,预览内容=预览内容}
 
      elseif v.column then
       标题=v.column.title
       链接="专栏分割"..v.column.id
       预览内容="共有"..v.column.articles_count.."个内容"
       底部内容=os.date("%Y %m-%d %H.%M.%S",v.column.updated_time)
-      return {标题=标题,底部内容=底部内容,链接=链接,文章=预览内容}
+      return {标题=标题,底部内容=底部内容,id内容=链接,预览内容=预览内容}
     end
 
   end
@@ -2137,22 +2125,22 @@ function 加载创作内容view()
   local mconf={
     itemc=获取适配器项目布局("simple/card"),
     onclick=function(l,v,c,b)
-      return 点击事件判断(v.Tag.链接.Text)
+      return 点击事件判断(v.Tag.id内容.Text)
     end,
     onlongclick=function(id,v,zero,one)
       local murl
-      if tostring(v.Tag.链接.Text):find("问题分割") then
-        murl="https://www.zhihu.com/question/"..tostring(v.Tag.链接.Text):match("问题分割(.+)").."/write"
-       elseif tostring(v.Tag.链接.Text):find("回答分割") then
-        murl="https://www.zhihu.com/api/v4/answers/"..tostring(v.Tag.链接.Text):match("回答分割(.+)")
-       elseif tostring(v.Tag.链接.Text):find("专栏分割") then
-        murl="https://zhuanlan.zhihu.com/api/columns/"..tostring(v.Tag.链接.Text):match("专栏分割(.+)")
-       elseif tostring(v.Tag.链接.Text):find("想法分割") then
-        murl="https://www.zhihu.com/api/v4/pins/"..tostring(v.Tag.链接.Text):match("想法分割(.+)")
-       elseif tostring(v.Tag.链接.Text):find("文章分割") then
-        murl="https://www.zhihu.com/api/v4/articles/"..tostring(v.Tag.链接.Text):match("文章分割(.+)")
-       elseif tostring(v.Tag.链接.Text):find("视频分割") then
-        murl="https://www.zhihu.com/api/v4/zvideos/"..tostring(v.Tag.链接.Text):match("视频分割(.+)")
+      if tostring(v.Tag.id内容.Text):find("问题分割") then
+        murl="https://www.zhihu.com/question/"..tostring(v.Tag.id内容.Text):match("问题分割(.+)").."/write"
+       elseif tostring(v.Tag.id内容.Text):find("回答分割") then
+        murl="https://www.zhihu.com/api/v4/answers/"..tostring(v.Tag.id内容.Text):match("回答分割(.+)")
+       elseif tostring(v.Tag.id内容.Text):find("专栏分割") then
+        murl="https://zhuanlan.zhihu.com/api/columns/"..tostring(v.Tag.id内容.Text):match("专栏分割(.+)")
+       elseif tostring(v.Tag.id内容.Text):find("想法分割") then
+        murl="https://www.zhihu.com/api/v4/pins/"..tostring(v.Tag.id内容.Text):match("想法分割(.+)")
+       elseif tostring(v.Tag.id内容.Text):find("文章分割") then
+        murl="https://www.zhihu.com/api/v4/articles/"..tostring(v.Tag.id内容.Text):match("文章分割(.+)")
+       elseif tostring(v.Tag.id内容.Text):find("视频分割") then
+        murl="https://www.zhihu.com/api/v4/zvideos/"..tostring(v.Tag.id内容.Text):match("视频分割(.+)")
       end
       双按钮对话框("删除该内容","取消删除？该操作不可撤消！","是的","点错了",function(an)
         zHttp.delete(murl,head,function(code,json)
@@ -2178,7 +2166,7 @@ function 加载创作内容view()
     },
     head="apphead",
     func=function(v,pos,adapter)
-      local data= reslove_homecreate(v)
+      local data= resolve_homecreate(v)
       if data then
         adapter.add(data)
       end

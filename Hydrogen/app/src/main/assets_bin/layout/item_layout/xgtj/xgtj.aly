@@ -30,7 +30,7 @@
       };
       {
         CardView;
-        CardBackgroundColor=转0x(primaryc)-0xdf000000,
+        CardBackgroundColor=转0x(primaryc),
         elevation="0";
         id="cardt";
         radius="4%w";

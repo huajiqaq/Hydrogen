@@ -578,7 +578,7 @@ function 问题详情(code)
   local show=tmpview.show
 
   function imgReset()
-    show.loadUrl("javascript:(function(){" ..
+    加载js(show,"(function(){" ..
     "var objs = document.getElementsByTagName('img'); " ..
     "for(var i=0;i<objs.length;i++) " ..
     "{"
@@ -621,7 +621,7 @@ function 问题详情(code)
       if b~=nil then
         --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
         this.setSharedData("imagedata",b)
-        activity.newActivity("image",{b})
+        activity.newActivity("image")
       end
     end
   }
@@ -677,12 +677,12 @@ question_base=require "model.question":new(question_id)
     图片=tab.author.avatar_url
   end
   question_adp.add{
-    question_author=tab.author.name,
-    question_voteup=(tab.voteup_count).."",
-    question_comment=(tab.comment_count).."",
-    question_id=(tab.id),
-    question_art=tab.excerpt,
-    question_image=图片,
+    标题=tab.author.name,
+    点赞数=(tab.voteup_count).."",
+    评论数=(tab.comment_count).."",
+    id内容=(tab.id),
+    预览内容=tab.excerpt,
+    图像=图片,
   }
 end)
 :getTag(function(name,url)
@@ -857,7 +857,7 @@ end
 
 question_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
-    activity.newActivity("answer",{question_id,tostring(v.Tag.question_id.Text)})
+    activity.newActivity("answer",{question_id,tostring(v.Tag.id内容.Text)})
   end
 })
 

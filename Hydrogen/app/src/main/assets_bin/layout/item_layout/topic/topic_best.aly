@@ -28,7 +28,7 @@
         padding="16dp";
         {
           TextView;
-          id="best_id";
+          id="id内容";
           textSize="0sp";
         };
         {
@@ -37,7 +37,7 @@
           {
             TextView;
             textSize="14sp";
-            id="best_title";
+            id="标题";
             textColor=textc;
             Typeface=字体("product-Bold");
           };
@@ -46,7 +46,7 @@
             textSize="12sp";
             MaxLines=3;
             ellipsize="end",
-            id="best_excerpt";
+            id="预览内容";
             textColor=stextc;
             layout_marginTop="2dp";
             Typeface=字体("product-Medium");
@@ -65,9 +65,8 @@
             };
             {
               TextView;
-              id="best_voteup_count";
+              id="点赞数";
               textSize="12sp",
-
               layout_marginLeft="6dp",
               textColor=textc;
               Typeface=字体("product");
@@ -84,7 +83,7 @@
             {
               TextView;
               layout_marginLeft="6dp",
-              id="best_comment_count";
+              id="评论数";
               textColor=textc;
               textSize="12sp",
               Typeface=字体("product");

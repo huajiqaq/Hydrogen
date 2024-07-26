@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.5209
+versionCode=0.5211
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir().."/logo.png"
@@ -49,8 +49,8 @@ function numtostr(num)
 end
 
 function 点击事件判断(myid,title)
-  if tostring(myid):find("问题分割") then
-    activity.newActivity("question",{tostring(myid):match("问题分割(.+)"),true})
+  if tostring(myid):find("问题分割") or not(tostring(myid):find("分割")) then
+    activity.newActivity("question",{tostring(myid):match("问题分割(.+)") or myid,true})
    elseif tostring(myid):find("文章分割") then
     activity.newActivity("column",{tostring(myid):match("文章分割(.+)"),tostring(myid):match("分割(.+)")})
    elseif tostring(myid):find("视频分割") then

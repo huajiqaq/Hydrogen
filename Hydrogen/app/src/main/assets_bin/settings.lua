@@ -74,6 +74,7 @@ data = {
 
   {__type=4,subtitle="全屏模式",status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=4,subtitle="代码块自动换行",status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
+  {__type=3,subtitle="设置屏蔽词"},
 
   {__type=1,title="主页设置"},
 
@@ -128,9 +129,6 @@ tab={
   ["回答预加载(beta)"]=function()
     提示("此功能可能还有隐性bug,仅供体验，若影响体验请关闭")
   end,
-  回答底栏设置滑动跟随=function()
-    提示("开启后可能会有部分内容被底栏遮盖 若影响体验请关闭")
-  end,
   夜间模式=function()
     提示("返回主页面生效")
     activity.setResult(1200,nil)
@@ -151,6 +149,43 @@ tab={
   end,
   全屏模式=function()
     提示("为了更好的浏览体验 推荐重启App")
+  end,
+  设置屏蔽词=function()
+    local 屏蔽词=this.getSharedData("屏蔽词")
+    local editDialog=AlertDialog.Builder(this)
+    .setTitle("设置屏蔽词")
+    .setView(loadlayout({
+      LinearLayout;
+      layout_height="fill";
+      layout_width="fill";
+      orientation="vertical";
+      {
+        TextView;
+        TextIsSelectable=true;
+        layout_marginTop="10dp";
+        layout_marginLeft="10dp",
+        layout_marginRight="10dp",
+        Text='屏蔽后的内容将不会出现 该内容是全局屏蔽词 屏蔽词格式使用空格分割';
+        Typeface=字体("product-Medium");
+      },
+      {
+        EditText;
+        layout_width="match";
+        layout_height="match";
+        layout_marginTop="5dp";
+        layout_marginLeft="10dp",
+        layout_marginRight="10dp",
+        id="edit";
+        Text=屏蔽词;
+        Typeface=字体("product");
+      }
+    }))
+    .setPositiveButton("确定", {onClick=function()
+        this.setSharedData("屏蔽词",edit.Text)
+        提示("设置成功 重启App生效")
+    end})
+    .setNegativeButton("取消", nil)
+    .show()
   end,
   热榜关闭图片=function()
     提示("设置成功 刷新热榜生效")

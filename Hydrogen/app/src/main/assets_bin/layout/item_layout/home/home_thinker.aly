@@ -24,7 +24,7 @@
       {
         ImageView;
         layout_width="-1",
-        id="img",
+        id="图像",
       };
       {
         TextView,
@@ -34,7 +34,7 @@
         textColor=textc;
         textSize="14sp";
         Typeface=字体("product-Bold");
-        id="tv",
+        id="标题",
       },
     },
   },

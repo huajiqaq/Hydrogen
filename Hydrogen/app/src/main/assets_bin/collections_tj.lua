@@ -48,7 +48,7 @@ function 刷新()
           底部内容=底部内容.." 已关注"
         end
         local 活动="由 "..v.creator.name.." 创建"
-        local mc_id=(v.id)
+        local id=(v.id)
         if 预览内容==false or 预览内容=="" then
           预览内容="无介绍"
         end
@@ -57,14 +57,14 @@ function 刷新()
           头像=logopng
         end
 
-        simple_list.Adapter.add{mc_action=活动,mc_art=预览内容,底部内容=底部内容,mc_question=问题id,mc_title=标题,mc_image=头像,mc_id=mc_id,isfollow=tostring(是否关注)}
+        simple_list.Adapter.add{活动=活动,预览内容=预览内容,底部内容=底部内容,标题=标题,图像=头像,id内容=id,isfollow=tostring(是否关注)}
       end
     end
   end)
 end
 
 simple_list.onItemClick=function(l,v,c,b)
-  activity.newActivity("collections",{v.Tag.mc_id.Text,true})
+  activity.newActivity("collections",{v.Tag.id内容.Text,true})
 end
 
 add=true

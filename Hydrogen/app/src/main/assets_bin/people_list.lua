@@ -13,7 +13,7 @@ if 是否屏蔽 then
   murl="https://api.zhihu.com/settings/blocked_users?filter=all"
   onclick=function(view)
     local rootview=view.getParent().getParent().getParent().getParent()
-    local 用户id=rootview.Tag.people_id.text
+    local 用户id=rootview.Tag.id内容.text
     local following=rootview.Tag.following
 
     if following.Text=="屏蔽" then
@@ -38,7 +38,7 @@ if 是否屏蔽 then
  else
   onclick=function(view)
     local rootview=view.getParent().getParent().getParent().getParent()
-    local 用户id=rootview.Tag.people_id.text
+    local 用户id=rootview.Tagid内容.text
     local following=rootview.Tag.following
     if following.Text=="关注"
       zHttp.post("https://api.zhihu.com/people/"..用户id.."/followers","",posthead,function(a,b)
@@ -110,10 +110,10 @@ function 刷新()
           end
 
           simple_list.Adapter.add{
-            people_image=头像,
-            username=名字,
-            userheadline=签名,
-            people_id=用户id,
+            图像=头像,
+            标题=名字,
+            预览内容=签名,
+            id内容=用户id,
             following={
               Text=文本;
               onClick=function(view)
@@ -128,7 +128,7 @@ function 刷新()
 end
 
 simple_list.onItemClick=function(l,v,c,b)
-  activity.newActivity("people",{v.Tag.people_id.text})
+  activity.newActivity("people",{v.Tag.id内容.text})
 end
 
 add=true

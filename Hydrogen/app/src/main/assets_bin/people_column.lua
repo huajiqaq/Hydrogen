@@ -50,7 +50,7 @@ function 刷新()
           问题id=问题id.."分割"..(v.id)
           标题=v.question.title
          elseif v.type=="topic" then
-          people_list.Adapter.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.id,people_title=v.name,people_image=头像}
+          people_list.Adapter.add{活动=活动,预览内容={Visibility=8},评论数={Visibility=8},id内容="话题分割"..v.id,标题=v.name,图像=头像}
           return
          elseif v.type=="question" then
           活动="发布了问题"
@@ -79,29 +79,14 @@ function 刷新()
           问题id="文章分割"..(v.id)
           标题=v.title
         end
-        simple_list.Adapter.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+        simple_list.Adapter.add{活动=活动,预览内容=预览内容,点赞数=点赞数,评论数=评论数,id内容=问题id,标题=标题,图像=头像}
       end
     end
   end)
 end
 
 simple_list.onItemClick=function(l,v,c,b)
-  if tostring(v.Tag.people_question.text):find("文章分割") then
-    activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("文章分割(.+)"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
-   elseif tostring(v.Tag.people_question.text):find("话题分割") then
-    activity.newActivity("huida",{"https://www.zhihu.com/topic/"..tostring(v.Tag.people_question.Text):match("话题分割(.+)")})
-   elseif tostring(v.Tag.people_question.text):find("问题分割") then
-    activity.newActivity("question",{tostring(v.Tag.people_question.Text):match("(.+)问题分割")})
-   elseif tostring(v.Tag.people_question.text):find("想法分割") then
-    activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("想法分割(.+)"),"想法"})
-   elseif tostring(v.Tag.people_question.Text):find("视频分割") then
-    activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("视频分割(.+)"),"视频"})
-   elseif tostring(v.Tag.people_question.Text):find("专栏分割") then
-    activity.newActivity("people_column",{tostring(v.Tag.people_question.Text):match("专栏分割(.+)专栏标题"),tostring(v.Tag.people_question.Text):match("专栏标题(.+)")})
-   else
-    保存历史记录(v.Tag.people_title.Text,v.Tag.people_url.Text,50)
-    activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
-  end
+点击事件判断(v.Tag.id内容.Text,v.Tag.标题.Text)
 end
 
 保存历史记录(title,"专栏分割"..id,50)

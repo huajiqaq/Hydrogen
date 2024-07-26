@@ -19,12 +19,12 @@
     {
       TextView;
       textSize="0sp";
-      id="comment_id",
+      id="id内容",
     };
     {
       TextView;
       textSize="0sp";
-      id="comment_author_id",
+      id="作者id",
     };
     {
       TextView;
@@ -50,7 +50,7 @@
           id="author_lay";
           {
             CircleImageView;
-            id="comment_image",
+            id="图像",
             layout_width="24dp",
             layout_height="24dp",
           };
@@ -58,7 +58,7 @@
             TextView;
             layout_marginLeft="8dp",
             textSize="14sp";
-            id="comment_author",
+            id="标题",
             Typeface=字体("product-Bold");
             textColor=textc;
           };
@@ -71,8 +71,8 @@
           {
             TextView;
             Typeface=字体("product");
-            textColor=stextc;
-            id="comment_art",
+            textColor=textc;
+            id="预览内容",
             textIsSelectable=true;
             linksClickable=true;
             textSize="12sp";
@@ -101,7 +101,7 @@
               Typeface=字体("product");
               textColor=stextc;
               textSize="12sp";
-              id="comment_time",
+              id="底部内容",
             };
           };
         }

@@ -40,25 +40,25 @@ if mtype:find("收藏") then
     _title.text=mtype
   end
 
-  reslove_home_collection={
+  resolve_home_collection={
     function(v)
       return
       {
-        collections_title={
+        标题={
           text=v.title,
         },
         is_lock=v.is_public==false and 图标("https") or nil,
 
-        collections_art={
+        预览内容={
           text=""..(v.item_count).."个内容"
         },
-        collections_item={
+        评论数={
           text=math.floor(v.comment_count)..""
         },
-        collections_follower={
+        关注数={
           text=(v.follower_count)..""
         },
-        collections_id={
+        id内容={
           text=tostring(v.id)
 
         },
@@ -67,17 +67,17 @@ if mtype:find("收藏") then
     function(v)
       return
       {
-        mc_image=v.creator.avatar_url,
-        mc_name={
+        图像=v.creator.avatar_url,
+        预览内容={
           text="由 "..v.creator.name.." 创建"
         },
-        mc_title={
+        标题={
           text=v.title
         },
-        mc_follower={
+        关注数={
           text=math.floor(v.follower_count).."人关注"
         },
-        mc_id={
+        id内容={
           text=tostring(v.id),
         },
         background={foreground=Ripple(nil,转0x(ripplec),"方")},
@@ -104,7 +104,7 @@ if mtype:find("收藏") then
     },
     onclick={
       function(parent,v,pos,id)
-        activity.newActivity("collections",{v.Tag.collections_id.Text})
+        activity.newActivity("collections",{v.Tag.id内容.Text})
       end,
       function(parent,v,pos,id)
         activity.newActivity("collections",{v.Tag.mc_id.Text,true})
@@ -117,7 +117,7 @@ if mtype:find("收藏") then
     head="head",
 
     func=function(v,pos,adapter)
-      local data= reslove_home_collection[pos](v)
+      local data= resolve_home_collection[pos](v)
       if data then
         adapter.add(data)
       end
@@ -158,7 +158,7 @@ if mtype:find("视频") then
   if issub then
     murl="https://api.zhihu.com/zvideo-collections/collections/"..id.."/include?offset=0&limit=10&include=answer"
 
-    function reslove(v)
+    function resolve(v)
       local 标题=v.title
       local 预览内容=v.description
       local 底部内容=v.play_count.."个播放"
@@ -166,13 +166,13 @@ if mtype:find("视频") then
       if 预览内容==false or 预览内容=="" then
         预览内容="无介绍"
       end
-      return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
+      return {标题=标题,预览内容=预览内容,底部内容=底部内容,id内容=链接,标题=标题}
     end
 
    else
     murl="https://api.zhihu.com/zvideo-collections/members/"..id.."/collections?offset=0&limit=10"
 
-    function reslove(v)
+    function resolve(v)
       local 标题=v.name
       local 预览内容=v.description
       local 链接="视频合集分割"..v.id
@@ -180,7 +180,7 @@ if mtype:find("视频") then
       if 预览内容==false or 预览内容=="" then
         预览内容="无介绍"
       end
-      return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
+      return {标题=标题,预览内容=预览内容,底部内容=底部内容,id内容=链接,标题=标题}
     end
 
   end
@@ -188,7 +188,7 @@ if mtype:find("视频") then
   if mtype:find("专栏") then
     mmtype="columns"
 
-    function reslove(v)
+    function resolve(v)
       local 标题=v.title
       local 预览内容=v.description
       local 链接="专栏分割"..v.id
@@ -196,7 +196,7 @@ if mtype:find("视频") then
       if 预览内容==false or 预览内容=="" then
         预览内容="无介绍"
       end
-      return {标题=标题,文章=预览内容,底部内容=底部内容,链接=链接,mc_title=标题}
+      return {标题=标题,预览内容=预览内容,底部内容=底部内容,id内容=链接,标题=标题}
     end
 
    elseif mtype:find("话题") then
@@ -204,7 +204,7 @@ if mtype:find("视频") then
     --底部内容删除
     itemc[2][2][3][4]=nil
 
-    function reslove(v)
+    function resolve(v)
       local 标题=v.name
       local 预览内容=v.excerpt
       local 链接="话题分割"..v.id
@@ -212,7 +212,7 @@ if mtype:find("视频") then
       if 预览内容==false or 预览内容=="" then
         预览内容="无介绍"
       end
-      return {标题=标题,文章=预览内容,链接=链接,mc_title=标题}
+      return {标题=标题,预览内容=预览内容,id内容=链接}
     end
 
    elseif mtype:find("问题") then
@@ -220,14 +220,14 @@ if mtype:find("视频") then
     --预览内容删除
     itemc[2][2][3][3]=nil
 
-    function reslove(v)
+    function resolve(v)
       local 标题=v.title
       local 链接="问题分割"..v.id
       local 底部内容=v.answer_count.."个回答 · "..v.follower_count.."个关注"
       if 预览内容==false or 预览内容=="" then
         预览内容="无介绍"
       end
-      return {标题=标题,底部内容=底部内容,链接=链接,mc_title=标题}
+      return {标题=标题,底部内容=底部内容,id内容=链接,标题=标题}
     end
 
   end
@@ -255,25 +255,14 @@ function 刷新()
         add=true
       end
       for i,v in ipairs(luajson.decode(content).data) do
-        simple_list.Adapter.add(reslove(v))
+        simple_list.Adapter.add(resolve(v))
       end
     end
   end)
 end
 
 simple_list.onItemClick=function(l,v,c,b)
-  if tostring(v.Tag.链接.Text):find("视频合集分割") then
-    activity.newActivity("followed",{tostring(v.Tag.链接.Text):match("视频合集分割(.+)"),mtype,title,tz,true})
-   elseif tostring(v.Tag.链接.Text):find("视频分割") then
-    activity.newActivity("column",{tostring(v.Tag.链接.Text):match("视频分割(.+)"),"视频"})
-   elseif tostring(v.Tag.链接.Text):find("专栏分割") then
-    activity.newActivity("people_column",{tostring(v.Tag.链接.Text):match("专栏分割(.+)")})
-   elseif tostring(v.Tag.链接.Text):find("话题分割") then
-    activity.newActivity("topic",{tostring(v.Tag.链接.Text):match("话题分割(.+)")})
-   elseif tostring(v.Tag.链接.Text):find("问题分割") then
-    activity.newActivity("question",{tostring(v.Tag.链接.Text):match("问题分割(.+)")})
-
-  end
+  点击事件判断(v.Tag.id内容.Text)
 end
 
 add=true

@@ -109,7 +109,8 @@ function reslove_topic(v,adapter)
       local answer_count=(v.target.answer_count).."个回答"
       local follower_count=(v.target.follower_count).."人关注"
       id="问题分割"..(v.target.id)
-      adapter.add{all_title=title,all_follower_count=follower_count,all_answer_count=answer_count,best_id=id}
+      local 底部内容=answer_count.." · "..follower_count
+      adapter.add{标题=title,底部内容=底部内容,id内容=id}
       return
      elseif v.target.type=="article" then
       title=v.target.title
@@ -135,7 +136,7 @@ function reslove_topic(v,adapter)
 
     local voteup_count=(v.target.voteup_count) or (v.target.like_count) or (v.target.counter.applaud)
     local comment_count=(v.target.comment_count) or (v.target.comment_count) or (v.target.counter.comment)
-    adapter.add {best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
+    adapter.add {预览内容=excerpt,标题=title,评论数=comment_count,id内容=id,点赞数=voteup_count}
    elseif v.target.type=="topic_sticky_module" then
     if v.target.data then
 
@@ -157,7 +158,7 @@ function reslove_topic(v,adapter)
           voteup_count=(w.target.answer_count)
           id="问题分割"..(w.target.id)
         end
-        adapter.add {best_excerpt=excerpt,best_title=title,best_comment_count=comment_count,best_id=id,best_voteup_count=voteup_count}
+        adapter.add {预览内容=excerpt,标题=title,评论数=comment_count,id内容=id,点赞数=voteup_count}
       end
     end
   end
@@ -243,10 +244,10 @@ local mconf={
     [4]=all_itemc
   },
   onclick=function(parent,v,pos,id)
-    if v.Tag.best_title then
-      点击事件判断(v.Tag.best_id.text,v.Tag.best_title.Text)
+    if v.Tag.标题 then
+      点击事件判断(v.Tag.id内容.text,v.Tag.标题.Text)
      else
-      点击事件判断(v.Tag.best_id.text)
+      点击事件判断(v.Tag.id内容.text)
     end
   end,
   onlongclick=nil,

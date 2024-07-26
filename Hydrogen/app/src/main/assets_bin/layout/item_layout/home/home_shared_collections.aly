@@ -28,12 +28,12 @@
         layout_width="0",
         layout_hieght="0",
         Visibility=8,
-        id="mc_id",
+        id="id内容",
       };
       {
         CircleImageView;
         layout_gravity="left|center",
-        id="mc_image",
+        id="图像",
         layout_width="60dp",
         layout_height="40dp",
         layout_marginLeft="5dp",
@@ -49,7 +49,7 @@
         {
           TextView;
           textSize="14sp";
-          id="mc_title",
+          id="标题",
           Typeface=字体("product-Bold");
           textColor=textc;
         };
@@ -61,7 +61,7 @@
           textSize="12sp",
           layout_gravity="left|bottom",
           gravity="left|bottom",
-          id="mc_name",
+          id="预览内容",
           y="17dp",
         };
         {
@@ -73,7 +73,7 @@
           Typeface=字体("product");
           SingleLine=true;
           textColor=stextc;
-          id="mc_follower",
+          id="关注数",
         };
       };
     };

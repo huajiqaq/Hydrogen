@@ -101,7 +101,7 @@ function 加载笔记(str)
       local _,name=v:match("(.+)/(.+)")
       notedata[#notedata+1]={
         timestamp=vv.lastModified(),
-        catitle=name,
+        标题=name,
         file=(v),
       }
     end
@@ -121,7 +121,7 @@ function 加载笔记(str)
       if filestr:find(str) then
         notedata[#notedata+1]={
           timestamp=vv.lastModified(),
-          catitle=name,
+          标题=name,
           file=(v),
         }
       end
@@ -149,7 +149,7 @@ function checktitle(str)
       end
     end
     for i=#oridata,1,-1 do
-      if not oridata[i].catitle:find(str) then
+      if not oridata[i].标题:find(str) then
         table.remove(oridata, i)
         noteadp.notifyDataSetChanged()
       end
@@ -159,12 +159,12 @@ end
 
 local_listview.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(id,v,zero,one)
-    本地列表(v.Tag.catitle.Text)
+    本地列表(v.Tag.标题.Text)
 end})
 
 local_listview.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
   onItemLongClick=function(id,v,zero,one)
-    双按钮对话框("删除","删除该内容？该操作不可撤消！","是的","点错了",function(an)删除文件(内置存储文件("Download/"..v.Tag.catitle.Text))
+    双按钮对话框("删除","删除该内容？该操作不可撤消！","是的","点错了",function(an)删除文件(内置存储文件("Download/"..v.Tag.标题.Text))
       an.dismiss()
       加载笔记(mystr)
       提示("已删除")end,function(an)an.dismiss()end)

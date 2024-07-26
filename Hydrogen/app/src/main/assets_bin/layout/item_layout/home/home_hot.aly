@@ -46,7 +46,7 @@
             {
               TextView;
               textSize="0sp";
-              id="导向链接",
+              id="id内容",
               Typeface=字体("product");
             };
             {

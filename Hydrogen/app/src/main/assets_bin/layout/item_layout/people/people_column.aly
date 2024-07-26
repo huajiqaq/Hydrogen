@@ -29,11 +29,6 @@
         paddingTop="18dp";
         paddingBottom="18dp";
         {
-          TextView;
-          id="people_url";
-          textSize="0sp";
-        };
-        {
           LinearLayout;
           orientation="vertical";
           {
@@ -43,11 +38,11 @@
               CircleImageView;
               layout_width="20dp",
               layout_height="20dp",
-              id="people_image",
+              id="图像",
             };
             {
               TextView;
-              id="people_action";
+              id="活动";
               layout_marginLeft="6dp",
               textColor=textc;
               layout_gravity="center_vertical",
@@ -56,14 +51,14 @@
             };
             {
               TextView;
-              id="people_question";
+              id="id内容";
               textSize="0sp";
             };
           };
           {
             TextView;
             textSize="14sp";
-            id="people_title";
+            id="标题";
             textColor=textc;
             letterSpacing="0.02";
             layout_marginTop="8dp";
@@ -72,7 +67,7 @@
           {
             TextView;
             textSize="12sp";
-            id="people_art";
+            id="预览内容";
             textColor=textc;
             MaxLines=3;
             letterSpacing="0.02";
@@ -84,7 +79,6 @@
             LinearLayout;
             layout_marginTop="8dp";
             orientation="horizontal";
-            id="people_palne",
             {
               ImageView;
               src=图标("vote_up"),
@@ -94,7 +88,7 @@
             };
             {
               TextView;
-              id="people_vote";
+              id="点赞数";
               layout_marginLeft="6dp",
               textColor=textc;
               textSize="12sp";
@@ -112,7 +106,7 @@
               TextView;
               layout_marginLeft="6dp",
               textSize="12sp";
-              id="people_comment";
+              id="评论数";
               textColor=textc;
               Typeface=字体("product");
             };

@@ -55,7 +55,7 @@ task(1,function()
             layout_width="64dp";
             layout_gravity="center";
             src="logo",
-            id="people_image",
+            id="图像",
           };
           {
             TextView;
@@ -489,7 +489,13 @@ local base_people=require "model.people":new(people_id)
   people_name.Text=名字
   people_sign.Text=签名
 
-  loadglide(people_image,大头像)
+  图像.onClick=function()
+    local data={["0"]=大头像,["1"]=1}
+    this.setSharedData("imagedata",luajson.encode(data))
+    activity.newActivity("image")
+  end
+
+  loadglide(图像,大头像)
 
   --获取id后才开始刷新
   add=true
@@ -522,10 +528,10 @@ end)
     问题id=问题id.."分割"..(v.target.id)
     标题=v.target.question.title
    elseif v.target.type=="topic" then
-    people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.target.id,people_title=v.target.name,people_image=头像}
+    people_adp.add{活动=活动,预览内容="无预览内容",评论数={Visibility=8},id内容="话题分割"..v.target.id,标题=v.target.name,图像=头像}
     return
    elseif v.target.type=="question" then
-    问题id=(v.target.id).."问题分割"
+    问题id="问题分割"..(v.target.id)
     标题=v.target.title
    elseif v.target.type=="column" then
     问题id="专栏分割"..v.target.id.."专栏标题"..v.target.title
@@ -537,12 +543,14 @@ end)
     return
    elseif v.target.type=="pin" then
     问题id="想法分割"..tostring(v.target.id)
-    if #v.target.content>0 then
+    local title=v.target.content[1].title
+    if #v.target.content>0 and title and title~="" then
       标题=v.target.content[1].title
      else
       标题="一个想法"
     end
     预览内容=v.target.content_html
+    点赞数=v.target.like_count
    elseif v.target.type=="zvideo" then
     问题id="视频分割"..v.target.id
     标题=v.target.title
@@ -551,7 +559,7 @@ end)
     标题=v.target.title
   end
   预览内容=Html.fromHtml(预览内容)
-  people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+  people_adp.add{活动=活动,预览内容=预览内容,点赞数=点赞数,评论数=评论数,id内容=问题id,标题=标题,图像=头像}
 
 end)
 
@@ -609,7 +617,7 @@ function 其他(isclear)
         end
       end
       for i=#oridata,1,-1 do
-        if not oridata[i].people_title:find(搜索内容) then
+        if not oridata[i].标题:find(搜索内容) then
           table.remove(oridata, i)
           people_adp.notifyDataSetChanged()
         end
@@ -679,12 +687,13 @@ function 其他(isclear)
           活动=活动 or "发布了回答"
          elseif v.type=="topic" then
           活动=活动 or "发布了话题"
-          people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.id,people_title=v.name,people_image=头像}
+          people_adp.add{活动=活动,预览内容="无预览内容",评论数={Visibility=8},id内容="话题分割"..v.id,标题=v.name,图像=头像}
           return
          elseif v.type=="question" then
           活动=活动 or "发布了问题"
-          问题id=(v.id).."问题分割"
+          问题id="问题分割"..(v.id)
           标题=v.title
+          预览内容="无预览内容"
          elseif v.type=="column" then
           活动=活动 or "发布了专栏"
           问题id="专栏分割"..v.id.."专栏标题"..v.title
@@ -715,7 +724,7 @@ function 其他(isclear)
         if 预览内容=="" then
           预览内容="无预览内容"
         end
-        people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+        people_adp.add{活动=活动,预览内容=预览内容,点赞数=点赞数,评论数=评论数,id内容=问题id,标题=标题,图像=头像}
       end
     end
   end)
@@ -744,7 +753,7 @@ function moreload()
         local 预览内容=添加字符串.."点击查看"
         local 点赞数="0"
         local 评论数="0"
-        people_adp.add{people_action=活动,people_art=预览内容,people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=标题,people_image=头像}
+        people_adp.add{活动=活动,预览内容=预览内容,点赞数=点赞数,评论数=评论数,id内容=问题id,标题=标题,图像=头像}
       end
     end
   end)
@@ -798,11 +807,11 @@ function checktitle(str)
           问题id=问题id.."分割"..(v.object.id)
           标题=v.object.question.name
          elseif v.object.type=="topic" then
-          people_adp.add{people_action=活动,people_art={Visibility=8},people_palne={Visibility=8},people_comment={Visibility=8},people_question="话题分割"..v.object.id,people_title=v.object.name,people_image=头像}
+          people_adp.add{活动=活动,预览内容="无预览内容",评论数={Visibility=8},id内容="话题分割"..v.object.id,标题=v.object.name,图像=头像}
           return
          elseif v.object.type=="question" then
           活动="发布了问题"
-          问题id=(v.object.id).."问题分割"
+          问题id="问题分割"..(v.object.id)
           标题=v.object.title
          elseif v.object.type=="column" then
           活动="发表了专栏"
@@ -828,7 +837,7 @@ function checktitle(str)
           问题id="文章分割"..(v.object.id)
           标题=v.object.title
         end
-        people_adp.add{people_action=活动,people_art=Html.fromHtml(预览内容),people_vote=点赞数,people_comment=评论数,people_question=问题id,people_title=Html.fromHtml(标题),people_image=头像}
+        people_adp.add{活动=活动,预览内容=Html.fromHtml(预览内容),点赞数=点赞数,评论数=评论数,id内容=问题id,标题=Html.fromHtml(标题),图像=头像}
         people_adp.notifyDataSetChanged()
       end
     end)
@@ -840,30 +849,18 @@ end
 
 people_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
-    if tostring(v.Tag.people_question.text):find("文章分割") then
-      activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("文章分割(.+)"),tostring(v.Tag.people_question.Text):match("分割(.+)")})
-     elseif tostring(v.Tag.people_question.text):find("话题分割") then
-      activity.newActivity("huida",{"https://www.zhihu.com/topic/"..tostring(v.Tag.people_question.Text):match("话题分割(.+)")})
-     elseif tostring(v.Tag.people_question.text):find("问题分割") then
-      activity.newActivity("question",{tostring(v.Tag.people_question.Text):match("(.+)问题分割")})
-     elseif tostring(v.Tag.people_question.text):find("想法分割") then
-      activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("想法分割(.+)"),"想法"})
-     elseif tostring(v.Tag.people_question.Text):find("视频分割") then
-      activity.newActivity("column",{tostring(v.Tag.people_question.Text):match("视频分割(.+)"),"视频"})
-     elseif tostring(v.Tag.people_question.Text):find("专栏分割") then
-      activity.newActivity("people_column",{tostring(v.Tag.people_question.Text):match("专栏分割(.+)专栏标题"),tostring(v.Tag.people_question.Text):match("专栏标题(.+)")})
-     elseif tostring(v.Tag.people_question.Text):find("更多") then
-      if tostring(v.Tag.people_question.Text):find("收藏") then
+    if tostring(v.Tag.id内容.Text):find("更多") then
+      if tostring(v.Tag.id内容.Text):find("收藏") then
         local tz=false
-        if tostring(v.Tag.people_question.Text):find("关注") then
+        if tostring(v.Tag.id内容.Text):find("关注") then
           tz=true
         end
-        activity.newActivity("followed",{用户id,v.Tag.people_question.Text,people_name.Text,tz})
+        activity.newActivity("followed",{用户id,v.Tag.id内容.Text,people_name.Text,tz})
        else
-        activity.newActivity("followed",{用户id,v.Tag.people_question.Text,people_name.Text})
+        activity.newActivity("followed",{用户id,v.Tag.id内容.Text,people_name.Text})
       end
      else
-      activity.newActivity("answer",{tostring(v.Tag.people_question.Text):match("(.+)分割"),tostring(v.Tag.people_question.Text):match("分割(.+)"),nil,true})
+      点击事件判断(v.Tag.id内容.Text,v.Tag.标题.Text)
     end
   end
 })

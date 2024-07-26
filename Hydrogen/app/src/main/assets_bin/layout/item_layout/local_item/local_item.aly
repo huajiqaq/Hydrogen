@@ -27,17 +27,12 @@
         orientation="horizontal";
         padding="16dp";
         {
-          TextView;
-          id="cid";
-          textSize="0sp";
-        };
-        {
           LinearLayout;
           orientation="vertical";
           {
             TextView;
             textSize="14sp";
-            id="catitle";
+            id="标题";
             textColor=textc;
             layout_marginTop="2dp";
             Typeface=字体("product-Bold");

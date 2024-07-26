@@ -26,7 +26,7 @@
         gravity="center";
         {
           TextView;
-          id="hotsearch_title";
+          id="标题";
           singleLine=true;
           textColor=textc;
           textSize="14sp";
@@ -38,7 +38,7 @@
         };
         {
           TextView;
-          id="hotsearch_key";
+          id="id内容";
           layout_width="0";
           layout_height="0";
         };

@@ -28,13 +28,13 @@
         padding="16dp";
         {
           TextView;
-          id="best_id";
+          id="id内容";
           textSize="0sp";
         };
         {
           TextView;
           textSize="14sp";
-          id="all_title";
+          id="标题";
           textColor=textc;
           Typeface=字体("product-Bold");
         };
@@ -44,17 +44,9 @@
           orientation="horizontal";
           {
             TextView;
-            id="all_answer_count";
+            id="底部内容";
             textSize="12sp",
             textColor=textc;
-            Typeface=字体("product");
-          };
-          {
-            TextView;
-            layout_marginLeft="6dp",
-            id="all_follower_count";
-            textColor=textc;
-            textSize="12sp",
             Typeface=字体("product");
           };
         };

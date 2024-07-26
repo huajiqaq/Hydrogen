@@ -129,7 +129,7 @@ function 加载笔记()
      else
       preview=content
     end
-    notedata[#notedata+1]={title=name,text=(v),preview=preview}
+    notedata[#notedata+1]={标题=name,text=(v),预览内容=preview}
   end
   noteadp=LuaAdapter(activity,notedata,noteitem)
   notelist.setAdapter(noteadp)
@@ -139,7 +139,7 @@ end
 
 notelist.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(id,v,zero,one)
-    local mtext=v.Tag.title.Text
+    local mtext=v.Tag.标题.Text
     local author
     if mtext:find("作者:") then
       author=mtext:match("作者:(.-)%)")
@@ -148,7 +148,7 @@ notelist.setOnItemClickListener(AdapterView.OnItemClickListener{
       author="未知"
     end
     atitle.Text=mtext
-    atext.Text=v.Tag.preview.Text
+    atext.Text=v.Tag.预览内容.Text
     aauthor.text=author
     artical_page.setCurrentItem(0,false)
     动画出现(back_root)

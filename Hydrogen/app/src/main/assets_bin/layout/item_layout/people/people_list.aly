@@ -29,14 +29,14 @@
         layout_weight=1;
         {
           TextView;
-          id="people_id";
+          id="id内容";
           textSize="0sp";
         };
         {
           CircleImageView;
           layout_width="26dp",
           layout_height="26dp",
-          id="people_image",
+          id="图像",
           layout_gravity="center_vertical",
         };
         {
@@ -45,7 +45,7 @@
           orientation="vertical";
           {
             TextView;
-            id="username";
+            id="标题";
             layout_marginLeft="6dp",
             textColor=textc;
             layout_gravity="center_vertical",
@@ -55,7 +55,7 @@
           {
             TextView;
             textSize="14sp";
-            id="userheadline";
+            id="预览内容";
             textColor=textc;
             layout_marginLeft="6dp",
             layout_marginTop="8dp";

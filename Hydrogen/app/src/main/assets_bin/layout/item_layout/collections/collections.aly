@@ -30,7 +30,7 @@
         padding="16dp";
         {
           TextView;
-          id="cid";
+          id="id内容";
           textSize="0sp";
         };
         {
@@ -40,7 +40,7 @@
           {
             TextView;
             textSize="14sp";
-            id="catitle";
+            id="标题";
             textColor=textc;
             layout_marginTop="2dp";
             Typeface=字体("product-Bold");
@@ -49,7 +49,7 @@
           {
             TextView;
             textSize="12sp";
-            id="caart";
+            id="预览内容";
             MaxLines=3,--设置最大输入行数
             ellipsize="end",--设置内容超出控件大小时显示...
             textColor=stextc;
@@ -70,7 +70,7 @@
             };
             {
               TextView;
-              id="cavoteup";
+              id="点赞数";
               layout_marginLeft="6dp",
               textColor=textc;
               textSize="12sp";
@@ -88,7 +88,7 @@
             {
               TextView;
               layout_marginLeft="6dp",
-              id="cacomment";
+              id="评论数";
               textColor=textc;
               textSize="12sp";
               Typeface=字体("product");

@@ -16,65 +16,13 @@
       layout_height="56dp";
       titleCentered="true"
     };
+
     {
-      NoScrollListView;
+      ListView;
       layout_height="-1";
       layout_width="-1";
       DividerHeight=0;
       id="help_list";
-    };
-
-    {
-      LinearLayout;
-      layout_width="-1";
-      layout_height="-1";
-      orientation="vertical";
-      gravity="right|bottom";
-      {
-        CardView;
-        layout_height="56dp",
-        radius="28dp";
-        layout_margin="16dp";
-        layout_marginRight="32dp";
-        layout_marginBottom="32dp";
-        CardBackgroundColor=primaryc;
-        elevation="0";
-        translationZ="4dp";
-        alpha=1;
-        id="post";
-        {
-          LinearLayout;
-          Visibility=0,
-          id="send",
-          gravity="center",
-          orientation="horizontal",
-          {
-            ImageView;
-            src=图标("send");
-            layout_height="24dp";
-            layout_width="24dp";
-            layout_margin="16dp";
-            layout_marginRight="12dp";
-            colorFilter=backgroundc,
-          };
-          {
-            TextView;
-            layout_marginRight="16dp";
-            text="仍要反馈问题",
-            textSize="16sp",
-            textColor=backgroundc,
-          };
-        };
-        {
-          ProgressBar;
-          id="progress",
-          ProgressBarBackground=backgroundc,
-          Visibility=8,
-          layout_height="-1";
-          layout_width="-1";
-          padding="12dp",
-        };
-      };
     };
   };
 };

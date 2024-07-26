@@ -77,8 +77,42 @@ import "android.animation.LayoutTransition"
 import "androidx.core.content.ContextCompat"
 import "com.google.android.material.card.MaterialCardView"
 
+local function contains_any(test_string)
+  for word in string.gmatch(this.getSharedData("屏蔽词"), "%S+") do
+    if string.find(test_string, word, 1, true) then
+      return true
+    end
+  end
+  return false
+end
 
-import "com.hydrogen.adapter.MyLuaAdapter"
+
+ori_MyLuaAdapter=luajava.bindClass "com.hydrogen.adapter.MyLuaAdapter"
+
+function MyLuaAdapter(context,table1,table2)
+  local layout,data
+  if not(table2) then
+    data={}
+    layout=table1
+   else
+    data=table1 or {}
+    layout=table2
+  end
+  local mt = {
+    __newindex = function(t, k, v)
+      local 匹配内容=v.标题..v.预览内容
+      if contains_any(匹配内容) then
+        return
+      end
+      rawset(t, k, v)
+    end
+  }
+  if this.getSharedData("屏蔽词") and this.getSharedData("屏蔽词"):gsub(" ","")~="" then
+    setmetatable(data, mt)
+  end
+  return ori_MyLuaAdapter(context,data,layout)
+end
+
 import "com.hydrogen.view.NoScrollListView"
 import "com.hydrogen.view.NoScrollGridView"
 

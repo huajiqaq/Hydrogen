@@ -41,7 +41,7 @@ zHttp.get(url,head,function(code,content)
   if code==200 then
     local data=luajson.decode(content)
     for k,v in ipairs(data.top_search.words) do
-      task(50,function()yuxuan_adpqy.add{hotsearch_key=v.query,hotsearch_title=v.display_query}end)
+      task(50,function()yuxuan_adpqy.add{id内容=v.query,标题=v.display_query}end)
     end
    else
     提示("获取热门搜索失败 "..content)
@@ -52,9 +52,9 @@ end)
 search_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
     if activity.getSharedData("内部搜索(beta)")=="true" then
-      activity.newActivity("search_result",{v.Tag.hotsearch_key.Text})
+      activity.newActivity("search_result",{v.Tag.id内容.Text})
      else
-      activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..v.Tag.hotsearch_key.Text})
+      activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..v.Tag.id内容.Text})
     end
   end
 })

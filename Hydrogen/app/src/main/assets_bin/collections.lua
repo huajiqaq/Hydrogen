@@ -69,21 +69,21 @@ function 初始化()
     if tab.type=="answer" then
       点赞数=(tab.voteup_count)..""
       评论数=(tab.comment_count)..""
-      内容=tab.excerpt
+      预览内容=tab.excerpt
       标题=tab.question.title
       id分割=(tab.question.id).."回答分割"..(tab.id)
      elseif tab.type=="article" then
       点赞数=(tab.voteup_count)..""
       评论数=(tab.comment_count)..""
-      内容=tab.excerpt
+      预览内容=tab.excerpt
       标题=tab.title
       id分割="文章分割"..(tab.id)
       yuxunnn_ay.add{
-        cavoteup=点赞数,
-        cacomment=评论数,
-        cid=id分割,
-        caart=内容,
-        catitle=标题,
+        点赞数=点赞数,
+        评论数=评论数,
+        id内容=id分割,
+        预览内容=预览内容,
+        标题=标题,
         background={foreground=Ripple(nil,转0x(ripplec),"方")},
         _rootview={
           onTouch=function(v,event)
@@ -94,14 +94,14 @@ function 初始化()
       return
      elseif tab.type=="pin" then
 
-      内容=tab.excerpt_title
+      预览内容=tab.excerpt_title
       点赞数=(tab.collection_count)..""
       评论数=(tab.comment_count)..""
       标题="一个想法"
       id分割="想法分割"..tab.id
      elseif tab.type=="zvideo" then
 
-      内容=tab.excerpt_title
+      预览内容=tab.excerpt_title
       点赞数=(tab.collection_count)..""
       评论数=(tab.comment_count)..""
       标题=tab.title
@@ -111,11 +111,11 @@ function 初始化()
       标题=tab.title
     end
     yuxunnn_ay.add{
-      cavoteup=点赞数,
-      cacomment=评论数,
-      cid=id分割,
-      caart=内容,
-      catitle=标题,
+      点赞数=点赞数,
+      评论数=评论数,
+      id内容=id分割,
+      预览内容=预览内容,
+      标题=标题,
       background={foreground=Ripple(nil,转0x(ripplec),"方")},
       _rootview={
         onTouch=function(v,event)
@@ -152,16 +152,7 @@ list5.setOnScrollListener{
 
 list5.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
-    if tostring(v.Tag.cid.text):find("文章分割") then
-      activity.newActivity("column",{tostring(v.Tag.cid.Text):match("文章分割(.+)")})
-     elseif tostring(v.Tag.cid.text):find("想法分割") then
-      activity.newActivity("column",{tostring(v.Tag.cid.Text):match("想法分割(.+)"),"想法"})
-     elseif tostring(v.Tag.cid.text):find("视频分割") then
-      activity.newActivity("column",{tostring(v.Tag.cid.Text):match("视频分割(.+)"),"视频"})
-     else
-      保存历史记录(v.Tag.catitle.Text,v.Tag.cid.Text,50)
-      activity.newActivity("answer",{tostring(v.Tag.cid.Text):match("(.+)回答分割"),tostring(v.Tag.cid.Text):match("回答分割(.+)")})
-    end
+    点击事件判断(v.Tag.id内容.Text,v.Tag.标题.Text)
   end
 })
 
@@ -169,14 +160,14 @@ function 多选菜单(v,zero)
   local rootview=v
 
   local 类型
-  local id=v.Tag.cid.Text:match("分割(.+)")
-  if tostring(v.Tag.cid.text):find("回答分割") then
+  local id=v.Tag.id内容.Text:match("分割(.+)")
+  if tostring(v.Tag.id内容.text):find("回答分割") then
     类型="answer"
-   elseif tostring(v.Tag.cid.text):find("文章分割") then
+   elseif tostring(v.Tag.id内容.text):find("文章分割") then
     类型="article"
-   elseif tostring(v.Tag.cid.text):find("想法分割") then
+   elseif tostring(v.Tag.id内容.text):find("想法分割") then
     类型="pin"
-   elseif tostring(v.Tag.cid.text):find("视频分割") then
+   elseif tostring(v.Tag.id内容.text):find("视频分割") then
     类型="zvideo"
   end
 
@@ -235,7 +226,7 @@ function checktitle(str)
       end
     end
     for i=#oridata,1,-1 do
-      if not oridata[i].catitle:find(str) then
+      if not oridata[i].标题:find(str) then
         table.remove(oridata, i)
       end
       list5.adapter.notifyDataSetChanged()

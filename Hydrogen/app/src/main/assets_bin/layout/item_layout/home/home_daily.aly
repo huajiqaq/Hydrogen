@@ -30,7 +30,7 @@
         {
           TextView;
           textSize="0sp";
-          id="导向链接3",
+          id="id内容",
           Typeface=字体("product");
         };
         {
@@ -41,7 +41,7 @@
             textColor=textc;
             textSize="14sp";
             Typeface=字体("product-Bold");
-            id="标题3",
+            id="标题",
           };
         };
       };

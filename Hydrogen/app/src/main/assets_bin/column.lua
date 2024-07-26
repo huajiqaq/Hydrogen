@@ -289,7 +289,7 @@ local z=JsInterface{
     if b~=nil and #b>1 then
       --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
       this.setSharedData("imagedata",b)
-      activity.newActivity("image",{b})
+      activity.newActivity("image")
     end
   end
 }

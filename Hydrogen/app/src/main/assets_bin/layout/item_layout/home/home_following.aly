@@ -31,7 +31,7 @@
         padding="16dp";
         {
           TextView;
-          id="follow_id";
+          id="id内容";
           textSize="0sp";
         };
         {
@@ -44,7 +44,7 @@
             {
               CircleImageView;
               padding="2dp",
-              id="follow_image",
+              id="图像",
               layout_width="32dp",
               layout_height="32dp",
             };
@@ -54,14 +54,14 @@
               layout_marginLeft="8dp";
               {
                 TextView;
-                id="follow_name";
+                id="动作";
                 textColor=stextc;
                 Typeface=字体("product");
                 textSize="14dp";
               };
               {
                 TextView;
-                id="follow_time";
+                id="时间";
                 textColor=stextc;
                 Typeface=字体("product");
                 textSize="14dp";
@@ -71,7 +71,7 @@
           {
             TextView;
             textSize="14sp";
-            id="follow_title";
+            id="标题";
             textColor=textc;
             layout_marginTop="4dp";
             Typeface=字体("product-Bold");
@@ -80,7 +80,7 @@
           {
             TextView;
             textSize="12sp";
-            id="follow_art";
+            id="预览内容";
             textColor=stextc;
             MaxLines=3,
             ellipsize="end",--设置内容超出控件大小时显示...
@@ -101,7 +101,7 @@
             };
             {
               TextView;
-              id="follow_voteup";
+              id="点赞数";
               layout_marginLeft="6dp",
               textSize="12sp";
               textColor=textc;
@@ -119,7 +119,7 @@
             {
               TextView;
               layout_marginLeft="6dp",
-              id="follow_comment";
+              id="评论数";
               textColor=textc;
               textSize="12sp";
               Typeface=字体("product");

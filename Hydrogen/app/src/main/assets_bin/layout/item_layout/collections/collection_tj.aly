@@ -30,7 +30,7 @@
         paddingBottom="18dp";
         {
           TextView;
-          id="mc_id";
+          id="id内容";
           textSize="0sp";
         };
         {
@@ -48,11 +48,11 @@
               CircleImageView;
               layout_width="20dp",
               layout_height="20dp",
-              id="mc_image",
+              id="图像",
             };
             {
               TextView;
-              id="mc_action";
+              id="活动";
               layout_marginLeft="6dp",
               textColor=textc;
               layout_gravity="center_vertical",
@@ -63,7 +63,7 @@
           {
             TextView;
             textSize="14sp";
-            id="mc_title";
+            id="标题";
             textColor=textc;
             letterSpacing="0.02";
             layout_marginTop="8dp";
@@ -72,7 +72,7 @@
           {
             TextView;
             textSize="12sp";
-            id="mc_art";
+            id="预览内容";
             textColor=textc;
             MaxLines=3;
             letterSpacing="0.02";
@@ -84,7 +84,6 @@
             LinearLayout;
             layout_marginTop="8dp";
             orientation="horizontal";
-            id="mc_palne",
             {
               TextView;
               id="底部内容";

@@ -26,7 +26,7 @@
       layout_width="fill";
       {
         TextView;
-        id="链接2";
+        id="id内容";
         textSize="0sp";
       };
       {
@@ -45,7 +45,7 @@
         {
           TextView;
           textSize="14sp";
-          id="标题2";
+          id="标题";
           textColor=textc;
           Typeface=字体("product-Bold");
         };
@@ -54,7 +54,7 @@
           textSize="12sp";
           MaxLines=3;
           ellipsize="end",
-          id="文章2";
+          id="预览内容";
           textColor=stextc;
           layout_marginTop="2dp";
           Typeface=字体("product-Medium");
@@ -62,7 +62,7 @@
         {
           TextView;
           id="底部内容";
-          textColor=textc;
+          textColor=stextc;
           textSize="12sp",
           Typeface=字体("product-Medium");
         };

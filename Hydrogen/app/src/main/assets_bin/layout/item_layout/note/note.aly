@@ -35,7 +35,7 @@
           textSize="14sp";
           gravity="center|left";
           Typeface=字体("product-Bold");
-          id="title";
+          id="标题";
         };
         {
           TextView;
@@ -46,13 +46,7 @@
           layout_marginTop="12dp";
           MaxLines=2;
           ellipsize="end";
-          id="preview";
-        };
-        {
-          TextView;
-          id="text";
-          layout_width="0";
-          layout_height="0";
+          id="预览内容";
         };
       };
     };

@@ -29,7 +29,7 @@
         padding="16dp";
         {
           TextView;
-          id="question_id";
+          id="id内容";
           textSize="0sp";
         };
         {
@@ -40,13 +40,13 @@
             orientation="horizontal";
             {
               CircleImageView;
-              id="question_image";
+              id="图像";
               layout_height="20dp",
               layout_width="20dp",
             };
             {
               TextView;
-              id="question_author";
+              id="标题";
               layout_marginLeft="6dp",
               textColor=textc;
               gravity="center_vertical",
@@ -57,7 +57,7 @@
           {
             TextView;
             textSize="12sp";
-            id="question_art";
+            id="预览内容";
             MaxLines=3;
             ellipsize="end",
             textColor=stextc;
@@ -78,7 +78,7 @@
             };
             {
               TextView;
-              id="question_voteup";
+              id="点赞数";
               textSize="12sp";
               layout_marginLeft="6dp",
               textColor=textc;
@@ -96,7 +96,7 @@
             {
               TextView;
               layout_marginLeft="6dp",
-              id="question_comment";
+              id="评论数";
               textColor=textc;
               textSize="12sp";
               Typeface=字体("product");

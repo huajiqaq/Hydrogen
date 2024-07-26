@@ -29,7 +29,7 @@
         {
           TextView;
           textSize="0sp";
-          id="history_id",
+          id="id内容",
           Typeface=字体("product");
         };
         {
@@ -40,13 +40,7 @@
             textColor=textc;
             textSize="14sp";
             Typeface=字体("product-Bold");
-            id="history_title",
-          };
-          {
-            TextView;
-            layout_width='0dp';
-            layout_height='0dp';
-            id="history_num",
+            id="标题",
           };
         };
       };

@@ -31,7 +31,7 @@
           textSize="14sp";
           Typeface=字体("product-Bold");
           textColor=textc;
-          id="collections_title",
+          id="标题",
         };
         {
           ImageView;
@@ -53,12 +53,12 @@
           textColor=stextc;
           textSize="12sp",
           Typeface=字体("product");
-          id="collections_art",
+          id="预览内容",
         };
         {
           TextView;
           TextSize="0dp",
-          id="collections_id",
+          id="id内容",
         };
       };
       {
@@ -80,7 +80,7 @@
           textColor=textc;
           textSize="12sp",
           Typeface=字体("product");
-          id="collections_item",
+          id="收藏数",
         };
         {
           ImageView;
@@ -97,7 +97,7 @@
           textColor=textc;
           Typeface=字体("product");
           textSize="12sp",
-          id="collections_follower",
+          id="关注数",
         };
       };
     };
