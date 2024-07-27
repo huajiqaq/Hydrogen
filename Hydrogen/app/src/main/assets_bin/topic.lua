@@ -90,7 +90,7 @@ end)
 best_itemc=获取适配器项目布局("topic/topic_best")
 all_itemc=获取适配器项目布局("topic/topic_all")
 
-function reslove_topic(v,adapter)
+function resolve_topic(v,adapter)
   xpcall(function()
     name=v.target.author.name
     end,function()
@@ -259,7 +259,7 @@ local mconf={
   },
   head="head",
   func=function(v,pos,adapter)
-    reslove_topic(v,adapter)
+    resolve_topic(v,adapter)
   end,
   dofunc=function(pos)
     if pos==0 then

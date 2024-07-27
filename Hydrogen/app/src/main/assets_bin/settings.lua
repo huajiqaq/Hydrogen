@@ -585,6 +585,7 @@ settab={
   ["禁用大部分缓存"]="禁用缓存",
   ["暗色工具栏主题"]="theme_darkactionbar",
   ["显示报错信息"]="调式模式",
+  ["音量键切换"]="音量键选择tab"
 }--设置数据
 
 settings_list.setOnItemClickListener(AdapterView.OnItemClickListener{

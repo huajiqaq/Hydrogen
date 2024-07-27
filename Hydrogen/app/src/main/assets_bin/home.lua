@@ -875,7 +875,7 @@ drawer_lv.setAdapter(adp)
 function ch_light(n)
   for i=1,#adp.getData() do
     local rootv=drawer_lv.getChildAt(i-1)
-    if rootv.Tag.tv then
+    if rootv and rootv.Tag.tv then
       if rootv.Tag.tv.text==n then
         rootv.Tag.cardv.CardBackgroundColor=转0x(primaryc)-0xde000000
         rootv.Tag.iv.ColorFilter=转0x(primaryc)
