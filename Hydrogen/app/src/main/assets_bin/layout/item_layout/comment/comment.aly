@@ -103,6 +103,15 @@
               textSize="12sp";
               id="底部内容",
             };
+            {
+              TextView;
+              layout_weight="1",
+              gravity="right";
+              Typeface=字体("product");
+              textColor=stextc;
+              textSize="12sp";
+              id="时间",
+            };
           };
         }
       };

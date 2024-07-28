@@ -155,7 +155,7 @@ function 多选菜单(v)
         .show();
     end},
     {"查看主页",function()
-        activity.newActivity("people",{rootview.Tag.标题_id.text})
+        activity.newActivity("people",{rootview.Tag.作者id.text})
     end}
   }
 
@@ -247,7 +247,7 @@ function 刷新()
     end
     comment_list.Adapter.add{提示内容={Visibility=(v.child_comment_count==0 and 8 or 0)},
       id内容=(tostring(v.id)),
-      标题_id=v.author.id,
+      作者id=v.author.id,
       预览内容={
         text=myspan,
         MovementMethod=LinkMovementMethod.getInstance(),
@@ -260,7 +260,7 @@ function 刷新()
       },
       author_lay={
         onClick=function(v)
-          activity.newActivity("people",{获取listview顶部布局(v).Tag.标题_id.text})
+          activity.newActivity("people",{获取listview顶部布局(v).Tag.作者id.text})
         end
       },
       标题=名字,

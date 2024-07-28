@@ -19,7 +19,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.5213
+versionCode=0.5214
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir().."/logo.png"
@@ -484,25 +484,22 @@ function 主题(str)
 end
 
 function 设置主题()
-  if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then
-    if 获取系统夜间模式(true) then
-      主题("Night")
-     else
-      if Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))==true then
-        主题("Night")
-       else
-        主题("Day")
-      end
-    end
+  -- 获取自动夜间模式设置
+  local 自动夜间模式 = Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))
+  -- 获取夜间模式设置
+  local 开启夜间模式 = Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))
+  -- 判断是否处于系统的夜间模式
+  local 系统夜间模式 = 获取系统夜间模式(true)
+
+  -- 根据设置决定主题
+  if 开启夜间模式==true then
+    主题("Night")
+   elseif 自动夜间模式 then
+    主题(系统夜间模式 and "Night" or "Day")
    else
-    if Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))==true then
-      主题("Night")
-     else
-      主题("Day")
-    end
+    主题("Day")
   end
 end
-
 
 设置主题()
 

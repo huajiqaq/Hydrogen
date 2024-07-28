@@ -136,7 +136,7 @@ tab={
   夜间模式追随系统=function(self)
     self.夜间模式()
   end,
-  关闭硬件加速=function(self)
+  关闭硬件加速=function()
     AlertDialog.Builder(this)
     .setTitle("小提示")
     .setMessage("开启后 可能会造成滑动卡顿 请酌情开启")
@@ -382,8 +382,7 @@ tab={
   end,
 
 
-  显示报错信息=function(index)
-    print(index)
+  显示报错信息=function(self,index)
     if this.getSharedData("调式模式")~="false" then
       this.setSharedData("调式模式","false")
       sta=1
@@ -400,7 +399,7 @@ tab={
       end})
       .setNeutralButton("取消",{onClick=function()
           this.setSharedData("调式模式","false")
-          data[index+1].status["Checked"]=false
+          data[index].status["Checked"]=false
           adp.notifyDataSetChanged()
       end})
       .show()
@@ -601,6 +600,6 @@ settings_list.setOnItemClickListener(AdapterView.OnItemClickListener{
       end
 
     end
-    (tab[tostring(v.Tag.subtitle.Text)] or function()end) (zero)
+    (tab[tostring(v.Tag.subtitle.Text)] or function()end) (tab,one)
     adp.notifyDataSetChanged()--更新列表
 end})
