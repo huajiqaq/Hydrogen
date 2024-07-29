@@ -104,7 +104,7 @@ function checktitle(str)
       end
     end
     for i=#oridata,1,-1 do
-      if not oridata[i].标题:find(str) then
+      if not tostring(oridata[i].标题):find(str) then
         table.remove(oridata, i)
         adp.notifyDataSetChanged()
       end
