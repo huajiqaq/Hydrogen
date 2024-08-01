@@ -388,7 +388,7 @@ function 数据添加(t,b)
       取消全屏()
       Handler().postDelayed(Runnable({
         run=function()
-          t.content.smoothScrollTo(0, savedScrollY);
+          t.content.scrollTo(0, savedScrollY);
         end,
       }),200)
     end,

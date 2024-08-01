@@ -1183,6 +1183,8 @@ function 热榜刷新(isclear)
       end,
 
       onBindViewHolder=function(holder,position)
+        --禁用复用
+        holder.setIsRecyclable(false)
         local view=holder.view.getTag()
         local data=myhotdata[position+1]
         view.标题.text=data.标题
@@ -1502,7 +1504,6 @@ follow_pageTool:createfunc(mconf)
 follow_pageTool:setOnTabListener()
 
 
-
 function 想法刷新(isclear)
 
   if itemcc and isclear==false then
@@ -1537,19 +1538,23 @@ function 想法刷新(isclear)
       end,
 
       onBindViewHolder=function(holder,position)
+        --禁用复用
+        holder.setIsRecyclable(false)
+
         view=holder.view.getTag()
 
         url=mytab[position+1].url
-        import "android.util.DisplayMetrics"
-        dm=DisplayMetrics()
-        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-
         loadglide(view.图像,url)
 
-        view.预览内容.Text=StringHelper.Sub(mytab[position+1].title,1,20,"...")
+        view.标题.Text=获取想法标题(mytab[position+1].title)
+
+        view.点赞数.Text=tostring(mytab[position+1].点赞数)
+        view.评论数.Text=tostring(mytab[position+1].评论数)
+
+        波纹({view.think_ripple},"圆自适应")
 
         --子项目点击事件
-        view.it.onClick=function(v)
+        view.content.onClick=function(v)
           activity.newActivity("column",{mytab[position+1].tzurl,"想法"})
           return true
         end
@@ -1603,7 +1608,7 @@ function 想法刷新(isclear)
 
     mytab={}
     recy.setAdapter(adapter)
-    recy.setLayoutManager(StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL))
+    recy.setLayoutManager(LinearLayoutManager(this,RecyclerView.VERTICAL,false))
     thisurl=nil
   end
   local geturl=thisurl or "https://api.zhihu.com/prague/feed?offset=0&limit=10"
@@ -1623,7 +1628,9 @@ function 想法刷新(isclear)
         local title=v.target.excerpt
         local tzurl=v.target.url:match("pin/(.-)?")
         local num=#mytab
-        table.insert(mytab,{url=url,title=title,tzurl=tzurl})
+        local 点赞数=v.target.reaction.statistics.up_vote_count
+        local 评论数=v.target.reaction.statistics.comment_count
+        table.insert(mytab,{url=url,title=title,tzurl=tzurl,点赞数=点赞数,评论数=评论数})
         adapter.notifyItemRangeInserted(num,#mytab)
       end
      else

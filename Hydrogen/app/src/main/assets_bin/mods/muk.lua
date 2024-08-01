@@ -18,7 +18,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.5216
+versionCode=0.5217
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir().."/logo.png"
@@ -2263,7 +2263,6 @@ function getDirSize(path)
 end
 
 import "androidx.core.content.ContextCompat"
-
 --1毫秒后添加 防止加载失败
 task(1,function()
   local old_onDestroy=onDestroy
@@ -2279,6 +2278,11 @@ task(1,function()
       Glide.get(this).clearMemory();
     end
 
+    --[[
+    thread(function(glide,context)
+      glide.get(context).clearDiskCache()
+    end,Glide,this)
+]]
     collectgarbage("collect")
     System.gc()
   end
@@ -2859,4 +2863,14 @@ function webview查找文字监听(content)
 
       提示("查找"..状态.." 已查找第"..activeMatchOrdinal+1 .."个 ".."共有"..numberOfMatches-activeMatchOrdinal-1 .."个待查找")
   end}
+end
+
+function 获取想法标题(simpletitle)
+  -- 查找 "|" 的位置
+  local position = simpletitle:find("|")
+  -- 如果找到了分隔符，则截取它前面的内容；否则，返回整个字符串
+  if position then
+    simpletitle = simpletitle:sub(1, position - 1)
+  end
+  return StringHelper.Sub(simpletitle,1,20,"...")
 end

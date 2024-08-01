@@ -153,12 +153,7 @@ function 刷新()
     _title.Text="查看想法"
     zHttp.get("https://www.zhihu.com/api/v4/pins/"..result,head,function(code,content)
       simpletitle=luajson.decode(content).excerpt_title
-      -- 查找 "|" 的位置
-      local position = simpletitle:find("|")
-      -- 如果找到了分隔符，则截取它前面的内容；否则，返回整个字符串
-      if position then
-        simpletitle = simpletitle:sub(1, position - 1)
-      end
+      simpletitle=获取想法标题(simpletitle)
       --simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
       if simpletitle=="" then
         simpletitle="一个想法"

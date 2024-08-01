@@ -40,7 +40,7 @@ function base:getAnswer(id,cb)
       if self.pageinfo[self.getid] then
         AlertDialog.Builder(this)
         .setTitle("提示")
-        .setMessage("发生错误 不存在该回答 已为你跳转下个回答")
+        .setMessage("发生错误 不存在该回答 已尝试跳转下个回答 如还无法访问 可点击上方标题进入问题详情页")
         .setCancelable(false)
         .setPositiveButton("我知道了",nil)
         .show()
@@ -48,7 +48,7 @@ function base:getAnswer(id,cb)
        else
         AlertDialog.Builder(this)
         .setTitle("提示")
-        .setMessage("发生错误 不存在该回答 你可点击上方标题进入问题详情页")
+        .setMessage("发生错误 不存在该回答 可点击上方标题进入问题详情页")
         .setCancelable(false)
         .setPositiveButton("我知道了",nil)
         .show()
@@ -59,30 +59,31 @@ end
 
 
 function base:getOneData(cb,z) --获取一条数据
-  --注意 必须tostring 如果不tostring可能导致
   local getid=self.getid
   local pageinfo=self.pageinfo
   if pageinfo[getid] then
     if z then
       local prev_ids=pageinfo[getid].prev_ids
-      self.getid=prev_ids[#prev_ids]
+      getid=prev_ids[#prev_ids]
      else
       local next_ids=pageinfo[getid].next_ids
-      self.getid=next_ids[1]
+      getid=next_ids[1]
     end
   end
-  self:getAnswer((self.getid),function(myz)
+  self:getAnswer((getid),function(myz)
     if myz==false then
-      self.getid=getid
       if z then
-        table.remove(pageinfo[getid].prev_ids)
+        table.remove(pageinfo[self.getid].prev_ids)
        else
-        table.remove(pageinfo[getid].next_ids,1)
+        table.remove(pageinfo[self.getid].next_ids,1)
       end
       return self:getOneData(cb,z)
     end
+
+    --更新getid
+    self.getid=getid
+
     local mypageinfo=myz.pagination_info
-    local mygetid
     if mypageinfo then
       local prev_ids=mypageinfo.prev_answer_ids
       local next_ids=mypageinfo.next_answer_ids
