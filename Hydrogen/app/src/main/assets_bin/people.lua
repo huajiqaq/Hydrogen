@@ -464,7 +464,7 @@ local base_people=require "model.people":new(people_id)
           AlertDialog.Builder(this)
           .setTitle("请输入")
           .setView(loadlayout(InputLayout))
-          .setPositiveButton("确定", {onClick=function() 其他("clear") checktitle(edit.text) end})
+          .setPositiveButton("确定", {onClick=function() chobu="搜索" 其他("clear") checktitle(edit.text) end})
           .setNegativeButton("取消", nil)
           .show();
 
@@ -589,21 +589,24 @@ function 其他(isclear)
     end
     return 全部()
   end
-  if isclear=="clear" then
-    add=true
-    myurl[chobu]=nil
-    return
-  end
   if chobu=="搜索" then
     if isclear=="clear" then
       add=true
       下一页数据=false
-      search_base:clear()
+      if search_base then
+        search_base:clear()
+      end
       return
     end
     return search_base:getData(nil,nil,function()
       add=true
     end)
+   else
+    if isclear=="clear" then
+      add=true
+      myurl[chobu]=nil
+      return
+    end
   end
   if chobu=="no搜索" then
     local oridata=people_adp.getData()
