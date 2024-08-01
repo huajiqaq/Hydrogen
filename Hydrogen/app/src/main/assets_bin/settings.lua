@@ -48,8 +48,6 @@ data = {
   {__type=4,subtitle="夜间模式追随系统",status={Checked=Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))}},
   {__type=4,subtitle="夜间模式",status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
 
-  {__type=4,subtitle="回答预加载(beta)",status={Checked=Boolean.valueOf(this.getSharedData("回答预加载(beta)"))}},
-  {__type=4,subtitle="标题简略化",status={Checked=Boolean.valueOf(this.getSharedData("标题简略化"))}},
   {__type=4,subtitle="不加载图片",status={Checked=Boolean.valueOf(this.getSharedData("不加载图片"))}},
   {__type=5,subtitle="字体大小",status={
       valueFrom=10,
@@ -124,10 +122,6 @@ tab={
     .setCancelable(false)
     .setPositiveButton("我知道了",nil)
     .show()
-  end,
-
-  ["回答预加载(beta)"]=function()
-    提示("此功能可能还有隐性bug,仅供体验，若影响体验请关闭")
   end,
   夜间模式=function()
     提示("返回主页面生效")

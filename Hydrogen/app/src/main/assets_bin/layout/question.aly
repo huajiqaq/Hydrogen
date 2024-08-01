@@ -44,6 +44,7 @@
           textSize="20sp";
           text="加载中",
           SingleLine=true;
+          ellipsize='end',
           layout_width="-1",
           paddingLeft="16dp";
           ellipsize='marquee',

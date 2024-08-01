@@ -58,6 +58,7 @@
       textSize="24sp";
       id="_title";
       SingleLine=true;
+      ellipsize='end',
       layout_width="-1",
       gravity="center";
       padding="24dp";

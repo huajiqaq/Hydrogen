@@ -117,7 +117,7 @@ liulan.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
       title=docode.." - 知乎"
     end
     if _title.text~="搜索" then
-      if liulanurl~="https://www.zhihu.com" and activity.getSharedData("标题简略化")~="true" then
+      if liulanurl~="https://www.zhihu.com" then
         _title.text=(title)
        elseif liulanurl=="https://www.zhihu.com"
         _title.text="提问 - 知乎"

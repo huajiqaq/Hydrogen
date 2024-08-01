@@ -62,11 +62,8 @@ comment.onClick=function()
   activity.newActivity("comment",{(回答id),"answers",_title.Text,username.Text})
 end;
 
-回答容器=answer:new(问题id)
 
-if 回答id then
-  回答容器.getid=回答id
-end
+回答容器=answer:new(回答id)
 
 local 点赞状态={}
 local 感谢状态={}
@@ -90,9 +87,8 @@ function 设置回答滑动位置配置(isremove)
 
   local content
   if isremove==nil then
-    local id表=mview.ids
-    local scroll=id表.mscroll.getScrollY()
-    local height=id表.userinfo.height
+    local scroll=mview.ids.content.getScrollY()
+    local height=userinfo.height
     content=tostring(scroll-height)
   end
 
@@ -130,79 +126,67 @@ if activity.getSharedData("回答单页模式")=="true" then
   pg.setUserInputEnabled(false);
 end
 
-function 数据添加(t,b)
-  local detector=GestureDetector(this,{a=lambda _:_})
-
-
-  local isDoubleTap=false
-  local timeOut=200
-  detector.setOnDoubleTapListener {
-    onDoubleTap=function()
-      t.content.scrollTo(0, 0)
-      isDoubleTap=true
-      task(timeOut,function()isDoubleTap=false end)
-    end
-  }
-
-  all_root.onClick=function(v)
-    if not isDoubleTap then
-      task(timeOut,function()
-        if not isDoubleTap then
-          if 问题id==nil or 问题id=="null" then
-            return 提示("加载中")
-          end
-          activity.newActivity("question",{问题id})
-        end
-      end)
-    end
+local detector=GestureDetector(this,{a=lambda _:_})
+local isDoubleTap=false
+local timeOut=200
+detector.setOnDoubleTapListener {
+  onDoubleTap=function()
+    local pos=pg.getCurrentItem()
+    local mview=数据表[pg.adapter.getItem(pos).id]
+    mview.ids.content.scrollTo(0, 0)
+    isDoubleTap=true
+    task(timeOut,function()isDoubleTap=false end)
   end
+}
 
-  all_root.onLongClick=function()
-    三按钮对话框("保存","是否保存当前滑动位置?","确认","取消","删除",
-    --点击第一个按钮的事件
-    function(an)
-      设置回答滑动位置配置()
-      提示("已保存")
-      an.dismiss()
-    end,
-    --点击第二个按钮事件
-    function(an)
-      an.dismiss()
-    end,
-    --点击第三个按钮事件
-    function(an)
-      设置回答滑动位置配置(true)
-      提示("已删除")
-      an.dismiss()
+all_root.onClick=function(v)
+  if not isDoubleTap then
+    task(timeOut,function()
+      if not isDoubleTap then
+        if 问题id==nil or 问题id=="null" then
+          return 提示("加载中")
+        end
+        activity.newActivity("question",{问题id})
+      end
     end)
   end
+end
 
-  all_root.onTouch=function(v,e)
-    return detector.onTouchEvent(e)
+all_root.onLongClick=function()
+  local pos=pg.getCurrentItem()
+  local mview=数据表[pg.adapter.getItem(pos).id]
+  if mview.load~=true
+    return 提示("请等待加载完毕进行该操作")
   end
+
+  三按钮对话框("保存","是否保存当前滑动位置?","确认","取消","删除",
+  --点击第一个按钮的事件
+  function(an)
+    设置回答滑动位置配置()
+    提示("已保存")
+    an.dismiss()
+  end,
+  --点击第二个按钮事件
+  function(an)
+    an.dismiss()
+  end,
+  --点击第三个按钮事件
+  function(an)
+    设置回答滑动位置配置(true)
+    提示("已删除")
+    an.dismiss()
+  end)
+end
+
+all_root.onTouch=function(v,e)
+  return detector.onTouchEvent(e)
+end
+
+function 数据添加(t,b)
 
   设置滑动跟随(t.content)
-
   local ua=getua(t.content)
   t.content.getSettings().setUserAgentString(ua)
-
-
-  if activity.getSharedData("标题简略化")~="true" then
-    _title.Text=b.question.title
-   else
-    _title.Text="回答"
-  end
-
-
-
-  loadglide(usericon,b.author.avatar_url)
-  if b.author.headline=="" then
-    userheadline.Text="Ta还没有签名哦~"
-   else
-    userheadline.Text=b.author.headline
-  end
-  username.Text=b.author.name
-
 
   t.content
   .getSettings()
@@ -305,8 +289,11 @@ function 数据添加(t,b)
         加载js(view,获取js("answer_code"))
         local 保存滑动位置=获取回答滑动位置配置()[tostring(b.id)] or 0
         if tonumber(保存滑动位置)>0 then
-          local 实际滑动位置=保存滑动位置+t.userinfo.height
-          t.content.smoothScrollTo(0,实际滑动位置)
+          local 实际滑动位置=保存滑动位置+userinfo.height
+          if 实际滑动位置>0 then
+            appbar.setExpanded(false);
+          end
+          t.content.scrollTo(0,实际滑动位置)
           提示("已恢复到上次滑动位置")
         end
       end)
@@ -387,21 +374,21 @@ function 数据添加(t,b)
     onShowCustomView=function(view,url)
       全屏模式=true
       web_video_view=view
-      savedScrollY= t.mscroll.getScrollY()
-      t.mscroll.setVisibility(8)
+      savedScrollY= t.content.getScrollY()
+      t.content.setVisibility(8)
       activity.getDecorView().addView(web_video_view)
       --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
       全屏()
     end,
     onHideCustomView=function(view,url)
       全屏模式=false
-      t.mscroll.setVisibility(0)
+      t.content.setVisibility(0)
       activity.getDecorView().removeView(web_video_view)
       --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
       取消全屏()
       Handler().postDelayed(Runnable({
         run=function()
-          t.mscroll.smoothScrollTo(0, savedScrollY);
+          t.content.smoothScrollTo(0, savedScrollY);
         end,
       }),200)
     end,
@@ -433,10 +420,38 @@ function 数据添加(t,b)
   end
 end
 
+function 初始化页(mviews)
+  if mviews.load==true then
+    vote_count.Text=(mviews.data.voteup_count)..""
+    thanks_count.Text=(mviews.data.thanks_count)..""
+    comment_count.Text=(mviews.data.comment_count)..""
+    loadglide(usericon,mviews.data.author.avatar_url)
+    if mviews.data.author.headline=="" then
+      userheadline.Text="Ta还没有签名哦~"
+     else
+      userheadline.Text=mviews.data.author.headline
+    end
+    username.Text=mviews.data.author.name
+    local 回答id=mviews.data.id
+    if 点赞状态[回答id] then
+      vote_count.setTextColor(转0x(primaryc))
+     else
+      vote_count.setTextColor(转0x(stextc))
+    end
+    if 感谢状态[回答id] then
+      thanks_count.setTextColor(转0x(primaryc))
+     else
+      thanks_count.setTextColor(转0x(stextc))
+    end
+  end
+end
 
-function 加载页(mviews,pos,isleftadd,isload)
-  if mviews==nil then return end
-  if mviews.load==nil then --判断是否加载过没有
+function 加载页(mviews,isleftadd)
+  if mviews==nil then
+    return Error("错误 找不到views")
+  end
+
+  if not(mviews.load) then --判断是否加载过没有
     回答容器:getOneData(function(cb,r)--获取1条数据
       if cb==false then
         mviews.load=nil
@@ -445,138 +460,37 @@ function 加载页(mviews,pos,isleftadd,isload)
         pg.setCurrentItem(pos-1,false)
         重表状态=true
        else
-
         pcall(function()
-
           if table.find(查重表,cb.id) then
             mviews.load=nil
             重表状态=true
            else
             重表状态=false
           end
-
           查重表[cb.id]=cb.id
-
         end)
 
-        pcall(function()
-          mviews.pageinfo=cb.pagination_info
-        end)
-
-        if mviews.data==nil or mviews.data.voteup_count==nil then
-          mviews.data=cb
-        end
-
-        if mviews.data and mviews.data.voteup_count and 重表状态==false and not(isload) then
-
-          vote_count.Text=(mviews.data.voteup_count)..""
-          thanks_count.Text=(mviews.data.thanks_count)..""
-          comment_count.Text=(mviews.data.comment_count)..""
-        end
+        mviews.data={
+          voteup_count=cb.voteup_count,
+          thanks_count=cb.thanks_count,
+          comment_count=cb.comment_count,
+          id=cb.id,
+          author={
+            avatar_url=cb.author.avatar_url,
+            headline=cb.author.headline,
+            name=cb.author.name,
+            id=cb.author.id
+          }
+        }
 
         数据添加(mviews.ids,cb) --添加数据
 
         mviews.load=true
 
-        if not(isload) then
-          if this.getSharedData("回答预加载(beta)")=="true" and isloaded then
-            if not(isleftadd) then
-              local mviews=数据表[pg.adapter.getItem(pos+1).id]
-              加载页(mviews,pos+1,false,true)
-             else
-              local mviews=数据表[pg.adapter.getItem(pos-1).id]
-              加载页(mviews,pos-1,true,true)
-            end
-          end
-         else
-          if not(isleftadd) then
-            --调整pageinfo 防止数据对不上
-            local mviews=数据表[pg.adapter.getItem(pos-1).id]
-            回答容器.pageinfo=mviews.pageinfo
-            回答容器.isleft=(#回答容器.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
-            回答容器.isright=(#回答容器.pageinfo.next_answer_ids>0 and {false} or {true})[1]
-            --再新建一页 防止误触右滑事件
-            id表[pg.adapter.getItemCount()+1]={}
-            local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
-            pg.adapter.add(加入view)
-            数据表[加入view.id]={
-              data={},
-              ids=id表[pg.adapter.getItemCount()],
-            }
-           else
-            --调整pageinfo 防止数据对不上
-            local mviews=数据表[pg.adapter.getItem(pos+1).id]
-            回答容器.pageinfo=mviews.pageinfo
-            回答容器.isleft=(#回答容器.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
-            回答容器.isright=(#回答容器.pageinfo.next_answer_ids>0 and {false} or {true})[1]
-            --再新建一页 防止误触右滑事件
-            id表[pg.adapter.getItemCount()+1]={}
-            local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
-            pg.adapter.insert(加入view,0)
-            数据表[加入view.id]={
-              data={},
-              ids=id表[pg.adapter.getItemCount()],
-            }
-          end
-
-          function mviews.loadfun()
-            if not(isleftadd) then
-              if 回答容器.isright then
-                mviews.loadfun=nil
-                return
-              end
-
-              id表[pg.adapter.getItemCount()+1]={}
-              local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
-              pg.adapter.add(加入view)
-
-
-              数据表[加入view.id]={
-                data={},
-                ids=id表[pg.adapter.getItemCount()],
-              }
-
-              local mviews=数据表[pg.adapter.getItem(pos+1).id]
-              if mviews.load==true then
-                mviews.loadfun=nil
-                return
-              end
-              加载页(mviews,pos+1,false,true)
-             else
-              if 回答容器.isleft then
-                mviews.loadfun=nil
-                return
-              end
-              id表[pg.adapter.getItemCount()+1]={}
-
-              local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
-
-              pg.adapter.insert(加入view,0)
-
-              数据表[加入view.id]={
-                data={},
-                ids=id表[pg.adapter.getItemCount()],
-              }
-              local pos=pg.getCurrentItem()+1
-              local mviews=数据表[pg.adapter.getItem(pos-1).id]
-              if mviews.load==true then
-                mviews.loadfun=nil
-                return
-              end
-              加载页(mviews,pos-1,true,true)
-            end
-
-            mviews.loadfun=nil
-          end
-
-          if isloaded~=true then
-            isloaded=true
-          end
-
-        end
+        初始化页(mviews)
 
       end
-    end,isleftadd or (pos==0 and 回答容器.one==nil and pos<=上次page and 回答容器.is_add==true and 回答容器.isleft==false and pg.adapter.getItemCount()>1))
+    end,isleftadd)
   end
 end
 
@@ -588,6 +502,7 @@ function 首次设置()
     if tab.answer_count==1 then
       回答容器.isleft=true
     end
+    _title.Text=tab.title
   end)
 
 
@@ -620,112 +535,51 @@ for i=1,2 do
   }
 end
 
-isloaded=false
-
 pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
   onPageScrolled=function(pos,positionOffset,positionOffsetPixels)
     if positionOffsetPixels==0 then
-
       appbar.setExpanded(true);
-
       --判断页面是否在开头or结尾 是否需要添加
       if pg.adapter.getItemCount()==pos+1 then
         if 回答容器.isright then
           pg.setCurrentItem(pos-1,false)
           return 提示("前面没有内容啦")
         end
-
         id表[pg.adapter.getItemCount()+1]={}
         local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
         pg.adapter.add(加入view)
-
-
         数据表[加入view.id]={
           data={},
           ids=id表[pg.adapter.getItemCount()],
         }
-
         local mviews=数据表[pg.adapter.getItem(pos).id]
-        加载页(mviews,pos)
-
-
+        加载页(mviews)
        elseif pos==0 and pg.adapter.getItemCount()>=0
         if 回答容器.isleft then
           pg.setCurrentItem(1,false)
           return 提示("已经到最左了")
         end
         id表[pg.adapter.getItemCount()+1]={}
-
         local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
-
         pg.adapter.insert(加入view,0)
-
         数据表[加入view.id]={
           data={},
           ids=id表[pg.adapter.getItemCount()],
         }
         local pos=pg.getCurrentItem()+1
         local mviews=数据表[pg.adapter.getItem(pos).id]
-        加载页(mviews,pos,true)
-
+        加载页(mviews,true)
         --判断是否加载过
        elseif pg.adapter.getItemCount()>=0 then
-
         local pos=pg.getCurrentItem()
         local mviews=数据表[pg.adapter.getItem(pos).id]
-
         if mviews.load==true then
-          --更新pageinfo
-          local pageinfodata=mviews.pageinfo
-          回答容器.pageinfo=pageinfodata
-          --在请求后再次判断是否在最左or最右端
-          回答容器.isleft=(#回答容器.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
-          回答容器.isright=(#回答容器.pageinfo.next_answer_ids>0 and {false} or {true})[1]
-          --暂时没用的参数
-          回答容器.now=pageinfodata.index
-
-          if mviews.loadfun then
-            mviews.loadfun()
-          end
-
-          --判断更新底栏数据
-          if mviews.data and mviews.data.id then
-            vote_count.Text=(mviews.data.voteup_count)..""
-            thanks_count.Text=(mviews.data.thanks_count)..""
-            comment_count.Text=(mviews.data.comment_count)..""
-
-            loadglide(usericon,mviews.data.author.avatar_url)
-            if mviews.data.author.headline=="" then
-              userheadline.Text="Ta还没有签名哦~"
-             else
-              userheadline.Text=mviews.data.author.headline
-            end
-            username.Text=mviews.data.author.name
-
-            local 回答id=mviews.data.id
-            if 点赞状态[回答id] then
-              vote_count.setTextColor(转0x(primaryc))
-             else
-              vote_count.setTextColor(转0x(stextc))
-            end
-
-            if 感谢状态[回答id] then
-              thanks_count.setTextColor(转0x(primaryc))
-             else
-              thanks_count.setTextColor(转0x(stextc))
-            end
-
-          end
-
+          回答容器.getid=mviews.data.id
+          初始化页(mviews)
         end
       end
-
-      上次page=a
-
     end
-
   end,
-
   onPageScrollStateChanged=function (state)
   end
 })

@@ -101,6 +101,7 @@
           textSize="14sp";
           id="_title";
           SingleLine=true;
+          ellipsize='end',
           layout_width="-1",
           gravity="center|left";
           paddingLeft="28dp";

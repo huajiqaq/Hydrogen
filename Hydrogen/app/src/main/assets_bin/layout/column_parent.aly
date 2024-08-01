@@ -45,7 +45,7 @@
           id="_title";
           SingleLine=true;
           layout_width="-1",
-          ellipsize='marquee',
+          ellipsize='end',
           Selected=true,
           gravity="center|left";
           layout_weight="1",

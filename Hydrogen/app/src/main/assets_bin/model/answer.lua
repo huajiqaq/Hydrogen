@@ -6,15 +6,14 @@
 
 
 local base={--表初始化
-  isright=false,
-  isleft=false,
-  pageinfo={},
   getid=nil,
+  pageinfo={}
 }
 
 function base:new(id)--类的new方法
   local child=table.clone(self)
-  child.id=id --这里的id是回答页id
+  --这里必须tonumber 因为不能保证传入的是string
+  child.getid=tonumber(id) --这里的id是回答页id
   return child
 end
 
@@ -38,54 +37,65 @@ function base:getAnswer(id,cb)
     if a==200 then
       cb(luajson.decode(b))
      elseif a==404 then
-      AlertDialog.Builder(this)
-      .setTitle("提示")
-      .setMessage("发生错误 不存在该回答")
-      .setCancelable(false)
-      .setPositiveButton("我知道了",{onClick=function() activity.finish() end})
-      .show()
+      if self.pageinfo[self.getid] then
+        AlertDialog.Builder(this)
+        .setTitle("提示")
+        .setMessage("发生错误 不存在该回答 已为你跳转下个回答")
+        .setCancelable(false)
+        .setPositiveButton("我知道了",nil)
+        .show()
+        cb(false)
+       else
+        AlertDialog.Builder(this)
+        .setTitle("提示")
+        .setMessage("发生错误 不存在该回答 你可点击上方标题进入问题详情页")
+        .setCancelable(false)
+        .setPositiveButton("我知道了",nil)
+        .show()
+      end
     end
   end)
 end
 
 
 function base:getOneData(cb,z) --获取一条数据
-  --判断id是否存在
-  if self.getid then --如果数据存在
-    --注释同上 这一步其实可以省略 但为了防止报错 所以加了
-    if self.pageinfo.index then
-      --判断是否为左滑
-      if z==true then
-        --获取过去的id表
-        mygetid=self.pageinfo.prev_answer_ids
-        --判断是否在最左
-        self.isleft=(#mygetid>0 and {false} or {true})[1]
-        --取出要访问的id 并保存
-        self.getid=mygetid[#mygetid]
-       else
-        --注释同上
-        mygetid=self.pageinfo.next_answer_ids
-        self.isright=(#mygetid>0 and {false} or {true})[1]
-        self.getid=mygetid[1]
-      end
-    end
-    if self.getid then
-      self:getAnswer((self.getid),function(myz)
-        --获取并存储pageinfo
-        local mypageinfo=myz.pagination_info
-        local mygetid
-        if mypageinfo then
-          self.pageinfo=mypageinfo
-          --在请求后再次判断是否在最左or最右端
-          self.isleft=(#self.pageinfo.prev_answer_ids>0 and {false} or {true})[1]
-          self.isright=(#self.pageinfo.next_answer_ids>0 and {false} or {true})[1]
-          --更新self.now 不过没什么用
-          self.now=mypageinfo.index
-        end
-        cb(myz)
-      end)
+  --注意 必须tostring 如果不tostring可能导致
+  local getid=self.getid
+  local pageinfo=self.pageinfo
+  if pageinfo[getid] then
+    if z then
+      local prev_ids=pageinfo[getid].prev_ids
+      self.getid=prev_ids[#prev_ids]
+     else
+      local next_ids=pageinfo[getid].next_ids
+      self.getid=next_ids[1]
     end
   end
+  self:getAnswer((self.getid),function(myz)
+    if myz==false then
+      self.getid=getid
+      if z then
+        table.remove(pageinfo[getid].prev_ids)
+       else
+        table.remove(pageinfo[getid].next_ids,1)
+      end
+      return self:getOneData(cb,z)
+    end
+    local mypageinfo=myz.pagination_info
+    local mygetid
+    if mypageinfo then
+      local prev_ids=mypageinfo.prev_answer_ids
+      local next_ids=mypageinfo.next_answer_ids
+      pageinfo[self.getid]={
+        prev_ids=prev_ids,
+        next_ids=next_ids
+      }
+      --在请求后再次判断是否在最左or最右端
+      self.isleft=#mypageinfo.prev_answer_ids==0
+      self.isright=#mypageinfo.next_answer_ids==0
+    end
+    cb(myz)
+  end)
 
   return self
 end

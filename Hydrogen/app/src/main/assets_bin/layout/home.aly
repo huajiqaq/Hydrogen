@@ -74,7 +74,7 @@
           textSize="20sp";
           id="_title";
           SingleLine=true;
-          ellipsize='marquee',
+          ellipsize='end',
           Selected=true,
           gravity="center|left";
           Typeface=字体("product-Bold");

@@ -51,10 +51,6 @@ if this.getSharedData("自动清理缓存") == nil then
   this.setSharedData("自动清理缓存","true")
 end
 
-if this.getSharedData("标题简略化") == nil then
-  this.setSharedData("标题简略化","false")
-end
-
 if this.getSharedData("全屏模式") == nil then
   this.setSharedData("全屏模式","false")
 end
@@ -756,8 +752,8 @@ import "com.google.android.material.shape.ShapeAppearanceModel";
 shapeAppearanceModel = ShapeAppearanceModel()
 .toBuilder()
 .setTopLeftCorner(CornerFamily.ROUNDED, 0)
-.setTopRightCorner(CornerFamily.ROUNDED, dp2px(24))
-.setBottomRightCorner(CornerFamily.ROUNDED, dp2px(24))
+.setTopRightCorner(CornerFamily.ROUNDED, dp2px(24,true))
+.setBottomRightCorner(CornerFamily.ROUNDED, dp2px(24,true))
 .setBottomLeftCorner(CornerFamily.ROUNDED, 0)
 .build();
 
@@ -850,7 +846,6 @@ ch_table={
   {"更多","menu"},
   "分割线",
   {"本地","inbox"},
-  {"一文","insert_drive_file"},
   {"历史","history"},
   "分割线",
   {"关注","list_alt"},
@@ -2422,6 +2417,7 @@ function check()
         检查链接(url)
       end
       ,function(an)
+        opentab[url]=true
         关闭对话框(an)
       end)
     end

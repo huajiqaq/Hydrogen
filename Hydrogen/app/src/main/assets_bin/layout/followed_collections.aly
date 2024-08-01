@@ -42,11 +42,11 @@
         };
         {
           TextView;
-          text="历史记录";
           textColor=primaryc;
           textSize="20sp";
           id="_title";
           SingleLine=true;
+          ellipsize='end',
           layout_width="-1",
           gravity="center|left";
           paddingLeft="16dp";

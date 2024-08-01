@@ -97,6 +97,7 @@ login_web.setWebViewClient{
           activity.setSharedData("idx",uid)
           activity.setResult(100)
           activity.finish()
+          加载js(view,"document.cookie = document.cookie")
           提示("登录成功")
          else
           view.loadUrl("https://www.zhihu.com/signin")

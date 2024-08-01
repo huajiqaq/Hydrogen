@@ -7,11 +7,7 @@ activity.setContentView(loadlayout("layout/simple"))
 初始化历史记录数据(true)
 
 id,title=...
-if activity.getSharedData("标题简略化")~="true" and title then
-  _title.text=title
- else
-  _title.text="专栏"
-end
+_title.text=title
 
 itemc=获取适配器项目布局("people/people_column")
 
@@ -86,7 +82,7 @@ function 刷新()
 end
 
 simple_list.onItemClick=function(l,v,c,b)
-点击事件判断(v.Tag.id内容.Text,v.Tag.标题.Text)
+  点击事件判断(v.Tag.id内容.Text,v.Tag.标题.Text)
 end
 
 保存历史记录(title,"专栏分割"..id,50)

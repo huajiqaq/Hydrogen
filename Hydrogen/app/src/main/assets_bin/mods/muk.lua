@@ -1,6 +1,5 @@
 require "import"
 import "mods.imports"
-
 import "model.zHttp"
 import "model.zhihu_url"
 
@@ -19,14 +18,16 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.5215
+versionCode=0.5216
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir().."/logo.png"
 
+
 function onConfigurationChanged(config)
 end
 
+--更新字号相关逻辑已移动到import.lua
 
 -- 定义一个函数，用于从字符串中获取数字和后续内容
 function get_number_and_following(str)
@@ -86,13 +87,7 @@ if this.getSharedData("调式模式")=="true" then
   this.setDebug(false)
 end
 
-if activity.getSharedData("font_size") then
-  --由于更新字号必须要刷新view实现 所以写在onResume是没用的
-  local res =this.getResources();
-  local config = res.getConfiguration();
-  config.fontScale=tonumber(activity.getSharedData("font_size"))/20
-  res.updateConfiguration(config,res.getDisplayMetrics());
-end
+
 
 local handler=Handler()
 
@@ -182,23 +177,23 @@ function 时间戳(t)
   return os.date("%Y-%m-%d",t)
 end
 
-function dp2px(dpValue)
-  local scale = activity.getResources().getDisplayMetrics().scaledDensity
+function dp2px(dpValue,isreal)
+  local scale = isreal and real_scale or activity.getResources().getDisplayMetrics().scaledDensity
   return dpValue * scale + 0.5
 end
 
-function px2dp(pxValue)
-  local scale = activity.getResources().getDisplayMetrics().scaledDensity
+function px2dp(pxValue,isreal)
+  local scale = isreal and real_scale or activity.getResources().getDisplayMetrics().scaledDensity
   return pxValue / scale + 0.5
 end
 
-function px2sp(pxValue)
-  local scale = activity.getResources().getDisplayMetrics().scaledDensity;
+function px2sp(pxValue,isreal)
+  local scale = isreal and real_scale or activity.getResources().getDisplayMetrics().scaledDensity
   return pxValue / scale + 0.5
 end
 
-function sp2px(spValue)
-  local scale = activity.getResources().getDisplayMetrics().scaledDensity
+function sp2px(spValue,isreal)
+  local scale = isreal and real_scale or activity.getResources().getDisplayMetrics().scaledDensity
   return spValue * scale + 0.5
 end
 

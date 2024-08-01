@@ -32,7 +32,7 @@
           textSize="14sp";
           gravity="center";
           SingleLine=true;
-          ellipsize='marquee',
+          ellipsize='end',
           Selected=true,
           Typeface=字体("product-Bold");
         };
