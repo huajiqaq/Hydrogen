@@ -374,14 +374,17 @@ if activity then
     activity.sendMsg(msg)
   end
 
+end
+
+-- 使用 this==activity 防止重复设置
+if this==activity and activity.getSharedData("font_size") then
+  --保存原来的scale
   real_scale=this.getApplicationContext().getResources().getDisplayMetrics().scaledDensity
-  if activity.getSharedData("font_size") then
-    --由于更新字号必须要刷新view实现 所以写在onResume是没用的
-    local res =this.getResources();
-    local config = res.getConfiguration();
-    config.fontScale=tonumber(activity.getSharedData("font_size"))/20
-    res.updateConfiguration(config,res.getDisplayMetrics());
-  end
+  --由于更新字号必须要刷新view实现 所以写在onResume是没用的
+  local res =this.getResources();
+  local config = res.getConfiguration();
+  config.fontScale=tonumber(activity.getSharedData("font_size"))/20
+  res.updateConfiguration(config,res.getDisplayMetrics());
 end
 
 
