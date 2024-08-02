@@ -36,8 +36,6 @@ function clear()
   清理内存()
 end
 
-mtip=false
-
 data = {
 
   {__type=1,title="浏览设置"},
@@ -56,12 +54,6 @@ data = {
       LabelFormatter=LabelFormatter{
         getFormattedValue=function(value)
           local formattedNumber = string.format("%.0f", value)
-          activity.setResult(1200,nil)
-          activity.setSharedData("font_size",formattedNumber.."")
-          if mtip==false then
-            提示("更改字号后 推荐重启App获得更好的体验")
-            mtip=true
-          end
           return formattedNumber.." sp"
         end,
       },
@@ -113,6 +105,8 @@ for k, v in ipairs(data) do
   end
 end
 
+mtip=false
+
 tab={
 
   ["内部浏览器查看回答"]=function()
@@ -138,8 +132,25 @@ tab={
     .setPositiveButton("我知道了",nil)
     .show()
   end,
-  字体大小=function()
+  字体大小=function(slider,value,fromUser)
     activity.setResult(1200,nil)
+    activity.setSharedData("font_size",value.."")
+    if mtip==false then
+      双按钮对话框("提示","更改字号后 推荐重启App获得更好的体验","立即重启","我知道了",function(an)
+        关闭对话框(an)
+        清除历史记录()
+        task(200,function()
+          import "android.os.Process"
+          local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
+          intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+          activity.startActivity(intent);
+          Process.killProcess(Process.myPid());
+        end)
+        end,function(an)
+        关闭对话框(an)
+      end)
+      mtip=true
+    end
   end,
   全屏模式=function()
     提示("为了更好的浏览体验 推荐重启App")
@@ -571,6 +582,22 @@ end
 adp=LuaMultiAdapter(this,data,about_item)
 settings_list.setAdapter(adp)
 
+task(1,function()
+  for i=1,#adp.getData() do
+    local rootv=settings_list.getChildAt(i-1)
+    if rootv and rootv.Tag.status and luajava.instanceof(rootv.Tag.status,Slider) then
+      local func=tab[tostring(rootv.Tag.subtitle.Text)]
+      if func then
+        rootv.Tag.status.addOnChangeListener(Slider.OnChangeListener{
+          onValueChange = function(slider,value,fromUser)
+            data[i].status.value=value
+            func(slider,value,fromUser)
+          end
+        })
+      end
+    end
+  end
+end)
 
 settab={
   ["夜间模式"]="Setting_Night_Mode",
