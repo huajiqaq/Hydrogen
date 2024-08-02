@@ -93,9 +93,10 @@ function Page_Tool:addPage(mtype,mydata,mynum)--新建Page
     canload=true,
   })
 
+  --添加用于限制点击的标识
   if self.addcanclick then
-    local mtab=self.canclick
-    table.insert(mtab,true)
+    local canclick=self.canclick
+    table.insert(canclick,true)
   end
 
   return self
@@ -107,8 +108,8 @@ function Page_Tool:setOnTabListener()
   local view=self.tabview
   local mtab=self.canclick
 
-  local func=self.referfunc
-  if func==nil then
+  local referfunc=self.referfunc
+  if referfunc==nil then
     error("你必须首先调用createfunc来创建一个刷新的函数")
   end
 
@@ -128,7 +129,7 @@ function Page_Tool:setOnTabListener()
           end,
         }),1050)
       end
-      func(nil,pos,false)
+      referfunc(nil,pos,false)
     end,
 
     onTabUnselected=function(tab)
@@ -149,7 +150,7 @@ function Page_Tool:setOnTabListener()
           end,
         }),1050)
       end
-      func(true,pos,true)
+      referfunc(true,pos,true)
     end,
   });
 end

@@ -275,7 +275,7 @@ task(1,function()
   波纹({view,mfollowing,mfollow},"方自适应")
 
   function _sort.onClick(view)
-    if chobu=="answer" then
+    if mytype=="answer" then
       pop=PopupMenu(activity,view)
       menu=pop.Menu
       menu.add("按时间排序").onMenuItemClick=function(a)
@@ -283,18 +283,14 @@ task(1,function()
           return
         end
         _sortt.text="按时间排序"
-        pcall(function()people_adp.clear()end)
-        其他("clear")
-        people_adp.notifyDataSetChanged()
+        刷新(true)
       end
       menu.add("按赞数排序").onMenuItemClick=function(a)
         if _sortt.text=="按赞数排序" then
           return
         end
         _sortt.text="按赞数排序"
-        pcall(function()people_adp.clear()end)
-        其他("clear")
-        people_adp.notifyDataSetChanged()
+        刷新(true)
       end
       pop.show()--显示
      else
@@ -303,7 +299,7 @@ task(1,function()
 end)
 
 if getLogin() then
-  chobu="all"
+  mytype="all"
   zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab",apphead,function(code,content)
     if code==200 then
       for i,v in ipairs(luajson.decode(content).tabs_v3) do
@@ -314,7 +310,11 @@ if getLogin() then
              else
               num=""
             end
-            peotab:addTab(k.name..num,function() pcall(function()people_adp.clear()end) chobu=k.key mmurl=k.url 其他("clear") people_adp.notifyDataSetChanged() end,3)
+            peotab:addTab(k.name..num,function()
+              mytype=k.key
+              oriurl=k.url
+              刷新(true)
+            end,3)
           end
          else
           if v.number>0 then
@@ -322,15 +322,19 @@ if getLogin() then
            else
             num=""
           end
-          peotab:addTab(v.name..num,function() pcall(function()people_adp.clear()end) chobu=v.key mmurl=v.url 其他("clear") people_adp.notifyDataSetChanged() end,3)
+          peotab:addTab(v.name..num,function()
+            mytype=v.key
+            oriurl=v.url
+            刷新(true)
+          end,3)
         end
         peotab:showTab(1)
       end
     end
   end)
  else
-  chobu="activities"
-  peotab:addTab("动态",function() pcall(function()people_adp.clear()end) chobu="activities" 其他("clear") people_adp.notifyDataSetChanged() end,3)
+  mytype="activities"
+  peotab:addTab("动态",function() mytype="activities" 刷新(true) people_adp.notifyDataSetChanged() end,3)
   peotab:showTab(1)
 end
 
@@ -464,7 +468,11 @@ local base_people=require "model.people":new(people_id)
           AlertDialog.Builder(this)
           .setTitle("请输入")
           .setView(loadlayout(InputLayout))
-          .setPositiveButton("确定", {onClick=function() chobu="搜索" 其他("clear") checktitle(edit.text) end})
+          .setPositiveButton("确定", {onClick=function()
+              搜索内容=edit.Text
+              搜索()
+              刷新(true)
+          end})
           .setNegativeButton("取消", nil)
           .show();
 
@@ -538,7 +546,6 @@ end)
     评论数=(v.target.items_count)
     标题=v.target.title
     预览内容=v.target.intro
-
    elseif v.target.type=="collection" then
     return
    elseif v.target.type=="pin" then
@@ -563,7 +570,7 @@ end)
 
 end)
 
-function 全部()
+function 加载全部()
   if _sortvis then
     _sortvis.setVisibility(8)
   end
@@ -576,77 +583,107 @@ function 全部()
   end)
 end
 
+function moreload()
+  zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab/more?tab_type=1",apphead,function(code,content)
+    if code==200 then
+      for i,v in ipairs(luajson.decode(content).more_tabs) do
+        local 头像=大头像
+        local 活动="的更多"
+        local 标题=v.title
+        local 问题id="更多"..v.title
+        local 添加字符串
+        if 无图模式 then
+          头像=logopng
+        end
+        if v.sub_title then
+          添加字符串="共有"..v.sub_title.."个内容 "
+          if v.sub_title=="" then
+            添加字符串=""
+          end
+         else
+          添加字符串=""
+        end
+        local 预览内容=添加字符串.."点击查看"
+        local 点赞数="0"
+        local 评论数="0"
+        people_adp.add{活动=活动,预览内容=预览内容,点赞数=点赞数,评论数=评论数,id内容=问题id,标题=标题,图像=头像}
+      end
+    end
+  end)
+end
+
+local apiurl= {
+  all=function() 加载全部() end,
+  zvideo="https://api.zhihu.com/members/"..people_id.."/zvideos?order_by=created&offset=0&limit=20",
+  answer="https://api.zhihu.com/members/"..people_id.."/answers?order_by=created&offset=0&limit=20",
+  activities="https://api.zhihu.com/people/"..people_id.."/activities?offset=0&limit=20",
+  vote="https://api.zhihu.com/moments/"..people_id.."/vote?limit=20",
+  more=function() moreload() end,
+  搜索=function()
+    if not(getLogin()) or isstart~="true" then
+      local oridata=people_adp.getData()
+      for b=1,2 do
+        if b==2 then
+          提示("搜索完毕 共搜索到"..#people_adp.getData().."条数据")
+          if #people_adp.getData()==0 then
+            mytype="all"
+            刷新(true)
+          end
+        end
+        for i=#oridata,1,-1 do
+          if not oridata[i].标题:find(搜索内容) then
+            table.remove(oridata, i)
+            people_adp.notifyDataSetChanged()
+          end
+        end
+      end
+      add=false
+      return
+     else
+      search_base:getData(nil,nil,function()
+        add=true
+      end)
+    end
+  end,
+}
+
 local myurl={}
-function 其他(isclear)
+function 刷新(isclear)
   randomstr=getRandom(16)
   local ramdom_str=randomstr
   add=false
-  if chobu=="all" then
-    if isclear=="clear" then
-      add=true
+  if isclear==true then
+    if mytype=="all" then
       base_people:clear()
-      return
+     elseif mytype=="搜索" then
+      search_base:clear()
+     else
+      myurl[mytype]=nil
     end
-    return 全部()
-  end
-  if chobu=="搜索" then
-    if isclear=="clear" then
-      add=true
-      下一页数据=false
-      if search_base then
-        search_base:clear()
-      end
-      return
-    end
-    return search_base:getData(nil,nil,function()
-      add=true
-    end)
-   else
-    if isclear=="clear" then
-      add=true
-      myurl[chobu]=nil
-      return
-    end
-  end
-  if chobu=="no搜索" then
-    local oridata=people_adp.getData()
-
-    for b=1,2 do
-      if b==2 then
-        提示("搜索完毕 共搜索到"..#people_adp.getData().."条数据")
-        if #people_adp.getData()==0 then
-          chobu="all"
-          其他("clear")
-        end
-      end
-      for i=#oridata,1,-1 do
-        if not oridata[i].标题:find(搜索内容) then
-          table.remove(oridata, i)
-          people_adp.notifyDataSetChanged()
-        end
-      end
-    end
+    add=true
+    pcall(function()people_adp.clear()end)
     return
   end
-  geturl=myurl[chobu] or "https://api.zhihu.com/people/"..people_id.."/"..chobu.."s?order_by=created&offset=0&limit=20"
   if _sortvis then
-    _sortvis.setVisibility(8)
-  end
-  if chobu=="zvideo" then
-    geturl=myurl[chobu] or "https://api.zhihu.com/members/"..people_id.."/"..chobu.."s?order_by=created&offset=0&limit=20"
-   elseif chobu=="answer"
-    _sortvis.setVisibility(0)
-    if _sortt.text=="按赞数排序" then
-      geturl=myurl[chobu] or "https://api.zhihu.com/people/"..people_id.."/answers?order_by=votenum&offset=0&limit=20"
+    if mytype=="answer" then
+      _sortvis.setVisibility(0)
+     else
+      _sortvis.setVisibility(8)
     end
-   elseif chobu=="activities" then
-    geturl=myurl[chobu] or "https://api.zhihu.com/people/"..people_id.."/"..chobu.."?offset=0&limit=20"
-   elseif chobu=="vote" then
-    geturl=myurl[chobu] or "https://api.zhihu.com/moments/"..people_id.."/"..chobu.."?limit=20"
-   elseif mmurl then
-    geturl=myurl[chobu] or mmurl
-   elseif chobu=="more" then
+  end
+  if apiurl[mytype] then
+    if type(apiurl[mytype])=="function" then
+      return apiurl[mytype]()
+    end
+    geturl=myurl[mytype] or apiurl[mytype]
+   elseif mytype=="more" then
     return moreload()
+   else
+    geturl=myurl[mytype] or oriurl or "https://api.zhihu.com/people/"..people_id.."/"..mytype.."s?order_by=created&offset=0&limit=20"
+  end
+
+  if _sortt.text=="按赞数排序" then
+    geturl=myurl[mytype] or "https://api.zhihu.com/people/"..people_id.."/answers?order_by=votenum&offset=0&limit=20"
   end
 
   zHttp.get(geturl,apphead,function(code,content)
@@ -657,11 +694,11 @@ function 其他(isclear)
       if luajson.decode(content).paging.next then
         testurl=luajson.decode(content).paging.next
         if testurl:find("api/v4") then
-          testurl=string.gsub(testurl,"api/v4(.-)/"..chobu,"people/"..people_id.."/"..chobu,1)
+          testurl=string.gsub(testurl,"api/v4(.-)/"..mytype,"people/"..people_id.."/"..mytype,1)
         end
-        myurl[chobu]=testurl
+        myurl[mytype]=testurl
       end
-      if luajson.decode(content).paging.is_end and isclear~="clear" then
+      if luajson.decode(content).paging.is_end and isclear~=true then
         提示("已经没有更多内容了")
        else
         add=true
@@ -703,7 +740,6 @@ function 其他(isclear)
           评论数=(v.items_count)
           标题=v.title
           预览内容=v.intro
-
          elseif v.type=="collection" then
           return
          elseif v.type=="pin" then
@@ -711,7 +747,6 @@ function 其他(isclear)
           标题="一个想法"
           问题id="想法分割"..v.id
           预览内容=v.content[1].content
-
           点赞数=(v.reaction_count)
           评论数=(v.comment_count)
           预览内容=Html.fromHtml(预览内容)
@@ -733,61 +768,17 @@ function 其他(isclear)
   end)
 end
 
-function moreload()
-  zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab/more?tab_type=1",apphead,function(code,content)
-    if code==200 then
-      for i,v in ipairs(luajson.decode(content).more_tabs) do
-        local 头像=大头像
-        local 活动="的更多"
-        local 标题=v.title
-        local 问题id="更多"..v.title
-        local 添加字符串
-        if 无图模式 then
-          头像=logopng
-        end
-        if v.sub_title then
-          添加字符串="共有"..v.sub_title.."个内容 "
-          if v.sub_title=="" then
-            添加字符串=""
-          end
-         else
-          添加字符串=""
-        end
-        local 预览内容=添加字符串.."点击查看"
-        local 点赞数="0"
-        local 评论数="0"
-        people_adp.add{活动=活动,预览内容=预览内容,点赞数=点赞数,评论数=评论数,id内容=问题id,标题=标题,图像=头像}
-      end
-    end
-  end)
-end
+search_base=require "model.dohttp"
 
-function 刷新()
-  其他()
-end
+function 搜索()
 
-function nochecktitle(str)
-  chobu="no搜索"
-  add=false
-  刷新()
-end
-
-function checktitle(str)
-
-  搜索内容=str
-
-  if not(getLogin()) then
-    return nochecktitle(str)
-  end
-
+  mytype="搜索"
   if isstart=="true" then--开启
     add=true
-    chobu="搜索"
-    local 请求链接="https://www.zhihu.com/api/v4/search_v3?correction=1&t=general&q="..urlEncode(str).."&restricted_scene=member&restricted_field=member_hash_id&restricted_value="..people_id
-
-    pcall(function()people_adp.clear()end)
+    mytype="搜索"
+    local 请求链接="https://www.zhihu.com/api/v4/search_v3?correction=1&t=general&q="..urlEncode(搜索内容).."&restricted_scene=member&restricted_field=member_hash_id&restricted_value="..people_id
     search_base=require "model.dohttp"
-    :new(下一页数据 or 请求链接)
+    :new(请求链接)
     :setresultfunc(function(data)
       提示("搜索完毕")
       下一页数据=data.paging.next
@@ -822,7 +813,6 @@ function checktitle(str)
           评论数=(v.object.items_count)
           标题=v.object.title
           预览内容=v.object.intro
-
          elseif v.object.type=="collection" then
           return
          elseif v.object.type=="pin" then
@@ -844,8 +834,7 @@ function checktitle(str)
         people_adp.notifyDataSetChanged()
       end
     end)
-   else
-    nochecktitle(str)
+
   end
 
 end
@@ -880,6 +869,6 @@ end)
 
 function onActivityResult(a,b,c)
   if b==100 then
-    其他("clear")
+    刷新(true)
   end
 end

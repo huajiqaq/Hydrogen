@@ -175,7 +175,7 @@ function 获取url(type)
   return "https://api.zhihu.com/v5.1/topics/"..topic_id.."/feeds/"..type
 end
 
-mpop={
+pop3={
   tittle="话题",
   list={
     {src=图标("insert_chart"),text="按精华排序",onClick=function()
@@ -197,7 +197,7 @@ mpop={
   }
 }
 
-mmpop={
+pop2={
   tittle="话题",
   list={
     {src=图标("format_align_left"),text="按时间顺序",onClick=function()
@@ -215,15 +215,9 @@ mmpop={
   }
 }
 
-mmmpop={
-  tittle="话题",
-  list={
-  }
-}
-
 task(1,function()
   local pos=TopictabLayout.getSelectedTabPosition();
-  a=MUKPopu(mpop)
+  a=MUKPopu(pop3)
 end)
 
 if activity.getSharedData("话题提示0.01")==nil
@@ -263,12 +257,16 @@ local mconf={
   end,
   dofunc=function(pos)
     if pos==0 then
-      a=MUKPopu(mmmpop)
+      a=MUKPopu({
+        tittle="话题",
+        list={
+        }
+      })
       return false
      elseif pos==1 then
-      a=MUKPopu(mpop)
+      a=MUKPopu(pop3)
      else
-      a=MUKPopu(mmpop)
+      a=MUKPopu(pop2)
     end
   end,
   funcstr="精华刷新"
