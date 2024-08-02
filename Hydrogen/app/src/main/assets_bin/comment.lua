@@ -271,6 +271,10 @@ function 刷新()
 
   end)
 
+  if comment_type=="comments" then
+    comment_base:setSortBy("ts")
+  end
+
   add=true
 
   comment_list.setOnScrollListener{
