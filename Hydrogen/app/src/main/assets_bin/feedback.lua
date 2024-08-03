@@ -131,6 +131,7 @@ data = {
   {__type=1,title="视频无法播放？", content="请升级你的Webview"},
   {__type=1,title="软件有点卡？", content="没错是这样的"},
   {__type=1,title="为什么出现乱码？", content="知乎已封禁你当前设备登录该账号 出现这种情况只能等主动解除"},
+  {__type=1,title="为什么显示不全？", content="这是知乎api对于未登录用户的限制 未登录不可查看全文 于2024年5月开始实施 详情可自行搜索"},
   {__type=1,title="软件安不安全？", content="通过网页登录不会存储你的账号信息，所有数据均直接请求于官方接口"},
   {__type=3,title="仍要反馈问题",send={
       onClick=function(send)
