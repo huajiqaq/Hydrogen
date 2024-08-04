@@ -555,6 +555,17 @@ about_item={
       focusable=true;
       clickable=true;
       layout_marginRight="16dp";
+      getView=function(view)
+        view.addOnChangeListener(Slider.OnChangeListener{
+          onValueChange = function(slider,value,fromUser)
+            if fromUser then
+              local pos=settings_list.getPositionForView(view)+1
+              data[pos].status.value=value
+              tab[data[pos].subtitle](slider,value,fromUser)
+            end
+          end
+        })
+      end
     };
   };
 
@@ -581,23 +592,6 @@ end
 
 adp=LuaMultiAdapter(this,data,about_item)
 settings_list.setAdapter(adp)
-
-task(1,function()
-  for i=1,#adp.getData() do
-    local rootv=settings_list.getChildAt(i-1)
-    if rootv and rootv.Tag.status and luajava.instanceof(rootv.Tag.status,Slider) then
-      local func=tab[tostring(rootv.Tag.subtitle.Text)]
-      if func then
-        rootv.Tag.status.addOnChangeListener(Slider.OnChangeListener{
-          onValueChange = function(slider,value,fromUser)
-            data[i].status.value=value
-            func(slider,value,fromUser)
-          end
-        })
-      end
-    end
-  end
-end)
 
 settab={
   ["夜间模式"]="Setting_Night_Mode",

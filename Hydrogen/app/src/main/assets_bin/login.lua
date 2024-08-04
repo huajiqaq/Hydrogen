@@ -78,7 +78,7 @@ login_web.setWebViewClient{
     end
   end,
   onPageFinished=function(view,url)
-    if url:find("https://www.zhihu.com/%?utm_id") or url=="https://www.zhihu.com" then
+    if url:find("https://www.zhihu.com/%?utm_id") or url=="https://www.zhihu.com" or url=="https://www.zhihu.com/" then
       if isfirst==nil then
         isfirst=true
         --尝试解决登录无效的问题

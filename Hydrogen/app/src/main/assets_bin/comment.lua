@@ -465,9 +465,10 @@ if comment_type=="comments" then
 
   end)
 
-  task(1,function()
-    local_comment_list.getChildAt(0).Tag.提示内容.Visibility=0
-  end)
+
+  --对话列表 显示第一个的提示内容
+  local_comment_list.adapter.getData()[1].提示内容.Visibility=0
+  local_comment_list.adapter.notifyDataSetChanged()
 
   local_comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)

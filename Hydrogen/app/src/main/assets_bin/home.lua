@@ -859,7 +859,7 @@ for i,v in ipairs(ch_table) do
   if v=="分割线"then
     adp.add{__type=2}
    else
-    adp.add{__type=1,iv={src=图标(v[2])},tv=v[1]}
+    adp.add{__type=1,cardv={},iv={src=图标(v[2])},tv={text=v[1]}}
   end
 end
 
@@ -868,20 +868,21 @@ drawer_lv.setAdapter(adp)
 
 --侧滑列表高亮项目函数
 function ch_light(n)
-  for i=1,#adp.getData() do
-    local rootv=drawer_lv.getChildAt(i-1)
-    if rootv and rootv.Tag.tv then
-      if rootv.Tag.tv.text==n then
-        rootv.Tag.cardv.CardBackgroundColor=转0x(primaryc)-0xde000000
-        rootv.Tag.iv.ColorFilter=转0x(primaryc)
-        rootv.Tag.tv.textColor=转0x(primaryc)
+  local data=adp.getData()
+  for i, item in ipairs(data) do
+    if item.tv then
+      if item.tv.text==n then
+        item.cardv.CardBackgroundColor=转0x(primaryc)-0xde000000
+        item.iv.ColorFilter=转0x(primaryc)
+        item.tv.textColor=转0x(primaryc)
        else
-        rootv.Tag.cardv.CardBackgroundColor=转0x(backgroundc)
-        rootv.Tag.iv.ColorFilter=转0x(textc)
-        rootv.Tag.tv.textColor=转0x(textc)
+        item.cardv.CardBackgroundColor=转0x(backgroundc)
+        item.iv.ColorFilter=转0x(textc)
+        item.tv.textColor=转0x(textc)
       end
     end
   end
+  adp.notifyDataSetChanged()
 end
 
 task(1,function()
