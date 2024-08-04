@@ -785,6 +785,14 @@ local function setattribute(root,view,params,k,v,ids)
       end
     end
     view.setOnLongClickListener(listener)
+   elseif k == "getView" then
+    if type(v)=="function" then
+      v(view)
+     else
+      error(string.format(
+      "getView必须要是function 当前type:%s", type(v)
+      ))
+    end
    elseif k=="password" and (v=="true" or v==true) then
     view.setInputType(0x81)
    elseif type(k)=="string" and not(k:find("layout_")) and not(k:find("padding")) and k~="style" then --设置属性

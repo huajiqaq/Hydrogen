@@ -420,6 +420,15 @@ local attributeSetterMap = {
      elseif nowValueType == "userdata" then
       nowView.setOnClickListener(nowValue)
     end
+  end,
+  getView= function()
+    if nowValueType=="function" then
+      nowValue(nowView)
+     else
+      error(string.format(
+      "getView必须要是function 当前type:%s", nowValueType
+      ))
+    end
   end
 }
 
