@@ -299,7 +299,6 @@ function 主页推荐刷新()
   zHttp.get(url,homeapphead1,function(code,content)
     if code==200 then
       home_isprev=false
-      homeapphead1["x-close-recommend"]="0"
       decoded_content = luajson.decode(content)
       if decoded_content.paging.is_end==false then
         requrl={
@@ -385,7 +384,6 @@ function 主页刷新(isclear,isprev)
     end
 
     homeapphead["x-feed-prefetch"]="1"
-    homeapphead1["x-close-recommend"]=nil
 
     local yxuan_adpqy=MyLuaAdapter(activity,itemc2)
     list2.adapter=yxuan_adpqy

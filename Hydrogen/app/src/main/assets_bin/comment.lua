@@ -66,7 +66,8 @@ function 发送评论(send_text,当前回复人)
 
   local unicode=require "unicode"
 
-  local mytext=unicode.encode(send_text)
+  --测试不通过unicode编码也可以 暂时这么解决
+  local mytext=send_text
 
   if _title.text=="对话列表" then
     --防止在对话列表内回复id为空

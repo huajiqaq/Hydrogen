@@ -721,7 +721,7 @@ function 加载数据()
             分享文本("https://www.zhihu.com/question/"..question_id)
         end},
         {src=图标("format_align_left"),text="按时间顺序",onClick=function()
-            question_base:setSortBy("created")
+            question_base:setSortBy("updated")
             question_base:clear()
             question_adp.clear()
         end},
