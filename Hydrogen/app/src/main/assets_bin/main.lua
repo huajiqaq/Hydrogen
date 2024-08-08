@@ -26,8 +26,6 @@ if not(welcomeAgain) then
       break
     end
   end
-  activity.newActivity("home",{activity.getIntent()})
-  activity.finish()
 end
 
 -- 检测是否需要进入欢迎页面
@@ -36,4 +34,7 @@ if welcomeAgain then
   newSubActivity("Welcome")
   activity.finish()
   return
+ else
+  activity.newActivity("home",{activity.getIntent()})
+  activity.finish()
 end

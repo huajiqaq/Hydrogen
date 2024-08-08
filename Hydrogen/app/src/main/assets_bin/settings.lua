@@ -64,6 +64,7 @@ data = {
 
   {__type=4,subtitle="全屏模式",status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=4,subtitle="代码块自动换行",status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
+  {__type=4,subtitle="切换webview",status={Checked=Boolean.valueOf(this.getSharedData("切换webview"))}},
   {__type=3,subtitle="设置屏蔽词"},
 
   {__type=1,title="主页设置"},
@@ -191,6 +192,51 @@ tab={
     end})
     .setNegativeButton("取消", nil)
     .show()
+  end,
+  切换webview=function(self,index)
+    import "com.norman.webviewup.lib.WebViewUpgrade"
+    import "com.norman.webviewup.lib.UpgradeCallback"
+    import "com.norman.webviewup.lib.source.UpgradePackageSource"
+
+
+    if pcall(function() this.getPackageManager().getPackageInfo(webview_packagename,0) end)==false then
+      this.setSharedData("切换webview","false")
+      data[index].status["Checked"]=false
+      adp.notifyDataSetChanged()
+      return showSimpleDialog("提示","你还没有安装谷歌浏览器 请安装后开启 本功能开启后将会默认使用谷歌浏览器的WebView而并非系统WebView")
+    end
+
+    if WebViewUpgrade.isProcessing()~=true and WebViewUpgrade.isCompleted()~=true then
+      import "android.util.Log"
+      local webViewUpgrade=WebViewUpgrade.addUpgradeCallback(UpgradeCallback({
+        onUpgradeProcess=function()
+          提示("进行中")
+        end,
+        onUpgradeComplete=function()
+          提示("完成")
+        end,
+        onUpgradeError=function(throwable)
+          error("错误信息:"..throwable.getMessage().."\n".."堆栈回溯"..Log.getStackTraceString(throwable))
+        end
+      }))
+      local upgradeSource = UpgradePackageSource(this.getApplicationContext(),webview_packagename);
+      webViewUpgrade.upgrade(upgradeSource);
+    end
+    if WebViewUpgrade.getUpgradeWebViewPackageName()~=webview_packagename then
+      提示("你需要重启App来生效")
+     else
+      提示("当前已替换")
+    end
+
+    this.setSharedData("webview包名","true")
+
+    AlertDialog.Builder(this)
+    .setTitle("提示")
+    .setMessage("切换后 软件将默认使用谷歌浏览器内置的WebView 请手动下载谷歌浏览器\n该功能仅提供给无法升级WebView使用 如果你可以升级你的WebView 请不要开启")
+    .setPositiveButton("我知道了",nil)
+    .setCancelable(false)
+    .show()
+
   end,
   热榜关闭图片=function()
     提示("设置成功 刷新热榜生效")

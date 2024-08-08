@@ -368,7 +368,6 @@ function 主页随机推荐 ()
 end
 
 
-
 function 主页刷新(isclear,isprev)
 
   if isprev then
@@ -2634,5 +2633,18 @@ if launchIntent ~= nil then
     PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
     packageManager.setComponentEnabledSetting(componentName,
     PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+  end
+end
+
+if this.getSharedData("切换webview")=="true" then
+  if pcall(function() this.getPackageManager().getPackageInfo(webview_packagename,0) end)==false then
+    this.setSharedData("切换webview","false")
+    return showSimpleDialog("提示","检测不到谷歌浏览器 已自动关闭切换webview")
+  end
+  import "com.norman.webviewup.lib.WebViewUpgrade"
+  import "com.norman.webviewup.lib.source.UpgradePackageSource"
+  if WebViewUpgrade.getUpgradeWebViewPackageName()==webview_packagename then
+    local upgradeSource = UpgradePackageSource(this.getApplicationContext(),webview_packagename);
+    WebViewUpgrade.upgrade(upgradeSource);
   end
 end

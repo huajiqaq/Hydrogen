@@ -53,4 +53,7 @@ dependencies {
     api 'com.google.android.flexbox:flexbox:3.0.0'
     api 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    api 'io.github.jonanorman.android.webviewup:core:0.1.0'
+//  不需要网络下载 不需要导入 https://github.com/JonaNorman/WebViewUpgrade
+//  api 'io.github.jonanorman.android.webviewup:download-source:0.1.0'
 }
