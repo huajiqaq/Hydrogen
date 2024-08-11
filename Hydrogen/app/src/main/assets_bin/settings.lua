@@ -65,6 +65,7 @@ data = {
   {__type=4,subtitle="全屏模式",status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=4,subtitle="代码块自动换行",status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
   {__type=4,subtitle="切换webview",status={Checked=Boolean.valueOf(this.getSharedData("切换webview"))}},
+  {__type=4,subtitle="使用系统字体",status={Checked=Boolean.valueOf(this.getSharedData("使用系统字体"))}},
   {__type=3,subtitle="设置屏蔽词"},
 
   {__type=1,title="主页设置"},
@@ -237,6 +238,9 @@ tab={
     .setCancelable(false)
     .show()
 
+  end,
+  使用系统字体=function()
+    提示("为了更好的浏览体验 推荐重启App")
   end,
   热榜关闭图片=function()
     提示("设置成功 刷新热榜生效")

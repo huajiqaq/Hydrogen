@@ -60,12 +60,13 @@ function base_question:next(callback)
 
   if self.is_end~=true then
 
-    zHttp.get(self.nextUrl or "https://api.zhihu.com/questions/"..self.id.."/answers?include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count,media_detail&limit=20".."&sort_by="..(self.sortby or "default"),head,function(code,body)
+    zHttp.get(self.nextUrl or "https://api.zhihu.com/questions/"..self.id.."/feeds?include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count,media_detail&limit=20".."&order="..(self.sortby or "default"),head,function(code,body)
 
       if code==200 then
         self.nextUrl=luajson.decode(body).paging.next
         self.is_end=luajson.decode(body).paging.is_end
         for k,v in pairs(luajson.decode(body).data) do
+          local v=v.target
           if self.mdata[v.id] then
            else
             self.mdata[v.id]=v --(概率需要(如果以后需要扩张功能的话))

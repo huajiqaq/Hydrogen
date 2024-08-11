@@ -18,7 +18,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.52179
+versionCode=0.53
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir().."/logo.png"
@@ -1244,9 +1244,20 @@ function 浏览器打开(pageurl)
   end
 end
 
-
-function 字体(t)
-  return Typeface.createFromFile(File(activity.getLuaDir().."/res/"..t..".ttf"))
+if this.getSharedData("使用系统字体")=="true" then
+  local font={
+    product=Typeface.create("sans-serif", Typeface.NORMAL),
+    ["product-Bold"]=Typeface.create("sans-serif", Typeface.BOLD),
+    ["product-Italic"]=Typeface.create("sans-serif", Typeface.ITALIC),
+    ["product-Medium"]=Typeface.create("sans-serif-medium", Typeface.NORMAL)
+  }
+  function 字体(t)
+    return font[t]
+  end
+ else
+  function 字体(t)
+    return Typeface.createFromFile(File(activity.getLuaDir().."/res/"..t..".ttf"))
+  end
 end
 
 
@@ -2874,3 +2885,5 @@ function 获取想法标题(simpletitle)
   end
   return StringHelper.Sub(simpletitle,1,20,"...")
 end
+
+webview_packagename="com.android.chrome"
