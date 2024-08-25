@@ -255,7 +255,7 @@ tab={
     if not(getLogin()) then
       return 提示("请登录后使用本功能")
     end
-    activity.newActivity("xgtj")
+    activity.newActivity("homesort")
   end,
   设置默认主页=function()
     starthome={"推荐","想法","热榜","关注"}

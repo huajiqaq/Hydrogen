@@ -14,183 +14,29 @@ title,author=...
 波纹({fh,_more,mark},"圆主题")
 波纹({all_root},"方自适应")
 
-filedir=内置存储文件("Download/"..title.."/"..author.."/mht.mht")
-xxx=读取文件(内置存储文件("Download/"..title.."/"..author.."/detail.txt"))
+local 保存路径=内置存储文件("Download/"..title.."/"..author)
+filedir=保存路径.."/html.html"
+xxx=读取文件(保存路径.."/detail.txt")
 
---new 0.5184 引入mhtml2html解析mhtml 去除大量mhtml替换逻辑
-if not(xxx:match("question_id")) then
 
-  local function replace_string(file_name, old_string, new_string)
-    -- 读取文件内容
-    local f = io.open(file_name, "r")
-    local s = f:read("*a")
-    f:close()
-
-    -- 查找old_string的位置
-    local i, j = string.find(s, old_string)
-    if i then -- 如果存在
-
-      -- 向上查找@media screen {的位置
-      local k = string.find(s, '@media screen {', 1, true)
-
-      -- 查找------MultipartBoundary前面的位置
-      local l = string.find(s, '------MultipartBoundary', i, true) - 1
-
-      -- 替换@media screen {到------MultipartBoundary前面的文字为new_string
-      local new_s = string.sub(s, 1, k - 1) .. new_string .. "\n" .. string.sub(s, l + 1)
-
-      -- 写入文件
-      local f = io.open(file_name, "w")
-      f:write(new_s)
-      f:close()
-
-     else -- 如果不存在
-      if this.getSharedData("调式模式")=="true" then
-        提示(old_string .. "在文件中没有找到")
-      end
-    end
-    return
-  end
-
-  -- 定义append_string函数
-  local function append_string(file_name, target_string, append_string)
-    -- 读取文件内容
-    local f = io.open(file_name, "r")
-    local s = f:read("*a")
-    f:close()
-
-    -- 查找target_string的位置
-    local i, j = string.find(s, target_string)
-    if i then -- 如果存在
-
-      -- 在target_string后添加append_string
-      local new_s = string.sub(s, 1, j) .. append_string .. string.sub(s, j + 1)
-
-      -- 写入文件
-      local f = io.open(file_name, "w")
-      f:write(new_s)
-      f:close()
-
-     else -- 如果不存在
-      if this.getSharedData("调式模式")=="true" then
-        提示(target_string .. "在文件中没有找到")
-      end
-      return
-    end
-  end
-
-  -- 打开 mhtml 文件
-  local file = io.open (filedir, "r+")
-  -- 读取文件内容
-  local content = file:read ("*a")
-  --获取个数
-  local _,count = content:gsub("dark%-mode","")
-  file:close()
-  if count==1 then
-    append_string(filedir, 'https://pic4.zhimg.com/">', '<svg id="dark-mode-svg" style="height: 0; width: 0; display: none;"><filter id="dark-mode-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.283 -0.567 -0.567 0 0.925 -0.567 0.283 -0.567 0 0.925 -0.567 -0.567 0.283 0 0.925 0 0 0 1 0"></feColorMatrix></filter><filter id="dark-mode-reverse-filter" x="0" y="0" width="99999" height="99999"><feColorMatrix type="matrix" values="0.333 -0.667 -0.667 0 1 -0.667 0.333 -0.667 0 1 -0.667 -0.667 0.333 0 1 0 0 0 1 0"></feColorMatrix></filter></svg><meta name="theme-color" content="#131313">')
-    if content:find("#dark%-mode%-reverse%-filter") then
-      replace_string(filedir, 'url%("#dark%-mode%-reverse%-filter"%)', [[@media screen {
-  img, .sr-backdrop { filter: url("#dark-mode-filter-a") !important;
-}]])
-      -- 打开 mhtml 文件
-      file = io.open (filedir, "r+")
-      -- 读取文件内容
-      content = file:read ("*a")
-      file:close()
-    end
-    _,count = content:gsub("dark%-mode","")
-  end
-
-  if count>1 then
-    local _,mycount = content:gsub('height: 0; width: 0; display: none;"><filter',"")
-    if mycount==0 then
-      替换文件字符串(filedir,'height: 0; width: 0;"><filter ','height: 0; width: 0; display: none;"><filter')
-    end
-    if 全局主题值=="Night" then
-      if content:find("#dark%-mode%-filter%-a") then
-        replace_string(filedir, 'url%("#dark%-mode%-filter%-a"%)', [[@media screen {
-  html { filter: url("#dark-mode-filter") !important; }
-  img, video, iframe, canvas, :not(object):not(body) > embed, object, svg image, [style*="background:url"], [style*="background-image:url"], [style*="background: url"], [style*="background-image: url"], [background], twitterwidget, .sr-reader, .no-dark-mode, .sr-backdrop { filter: url("#dark-mode-reverse-filter") !important; }
-  [style*="background:url"] *, [style*="background-image:url"] *, [style*="background: url"] *, [style*="background-image: url"] *, input, [background] *, img[src^="https://s0.wp.com/latex.php"], twitterwidget .NaturalImage-image { filter: none !important; }
-  html { text-shadow: 0px 0px 0px !important; }
-  ::-webkit-scrollbar { background-color: rgb(32, 35, 36); color: rgb(171, 164, 153); }
-  ::-webkit-scrollbar-thumb { background-color: rgb(69, 74, 77); }
-  ::-webkit-scrollbar-thumb:hover { background-color: rgb(87, 94, 98); }
-  ::-webkit-scrollbar-thumb:active { background-color: rgb(72, 78, 81); }
-  ::-webkit-scrollbar-corner { background-color: rgb(24, 26, 27); }
-  html { background: rgb(255, 255, 255) !important; }
-}
-
-@media print {
-  .no-print { display: none !important; }
-}]])
-      end
-     else
-      if content:find("#dark%-mode%-filter") then
-        replace_string(filedir, 'url%("#dark%-mode%-filter"%)', [[@media screen {
-  img, .sr-backdrop { filter: url("#dark-mode-filter-a") !important;
-}]])
-      end
-    end
-  end
-
-  local mynum = string.match(xxx, "(%d+)[^/]*$")
-  if xxx:match("article")
-    mytype="文章"
-   elseif xxx:match("pin")
-    mytype="想法"
-   elseif xxx:match("video")
-    mytype="视频"
-    activity.finish()
-    activity.newActivity("column",{mynum,mytype})
-    return
-  end
-  activity.finish()
-  activity.newActivity("column",{mynum,mytype,true,filedir,title,author})
+if xxx:match("article") or xxx:match("pin") then
+  this.finish()
+  this.newActivity("column",{filedir,"本地"})
   return
 end
 
--- 打开 mhtml 文件
-local file = io.open (filedir, "r+")
--- 读取文件内容
-local content = file:read ("*a")
-
-if content:find("body, body %*")==nil and content:find("oribody, oribody %*")==nil then
-  -- 查找 html[data-android] 的位置
-  local s, e = string.find (content, "html%[data%-android%]")
-  -- 如果找到了
-  if s then
-    -- 定义要追加的样式代码
-    style = "body, body * { background-color: rgb(25, 25, 25) !important; color: rgb(204, 204, 204) !important; }\n\n"
-    -- 在 html[data-android] 前面插入样式代码
-    content = content:sub (1, s - 1) .. style .. content:sub (s)
-    -- 回到文件开头
-    file:seek ("set")
-    -- 写入修改后的内容
-    file:write (content)
-  end
+--暂时这么解决闪屏问题 第二种解决方法添加 layoutTransition=LayoutTransition()
+local 加载内容=读取文件(filedir)
+if 全局主题值=="Night" then
+  加载内容=加载内容:gsub('light','dark')
 end
--- 关闭文件
-file:close ()
--- 打开 html 文件
-local file = io.open (filedir, "r+")
--- 读取文件内容
-local content = file:read ("*a")
-if content:find("body, body *") then
-  if 全局主题值~="Night" then
-    替换文件字符串(filedir,"body, body %*","oribody, oribody *")
-  end
- elseif content:find("oribody, oribody *") then
-  if 全局主题值=="Night" then
-    替换文件字符串(filedir,"oribody, oribody %*","body, body *")
-  end
-end
+task(1,function()
+  t.content.loadDataWithBaseURL(nil,加载内容,"text/html","utf-8",nil)
+end)
 
-file:close()
+--new 0.53 引入mhtml2html解析mhtml 去除大量mhtml替换逻辑
 
 import "androidx.viewpager2.widget.ViewPager2"
-
-
 activity.setContentView(loadlayout("layout/local"))
 
 设置toolbar(toolbar)
@@ -255,20 +101,14 @@ import "com.dingyi.adapter.BaseViewPage2Adapter"
 pg.adapter=BaseViewPage2Adapter(this)
 pg.adapter.add(加入view)
 
-mripple.onClick=function()
+userinfo.onClick=function()
   提示("请点击右上角「使用网络打开」打开原回答页后查看")
 end
-波纹({mripple},"圆自适应")
 
 task(1,function()
   顶栏高度=toolbar.height
 end)
 
-
-
-task(1,function()
-  顶栏高度=toolbar.height
-end)
 
 local function 设置滑动跟随(t)
   t.onGenericMotion=function(view,x,y,lx,ly)
@@ -297,7 +137,7 @@ comment.onClick=function()
   if getDirSize(保存路径.."/".."fold/")==0 then
     提示("你还没有收藏评论")
    else
-    activity.newActivity("comment",{nil,"local",title,username.text})
+    activity.newActivity("comment",{保存路径,"local",nil,nil,保存路径})
   end
 end;
 
@@ -357,9 +197,6 @@ end})
 --设置网页图片点击事件，
 local z=JsInterface{
   execute=function(b)
-    if b=="getmhtml" then
-      return 读取文件(filedir)
-    end
     if b~=nil and #b>1 then
       --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
       this.setSharedData("imagedata",b)
@@ -378,12 +215,10 @@ t.content.setWebViewClient{
     view.goBack()
   end,
   onPageStarted=function(view,url,favicon)
-
   end,
   onPageFinished=function(view,l)
     t.content.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-    if 全局主题值=="Day" then
-    end
+    t.content.setVisibility(0)
   end,
   onLoadResource=function(view,url)
   end,
@@ -391,13 +226,11 @@ t.content.setWebViewClient{
 
 t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onProgressChanged=function(view,url,favicon)
+    if 全局主题值=="Night" then
+      黑暗页(view)
+    end
 end}))
 
-
-myuri = Uri.fromFile(File(this.getLuaDir().."/mhtml2html.html")).toString();
-
-t.content.loadUrl(myuri)
-t.content.setVisibility(0)
 
 local content=t.content
 webview查找文字监听(content)

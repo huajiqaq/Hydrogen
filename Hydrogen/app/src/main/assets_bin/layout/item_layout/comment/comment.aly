@@ -16,27 +16,12 @@
     CardBackgroundColor=cardedge;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
-    {
-      TextView;
-      textSize="0sp";
-      id="id内容",
-    };
-    {
-      TextView;
-      textSize="0sp";
-      id="作者id",
-    };
-    {
-      TextView;
-      textSize="0sp";
-      id="isme",
-    };
+    id="card";
     {
       LinearLayout;
       layout_height="fill";
       id="background";
       layout_width="fill";
-      ripple="圆自适应",
       {
         LinearLayout;
         padding="8dp",
@@ -93,6 +78,7 @@
               textSize="12sp";
               gravity="left";
               text="查看对话列表",
+              Visibility=8;
             };
             {
               TextView;

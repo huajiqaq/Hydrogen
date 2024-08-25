@@ -14,7 +14,7 @@ import "android.content.pm.ActivityInfo"
 import "android.graphics.PathMeasure"
 import "android.webkit.ValueCallback"
 import "com.google.android.material.progressindicator.LinearProgressIndicator"
-问题id,回答id,问题对象,是否记录历史记录,在线页数=...
+问题id,回答id=...
 
 --new 0.46 删除滑动监听
 activity.setContentView(loadlayout("layout/answer"))
@@ -59,7 +59,8 @@ comment.onClick=function()
   if 回答id==nil then
     return 提示("加载中")
   end
-  activity.newActivity("comment",{(回答id),"answers",_title.Text,username.Text})
+  local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
+  activity.newActivity("comment",{回答id,"answers",nil,nil,保存路径})
 end;
 
 
@@ -251,7 +252,7 @@ function 数据添加(t,b)
     thanks_count.setTextColor(转0x(stextc))
   end
 
-  if 是否记录历史记录 and not(已记录) then
+  if not(已记录) then
     初始化历史记录数据(true)
     保存历史记录(_title.Text,问题id.."分割"..回答id,50)
     已记录=true
@@ -267,8 +268,6 @@ function 数据添加(t,b)
       end
     end,
     onPageStarted=function(view,url,favicon)
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-
       加载js(view,获取js("native"))
       t.content.setVisibility(8)
       if t.progress~=nil then
@@ -276,6 +275,7 @@ function 数据添加(t,b)
       end
       等待doc(view)
       加载js(view,获取js("answer_pages"))
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
     end,
     onPageFinished=function(view,url,favicon)
       t.content.setVisibility(0)
@@ -355,7 +355,7 @@ function 数据添加(t,b)
   t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     onProgressChanged=function(view,url,favicon)
       if 全局主题值=="Night" then
-        黑暗页(view)
+        夜间模式回答页(view)
       end
     end,
     onConsoleMessage=function(consoleMessage)
@@ -796,14 +796,8 @@ task(1,function()
           end
 
           local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
-
           local pgids=数据表[pgnum].ids
-
           local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
-
-          if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
-            创建文件夹(内置存储文件("Download/".._title.Text))
-          end
 
           创建文件夹(保存路径)
           创建文件(内置存储文件("Download/".._title.Text.."/"..username.Text.."/detail.txt"))
@@ -815,8 +809,7 @@ task(1,function()
           写入内容=写入内容..'author="'..username.Text..'"\n'
           写入内容=写入内容..'headline="'..userheadline.Text..'"\n'
           写入文件(保存路径.."/detail.txt",写入内容)
-          pgids.content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..username.Text.."/mht.mht"))
-          提示("保存成功")
+          this.newActivity("saveweb",{pgids.content.getUrl(),保存路径,写入内容})
         end
       },
 
@@ -838,7 +831,7 @@ task(1,function()
           end
 
           local url="https://www.zhihu.com/report?id="..回答id.."&type=answer"
-          activity.newActivity("huida",{url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
+          activity.newActivity("browser",{url.."&source=android&ab_signature=","举报"})
         end
       },
 

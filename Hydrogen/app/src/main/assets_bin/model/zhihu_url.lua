@@ -36,23 +36,20 @@ function 检查链接(url,b)
         return true
       end
       questions,answer=url:match("question/(.-)?") or url:match("question/(.+)"),nil
-      this.newActivity("question",{questions,true})
+      this.newActivity("question",{questions})
       return
     end
-    this.newActivity("answer",{questions,answer,nil,true})
+    this.newActivity("answer",{questions,answer})
    elseif url:find("zhihu.com/column/republish_apply") then
     if b then return true end
     -- 网页端加入专栏
     加入专栏(url:getUrlArg("id="),url:getUrlArg("type="))
    elseif url:find("https://www.zhihu.com/account/unhuman") then
     if b then return true end
-    activity.newActivity("huida",{url})
+    activity.newActivity("browser",{url})
    elseif url:find("zhuanlan.zhihu.com/p/") then--/p/143744216
     if b then return true end
     this.newActivity("column",{url:getUrlArg("zhihu.com/p/")})
-   elseif url:find("zhuanlan.zhihu.com/write") then
-    if b then return true end
-    this.newActivity("huida",{"https://zhuanlan.zhihu.com/write","专栏",true})
    elseif url:find("zhihu.com/appview/p/") then--/p/143744216
     if b then return true end
     this.newActivity("column",{url:getUrlArg("appview/p/")})
@@ -81,7 +78,7 @@ function 检查链接(url,b)
           end,function()
           视频链接=v.playlist.HD.play_url
         end)
-        this.newActivity("huida",{视频链接})
+        this.newActivity("browser",{视频链接})
        elseif code==401 then
         Toast.makeText(activity, "请登录后查看视频",Toast.LENGTH_SHORT).show()
       end
@@ -93,7 +90,7 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/people") or url:find("zhihu.com/org") then
     if b then return true end
     local people_name=url:getUrlArg("/people/") or url:getUrlArg("/org/")
-    this.newActivity("people",{people_name,true})
+    this.newActivity("people",{people_name})
    elseif url:find("zhihu.com/roundtable/") then
     if b then return true end
     this.newActivity("column",{url:getUrlArg("/roundtable/"),"圆桌"})
@@ -129,7 +126,7 @@ function 检查链接(url,b)
     检查意图(url)
    else
     if b then return false end
-    this.newActivity("huida",{url})
+    this.newActivity("browser",{url})
   end
 end
 
@@ -138,23 +135,23 @@ function 检查意图(url,b)
     if url:find "answers" then
       if b then return true end
       local id=url:getUrlArg("answers/")
-      this.newActivity("answer",{"null",(id),nil,true})
+      this.newActivity("answer",{"null",id})
      elseif url:find "answer" then
       if b then return true end
       local id=url:getUrlArg("answer/")
-      this.newActivity("answer",{"null",(id),nil,true})
+      this.newActivity("answer",{"null",id})
      elseif url:find "questions" then
       if b then return true end
-      this.newActivity("question",{url:getUrlArg("questions/"),true})
+      this.newActivity("question",{url:getUrlArg("questions/")})
      elseif url:find "question" then
       if b then return true end
-      this.newActivity("question",{url:getUrlArg("question/"),true})
+      this.newActivity("question",{url:getUrlArg("question/")})
      elseif url:find "topic" then
       if b then return true end
       this.newActivity("topic",{url:getUrlArg("topic/")})
      elseif url:find "people" then
       if b then return true end
-      this.newActivity("people",{url:getUrlArg("people/"),true})
+      this.newActivity("people",{url:getUrlArg("people/")})
      elseif url:find "columns" then
       if b then return true end
       this.newActivity("people_column",{url:getUrlArg("columns/")})

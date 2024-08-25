@@ -15,7 +15,7 @@ import "com.bumptech.glide.load.engine.DiskCacheStrategy"
 activity.setContentView(loadlayout("layout/image"))
 
 
-波纹({download},"方白")
+波纹({download},"方自适应")
 
 沉浸状态栏()
 

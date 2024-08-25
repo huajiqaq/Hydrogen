@@ -3,6 +3,7 @@
   layout_width="fill";
   layout_height="fill";
   id="root";
+  layoutTransition=LayoutTransition(),
   {
     NestedLuaWebView,
     id="content",

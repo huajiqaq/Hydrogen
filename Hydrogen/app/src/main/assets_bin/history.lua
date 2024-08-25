@@ -8,36 +8,8 @@ activity.setContentView(loadlayout("layout/history"))
 
 初始化历史记录数据(true)
 
-isxg=...
-
-if isxg then
-  activity.setResult(1500,nil)
-end
-
-function 初始化()
-  recordtt={}
-  recordii={}
-  if (退出时保存历史记录==true)then
-    for d in each(this.getSharedPreferences("Historyrecordtitle",0).getAll().entrySet()) do
-      recordtt[tonumber(d.getKey())]=d.getValue()
-    end
-    for d in each(this.getSharedPreferences("Historyrecordid",0).getAll().entrySet()) do
-      recordii[tonumber(d.getKey())]=d.getValue()
-    end
-   else
-    local k=0
-    for i=#recordtitle,1,-1 do
-      k=k+1
-      recordtt[k]=recordtitle[i]
-      recordii[k]=recordid[i]
-    end
-  end
-end
-
-初始化()
-
 history_list.setDividerHeight(0)
-if (#recordtt==0)then
+if (#recordtitle==0)then
   history_list.setVisibility(8)
   histab.ids.load.parent.setVisibility(8)
   empty.setVisibility(0)
@@ -49,109 +21,102 @@ itemc=获取适配器项目布局("history/history")
 
 adp=LuaAdapter(activity,itemc)
 
-history_list.Adapter=adp
+history_list.adapter=adp
 
-for n=1,#recordtt do
-  adp.add{标题=Html.fromHtml(recordtt[n]),id内容=tostring(n)}
-end
 
 mytab={"全部","回答","想法","文章","提问","用户","视频","专栏"}
 
 
-function check(str)
-  if str=="全部"
-
-    for n=1,#recordtt do
-      adp.add{标题=Html.fromHtml(recordtt[n]),id内容=tostring(n)}
+function 加载历史记录()
+  if find_type=="全部" or find_type==nil then
+    for i=#recordid,1,-1 do
+      local id=recordid[i]
+      local title=recordtitle[i]
+      adp.add{标题=Html.fromHtml(title),id内容=id}
     end
-   elseif str=="回答" then
-    for n=1,#recordii do
-      if not recordii[n]:find("想法") and not recordii[n]:find("文章") and not recordii[n]:find("视频") and not recordii[n]:find("用户") and not recordii[n]:find("专栏") and recordii[n]:find("分割") then
-        adp.add{标题=Html.fromHtml(recordtt[n]),id内容=tostring(n)}
+   elseif find_type=="回答" then
+    for i=#recordid,1,-1 do
+      local id=recordid[i]
+      if not id:find("想法") and not id:find("文章") and not id:find("视频") and not id:find("用户") and not id:find("专栏") and id:find("分割") then
+        local title=recordtitle[i]
+        adp.add{标题=Html.fromHtml(title),id内容=id}
       end
     end
-   elseif str=="提问" then
-    for n=1,#recordii do
-      if not recordii[n]:find("分割") then
-        adp.add{标题=Html.fromHtml(recordtt[n]),id内容=tostring(n)}
+   elseif find_type=="提问" then
+    for i=#recordtitle,1,-1 do
+      local id=recordid[i]
+      if not id:find("分割") then
+        local title=recordtitle[i]
+        adp.add{标题=Html.fromHtml(title),id内容=id}
       end
     end
    else
-    for n=1,#recordii do
-      if recordii[n]:find(str) then
-        adp.add{标题=Html.fromHtml(recordtt[n]),id内容=tostring(n)}
+    for i=#recordtitle,1,-1 do
+      local id=recordid[i]
+      if id:find(find_type) then
+        local title=recordtitle[i]
+        adp.add{标题=Html.fromHtml(title),id内容=id}
       end
     end
   end
 end
 
 for i,v in ipairs(mytab) do
-  histab:addTab(v,function() pcall(function()adp.clear()end) check(v) adp.notifyDataSetChanged() end,3)
+  histab:addTab(v,function()
+    adp.clear()
+    find_type=v
+    加载历史记录()
+    adp.notifyDataSetChanged()
+  end,3)
 end
 histab:showTab(1)
 
+加载历史记录()
+
 function checktitle(str)
   local oridata=adp.getData()
-
-  for b=1,2 do
-    if b==2 then
-      提示("搜索完毕 共搜索到"..#adp.getData().."条数据")
-      if #adp.getData()==0 then
-        task(200,function()
-          activity.newActivity("history",{true}).overridePendingTransition(0, 0)
-          activity.finish()
-        end)
-      end
+  for i=#oridata,1,-1 do
+    if not tostring(oridata[i].标题):find(str) then
+      table.remove(oridata, i)
+      adp.notifyDataSetChanged()
     end
-    for i=#oridata,1,-1 do
-      if not tostring(oridata[i].标题):find(str) then
-        table.remove(oridata, i)
-        adp.notifyDataSetChanged()
-      end
+  end
+  提示("搜索完毕 共搜索到"..#adp.getData().."条数据")
+  if #adp.getData()==0 then
+    加载历史记录()
+  end
+end
+
+function 获取位置(find_id)
+  for k,v ipairs(recordid) do
+    if v==find_id then
+      return k
     end
   end
 end
 
 history_list.onItemLongClick=function(l,v,c,b)
   双按钮对话框("删除","删除该历史记录？该操作不可撤消！","是的","点错了",function(an)
-
-    adp.clear()
-    清除历史记录()
-    allnum=#recordtt
-    recordtt[tointeger(v.Tag.id内容.text)]=nil
-    recordii[tointeger(v.Tag.id内容.text)]=nil
-
-    kkk=0
-    for n=1,allnum do
-      if recordtt[n] then
-        kkk=kkk+1
-        this.getSharedPreferences("Historyrecordtitle",0).edit().putString(tostring(kkk),recordtt[n]).commit()
-        this.getSharedPreferences("Historyrecordid",0).edit().putString(tostring(kkk),recordii[n]).commit()
-      end
-    end
-
-
-    初始化()
-    for n=1,#recordtt do
-      adp.add{标题=Html.fromHtml(recordtt[n]),id内容=tostring(n)}
-    end
-
-
+    local pos=获取位置(v.Tag.id内容.text)
+    table.remove(recordtitle,pos)
+    table.remove(recordid,pos)
+    adp.remove(c)
     adp.notifyDataSetChanged()
     an.dismiss()
-    activity.setResult(1500,nil)
     提示("已删除")
-
   end
   ,function(an)an.dismiss()end)
   return true
 end
+
 history_list.onItemClick=function(l,v,c,b)
-  local clicknum=tointeger(v.Tag.id内容.text)
-  初始化历史记录数据(true)
-  保存历史记录(recordtt[clicknum],recordii[clicknum],50)
-  点击事件判断(recordii[clicknum])
-  activity.setResult(1500,nil)
+  local 标题=v.Tag.标题.text
+  local id内容=v.Tag.id内容.text
+  点击事件判断(id内容)
+  table.remove(recordtitle,#recordtitle)
+  table.remove(recordid,#recordid)
+  table.insert(recordtitle,1,标题)
+  table.insert(recordtitle,1,id内容)
 end
 
 
@@ -208,8 +173,7 @@ task(1,function()
   })
 end)
 
-function onPause()
-  if ishava then
-    activity.overridePendingTransition(0,0);
-  end
+function onDestroy()
+  清空并保存历史记录("Historyrecordtitle", recordtitle)
+  清空并保存历史记录("Historyrecordid", recordid)
 end

@@ -16,12 +16,12 @@
     CardBackgroundColor=cardedge;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
+    id="card";
     {
       LinearLayout;
       layout_height="fill";
       id="background";
       layout_width="fill";
-      ripple="圆自适应",
 
       {
         LinearLayout;
@@ -53,11 +53,6 @@
               Typeface=字体("product");
               textSize="12sp";
             };
-            {
-              TextView;
-              id="id内容";
-              textSize="0sp";
-            };
 
           };
           {
@@ -83,12 +78,14 @@
             LinearLayout;
             layout_marginTop="2dp";
             orientation="horizontal";
+            id="底部内容";
             {
               ImageView;
               src=图标("vote_up"),
               ColorFilter=textc;
               layout_height="16dp",
               layout_width="16dp",
+              id="点赞图标";
             };
             {
               TextView;
@@ -105,6 +102,7 @@
               ColorFilter=textc;
               layout_height="16dp",
               layout_width="16dp",
+              id="评论图标";
             };
             {
               TextView;

@@ -16,20 +16,12 @@
     CardBackgroundColor=cardedge;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
+    id="card";
     {
       LinearLayout;
-      ripple="圆自适应",
       layout_height="fill";
       layout_width="fill";
       orientation="horizontal";
-      {
-        TextView;
-        TextSize="0dp",
-        layout_width="0",
-        layout_hieght="0",
-        Visibility=8,
-        id="id内容",
-      };
       {
         CircleImageView;
         layout_gravity="left|center",

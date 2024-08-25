@@ -1,88 +1,74 @@
 {
-  FrameLayout,
+  LinearLayout,
   layout_width="-1",
-  layout_height="-2",
-  id="content",
-  clickable="true";
+  background=backgroundc,
   {
-    LinearLayout,
-    layout_width="-1",
-    background=backgroundc,
+    MaterialCardView;
+    layout_margin="16dp";
+    layout_marginTop="8dp";
+    layout_marginBottom="8dp";
+    layout_gravity='center';
+    Elevation='0';
+    layout_width='fill';
+    layout_height='-2';
+    radius=cardradius;
+    CardBackgroundColor=cardedge;
+    StrokeColor=cardedge;
+    StrokeWidth=dp2px(1),
+    id="card",
     {
-      MaterialCardView;
-      layout_margin="16dp";
-      layout_marginTop="8dp";
-      layout_marginBottom="8dp";
-      layout_gravity='center';
-      Elevation='0';
-      layout_width='fill';
-      layout_height='-2';
-      radius=cardradius;
-      id="_root",
-      CardBackgroundColor=cardedge;
-      StrokeColor=cardedge;
-      StrokeWidth=dp2px(1),
+      LinearLayout;
+      layout_height="fill";
+      layout_width="fill";
       {
         LinearLayout;
-        layout_height="fill";
-        id="hot_ripple",
+        orientation="horizontal",
         layout_width="fill";
         {
           LinearLayout;
-          orientation="horizontal",
-          id="hot_background";
-          layout_width="fill";
+          padding="16dp";
+          layout_weight=1;
           {
-            LinearLayout;
-            padding="16dp";
-            layout_weight=1;
-            {
-              TextView;
-              textSize="16sp";
-              Typeface=字体("product");
-              id="排行";
-              textColor=primaryc;
-            };
-            {
-              TextView;
-              textSize="0sp";
-              id="id内容",
-              Typeface=字体("product");
-            };
-            {
-              LinearLayout;
-              layout_marginLeft="10dp";
-              orientation="vertical";
-              {
-                TextView;
-                textColor=textc;
-                textSize="14sp";
-                Typeface=字体("product-Bold");
-                id="标题",
-              };
-              {
-                TextView;
-                textColor=stextc;
-                textSize="13sp";
-                id="热度",
-                Typeface=字体("product");
-              };
-            };
+            TextView;
+            textSize="16sp";
+            Typeface=字体("product");
+            id="排行";
+            textColor=primaryc;
           };
           {
-            MaterialCardView;
-            Elevation='0';
-            layout_marginRight="5dp";
-            layout_gravity="center_vertical",
-            CardBackgroundColor=cardbackroundc,
+            LinearLayout;
+            layout_marginLeft="10dp";
+            orientation="vertical";
             {
-              ImageView;
-              layout_width='96dp';
-              layout_gravity="center|right",
-              layout_height="56dp",
-              id="热图片",
-              ScaleType=ScaleType.CENTER_CROP,
+              TextView;
+              textColor=textc;
+              textSize="14sp";
+              Typeface=字体("product-Bold");
+              id="标题",
             };
+            {
+              TextView;
+              textColor=stextc;
+              textSize="13sp";
+              id="热度",
+              Typeface=字体("product");
+            };
+          };
+        };
+        {
+          MaterialCardView;
+          Elevation='0';
+          layout_marginRight="5dp";
+          layout_gravity="center_vertical",
+          CardBackgroundColor=cardbackroundc,
+          id="热图片布局";
+          {
+            ImageView;
+            layout_width='96dp';
+            layout_gravity="center|right",
+            layout_height="56dp",
+            id="热图片",
+            ScaleType=ScaleType.CENTER_CROP,
           };
         };
       };

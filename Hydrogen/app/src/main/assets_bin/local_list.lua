@@ -68,41 +68,50 @@ notedata={}
 noteadp=LuaAdapter(activity,notedata,local_item)
 local_listview.setAdapter(noteadp)
 
-mytab={"全部","回答","想法","文章","视频"}
-for i,v in ipairs(mytab) do
-  localtab:addTab(v,function() pcall(function()noteadp.clear()end) 加载笔记(v) mystr=v noteadp.notifyDataSetChanged() end,3)
+tab={"全部","回答","想法","文章"}
+for i,v in ipairs(tab) do
+  localtab:addTab(v,function()
+    noteadp.clear()
+    find_type=v
+    加载本地列表()
+    noteadp.notifyDataSetChanged()
+  end,3)
 end
 localtab:showTab(1)
 
-function 加载笔记(str)
+function 加载本地列表()
   if #luajava.astable(File(内置存储文件("Download")).listFiles())==0 then
     localtab.ids.load.parent.setVisibility(8)
     empty.setVisibility(0)
     return false
   end
 
-  if str =="全部" or str==nil then
-    str="all"
-   elseif str =="回答" then
-    str="answer_id"
-   elseif str=="想法" then
-    str="pin"
-   elseif str=="文章" then
-    str="article"
-   elseif str=="视频" then
-    str="video"
+  local find_type=find_type
+
+  if find_type =="全部" or find_type==nil then
+    find_type="all"
+   elseif find_type =="回答" then
+    find_type="answer_id"
+   elseif find_type=="想法" then
+    find_type="pin"
+   elseif find_type=="文章" then
+    find_type="article"
+   elseif find_type=="视频" then
+    find_type="video"
   end
 
   notedata={}
-  if str == "all" then
-    for i,v in ipairs(luajava.astable(File(内置存储文件("Download")).listFiles())) do
-      local vv=v
-      local v=tostring(v)
-      local _,name=v:match("(.+)/(.+)")
+  if find_type == "all" then
+    --获取软件存储目录下文件夹列表
+    local save_paths=luajava.astable(File(内置存储文件("Download")).listFiles())
+    for _,path in ipairs(save_paths) do
+      --保存格式为 标题/作者名称 获取标题 转为字符串
+      local title_path=tostring(path)
+      local _,name=title_path:match("(.+)/(.+)")
       notedata[#notedata+1]={
-        timestamp=vv.lastModified(),
+        timestamp=path.lastModified(),
         标题=name,
-        file=(v),
+        file=path,
       }
     end
 
@@ -111,18 +120,23 @@ function 加载笔记(str)
     end)
    else
 
-    for i,v in ipairs(luajava.astable(File(内置存储文件("Download")).listFiles())) do
-      local vv=v
-      local v=tostring(v)
-      local a=luajava.astable(File(v).listFiles())
-      local bbb=tostring(a[1]).."/detail.txt"
-      local filestr=读取文件(bbb)
-      local _,name=v:match("(.+)/(.+)")
-      if filestr:find(str) then
+    --获取软件存储目录下文件夹列表
+    local save_paths=luajava.astable(File(内置存储文件("Download")).listFiles())
+    for _,path in ipairs(save_paths) do
+      --保存格式为 标题/作者名称 获取标题 转为字符串
+      local title_path=tostring(path)
+      --获取作者名称文件夹
+      local author_path=luajava.astable(File(title_path).listFiles())
+      --获取详情文件夹第一个内容
+      local detail_path=tostring(author_path[1]).."/detail.txt"
+      local detail_content=读取文件(detail_path)
+      local _,name=title_path:match("(.+)/(.+)")
+      --查找是否符合
+      if detail_content:find(find_type) then
         notedata[#notedata+1]={
-          timestamp=vv.lastModified(),
+          timestamp=path.lastModified(),
           标题=name,
-          file=(v),
+          file=path,
         }
       end
     end
@@ -136,24 +150,19 @@ function 加载笔记(str)
   local_listview.setAdapter(noteadp)
 end
 
-加载笔记()
+加载本地列表()
 
-function checktitle(str)
+function checktitle(find_content)
   local oridata=noteadp.getData()
-
-  for b=1,2 do
-    if b==2 then
-      提示("搜索完毕 共搜索到"..#noteadp.getData().."条数据")
-      if #noteadp.getData()==0 then
-        加载笔记(mystr)
-      end
+  for i=#oridata,1,-1 do
+    if not oridata[i].标题:find(find_content) then
+      table.remove(oridata, i)
+      noteadp.notifyDataSetChanged()
     end
-    for i=#oridata,1,-1 do
-      if not oridata[i].标题:find(str) then
-        table.remove(oridata, i)
-        noteadp.notifyDataSetChanged()
-      end
-    end
+  end
+  提示("搜索完毕 共搜索到"..#noteadp.getData().."条数据")
+  if #noteadp.getData()==0 then
+    加载本地列表()
   end
 end
 
@@ -166,7 +175,7 @@ local_listview.setOnItemLongClickListener(AdapterView.OnItemLongClickListener{
   onItemLongClick=function(id,v,zero,one)
     双按钮对话框("删除","删除该内容？该操作不可撤消！","是的","点错了",function(an)删除文件(内置存储文件("Download/"..v.Tag.标题.Text))
       an.dismiss()
-      加载笔记(mystr)
+      加载本地列表()
       提示("已删除")end,function(an)an.dismiss()end)
     return true
 end})
@@ -291,7 +300,7 @@ function 本地列表(path)
           删除文件(内置存储文件("Download/"..path))
           --访问全局变量的an
           _G["an"].dismiss()
-          加载笔记(mystr)
+          加载本地列表()
          else
           id.adapter.remove(zero)
           提示("已删除")
@@ -304,10 +313,10 @@ end
 
 task(1,function()
   a=MUKPopu({
-    tittle="已保存的回答",
+    tittle="已保存的内容",
     list={
       {
-        src=图标("search"),text="搜索已保存的回答",onClick=function()
+        src=图标("search"),text="搜索已保存的内容",onClick=function()
           InputLayout={
             LinearLayout;
             orientation="vertical";

@@ -74,7 +74,7 @@ login_web.setWebViewClient{
       加载js(view,获取js("login"))
     end
     if 全局主题值=="Night" then
-      黑暗模式主题(view)
+      夜间模式主题(view)
     end
   end,
   onPageFinished=function(view,url)

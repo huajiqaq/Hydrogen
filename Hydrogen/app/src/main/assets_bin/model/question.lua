@@ -1,9 +1,4 @@
-local base_question={
-  nextUrl=nil,
-  is_end=false,
-  mdata={},
-  data={}
-}
+local base_question={}
 
 
 function base_question:new(id)
@@ -25,24 +20,6 @@ function base_question:getTag(callback)
   return self
 end
 
-function base_question:clear()
-  self.nextUrl=nil
-  self.is_end=false
-  self.data={}
-  self.mdata={}
-  return self
-end
-
-
-function base_question:setSortBy(tab)
-  self.sortby=tab
-  return self
-end
-
-function base_question:setresultfunc(tab)
-  self.resultfunc=tab
-  return self
-end
 
 function base_question:getData(callback)
   zHttp.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,excerpt",apphead
@@ -53,38 +30,87 @@ function base_question:getData(callback)
     end
   end)
   return self
-
 end
 
-function base_question:next(callback)
+function base_question:getUrl(sortby)
+  return "https://api.zhihu.com/questions/"..self.id.."/feeds?include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count,media_detail&limit=20".."&order="..(sortby or "default")
+end
 
-  if self.is_end~=true then
 
-    zHttp.get(self.nextUrl or "https://api.zhihu.com/questions/"..self.id.."/feeds?include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count,media_detail&limit=20".."&order="..(self.sortby or "default"),head,function(code,body)
+function base_question.getAdapter(question_pagetool,pos)
+  return LuaCustRecyclerAdapter(AdapterCreator({
 
-      if code==200 then
-        self.nextUrl=luajson.decode(body).paging.next
-        self.is_end=luajson.decode(body).paging.is_end
-        for k,v in pairs(luajson.decode(body).data) do
-          local v=v.target
-          if self.mdata[v.id] then
-           else
-            self.mdata[v.id]=v --(概率需要(如果以后需要扩张功能的话))
-            self.data[#self.data+1]=v
-            self.data[#self.data].id=(self.data[#self.data].id)
-            if self.resultfunc then self.resultfunc(v) end
-          end
-        end
-        callback(true)
-       else
-        callback(false,body)
+    getItemCount=function()
+      return #question_pagetool:getItemData(pos)
+    end,
+
+    getItemViewType=function(position)
+      return 0
+    end,
+
+    onCreateViewHolder=function(parent,viewType)
+      local views={}
+      local holder=LuaCustRecyclerHolder(loadlayout(question_itemc,views))
+      holder.view.setTag(views)
+      return holder
+    end,
+
+    onBindViewHolder=function(holder,position)
+      local views=holder.view.getTag()
+      local data=question_pagetool:getItemData(pos)[position+1]
+      views.标题.Text=data.标题
+      views.点赞数.Text=data.点赞数
+      views.评论数.Text=data.评论数
+      views.预览内容.Text=data.预览内容
+      loadglide(views.图像,data.图像)
+
+      views.card.onClick=function()
+        activity.newActivity("answer",{question_id,tostring(data.id内容)})
       end
+    end,
+  }))
 
-    end)
-   else
-    callback(false,body)
-  end
-  return self
 end
+
+function base_question.resolvedata(v,data)
+  local v=v.target
+  if v.excerpt == nil or v.excerpt=="" then
+    if v.media_detail and v.media_detail.videos then
+      if #v.media_detail.videos>0 then
+        v.excerpt="[视频]"
+      end
+    end
+  end
+  local 图片
+  if 无图模式 then
+    图片=logopng
+   else
+    图片=v.author.avatar_url
+  end
+  local add={}
+
+  add.标题=v.author.name
+  add.点赞数=v.voteup_count..""
+  add.评论数=v.comment_count..""
+  add.id内容=v.id..""
+  add.预览内容=v.excerpt
+  add.图像=图片
+  table.insert(data,add)
+end
+
+function base_question:initpage(view,sr)
+  return MyPageTool2:new({
+    view=view,
+    sr=sr,
+    head="head",
+    adapters_func=self.getAdapter,
+    func=self.resolvedata
+  })
+  :initPage()
+  :createfunc()
+  :setUrlItem(self:getUrl())
+  :refer()
+end
+
 
 return base_question

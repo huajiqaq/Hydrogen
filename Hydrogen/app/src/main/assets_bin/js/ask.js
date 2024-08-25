@@ -3,32 +3,32 @@ console.log("重新加载")
 let logFetch = window.fetch
 
 function onfetch(callback) {
-	window.fetch = function(input, init) {
-		return new Promise((resolve, reject) => {
-			logFetch(input, init)
-				.then(function(response) {
-					callback(response.clone())
-					resolve(response)
-				}, reject)
-		})
-	}
+    window.fetch = function (input, init) {
+        return new Promise((resolve, reject) => {
+            logFetch(input, init)
+                .then(function (response) {
+                    callback(response.clone())
+                    resolve(response)
+                }, reject)
+        })
+    }
 }
 
 onfetch(response => {
-	let url = response.url
-	if (url == "https://www.zhihu.com/api/v4/questions") {
-		if (response.status === 200) {
-			response.json()
-				.then(res => {
-					console.log("提交成功退出");
-				})
-		} else {
-			console.log("失败 状态码" + response.status)
-		}
-	}
+    let url = response.url
+    if (url == "https://www.zhihu.com/api/v4/questions") {
+        if (response.status === 200) {
+            response.json()
+                .then(res => {
+                    console.log("提交成功退出");
+                })
+        } else {
+            console.log("失败 状态码" + response.status)
+        }
+    }
 })
 
-window.onload = function () {
+window.addEventListener("load", function () {
     var style
     function emulateMouseClick(element) {
         let event = new MouseEvent('click', {
@@ -38,22 +38,18 @@ window.onload = function () {
         element.dispatchEvent(event);
     }
 
-    document.querySelector(".App-main").style.display = 'none'
-    //防止图片显示不正确
     style = document.createElement('style');
-    style.innerHTML = '.Modal-closeButton{position:unset !important}'
-    document.head.appendChild(style);
-    //防止按钮放的波
-    style = document.createElement('style');
-    style.innerHTML = '.Modal{box-shadow:unset !important;width:unset}'
+    //隐藏头部和底部
+    style.innerHTML = '.App-main, .AppHeader{display:none !important}'
+    //解决显示不全 536px是原来网页截取下来的
+    style.innerHTML += '.Modal{width:100vw !important;height:100vh !important;max-width: 536px !important;max-height: unset !important}'
     document.head.appendChild(style);
     //防止输入框被下面视图覆盖
     style = document.createElement('style');
     style.innerHTML = '.Ask-items{max-width:unset !important;max-height:unset !important}'
     style.innerHTML += '.Editable-content{max-width:unset !important;max-height:unset !important}'
-    //条件 ：元素名为 Ask-form 的 form 元素 下的直接子元素 且 该直接子元素是一个没有名称的div 位于父元素的第一个
-    //直接子元素：当前元素下面第一级的元素是直接子元素
-    style.innerHTML += 'form.Ask-form > div:not([name]):first-child{height:unset !important}'
+    //条件 ：元素名为 Ask-form 的元素 下的所有div元素 防止显示不全
+    style.innerHTML += '.Ask-form > div{height:unset !important}'
     document.head.appendChild(style);
     //优化推荐问题
     style = document.createElement('style');
@@ -61,18 +57,23 @@ window.onload = function () {
     style.innerHTML = '.AskTitle-suggestionContainer{width:100% !important}'
     //防止推荐问题宽度不统一
     style.innerHTML += '.Menu-item{width:100vw !important}'
+    //隐藏添加问题的关闭按钮
+    style.innerHTML += 'div.Modal.Modal--large > .Modal-closeButton{display:none !important}'
+    //防止图片显示过大
+    style.innerHTML += '.Image-resizerContainer > :first-child > :first-child{height:100% !important}'
+    style.innerHTML += '.Image{width:100% !important;height:100% !important}'
+    //防止按钮不显示
+    style.innerHTML += '.Modal-closeButton{position:unset !important}'
+    //防止滚动条
+    style.innerHTML += '.Modal-content.Modal-content--spread{overflow: hidden !important}'
+    //绑定手机号文本改间距
+    style.innerHTML += '.Modal-content--spread > :first-child > :first-child{margin: 18px !important}'
+    //防止显示不全
+    style.innerHTML += '.Modal-inner{height: 100vh !important;width: 100vw !important}'
     document.head.appendChild(style);
-
-    waitForKeyElements('.Modal-closeButton', function () {
-        document.querySelector(".Modal-wrapper").style.bottom = "unset"
-        document.querySelector(".Modal-inner").style.width = "100%"
-        document.querySelector(".Modal-inner").style.height = "100%"
-        document.querySelector(".Modal-inner").style.position = "fixed"
-        document.getElementsByClassName("Button Modal-closeButton")[0].style.display = "none"
-        document.getElementsByClassName("Modal Modal--large")[0].style.width = "-webkit-fill-available"
-        console.log("提问加载完成")
-    })
 
     emulateMouseClick(document.querySelector(".SearchBar-askButton"))
 
-}
+    console.log("加载完成")
+
+})

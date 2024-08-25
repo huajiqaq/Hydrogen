@@ -135,11 +135,6 @@
             id="usericon",
           },
           {
-            View,
-            layout_height="75dp",
-            id="mripple",
-          },
-          {
             TextView,
             text="",
             textSize="16sp",

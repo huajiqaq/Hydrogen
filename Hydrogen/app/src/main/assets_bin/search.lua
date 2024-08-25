@@ -16,7 +16,7 @@ button.onClick=function()
   if #(tostring(t2.text):gsub("\n",""):gsub(" ",""))<1 then
     提示("请输入您要搜索的内容")
    else
-    activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..t2.text})
+    activity.newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..t2.text})
   end
 end
 
@@ -34,7 +34,7 @@ itemc=获取适配器项目布局("search/search")
 
 yuxuan_adpqy=LuaAdapter(activity,itemc)
 
-search_list.Adapter=yuxuan_adpqy
+search_list.adapter=yuxuan_adpqy
 
 local url = "https://api.zhihu.com/search/top_search"
 zHttp.get(url,head,function(code,content)
@@ -54,7 +54,7 @@ search_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     if activity.getSharedData("内部搜索(beta)")=="true" then
       activity.newActivity("search_result",{v.Tag.id内容.Text})
      else
-      activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..v.Tag.id内容.Text})
+      activity.newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..v.Tag.id内容.Text})
     end
   end
 })
@@ -68,7 +68,7 @@ t2.setOnEditorActionListener(OnEditorActionListener({
       if #(tostring(t2.text):gsub("\n",""):gsub(" ",""))<1 then
         提示("请输入您要搜索的内容")
        else
-        activity.newActivity("huida",{"https://www.zhihu.com/search?type=content&q="..t2.text})
+        activity.newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..t2.text})
       end
     end
     return true;

@@ -16,9 +16,9 @@
     CardBackgroundColor=cardedge;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
+    id="card";
     {
       LinearLayout;
-      ripple="圆自适应",
       layout_height="fill";
       layout_width="fill";
       orientation="vertical";
@@ -55,11 +55,6 @@
           Typeface=字体("product");
           id="预览内容",
         };
-        {
-          TextView;
-          TextSize="0dp",
-          id="id内容",
-        };
       };
       {
         LinearLayout;
@@ -80,7 +75,7 @@
           textColor=textc;
           textSize="12sp",
           Typeface=字体("product");
-          id="收藏数",
+          id="评论数",
         };
         {
           ImageView;

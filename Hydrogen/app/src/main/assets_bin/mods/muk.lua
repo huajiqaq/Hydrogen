@@ -11,7 +11,7 @@ import "jesse205"
 
 oldTheme=ThemeUtil.getAppTheme()
 oldDarkActionBar=getSharedData("theme_darkactionbar")
-MyPageTool = require "views/MyPageTool"
+MyPageTool2 = require "views/MyPageTool2"
 
 --重写SwipeRefreshLayout到自定义view 原SwipeRefreshLayout和滑动组件有bug
 SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
@@ -28,6 +28,7 @@ function onConfigurationChanged(config)
 end
 
 --更新字号相关逻辑已移动到import.lua
+
 
 -- 定义一个函数，用于从字符串中获取数字和后续内容
 function get_number_and_following(str)
@@ -51,7 +52,7 @@ end
 
 function 点击事件判断(myid,title)
   if tostring(myid):find("问题分割") or not(tostring(myid):find("分割")) then
-    activity.newActivity("question",{tostring(myid):match("问题分割(.+)") or myid,true})
+    activity.newActivity("question",{tostring(myid):match("问题分割(.+)") or myid})
    elseif tostring(myid):find("文章分割") then
     activity.newActivity("column",{tostring(myid):match("文章分割(.+)"),tostring(myid):match("分割(.+)")})
    elseif tostring(myid):find("视频分割") then
@@ -65,18 +66,15 @@ function 点击事件判断(myid,title)
    elseif tostring(myid):find("专题分割") then
     activity.newActivity("column",{tostring(myid):match("专题分割(.+)"),"专题"})
    elseif tostring(myid):find("视频合集分割") then
-    activity.newActivity("huida",{tostring(myid):match("视频分割(.+)"),"视频",true})
+    activity.newActivity("browser",{tostring(myid):match("视频分割(.+)"),"视频"})
    elseif tostring(myid):find("话题分割") then
     activity.newActivity("topic",{tostring(myid):match("话题分割(.+)")})
    elseif tostring(myid):find("用户分割") then
     activity.newActivity("people",{tostring(myid):match("用户分割(.+)")})
    elseif tostring(myid):find("专栏分割") then
-    activity.newActivity("huida",{"https://www.zhihu.com/column/"..tostring(myid):match("专栏分割(.+)"),"我的专栏"})
+    activity.newActivity("people_column",{tostring(myid):match("专栏分割(.+)")})
 
    else
-    if title then
-      保存历史记录(title,myid,50)
-    end
     activity.newActivity("answer",{tostring(myid):match("(.+)分割"),tostring(myid):match("分割(.+)")})
   end
 end
@@ -162,6 +160,9 @@ function Ripple(id,color,t)
 end
 
 function 时间戳(t)
+  if not t then
+    return nil
+  end
   --local t=t/1000
   local nowtime=os.time()
   local between=nowtime-t
@@ -294,78 +295,81 @@ function 设置Cookie(url,b)
   return result
 end
 
-function 初始化历史记录数据(save)
-  recordtitle={}
-  recordid={}
-  退出时保存历史记录=save
-  if (退出时保存历史记录==true)then
-    local recordt={}
-    local recordi={}
-    for d in each(this.getSharedPreferences("Historyrecordtitle",0).getAll().entrySet()) do
-      recordt[tonumber(d.getKey())]=d.getValue()
-    end
-    for d in each(this.getSharedPreferences("Historyrecordid",0).getAll().entrySet()) do
-      recordi[tonumber(d.getKey())]=d.getValue()
-    end
-    local k=0
-    for i=#recordt,1,-1 do
-      k=k+1
-      recordtitle[k]=recordt[i]
-      recordid[k]=recordi[i]
-    end
+-- 从 SharedPreferences 中加载数据
+function loadSharedPreferences(name)
+  local data = {}
+  for entry in each(this.getSharedPreferences(name, 0).getAll().entrySet()) do
+    data[tonumber(entry.getKey())] = entry.getValue()
+  end
+  return data
+end
+
+
+-- 初始化历史记录数据
+function 初始化历史记录数据()
+  recordtitle = {}
+  recordid = {}
+  -- 从 SharedPreferences 中加载数据
+  local titles = loadSharedPreferences("Historyrecordtitle")
+  local ids = loadSharedPreferences("Historyrecordid")
+  -- 将数据排序并存储到记录数组中
+  local keys = {}
+  for key in pairs(titles) do
+    table.insert(keys, tonumber(key))
+  end
+  table.sort(keys, function(a, b) return a > b end)
+  for i, key in ipairs(keys) do
+    recordtitle[i] = titles[key]
+    recordid[i] = ids[key]
   end
 end
 
-function saveHistoryrecord(a,b,num)
-  recordtitle[#recordtitle+1]=a
-  recordid[#recordid+1]=b
-  local www=num
-  if (num==nil)then
-    www=#recordtitle
-  end
-  if (退出时保存历史记录==true)then
-    this.getSharedPreferences("Historyrecordtitle",0).edit().clear().commit()
-    this.getSharedPreferences("Historyrecordid",0).edit().clear().commit()
-    local k=#recordtitle+1
-    for i=1,www do
-      this.getSharedPreferences("Historyrecordtitle",0).edit().putString(tostring(i),recordtitle[k-i]).apply()
-      this.getSharedPreferences("Historyrecordid",0).edit().putString(tostring(i),recordid[k-i]).apply()
-    end
-   else
-    if (#recordtitle>www)then
-      local c=#recordtitle-www
-      for i=1,#recordtitle do
-        recordtitle[i]=recordtitle[i+c]
-        recordid[i]=recordid[i+c]
-      end
-    end
+
+function saveHistoryRecord(title, id)
+  table.insert(recordtitle, title)
+  table.insert(recordid, id)
+
+  清空并保存历史记录("Historyrecordtitle", recordtitle)
+  清空并保存历史记录("Historyrecordid", recordid)
+end
+
+
+function 清空并保存历史记录(name, data)
+  local index = #data
+  local editor = this.getSharedPreferences(name, 0).edit()
+  editor.clear().commit()
+  for i = 1, index do
+    editor.putString(tostring(i), data[#data - i + 1]).apply()
   end
 end
 
-function 保存历史记录(a,b,num)
-  local ok=nil
-  for i,v in ipairs(recordid)do
-    if (b==(v))then
-      for b=i,#recordtitle do
-        recordtitle[b]=recordtitle[b+1]
-        recordid[b]=recordid[b+1]
-      end
-      saveHistoryrecord(a,b,num)
-      ok=1
-      return true
+function 保存历史记录(title, id)
+  -- 查找记录是否已存在
+  local found = false
+  for i, existingId in ipairs(recordid) do
+    if id == existingId then
+      -- 如果记录已存在，先删除再添加
+      table.remove(recordtitle, i)
+      table.remove(recordid, i)
+      saveHistoryRecord(title, id)
+      found = true
+      break
     end
   end
-  if (ok==1)then
-   else
-    saveHistoryrecord(a,b,num)
+
+  if not found then
+    saveHistoryRecord(title, id)
   end
 end
 
+
+-- 清除所有历史记录
 function 清除历史记录()
-  this.getSharedPreferences("Historyrecordtitle",0).edit().clear().commit()
-  this.getSharedPreferences("Historyrecordid",0).edit().clear().commit()
-  recordtitle={}
-  recordid={}
+  -- 清空SharedPreferences和全局变量
+  this.getSharedPreferences("Historyrecordtitle", 0).edit().clear().commit()
+  this.getSharedPreferences("Historyrecordid", 0).edit().clear().commit()
+  recordtitle = {}
+  recordid = {}
 end
 
 
@@ -406,22 +410,18 @@ end
 function 主题(str)
   全局主题值=str
   if 全局主题值=="Day" then
-    --primaryc="#448aff"
     primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#fdd835"
     textc="#212121"
     stextc="#424242"
     backgroundc="#ffffffff"
-    oribarbackgroundc="#efffffff"
     barbackgroundc=android.res.color.attr.colorBackground&0xFFFFFF+0xFF000000*0.8
     cardbackc="#fff1f1f1"
     viewshaderc="#00000000"
     grayc="#ECEDF1"
     ripplec="#559E9E9E"
-    --cardedge="#FFE0E0E0"
     cardedge=dec2hex(res.color.attr.colorSurface)
     oricardedge="#FFF6F6F6"
-    --cardedge="#FFF6F6F6"
     pcall(function()
       local _window = activity.getWindow();
       _window.setBackgroundDrawable(ColorDrawable(0xffffffff));
@@ -443,25 +443,18 @@ function 主题(str)
       return
     end
    elseif 全局主题值=="Night" then
-    --primaryc="#FF88B0F8"
     primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#ffbfa328"
-    --textc="#808080"
     textc="#FFCBCBCB"
-    --stextc="#666666"
     stextc="#808080"
-    --   backgroundc="#ff191919"
-    oribarbackgroundc="#ef191919"
+    backgroundc="#ff191919"
     barbackgroundc=android.res.color.attr.colorBackground&0xFFFFFF+0xFF000000*0.8
-    --   cardbackc="#ff212121"
-    backgroundc="#FF000000"
-    cardbackc="#FF000000"
+    cardbackc="#ff212121"
     viewshaderc="#80000000"
     grayc="#212121"
     ripplec="#559E9E9E"
     cardedge=dec2hex(res.color.attr.colorSurface-0x4f000000)
     oricardedge="#555555"
-    --cardedge="#555555"
     pcall(function()
       local _window = activity.getWindow();
       _window.setBackgroundDrawable(ColorDrawable(0xff222222));
@@ -622,21 +615,12 @@ end
 ripple = activity.obtainStyledAttributes({android.R.attr.selectableItemBackgroundBorderless}).getResourceId(0,0)
 ripples = activity.obtainStyledAttributes({android.R.attr.selectableItemBackground}).getResourceId(0,0)
 
+local color=res.color.attr.colorControlHighlight
+colorStateList = ColorStateList.valueOf(color);
+
 function 波纹(id,lx)
   xpcall(function()
     for index,content in pairs(id) do
-      if lx=="圆白" then
-        content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3fffffff})))
-      end
-      if lx=="方白" then
-        content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3fffffff})))
-      end
-      if lx=="圆黑" then
-        content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
-      end
-      if lx=="方黑" then
-        content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
-      end
       if lx=="圆主题" then
         content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
       end
@@ -644,18 +628,10 @@ function 波纹(id,lx)
         content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{转0x(primaryc)-0xdf000000})))
       end
       if lx=="圆自适应" then
-        if 全局主题值=="Day" then
-          content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
-         else
-          content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{0x3fffffff})))
-        end
+        content.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(colorStateList))
       end
       if lx=="方自适应" then
-        if 全局主题值=="Day" then
-          content.backgroundDrawable=(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3f000000})))
-         else
-          content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{0x3fffffff})))
-        end
+        content.setBackgroundDrawable(activity.Resources.getDrawable(ripples).setColor(colorStateList))
       end
     end
   end,function(e)end)
@@ -682,12 +658,6 @@ function 关闭对话框(an)
 end
 
 function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
-  local bwz
-  if 全局主题值=="Day" then
-    bwz=0x3f000000
-   else
-    bwz=0x3fffffff
-  end
 
   import "com.google.android.material.bottomsheet.*"
 
@@ -764,7 +734,6 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
           textColor=转0x(stextc);
           text=ds;
           id="dsnr_c";
-          RippleColor=ColorStateList(int[0].class{int{}},int{bwz});
           Typeface=字体("product-Bold");
         };
         {
@@ -779,7 +748,6 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
           textColor=转0x(stextc);
           text=qx;
           id="qxnr_c";
-          RippleColor=ColorStateList(int[0].class{int{}},int{bwz});
           Typeface=字体("product-Bold");
         };
         {
@@ -814,13 +782,6 @@ end
 
 
 function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
-
-  local bwz
-  if 全局主题值=="Day" then
-    bwz=0x3f000000
-   else
-    bwz=0x3fffffff
-  end
 
   import "com.google.android.material.bottomsheet.*"
 
@@ -893,7 +854,6 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
           textColor=转0x(stextc);
           text=qx;
           id="qxnr_c";
-          RippleColor=ColorStateList(int[0].class{int{}},int{bwz});
           Typeface=字体("product-Bold");
         };
         {
@@ -1430,12 +1390,6 @@ end
   showPopMenu(tab,"主菜单").showAsDropDown(menu)--弹出菜单
 ]]
 function showPopMenu(tab,title)
-  local bwz
-  if 全局主题值=="Day" then
-    bwz=0x3f000000
-   else
-    bwz=0x3fffffff
-  end
   local lp = activity.getWindow().getAttributes();
   lp.alpha = 0.85;
   activity.getWindow().setAttributes(lp);
@@ -1532,7 +1486,7 @@ function showPopMenu(tab,title)
 
   for a,b in ipairs(tab) do--遍历
     view=loadlayout(Popup_list_item)--设置菜单项布局
-    view.BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(ColorStateList(int[0].class{int{}},int{bwz}));
+    view.BackgroundDrawable=activity.Resources.getDrawable(ripples).setColor(colorStateList);
     if type(b[2])=="function" then--one
 
       Popup_list.addView(view)--添加
@@ -1982,7 +1936,7 @@ function 加入专栏(回答id,收藏类型)
   dialog_lay.addView(add_text).addView(add_button)
 
   add_text.onClick=function()
-    activity.newActivity("huida",{"https://www.zhihu.com/column/request","新建专栏","null"})
+    activity.newActivity("browser",{"https://www.zhihu.com/column/request","新建专栏"})
     提示("已跳转 请自行添加")
   end
 
@@ -2180,20 +2134,21 @@ cardradius=nil
 --cardback=全局主题值=="Day" and cardedge or backgroundc
 --cardmargin=全局主题值=="Day" and "4px" or false
 
-function 黑暗模式主题(view)
-  加载js(view,获取js("darktheme"))
-end
-
-function 白天主题(view)
-  加载js(view,获取js("daytheme"))
+function 夜间模式主题(view)
+  local js=获取js("darktheme")
+  加载js(view,js)
 end
 
 function 等待doc(view)
-  加载js(view,获取js("waitdoc"))
+  local js=获取js("waitdoc")
+  加载js(view,js)
 end
 
-function 黑暗页(view)
-  加载js(view,[[javascript:(function(){var styleElem=null,doc=document,ie=doc.all,fontColor=80,sel="body,body *";styleElem=createCSS(sel,setStyle(fontColor),styleElem);function setStyle(fontColor){var colorArr=[fontColor,fontColor,fontColor];return"background-color:#]]..backgroundc:sub(4,#backgroundc)..[[ !important;color:RGB("+colorArr.join("%,")+"%) !important;"}function createCSS(sel,decl,styleElem){var doc=document,h=doc.getElementsByTagName("head")[0],styleElem=styleElem;if(!styleElem){s=doc.createElement("style");s.setAttribute("type","text/css");styleElem=ie?doc.styleSheets[doc.styleSheets.length-1]:h.appendChild(s)}if(ie){styleElem.addRule(sel,decl)}else{styleElem.innerHTML="";styleElem.appendChild(doc.createTextNode(sel+" {"+decl+"}"))}return styleElem}})();]])
+function 夜间模式回答页(view)
+  local js=获取js("darkanswer")
+  local gsub_str='"'..backgroundc:sub(4,#backgroundc)..'"'
+  js=js:gsub("appbackgroudc",gsub_str)
+  加载js(view,js)
 end
 
 function matchtext(str,regex)
@@ -2398,7 +2353,7 @@ function setHead()
 
     apphead = {
       ["x-api-version"] = "3.1.8";
-      ["x-app-za"] = "OS=Android&Release=10&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
+      ["x-app-za"] = "OS=Android&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
       ["x-app-version"] = "9.13.0";
       ["x-app-bundleid"] = "com.zhihu.android";
       ["x-app-flavor"] = "myapp";
@@ -2422,7 +2377,7 @@ function setHead()
 
     apphead = {
       ["x-api-version"] = "3.1.8";
-      ["x-app-za"] = "OS=Android&Release=10&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
+      ["x-app-za"] = "OS=Android&Release&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
       ["x-app-version"] = "9.13.0";
       ["x-app-bundleid"] = "com.zhihu.android";
       ["x-app-flavor"] = "myapp";
@@ -2436,17 +2391,9 @@ function setHead()
     postapphead["content-type"]="application/json; charset=UTF-8"
   end
 
-  if homeapphead and homeapphead1 then
-    homeapphead=table.clone(apphead)
-    homeapphead["x-close-recommend"]="0"
-    homeapphead["x-feed-prefetch"]="1"
-    homeapphead1=table.clone(apphead)
-    homeapphead1["scroll"]="down"
-  end
-
-  if followapphead then
-    followapphead = table.clone(apphead)
-    followapphead["x-moments-ab-param"] = "follow_tab=1";
+  if followhead then
+    followhead = table.clone(apphead)
+    followhead["x-moments-ab-param"] = "follow_tab=1";
   end
 
 end
@@ -2492,7 +2439,7 @@ function 清理内存()
     if m == 0 then
       提示("没有可清理的缓存")
      else
-      提示("清理成功,共清理 "..tokb(m))
+      --提示("清理成功,共清理 "..tokb(m))
     end
   end)
 end
@@ -2637,15 +2584,37 @@ end
 
 local glid_manage=Glide.with(this)
 local glid_manager=Glide.get(this)
-function loadglide(view,url,ischeck)
+glide_img={}
+function loadglide(view,url,ischeck,size)
   if 无图模式 and ischeck~=false then
     url=logopng
   end
   import "com.bumptech.glide.load.engine.DiskCacheStrategy"
-  glid_manage
-  .load(url)
-  .diskCacheStrategy(DiskCacheStrategy.NONE)
-  .into(view)
+  import "com.bumptech.glide.request.RequestListener"
+  if size then
+    glid_manage
+    .asBitmap()
+    .load(url)
+    .diskCacheStrategy(DiskCacheStrategy.NONE)
+    .override(size.width,size.height)
+    .listener(RequestListener{
+      onLoadFailed=function(e,model,target,isFirstResource)
+        return false;
+      end,
+    })
+    .into(view)
+   else
+    glid_manage
+    .asBitmap()
+    .load(url)
+    .diskCacheStrategy(DiskCacheStrategy.NONE)
+    .listener(RequestListener{
+      onLoadFailed=function(e,model,target,isFirstResource)
+        return false;
+      end,
+    })
+    .into(view)
+  end
   glid_manager.clearMemory();
 end
 
@@ -2887,3 +2856,847 @@ function 获取想法标题(simpletitle)
 end
 
 webview_packagename="com.android.chrome"
+
+--有生之年优化的代码 软件内直接加载内容 bug太多遂放弃
+function trim_last_newline(str)
+  if str:sub(-1) == "\n" or str:sub(-1) == "\r" then
+    return str:sub(1, -2) -- 移除最后一个字符
+   else
+    return str -- 返回原字符串
+  end
+end
+
+function setClickableSpan(spannableString,startindex,endindex,url)
+  import "android.text.SpannableString"
+  import "android.text.style.ClickableSpan"
+  import "android.text.Spanned"
+  import "android.text.method.LinkMovementMethod"
+  local clickableSpan = ClickableSpan{
+    onClick=function(widget)
+      检查链接(url);
+    end,
+    updateDrawState=function(v)
+      v.setColor(v.linkColor);
+      v.setUnderlineText(false)
+    end
+  }
+  spannableString.setSpan(clickableSpan, startindex, endindex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+end
+
+local method = View.getDeclaredMethod("initializeScrollbars", Class{TypedArray});
+method.setAccessible(true);
+
+function recylerview显示滚动条(recy)
+  method.invoke(recy, Object[1]);
+end
+
+
+内容页加载={}
+
+function 加载内容页(data,recy)
+
+  import "android.content.res.TypedArray";
+
+  recylerview显示滚动条(recy)
+  recy.setVerticalScrollBarEnabled(true);
+  recy.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+
+
+  import "android.widget.ImageView$ScaleType"
+
+  local structured_content=data.structured_content
+  local segments={}
+  if structured_content then
+    segments=structured_content.segments
+  end
+
+  if data.relationship_tips then
+    table.insert(segments,1,{
+      type="myapptip",
+      myapptip={
+        text=data.relationship_tips.text
+      }
+    })
+  end
+
+  if data.type~="answer" and data.header then
+    table.insert(segments,1,{
+      type="heading",
+      heading={
+        text=data.header.text
+      }
+    })
+  end
+
+  if data.image_list then
+    table.insert(segments,1,{
+      type="imglist",
+      imglist={
+        images=data.image_list.images,
+        count=data.image_list.count
+      }
+    })
+  end
+
+  if data.author then
+    table.insert(segments,1,{
+      type="author",
+      author={
+        avatar_url=data.author.avatar.avatar_image.day,
+        headline=data.author.description,
+        name=data.author.fullname,
+        id=data.author.id
+      }
+    })
+  end
+
+  table.insert(segments,{
+    type="myapptip",
+    myapptip={
+      text=(function()
+        local content_end_info=data.content_end_info
+        local str=""
+        if content_end_info.update_time_text and content_end_info.update_time_text~="" then
+          str=content_end_info.update_time_text
+         elseif content_end_info.create_time_text and content_end_info.create_time_text~="" then
+          str=content_end_info.create_time_text
+        end
+        if content_end_info.ip_info and content_end_info.ip_info~="" then
+          str=str.." · "..content_end_info.ip_info
+        end
+        if str=="" then
+          str="未知"
+        end
+        return str
+      end)()
+    }
+  })
+
+  local recywidth=recy.width
+  import "androidx.viewpager2.widget.ViewPager2"
+  import "com.google.android.material.card.MaterialCardView"
+  import "android.widget.CircleImageView"
+  import "android.text.method.LinkMovementMethod"
+
+  local imgindex=0
+  local imgdata={}
+
+  for k,v in pairs(segments) do
+    local type1=v.type
+    local data=v[type1]
+    switch type1
+     case "image"
+      local url=data.urls[1]
+      imgdata[url]=tostring(imgindex)
+      imgindex=imgindex+1
+     case "imglist"
+      for i=1,#data.images do
+        local url=data.images[i].url
+        imgdata[url]=tostring(imgindex)
+        imgindex=imgindex+1
+      end
+    end
+  end
+
+  local function 跳转图片(url)
+    local pos=imgdata[url]
+    local imgdata1={}
+    for k,v in pairs(imgdata) do
+      imgdata1[v]=k
+    end
+    imgdata1[tostring(table.size(imgdata1))]=tonumber(pos)
+    this.setSharedData("imagedata",luajson.encode(imgdata1))
+    activity.newActivity("image")
+  end
+
+  内容页加载[recy.id]=segments
+
+
+  local adp=LuaCustRecyclerAdapter(AdapterCreator({
+
+    getItemCount=function()
+      return #segments
+    end,
+
+    getItemViewType=function(position)
+      local data=segments[position+1]
+      local datatype
+      local type1=data.type
+      switch type1
+       case "paragraph"
+        datatype=0
+       case "image"
+        datatype=1
+       case "hr"
+        datatype=2
+       case "heading"
+        datatype=3
+       case "code_block"
+        datatype=4
+       case "list_node"
+        datatype=5
+       case "video"
+        datatype=6
+       case "card"
+        if data[type1].card_type:find("ad") then
+          datatype=7
+         else
+          datatype=8
+        end
+       case "blockquote"
+        datatype=9
+       case "author"
+        datatype=98
+       case "imglist"
+        datatype=99
+       case "myapptip"
+        datatype=100
+      end
+      data.datatype=datatype
+      return datatype or 500
+    end,
+
+    onCreateViewHolder=function(parent,viewType)
+      local views={}
+      local itemc
+      switch viewType
+       case 0
+        itemc= {
+          LinearLayout,
+          layout_width="fill";
+          orientation="vertical";
+          id="root";
+          {
+            TextView;
+            id="text",
+            Typeface=字体("product");
+            textSize="16sp";
+            LineHeight="20sp";
+            layout_width="match";
+            TextIsSelectable=true,
+          };
+        };
+       case 1
+        itemc=
+        {
+          LinearLayout,
+          layout_width="fill";
+          orientation="vertical";
+          {
+            ImageView;
+            id="img",
+            layout_width="match";
+            adjustViewBounds="true",
+          };
+          {
+            TextView;
+            text="\n";
+            id="介绍";
+            layout_gravity="center";
+            gravity="center";
+            layout_width="match";
+          }
+        }
+       case 2
+        itemc= {
+          LinearLayout;
+          layout_width="-1";
+          layout_height="wrap";
+          gravity="center";
+          orientation="vertical";
+          {
+            TextView;
+            layout_width="-1";
+            layout_height="10px";
+            background=cardback,
+            layout_marginTop="16dp";
+            layout_marginBottom="16dp";
+            layout_marginLeft="100dp";
+            layout_marginRight="100dp";
+          };
+          {
+            TextView;
+            text="\n";
+            layout_width="match";
+          }
+        };
+       case 3
+        itemc={
+          TextView;
+          id="text",
+          Typeface=字体("product-Bold");
+          textSize="16sp";
+          LineHeight="20sp";
+          TextIsSelectable=true
+        }
+       case 4
+        itemc={
+          TextView;
+          id="text",
+          Typeface=字体("product");
+          textSize="16sp";
+          LineHeight="20sp";
+          TextIsSelectable=true
+        }
+       case 5
+        itemc={
+          TextView;
+          id="text",
+          Typeface=字体("product");
+          textSize="16sp";
+          LineHeight="20sp";
+          TextIsSelectable=true
+        }
+       case 6
+        itemc= {
+          LinearLayout;
+          layout_height="wrap";
+          layout_width="fill";
+          orientation="vertical";
+          {
+            MaterialCardView;
+            layout_height="wrap";
+            layout_width="match";
+            id="card";
+            {
+              LinearLayout;
+              layout_gravity="center";
+              layout_width="match";
+              padding="16dp";
+              {
+                TextView;
+                id="text",
+                layout_gravity="center";
+                layout_width="match";
+                gravity="center";
+              };
+            };
+          };
+          {
+            TextView;
+            text="\n";
+            layout_width="match";
+          }
+        };
+       case 7
+        itemc= {
+          LinearLayout;
+          layout_height="wrap";
+          layout_width="fill";
+          orientation="vertical";
+          {
+            MaterialCardView;
+            layout_gravity='center';
+            Elevation='0';
+            layout_width='fill';
+            layout_height='-2';
+            radius=cardradius;
+            id="card",
+            CardBackgroundColor=cardedge;
+            StrokeColor=cardedge;
+            StrokeWidth=dp2px(1),
+            {
+              LinearLayout;
+              layout_width="fill";
+              orientation="horizontal",
+              {
+                MaterialCardView;
+                Elevation='0';
+                layout_marginLeft="5dp";
+                layout_gravity="center_vertical",
+                CardBackgroundColor=cardbackroundc,
+                {
+                  ImageView;
+                  layout_width='56dp';
+                  layout_gravity="center|right",
+                  layout_height="56dp",
+                  id="img",
+                  ScaleType=ScaleType.CENTER_CROP,
+                };
+              };
+              {
+                LinearLayout;
+                padding="16dp";
+                layout_weight=1;
+                layout_gravity="center",
+                gravity="center",
+                {
+                  TextView;
+                  textColor=textc;
+                  textSize="14sp";
+                  Typeface=字体("product-Bold");
+                  id="标题",
+                  layout_weight="1";
+                };
+                {
+                  AppCompatImageView;
+                  id="rightIcon";
+                  layout_width="24dp";
+                  layout_height="24dp";
+                  colorFilter=theme.color.textColorSecondary;
+                  ImageResource=R.drawable.ic_chevron_right;
+                }
+              };
+            };
+          };
+          {
+            TextView;
+            text="\n";
+            layout_width="match";
+          }
+        };
+       case 8
+        itemc= {
+          LinearLayout;
+          layout_height="wrap";
+          layout_width="fill";
+          orientation="vertical";
+          {
+            MaterialCardView;
+            layout_gravity='center';
+            Elevation='0';
+            layout_width='fill';
+            layout_height='-2';
+            radius=cardradius;
+            id="card",
+            CardBackgroundColor=cardedge;
+            StrokeColor=cardedge;
+            StrokeWidth=dp2px(1),
+            {
+              LinearLayout;
+              padding="16dp";
+              orientation="vertical";
+              {
+                TextView;
+                textColor=textc;
+                textSize="14sp";
+                Typeface=字体("product-Bold");
+                id="标题",
+              };
+              {
+                TextView;
+                textColor=textc;
+                textSize="14sp";
+                Typeface=字体("product");
+                id="底部内容",
+              };
+            };
+          };
+
+          {
+            TextView;
+            text="\n";
+            layout_width="match";
+          }
+        };
+       case 9
+        itemc={
+          LinearLayout;
+          layout_width="-1";
+          layout_height="wrap";
+          gravity="center";
+          orientation="horizontal";
+          {
+            TextView;
+            layout_width="wrap";
+            layout_height="10px";
+            background=cardback,
+            layout_marginTop="16dp";
+            layout_marginBottom="16dp";
+            layout_marginLeft="10dp";
+            layout_marginRight="10dp";
+          };
+          {
+            TextView;
+            id="text",
+            Typeface=字体("product");
+            textSize="16sp";
+            LineHeight="20sp";
+            TextIsSelectable=true,
+          },
+          {
+            TextView;
+            text="\n";
+            layout_width="match";
+          };
+        }
+
+       case 98
+        itemc={
+          LinearLayout;
+          layout_height="wrap";
+          layout_width="fill";
+          orientation="vertical";
+          {
+            MaterialCardView;
+            layout_gravity="center";
+            layout_height="-2";
+            CardBackgroundColor=cardedge,
+            Elevation="0";
+            layout_width="-1";
+            layout_margin="16dp";
+            layout_marginTop="0dp";
+            layout_marginBottom="0dp";
+            layout_marginLeft="0dp";
+            layout_marginRight="0dp";
+            radius=cardradius;
+            StrokeColor=cardedge;
+            StrokeWidth=dp2px(1),
+            id="card",
+            {
+              CircleImageView,
+              layout_marginLeft="8dp";
+              layout_width="45dp",
+              layout_height="45dp",
+              layout_gravity="left|center",
+              id="usericon",
+            },
+            {
+              TextView,
+              text="",
+              textSize="16sp",
+              id="username",
+              Typeface=字体("product-Bold");
+              layout_marginTop="15dp",
+              layout_marginLeft="60dp",
+              gravity="left|center",
+              textColor=textc,
+            },
+            {
+              TextView,
+              text="",
+              id="userheadline",
+              Typeface=字体("product");
+              textSize="14sp",
+              layout_marginLeft="60dp",
+              layout_marginRight="5dp",
+              layout_marginTop="40dp",
+              layout_marginBottom="10dp",
+              gravity="left|bottom",
+              textColor="#FF767676",
+            },
+          };
+          {
+            TextView;
+            text="";
+            layout_gravity="center";
+            gravity="center";
+            layout_width="match";
+          }
+        };
+       case 99
+        itemc= {
+          LinearLayout;
+          orientation="vertical";
+          layout_width="-1";
+          layout_height="wrap";
+          {
+            RelativeLayout;
+            layout_width="fill";
+            layout_height="50%h";
+            {
+              LinearLayout;
+              layout_width="-1";
+              layout_height="-1";
+              {
+                ViewPager2;
+                id="picpage";
+                layout_width="-1";
+                layout_height="-1";
+              };
+            };
+            {
+              LinearLayout;
+              layout_alignParentRight="true";
+              orientation="horizontal";
+              {
+                MaterialCardView;
+                layout_gravity="center";
+                {
+                  LinearLayout;
+                  orientation="horizontal";
+                  layout_marginRight="8dp";
+                  layout_marginLeft="8dp";
+                  {
+                    TextView;
+                    id="now_count",
+                    text="1",
+                  };
+                  {
+                    TextView;
+                    text="/",
+                  };
+                  {
+                    TextView;
+                    id="all_count",
+                    text="1",
+                  };
+                };
+              };
+            };
+          };
+          {
+            TextView;
+            layout_width="match";
+            text="\n";
+          };
+        };
+
+       case 100
+        itemc={
+          TextView;
+          id="text",
+          Typeface=字体("product");
+          textSize="14sp";
+          LineHeight="20sp";
+          TextIsSelectable=true,
+        }
+       case 500
+        itemc={TextView;text="未知类型"}
+      end
+
+      holder=LuaCustRecyclerHolder(loadlayout(itemc,views))
+
+      if views.text and views.text.isTextSelectable()==true then
+        views.text.TextIsSelectable=false
+        views.text.onLongClick=function(v)
+          local mtab={
+
+            {"分享",function()
+                local text=trim_last_newline(v.Text)
+                if text=="" then
+                  text=trim_last_newline(v.hint)
+                end
+                分享文本(text)
+            end},
+            {"复制",function()
+                local text=trim_last_newline(v.Text)
+                if text=="" then
+                  text=trim_last_newline(v.hint)
+                end
+                import "android.content.*"
+                activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(text)
+                提示("复制文本成功")
+            end},
+          }
+
+          local pop=showPopMenu(mtab)
+          pop.showAtLocation(v, Gravity.NO_GRAVITY, recy_x, recy_y);
+
+        end
+      end
+
+      holder.view.setTag(views)
+      return holder
+    end,
+
+    onBindViewHolder=function(holder,position)
+      local view=holder.view.getTag()
+      local data=segments[position+1]
+      local type=data.type
+
+      switch data.datatype
+       case 0
+        view.text.text=data[type].text.."\n"
+        if data[type].marks then
+          local text = SpannableString(view.text.text)
+          for _,v in ipairs(data[type].marks) do
+            local start_index=v.start_index
+            local end_index=v.end_index
+            if v.type=="bold" then
+              text.setSpan(StyleSpan(Typeface.BOLD), start_index,end_index, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+             elseif v.type=="link" then
+              setClickableSpan(text,start_index,end_index,v.link.href);
+            end
+          end
+          --似乎必须要在这里设置
+          view.text.setMovementMethod(LinkMovementMethod.getInstance());
+          view.text.text=text
+        end
+       case 1
+
+        local url=data[type].urls[1]
+        local width=data[type].width
+        local height=data[type].height
+        local sy = recywidth / width
+        width=recywidth
+        height = height * sy;
+
+        view.img.onClick=function()
+          跳转图片(url)
+        end
+        view.介绍.text=""
+        view.介绍.hint=data[type].description.."\n"
+
+        --计算高度 否则会异常滚动
+        loadglide(view.img,url,nil,{
+          width=width,
+          height=height
+        })
+
+        --禁用缓存 防止重复加载
+        holder.setIsRecyclable(false)
+       case 2
+       case 3
+        view.text.text=data[type].text.."\n"
+       case 4
+        view.text.text=data[type].content.."\n"
+       case 5
+        local items=data[type].items
+        local i=1
+        local content={}
+        for _,v in ipairs(items) do
+          table.insert(content,tostring(i)..".  "..v.text)
+          i=i+1
+        end
+        view.text.text=table.concat(content,"\n").."\n"
+       case 6
+        view.text.text="点击播放 "..data[type].title
+       case 7
+        if data[type].cover then
+          loadglide(view.img,data[type].cover)
+         else
+          loadglide(logopng,data[type].cover)
+        end
+        local extra_data=luajson.decode(data[type].extra_info)
+        view.标题.text= extra_data.description
+       case 8
+        local extra_data=luajson.decode(data[type].extra_info)
+        view.标题.text=extra_data.title
+        view.底部内容.hint=Html.fromHtml(extra_data.desc)
+       case 9
+        view.text.hint=data[type].text.."\n"
+       case 98
+        local author=data[type]
+        loadglide(view.usericon,author.avatar_url)
+        if author.headline=="" then
+          view.userheadline.text="Ta还没有签名哦~"
+         else
+          view.userheadline.text=author.headline
+        end
+        view.username.text=author.name
+
+       case 99
+        local imglist=data[type]
+        view.all_count.text=tostring(imglist.count)
+        import "com.dingyi.adapter.BaseViewPage2Adapter"
+
+        local t=BaseViewPage2Adapter(this)
+
+        local base=
+        {
+          FrameLayout,
+          layout_height="-1",
+          layout_width="-1",
+          layoutTransition=LayoutTransition()
+          .enableTransitionType(LayoutTransition.CHANGING),
+          {
+            ImageView,
+            id="img",
+            visibility=8,
+            layout_height="-1",
+            layout_width="-1",
+          },
+        }
+
+        local views={}
+        for i=1,#imglist.images do
+          views[i]={}
+          views[i].ids={}
+          t.add(loadlayout(base,views[i].ids))
+        end
+
+        view.picpage.adapter=t
+
+        import "androidx.viewpager2.widget.ViewPager2$OnPageChangeCallback"
+        import "com.bumptech.glide.Glide"
+        import "com.bumptech.glide.load.engine.DiskCacheStrategy"
+
+        view.picpage.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
+          onPageSelected=function(i)--选中的页数
+            i=i+1
+            view.now_count.text=tostring(i)
+            local parent=views[i].ids
+            if parent.img.getDrawable()==nil then
+              local url=imglist.images[i].url
+              loadglide(parent.img,url,nil,nil)
+              parent.img.Visibility=0
+              parent.img.onClick=function()
+                跳转图片(url)
+              end
+            end
+          end,
+
+        })
+
+       case 100
+        view.text.hint=data[type].text.."\n"
+      end
+
+
+      switch viewType
+       case 6
+        views.card.onClick=function()
+          zHttp.get("https://lens.zhihu.com/api/v4/videos/"..data.id内容,head,function(code,content)
+            if code==200 then
+              local v=luajson.decode(content)
+              xpcall(function()
+                视频链接=v.playlist.SD.play_url
+                end,function()
+                视频链接=v.playlist.LD.play_url
+                end,function()
+                视频链接=v.playlist.HD.play_url
+              end)
+              this.newActivity("browser",{视频链接})
+             elseif code==401 then
+              Toast.makeText(activity, "请登录后查看视频",Toast.LENGTH_SHORT).show()
+            end
+          end)
+        end
+       case 7,8
+        views.card.onClick=function()
+          检查链接(data.id内容)
+        end
+       case 98
+        views.card.onClick=function()
+          this.newActivity("people",{data.id内容})
+        end
+      end
+
+    end,
+  }))
+
+  recy.setAdapter(adp)
+  recy.setLayoutManager(LinearLayoutManager(this,RecyclerView.VERTICAL,false))
+  recy.setLayoutFrozen(false)
+  recy.addOnItemTouchListener(RecyclerView.OnItemTouchListener {
+    onInterceptTouchEvent=function(rv, e)
+      recy_x=e.getX()
+      recy_y=e.getY()
+      --mDetector.onTouchEvent(e);
+      return false;
+    end,
+    onTouchEvent=function(rv,e)
+      --print(e)
+    end,
+    onRequestDisallowInterceptTouchEvent=function(disallowIntercept)
+    end
+  });
+
+end
+
+function replace_or_add_order_by(url, new_value)
+  -- 分离URL中的查询部分
+  local query_start = url:find("?")
+  if not query_start then return url .. "?order_by=" .. new_value end -- 如果没有查询部分，则直接添加 order_by 参数
+  local query_string = url:sub(query_start + 1)
+  local base_url = url:sub(1, query_start - 1)
+  -- 查找并替换 order_by 参数
+  local modified_query = query_string:gsub("order_by=[^&]*", "order_by=" .. new_value)
+  -- 如果 order_by 不存在，则添加它
+  if modified_query == query_string then
+    modified_query = query_string .. (query_string:find("&$") and "" or "&") .. "order_by=" .. new_value
+  end
+  -- 构建新的URL
+  return base_url .. "?" .. modified_query
+end

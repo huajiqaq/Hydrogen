@@ -80,12 +80,16 @@
       layout_height="-2";
       orientation="vertical";
       {
-        ListView;
-        DividerHeight=0;
-        layout_width="fill";
-        background=backgroundc,
+        SwipeRefreshLayout;
+        id="collectionsr";
         layout_height="fill";
-        id="list5";
+        layout_width="fill";
+        {
+          RecyclerView;
+          id="collection_recy";
+          layout_width="-1";
+          layout_height="-1";
+        };
       };
     };
   };

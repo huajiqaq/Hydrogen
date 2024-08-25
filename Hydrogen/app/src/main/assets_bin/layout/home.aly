@@ -100,7 +100,7 @@
                 return 提示("请登录后使用本功能")
               end
               task(20,function()
-                activity.newActivity("huida",{"https://www.zhihu.com/messages","提问",true})
+                activity.newActivity("browser",{"https://www.zhihu.com/messages","提问"})
               end)
             end;
           };
@@ -169,7 +169,6 @@
         "layout.home_layout.page_daily";
         "layout.home_layout.page_collections";
         "layout.home_layout.page_follow";
-        "layout.home_layout.page_create";
 
       };
     };

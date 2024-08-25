@@ -76,18 +76,23 @@
     };
     {--滚动布局下必须有线性竖直布
       LinearLayout,
-      id="Internetnet",
+      id="internetnet",
       orientation="vertical",
       layout_width="fill",
       layout_height="fill",
       background=backgroundc,
       {
-        GridView;
-        layout_width="-1";
-        background=backgroundc,
-        layout_height="-1";
-        id="comment_list";
+        SwipeRefreshLayout;
+        id="commentsr";
+        layout_height="fill";
+        layout_width="fill";
         layout_weight=1;
+        {
+          RecyclerView;
+          id="comment_recy";
+          layout_width="-1";
+          layout_height="-1";
+        };
       };
 
       {
@@ -131,7 +136,7 @@
     };
     {
       LinearLayout,
-      id="Localcomment",
+      id="localcomment",
       orientation="vertical",
       layout_width="fill",
       layout_height="fill",

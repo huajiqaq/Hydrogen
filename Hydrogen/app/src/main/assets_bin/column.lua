@@ -11,7 +11,7 @@ import "com.androlua.LuaWebView$JsInterface"
 
 import "com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton"
 
-local result,类型,islocal,filedir,simpletitle,autoname=...
+local id,类型=...
 
 if 类型==nil or 类型:match("%d") then
   类型="文章"
@@ -21,39 +21,30 @@ end
 
 activity.setContentView(loadlayout("layout/column_parent"))
 
-if islocal then
-  if 类型~="视频" then
-    原类型=类型
-    类型="本地"
-  end
-  mtype="local"
- else
-
-  if 类型=="文章" then
-    mtype="article"
-    fxurl="https://zhuanlan.zhihu.com/p/"..result
-   elseif 类型=="想法"
-    mtype="pin"
-    fxurl="https://www.zhihu.com/appview/pin/"..result
-   elseif 类型=="视频"
-    mtype="zvideo"
-    fxurl="https://www.zhihu.com/zvideo/"..result
-   elseif 类型=="圆桌" then
-    mtype="roundtable"
-    fxurl="https://www.zhihu.com/roundtable/"..result
-   elseif 类型=="专题" then
-    mtype="special"
-    fxurl="https://www.zhihu.com/special/"..result
-  end
-
+if 类型=="本地" then
+  task(1,function()
+    _title.text="本地内容"
+    local html=File(id)
+    local 详情=读取文件(tostring(html.getParent()).."/detail.txt")
+    if 详情:match("article")
+      mytype="文章"
+     elseif 详情:match("pin")
+      mytype="想法"
+    end
+    myid = 详情:match("(%d+)[^/]*$")
+    local myuri = Uri.fromFile(html).toString();
+    content.loadUrl(myuri)
+  end)
 end
 
+base_column=require "model/column"
+:new(id,类型)
+
+urltype=base_column.urltype
+fxurl=base_column.fxurl
 
 波纹({fh,_more},"圆主题")
 静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),pbar,"横")
-
---设置webview
-content=mty
 
 content.getSettings()
 .setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
@@ -116,114 +107,26 @@ _title.Text="加载中"
 
 local ua=getua(content)
 content.getSettings().setUserAgentString(ua)
-
+content.BackgroundColor=转0x("#00000000",true);
 
 function 刷新()
-  content.BackgroundColor=转0x("#00000000",true);
-  content.setVisibility(8)
-  if 类型=="文章" then
-    zHttp.get("https://www.zhihu.com/api/v4/articles/"..result,head,function(code,body)
-      if code==200 then
-        local url=luajson.decode(body)
-        autoname=url.author.name
-        simpletitle=url.title
-        --simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
-        if simpletitle=="" then
-          simpletitle="一个文章"
-        end
-        authorid=url.author.id
-        _title.Text=url.title
-        content.loadUrl("https://www.zhihu.com/appview/p/"..result)
-        保存历史记录(_title.Text,"文章分割"..result,50)
-       else
-        提示("加载页面失败")
-        _title.Text="加载失败"
-      end
-      if luajson.decode(body).author.id==activity.getSharedData("idx") then
-        table.insert(mpop.list,#mpop.list,{
-          src=mpop.list[#mpop.list].src,text="编辑文章",onClick=function()
-            提示("请手动进入设置")
-            activity.newActivity("huida",{"https://zhuanlan.zhihu.com/p/"..result,"我的文章设置"})
-          end
-        })
-        a=MUKPopu(mpop)
-      end
-    end)
-   elseif 类型=="想法" then
-    _title.Text="查看想法"
-    zHttp.get("https://www.zhihu.com/api/v4/pins/"..result,head,function(code,content)
-      simpletitle=luajson.decode(content).excerpt_title
-      simpletitle=获取想法标题(simpletitle)
-      --simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
-      if simpletitle=="" then
-        simpletitle="一个想法"
-      end
-      autoname=luajson.decode(content).author.name
-      authorid=luajson.decode(content).author.id
-      if luajson.decode(content).self_create then
-        table.insert(mpop.list,#mpop.list,{
-          src=mpop.list[#mpop.list].src,text="删除想法",onClick=function()
-            zHttp.delete("https://www.zhihu.com/api/v4/pins/"..result,posthead,function(code,content)
-              if code==200 then
-                提示("删除成功")
-               elseif code==401 then
-                提示("请登录后使用本功能")
-              end
-            end)
 
-          end
-        })
-        a=MUKPopu(mpop)
-      end
-      保存历史记录(simpletitle,"想法分割"..result,50)
-    end)
-    content.loadUrl("https://www.zhihu.com/appview/pin/"..result)
-   elseif 类型=="视频" then
-    content.loadUrl("https://www.zhihu.com/zvideo/"..result.."?utm_id=0")
-    _title.Text="视频"
-    zHttp.get("https://www.zhihu.com/api/v4/zvideos/"..result,head,function(code,content)
-      simpletitle=luajson.decode(content).title
-      --simpletitle=StringHelper.Sub(simpletitle,0,20,"...")
-      if simpletitle=="" then
-        simpletitle="一个视频"
-      end
-      autoname=luajson.decode(content).author.name
-      authorid=luajson.decode(content).author.id
-      保存历史记录(simpletitle,"视频分割"..result,50)
-      table.insert(mpop.list,#mpop.list,{
-        src=mpop.list[#mpop.list].src,text="编辑视频",onClick=function()
-          提示("请手动进入设置")
-          activity.newActivity("huida",{"https://www.zhihu.com/zvideo/"..result,"我的视频设置"})
-        end
-      })
-      a=MUKPopu(mpop)
-    end)
-    if activity.getSharedData("视频提示0.01")==nil
-      AlertDialog.Builder(this)
-      .setTitle("小提示")
-      .setCancelable(false)
-      .setMessage("你可点击右上角查看评论")
-      .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("视频提示0.01","true") end})
-      .show()
+  --第二个为issave 为true代表记录历史记录
+  base_column:getData(function(data)
+    if data==false then
+      提示("加载页面失败")
+      _title.Text="加载失败"
+      return
     end
-   elseif 类型=="直播" then
+    author_id=data.author.id
+    aurhor_name=data.author.name
+    _title.text=data.title
+    content.setVisibility(8)
+    content.loadUrl(base_column.weburl)
+  end,true)
+
+  if 类型=="直播" then
     followdoc='document.querySelector(".TheaterRoomHeader-actor").childNodes[2]'
-    zHttp.get("https://www.zhihu.com/api/v4/drama/dramas/"..result.."/lite",head,function(code,content)
-      _title.Text="直播"
-      authorid=luajson.decode(content).theater.actor.id
-      mid=luajson.decode(content).theater.id
-      mty.loadUrl("https://www.zhihu.com/theater/"..mid.."?drama_id="..result)
-    end)
-   elseif 类型=="圆桌" then
-    content.loadUrl("https://www.zhihu.com/roundtable/"..result)
-    _title.Text="圆桌"
-   elseif 类型=="专题" then
-    content.loadUrl("https://www.zhihu.com/special/"..result)
-    _title.Text="专题"
-   elseif 类型=="本地" then
-    myuri = Uri.fromFile(File(this.getLuaDir().."/mhtml2html.html")).toString();
-    content.loadUrl(myuri)
-    _title.Text=simpletitle
   end
 
 end
@@ -239,7 +142,7 @@ content.setWebViewClient{
         检查意图(url)
       end
      else
-      if url:find("https://www.zhihu.com/oia/"..mtype.."/"..result) then
+      if url:find("https://www.zhihu.com/oia/"..urltype.."/"..id) then
         return false
       end
       检查链接(url)
@@ -249,17 +152,13 @@ content.setWebViewClient{
     view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
 
     加载js(view,获取js("native"))
-    content.setVisibility(0)
     等待doc(view)
     if 全局主题值=="Night" then
-      黑暗模式主题(view)
-     else
-      白天主题(view)
+      夜间模式主题(view)
     end
-
-    if url:find("https://www.zhihu.com/appview/pin/"..result) then
+    if url:find("https://www.zhihu.com/appview/pin/"..id) then
       加载js(view,获取js("pin"))
-     elseif url:find("https://www.zhihu.com/zvideo/"..result)
+     elseif url:find("https://www.zhihu.com/zvideo/"..id)
       加载js(view,获取js("zvideo"))
      elseif url:find("https://www.zhihu.com/theater/")
       加载js(view,获取js("drama"))
@@ -267,7 +166,7 @@ content.setWebViewClient{
 
   end,
   onPageFinished=function(view,l)
-
+    content.setVisibility(0)
   end,
   onLoadResource=function(view,url)
   end,
@@ -278,9 +177,6 @@ content.setWebViewClient{
 --设置网页图片点击事件，
 local z=JsInterface{
   execute=function(b)
-    if b=="getmhtml" then
-      return 读取文件(filedir)
-    end
     if b~=nil and #b>1 then
       --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
       this.setSharedData("imagedata",b)
@@ -334,9 +230,9 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
     if consoleMessage.message()=="显示评论" then
-      activity.newActivity("comment",{result,mtype.."s"})
+      activity.newActivity("comment",{id,mtype.."s"})
      elseif consoleMessage.message()=="查看用户" then
-      activity.newActivity("people",{authorid})
+      activity.newActivity("people",{author_id})
      elseif consoleMessage.message():find("收藏") then
       if not(getLogin()) then
         return 提示("请登录后使用本功能")
@@ -407,7 +303,7 @@ webview查找文字监听(content)
 --pop
 
 if 类型=="本地" then
-  mpop={
+  pop={
     tittle="本地",
     list={
       {
@@ -423,18 +319,18 @@ if 类型=="本地" then
 
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
-          local 保存路径=内置存储文件("Download/"..simpletitle.."/"..autoname)
+          local 保存路径=id
           if getDirSize(保存路径.."/".."fold/")==0 then
             提示("你还没有收藏评论")
            else
-            activity.newActivity("comment",{result,"local",simpletitle,autoname})
+            activity.newActivity("comment",{保存路径,"local"})
           end
         end
       },
 
       {
         src=图标("cloud"),text="使用网络打开",onClick=function()
-          activity.newActivity("column",{result,原类型})
+          activity.newActivity("column",{myid,mytype})
         end
       },
 
@@ -458,8 +354,8 @@ if 类型=="本地" then
   }
  elseif 类型 then
 
-  mpop={
-    tittle=_title.text,
+  pop={
+    tittle=类型,
     list={
       {
         src=图标("refresh"),text="刷新",onClick=function()
@@ -484,29 +380,37 @@ if 类型=="本地" then
       },
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
-          activity.newActivity("comment",{result,mtype.."s"})
+          activity.newActivity("comment",{id,urltype.."s"})
 
         end
       },
       {
         src=图标("explore"),text="收藏文件夹",onClick=function()
-          加入收藏夹(result,mtype)
+          加入收藏夹(id,urltype)
 
         end
       },
       {
         src=图标("explore"),text="举报",onClick=function()
-          local url="https://www.zhihu.com/report?id="..result.."&type="..mtype
-          activity.newActivity("huida",{url.."&source=android&ab_signature=",nil,nil,nil,"举报"})
+          local url="https://www.zhihu.com/report?id="..id.."&type="..urltype
+          activity.newActivity("browser",{url.."&source=android&ab_signature=","举报"})
         end
       },
       {
         src=图标("save"),text="保存在本地",onClick=function()
+          if 类型~="想法" or 类型~="想法" then
+            return 提示(类型.."不支持保存")
+          end
+
           local result=get_write_permissions()
           if result~=true then
             return false
           end
-          保存()
+
+          local 保存路径=内置存储文件("Download/".._title.Text.."/"..aurhor_name)
+          local 写入内容='pin_url="'..content.getUrl()
+          this.newActivity("saveweb",{content.getUrl(),保存路径,写入内容})
+
         end
       },
       {
@@ -517,78 +421,19 @@ if 类型=="本地" then
     }
   }
  else
-  mpop={
+  pop={
     tittle=_title.Text,
     list={
     }
   }
 end
 
-if 类型=="文章" then
-  mpop["tittle"]="文章"
-  function 保存()
-    if not(文件是否存在(内置存储文件("Download/".._title.Text))) then
-      创建文件夹(内置存储文件("Download/".._title.Text))
-    end
-    创建文件夹(内置存储文件("Download/".._title.Text.."/"..autoname))
-    content.saveWebArchive(内置存储文件("Download/".._title.Text.."/"..autoname.."/mht.mht"))
-    创建文件(内置存储文件("Download/".._title.Text.."/"..autoname.."/detail.txt"))
-    写入文件(内置存储文件("Download/".._title.Text.."/"..autoname.."/detail.txt"),'article_url="'..content.getUrl()..'"')
-    提示("保存成功")
-  end
- elseif 类型=="想法" then
-  mpop["tittle"]="一个想法"
-  function 保存()
-    创建文件夹(内置存储文件("Download/"..simpletitle))
-    创建文件夹(内置存储文件("Download/"..simpletitle.."/"..autoname))
-    创建文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"))
-    写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"),'pin_url="'..content.getUrl()..'"')
-    content.saveWebArchive(内置存储文件("Download/"..simpletitle.."/"..autoname.."/mht.mht"))
-    提示("保存成功")
-  end
- elseif 类型=="视频" then
-  mpop["tittle"]="视频"
-  function 保存()
-    创建文件夹(内置存储文件("Download/"..simpletitle))
-    创建文件夹(内置存储文件("Download/"..simpletitle.."/"..autoname))
-    创建文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"))
-    写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/detail.txt"),'video_url="'..content.getUrl()..'"')
-    写入文件(内置存储文件("Download/"..simpletitle.."/"..autoname.."/mht.mht"),'video_id="'..result..'"')
-    提示("保存成功")
-  end
-  table.insert(mpop.list,4,{
-    src=图标("chat_bubble"),text="查看保存评论",onClick=function()
-      local 保存路径=内置存储文件("Download/"..simpletitle.."/"..autoname)
-      if getDirSize(保存路径.."/".."fold/")==0 then
-        提示("你还没有收藏评论")
-       else
-        activity.newActivity("comment",{result,"local",simpletitle,autoname})
-      end
-
-    end
-  })
- elseif 类型 then
-  if 类型~="本地" then
-    mpop["tittle"]=类型
-    table.remove(mpop.list,3)
-    table.remove(mpop.list,3)
-    table.remove(mpop.list,3)
-    table.remove(mpop.list,3)
-  end
- else
-  table.remove(mpop.list,2)
-  table.remove(mpop.list,2)
-  table.remove(mpop.list,2)
-  table.remove(mpop.list,2)
-  table.remove(mpop.list,2)
-end
-
 task(1,function()
-  a=MUKPopu(mpop)
+  a=MUKPopu(pop)
 
   if 类型=="文章" or 类型=="视频" then
     fab.Visibility=0
-    local mylist=mpop.list
+    local mylist=pop.list
     for i = 1, #mylist do
       local myname = mylist[i].text
       if myname:find("评论") then

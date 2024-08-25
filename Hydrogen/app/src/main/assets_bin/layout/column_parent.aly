@@ -91,7 +91,7 @@
         layout_height="fill";
         layout_width="fill";
         layout_wieght="1",
-        id="mty";
+        id="content";
       };
     };
   };

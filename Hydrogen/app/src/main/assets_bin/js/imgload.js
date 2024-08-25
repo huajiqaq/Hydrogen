@@ -29,9 +29,36 @@
         return window.location.href.startsWith("file://");
     }
 
+    function checkClickTarget(event) {
+        let target = event.target;
+
+        if (target.tagName.toLowerCase() === 'div') {
+            while (target && target.tagName.toLowerCase() !== 'body') {
+                const parent = target.parentElement;
+
+                if (parent && Math.abs(target.clientWidth - parent.clientWidth) <= 5 &&
+                    Math.abs(target.clientHeight - parent.clientHeight) <= 5) {
+
+                    const img = parent.querySelector('img:first-child');
+                    if (img) {
+                        return img;
+                    }
+                } else {
+                    break;
+                }
+
+                target = target.parentElement;
+            }
+        }
+        return event.target;
+    }
+
     document.addEventListener('click', function (event) { // 判断点击的目标是否为img元素 
         let doc = event.target
+
         if (isZhihuPage() && doc.parentNode.className.includes("GifPlayer")) {
+            // 禁止父元素接受事件
+            doc.parentNode.style.pointerEvents = "none"
             doc.src = doc.src.replace(/(\.\w+)(\?.*)?$/, ".gif$2");
             doc.dataset.original = doc.src;
             event.stopPropagation()
@@ -42,10 +69,13 @@
                     children[i].style.pointerEvents = "none"
                 }
             }
-            return
+            return false
+        }
+        if (doc.tagName !== 'IMG') {
+            doc = checkClickTarget(event)
         }
         if (doc.tagName === 'IMG') {
-            window.androlua.execute(JSON.stringify(getimg(event.target.src)));
+            window.androlua.execute(JSON.stringify(getimg(doc.src)));
         }
     }, true);
 

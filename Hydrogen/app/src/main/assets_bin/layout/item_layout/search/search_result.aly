@@ -15,12 +15,12 @@
     radius=cardradius;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
+    id="card",
     {
       LinearLayout;
       layout_height="fill";
       id="background";
       layout_width="fill";
-      ripple="圆自适应",
 
       {
         LinearLayout;
@@ -29,26 +29,14 @@
         paddingTop="18dp";
         paddingBottom="18dp";
         {
-          TextView;
-          id="id内容";
-          textSize="0sp";
-        };
-        {
           LinearLayout;
           orientation="vertical";
           {
             LinearLayout;
             orientation="horizontal";
             {
-              CircleImageView;
-              layout_width="20dp",
-              layout_height="20dp",
-              id="图像",
-            };
-            {
               TextView;
               id="活动";
-              layout_marginLeft="6dp",
               textColor=stextc;
               layout_gravity="center_vertical",
               Typeface=字体("product");
@@ -111,6 +99,17 @@
               id="评论数";
               textColor=textc;
               Typeface=字体("product");
+            };
+            {
+              TextView;
+              textSize="12sp",
+              layout_gravity="right|bottom";
+              layout_marginLeft="20dp";
+              Typeface=字体("product");
+              SingleLine=true;
+              textColor=stextc;
+              text="hh";
+              id="关注数",
             };
           };
         };

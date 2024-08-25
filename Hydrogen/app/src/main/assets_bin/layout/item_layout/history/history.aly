@@ -27,12 +27,6 @@
         orientation="horizontal";
         padding="16dp";
         {
-          TextView;
-          textSize="0sp";
-          id="id内容",
-          Typeface=字体("product");
-        };
-        {
           LinearLayout;
           orientation="vertical";
           {
@@ -41,6 +35,12 @@
             textSize="14sp";
             Typeface=字体("product-Bold");
             id="标题",
+          };
+          {
+            TextView;
+            textSize="0sp";
+            Typeface=字体("product-Bold");
+            id="id内容",
           };
         };
       };

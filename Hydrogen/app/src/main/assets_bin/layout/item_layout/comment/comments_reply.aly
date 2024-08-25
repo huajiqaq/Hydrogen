@@ -16,11 +16,6 @@
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
     {
-      TextView;
-      textSize="0sp";
-      id="id内容",
-    };
-    {
       LinearLayout;
       layout_height="fill";
       id="background";
@@ -37,6 +32,12 @@
           orientation="horizontal";
           gravity="left|center",
           id="author_lay";
+          {
+            TextView;
+            layout_marginLeft="",
+            textSize="0";
+            id="id内容",
+          };
           {
             TextView;
             layout_marginLeft="8dp",

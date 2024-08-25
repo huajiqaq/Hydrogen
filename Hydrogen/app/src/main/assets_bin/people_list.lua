@@ -6,145 +6,24 @@ activity.setContentView(loadlayout("layout/simple"))
 
 初始化历史记录数据(true)
 
-title,murl,是否屏蔽=...
+title,people_id=...
 _title.text=title
 
-if 是否屏蔽 then
-  murl="https://api.zhihu.com/settings/blocked_users?filter=all"
-  onclick=function(view)
-    local rootview=view.getParent().getParent().getParent().getParent()
-    local 用户id=rootview.Tag.id内容.text
-    local following=rootview.Tag.following
-
-    if following.Text=="屏蔽" then
-      zHttp.post("https://api.zhihu.com/settings/blocked_users","people_id="..用户id,apphead,function(code,json)
-        if code==200 or code==201 then
-          following.Text="取消屏蔽";
-        end
-      end)
-     elseif following.Text=="取消屏蔽" then
-      zHttp.delete("https://api.zhihu.com/settings/blocked_users/"..用户id,posthead,function(code,json)
-        if code==200 then
-          following.Text="屏蔽";
-        end
-      end)
-     else
-      提示("加载中")
-    end
-  end
-  判断文本=function()
-    return "取消屏蔽"
-  end
+if title:find("关注") then
+  类型="followees"
+ elseif title:find("粉丝") then
+  类型="followers"
  else
-  onclick=function(view)
-    local rootview=view.getParent().getParent().getParent().getParent()
-    local 用户id=rootview.Tagid内容.text
-    local following=rootview.Tag.following
-    if following.Text=="关注"
-      zHttp.post("https://api.zhihu.com/people/"..用户id.."/followers","",posthead,function(a,b)
-        if a==200 then
-          following.Text="取关";
-         elseif a==500 then
-          提示("请登录后使用本功能")
-        end
-      end)
-     elseif following.Text=="取关"
-      zHttp.delete("https://api.zhihu.com/people/"..用户id.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
-        if a==200 then
-          following.Text="关注";
-        end
-      end)
-     else
-      提示("加载中")
-    end
-  end
-  判断文本=function(v)
-    local 文本
-    if v.is_following then
-      文本="取关";
-     else
-      文本="关注";
-    end
-    return 文本
-  end
+  类型="block_all"
 end
 
-itemc=获取适配器项目布局("people/people_list")
+peopeo_list_item=获取适配器项目布局("people/people_list")
 
-
-simple_list.setDividerHeight(0)
-adp=MyLuaAdapter(activity,itemc)
-simple_list.Adapter=adp
-
-function 刷新()
-  geturl=myurl or murl
-  zHttp.get(geturl,head,function(code,content)
-    if code==200 then
-      if luajson.decode(content).paging.next then
-        testurl=luajson.decode(content).paging.next
-        if testurl:find("http://") then
-          testurl=string.gsub(testurl,"http://","https://",1)
-        end
-        myurl=testurl
-      end
-      if luajson.decode(content).paging.is_end then
-        提示("已经没有更多内容了")
-       else
-        add=true
-      end
-      for i,v in ipairs(luajson.decode(content).data) do
-        if v.type=="people" then
-          local 头像=v.avatar_url
-          local 名字=v.name
-          local 签名=v.headline
-          local 用户id=v.id
-          local 文本
-          if 签名=="" then
-            签名="无签名"
-          end
-
-          文本=判断文本(v)
-
-          if 无图模式 then
-            头像=logopng
-          end
-
-          simple_list.Adapter.add{
-            图像=头像,
-            标题=名字,
-            预览内容=签名,
-            id内容=用户id,
-            following={
-              Text=文本;
-              onClick=function(view)
-                onclick(view)
-              end
-            },
-          }
-        end
-      end
-    end
-  end)
-end
-
-simple_list.onItemClick=function(l,v,c,b)
-  activity.newActivity("people",{v.Tag.id内容.text})
-end
-
-add=true
-
-simple_list.setOnScrollListener{
-  onScroll=function(view,a,b,c)
-    if a+b==c and add then
-      add=false
-      刷新()
-      System.gc()
-    end
-  end
-}
+people_list_base=require "model.people_list":new(people_id,类型)
+:initpage(simple_recy,simplesr)
 
 task(1,function()
-  if 是否屏蔽 then
+  if 类型:find("block") then
     a=MUKPopu({
       tittle=_title.text,
       list={

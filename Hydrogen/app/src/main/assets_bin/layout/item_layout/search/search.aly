@@ -36,12 +36,6 @@
           Selected=true,
           Typeface=字体("product-Bold");
         };
-        {
-          TextView;
-          id="id内容";
-          layout_width="0";
-          layout_height="0";
-        };
       };
     };
   };

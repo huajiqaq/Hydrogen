@@ -86,12 +86,16 @@
         layout_height="fill",
         background=backgroundc,
         {
-          ListView;
-          fastScrollEnabled=false,
-          layout_width="fill";
-          background=backgroundc,
+          SwipeRefreshLayout;
+          id="simplesr";
           layout_height="fill";
-          id="simple_list";
+          layout_width="fill";
+          {
+            RecyclerView;
+            id="simple_recy";
+            layout_width="-1";
+            layout_height="-1";
+          };
         };
       };
     };

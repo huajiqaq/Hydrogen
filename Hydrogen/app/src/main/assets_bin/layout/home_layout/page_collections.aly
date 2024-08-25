@@ -17,7 +17,7 @@
 
   {
     ViewPager,
-    id="page",
+    id="collection_vpg",
     layout_width="-1";
     layout_height="-1";
   };
