@@ -16,7 +16,7 @@ function base:getData(isclear,isinit)
     self.view.adapter.notifyDataSetChanged()
   end
 
-  if isint and self.view.adapter.getItemCount()>0 then
+  if isinit and self.view.adapter.getItemCount()>0 then
     return self
   end
 

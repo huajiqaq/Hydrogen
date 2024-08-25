@@ -32,7 +32,7 @@ end
 if activity.getSharedData("第一次提示") and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
   双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function(an)
-    关闭对话框(an) end,function(an)
+  关闭对话框(an) end,function(an)
     关闭对话框(an) 浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
   end)
 end
@@ -574,10 +574,13 @@ home_pagetool=require "model.home_recommend"
 :new()
 :initpage(home_recy,homesr)
 
---想法
-thinker_pagetool=require "model.home_thinker"
-:new()
-:initpage(think_recy,thinksr)
+
+if this.getSharedData("开启想法") == "true" then
+  --想法
+  thinker_pagetool=require "model.home_thinker"
+  :new()
+  :initpage(think_recy,thinksr)
+end
 
 --热榜
 hot_pagetool=require "model.home_hot"
@@ -835,7 +838,6 @@ end
 
 function onResume()
   activity.getDecorView().post{run=function()check()end}
-  初始化历史记录数据()
 end
 
 

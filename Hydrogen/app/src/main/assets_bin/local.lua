@@ -227,7 +227,7 @@ t.content.setWebViewClient{
 t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onProgressChanged=function(view,url,favicon)
     if 全局主题值=="Night" then
-      黑暗页(view)
+      夜间模式回答页(view)
     end
 end}))
 

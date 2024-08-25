@@ -16,15 +16,20 @@ function base:getUrlByType(sortby)
   end
 end
 
-
-local function setstyle(styleee)
-  stylee = SpannableStringBuilder(styleee);
-  local len= stylee.length()
-  local urltab=luajava.astable(stylee.getSpans(0, len,URLSpan))
-  local function Myspan(b)
+local function setstyle(text)
+  local style = SpannableStringBuilder(text);
+  local len= style.length()
+  local urltab=luajava.astable(style.getSpans(0, len,URLSpan))
+  local function MyClickableSpan(url)
     local myspan=ClickableSpan{
       onClick=function(v)
-        检查链接(urltab[b].getURL())
+        if v.Text=="查看图片" then
+          local data={["0"]=url,["1"]=1}
+          this.setSharedData("imagedata",luajson.encode(data))
+          activity.newActivity("image")
+          return
+        end
+        检查链接(url)
       end,
       updateDrawState=function(v)
         v.setColor(v.linkColor);
@@ -34,11 +39,16 @@ local function setstyle(styleee)
     return myspan
   end
   if #urltab>0 then
-    stylee.clearSpans()
+    style.clearSpans()
     for i=1,#urltab do
-      stylee.setSpan(Myspan(i), styleee.getSpanStart(urltab[i]), styleee.getSpanEnd(urltab[i]), Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+      local urlspan=urltab[i]
+      local url=urlspan.getURL()
+      local Span=MyClickableSpan(url)
+      local startindex= text.getSpanStart(urlspan)
+      local endindex=text.getSpanEnd(urlspan)
+      style.setSpan(Span, startindex, endindex, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
     end
-    return stylee
+    return style
   end
 end
 

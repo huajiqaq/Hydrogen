@@ -1,4 +1,7 @@
 require "import"
+
+custom_onstart=true
+
 import "mods.muk"
 activity.setContentView(loadlayout("layout/history"))
 

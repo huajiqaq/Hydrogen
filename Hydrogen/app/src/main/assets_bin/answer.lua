@@ -797,9 +797,8 @@ task(1,function()
 
           local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
           local pgids=数据表[pgnum].ids
+          
           local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
-
-          创建文件夹(保存路径)
           创建文件(内置存储文件("Download/".._title.Text.."/"..username.Text.."/detail.txt"))
           写入内容='question_id="'..问题id..'"\n'
           写入内容=写入内容..'answer_id="'..回答id..'"\n'

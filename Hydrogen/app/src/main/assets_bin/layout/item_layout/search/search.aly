@@ -26,6 +26,11 @@
         gravity="center";
         {
           TextView;
+          id="id内容";
+          textSize="0";
+        };
+        {
+          TextView;
           id="标题";
           singleLine=true;
           textColor=textc;

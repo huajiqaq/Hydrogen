@@ -140,7 +140,7 @@ end
 
 
 local webview_loadurl=content.getUrl()
-local mhtml2html=this.getLuaDir().."/mhtml2html.html"
+local mhtml2html=Uri.fromFile(File(this.getLuaDir().."/mhtml2html.html")).toString()
 
 content.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)--回调参数，v控件，url网址
@@ -199,7 +199,7 @@ pop={
         创建文件(详情文件夹)
         写入文件(详情文件夹,写入内容)
         content.saveWebArchive(保存路径.."/mht.mht")
-        content.loadUrl(Uri.fromFile(File(mhtml2html)).toString())
+        content.loadUrl(mhtml2html)
         提示("保存成功")
     end},
 

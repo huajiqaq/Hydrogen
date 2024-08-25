@@ -16,21 +16,6 @@ question_itemc=获取适配器项目布局("question/question")
 波纹({fh,_more},"圆主题")
 波纹({discussion,view,description,follow,open,star},"方自适应")
 
-function 刷新()
-  resultbar.Visibility=0
-  add=false
-  question_base:next(function(r,a)
-    if r==false and question_base.is_end==false then
-      提示("获取回答列表出错 "..a or "")
-     else
-      if question_base.is_end==false
-        add=true
-      end
-      resultbar.Visibility=8
-    end
-  end)
-end
-
 function 问题详情(code)
 
   import "com.google.android.material.bottomsheet.*"
@@ -218,7 +203,7 @@ question_base:getData(function(tab)
   title.text=tab.title
 
   初始化历史记录数据(true)
-  保存历史记录(title.Text,question_id,50)
+  保存历史记录(title.Text,question_id)
 
   _comment.Text=tostring((tab.comment_count))
   _star.Text=tostring((tab.follower_count))
