@@ -116,10 +116,11 @@ history_list.onItemClick=function(l,v,c,b)
   local 标题=v.Tag.标题.text
   local id内容=v.Tag.id内容.text
   点击事件判断(id内容)
-  table.remove(recordtitle,#recordtitle)
-  table.remove(recordid,#recordid)
-  table.insert(recordtitle,1,标题)
-  table.insert(recordtitle,1,id内容)
+  local pos=获取位置(id内容)
+  table.remove(recordtitle,pos)
+  table.remove(recordid,pos)
+  table.insert(recordtitle,标题)
+  table.insert(recordid,id内容)
 end
 
 

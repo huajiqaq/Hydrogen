@@ -385,7 +385,7 @@ task(1,function()
 
       end},
       {src=图标("info"),text="问题",onClick=function()
-          Snakebar("文件保存在"..内置存储("Hydrogen/download"))
+          提示("文件保存在"..内置存储("Hydrogen/download"))
       end},
     }
   })

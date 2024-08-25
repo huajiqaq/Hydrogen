@@ -18,7 +18,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.534
+versionCode=0.535
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir().."/logo.png"
@@ -558,11 +558,6 @@ function 提示(t)
   }
 
   my_toast=Toast.makeText(activity,t,Toast.LENGTH_SHORT).setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0).setView(loadlayout(tsbj)).show()
-end
-
-
-function Snakebar(fill)
-  提示(fill)
 end
 
 function 颜色渐变(控件,左色,右色)

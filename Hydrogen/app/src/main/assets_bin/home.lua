@@ -954,7 +954,7 @@ function onKeyDown(code,event)
     end
     if now - lastclick > 2 then
       --双击退出
-      Snakebar("再按一次退出")
+      提示("再按一次退出")
       lastclick = now
       return true
     end
