@@ -23,25 +23,23 @@ end
 local corii={dp2px(24),dp2px(24),dp2px(24),dp2px(24)}
 t1.setBoxCornerRadii(table.unpack(corii))
 
-
 import "com.google.android.material.card.MaterialCardView"
-
 
 波纹({_back},"圆主题")
 波纹({button},"方主题")
 
 itemc=获取适配器项目布局("search/search")
 
-yuxuan_adpqy=LuaAdapter(activity,itemc)
+adp=LuaAdapter(activity,itemc)
 
-search_list.adapter=yuxuan_adpqy
+search_list.adapter=adp
 
 local url = "https://api.zhihu.com/search/top_search"
 zHttp.get(url,head,function(code,content)
   if code==200 then
     local data=luajson.decode(content)
     for k,v in ipairs(data.top_search.words) do
-      task(50,function()yuxuan_adpqy.add{id内容=v.query,标题=v.display_query}end)
+      task(50,function()adp.add{id内容=v.query,标题=v.display_query}end)
     end
    else
     提示("获取热门搜索失败 "..content)
@@ -51,11 +49,7 @@ end)
 
 search_list.setOnItemClickListener(AdapterView.OnItemClickListener{
   onItemClick=function(parent,v,pos,id)
-    if activity.getSharedData("内部搜索(beta)")=="true" then
-      activity.newActivity("search_result",{v.Tag.id内容.Text})
-     else
-      activity.newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..v.Tag.id内容.Text})
-    end
+    activity.newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..v.Tag.id内容.Text})
   end
 })
 
@@ -74,3 +68,11 @@ t2.setOnEditorActionListener(OnEditorActionListener({
     return true;
   end
 }))
+
+function onStart()
+  task(50,function()
+    t2.requestFocus()
+    imm = this.getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.toggleSoftInput(0,0);
+  end)
+end

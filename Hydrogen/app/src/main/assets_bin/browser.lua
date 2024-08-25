@@ -287,14 +287,6 @@ content.setWebViewClient{
       加载js内容=获取js("notification")
      elseif url:find("https://www.zhihu.com/settings/") then
       加载js内容=获取js("setting")
-     elseif url:find("zhihu.com/market/paid") then
-      加载js内容=获取js("paid_content")
-      id=url:match("/section/(.+)")
-      urltype="paid_column_section_manuscript"
-      table.insert(pop.list,#pop.list,{src=图标("chat_bubble"),text="查看评论",onClick=function()
-          activity.newActivity("comment",{id,urltype.."s"})
-      end})
-      a=MUKPopu(pop)
      else
       加载js内容=获取js("model")
     end
