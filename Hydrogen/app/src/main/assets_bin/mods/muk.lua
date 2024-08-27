@@ -18,7 +18,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.537
+versionCode=0.538
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir().."/logo.png"
@@ -351,6 +351,7 @@ end
 function 保存历史记录(title, id)
   -- 查找记录是否已存在
   local found = false
+  local id=tostring(id)
   for i, existingId in ipairs(recordid) do
     if id == existingId then
       -- 如果记录已存在，先删除再添加
