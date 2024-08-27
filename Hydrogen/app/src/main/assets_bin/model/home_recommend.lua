@@ -49,22 +49,12 @@ function base.resolvedata(v,data)
 
   local id内容=分割字符串..id
 
-  local created_time=v.created_time or v.created
-  local updated_time=v.updated_time or v.updated
-
-  local 底部内容
-  if updated_time>created_time then
-    底部内容="更新于"..时间戳(updated_time)
-   else
-    底部内容="创建于"..时间戳(created_time)
-  end
 
   local add={}
   add.标题=标题
   add.预览内容=预览内容
   add.评论数=评论数
   add.点赞数=点赞数
-  add.底部内容=底部内容
   add.id内容=id内容
 
   add.isread=isread

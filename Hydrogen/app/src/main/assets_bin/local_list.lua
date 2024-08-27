@@ -6,9 +6,6 @@ activity.setContentView(loadlayout("layout/local_list"))
 
 设置toolbar(toolbar)
 
-初始化历史记录数据(true)
-
-
 波纹({fh,_more},"圆主题")
 _title.Text="已保存的内容"
 

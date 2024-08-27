@@ -125,7 +125,7 @@ function adpTool:getAdp()
         return;
       end
 
-      --footer的内容 因为header和footer不需要onBindViewHolder 上面已排除header 所以直接不用renturn
+      --footer的内容 因为header和footer不需要onBindViewHolder 上面已排除header 所以直接不用return
 
     end,
   }))

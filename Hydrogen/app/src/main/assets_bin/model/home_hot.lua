@@ -10,7 +10,7 @@ end
 function base:getData(isclear,isinit)
 
   if isclear then
-    self.myhotdata={}
+    table.clear(self.myhotdata)
     self.view.removeAllViews();
     self.view.getRecycledViewPool().clear();
     self.view.adapter.notifyDataSetChanged()

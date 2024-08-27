@@ -18,7 +18,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.535
+versionCode=0.537
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 logopng=this.getLuaDir().."/logo.png"
@@ -657,7 +657,7 @@ function 关闭对话框(an)
   an.dismiss()
 end
 
-function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
+function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr)
 
   import "com.google.android.material.bottomsheet.*"
 
@@ -781,7 +781,7 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,gb)
 end
 
 
-function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,gb)
+function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr)
 
   import "com.google.android.material.bottomsheet.*"
 

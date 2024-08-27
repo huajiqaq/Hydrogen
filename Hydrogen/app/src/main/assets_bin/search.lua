@@ -70,9 +70,11 @@ t2.setOnEditorActionListener(OnEditorActionListener({
 }))
 
 function onStart()
-  task(50,function()
-    t2.requestFocus()
-    imm = this.getSystemService(Context.INPUT_METHOD_SERVICE);
-    imm.toggleSoftInput(0,0);
-  end)
+  t2.requestFocus()
+  t2.postDelayed(Runnable{
+    run=function()
+      imm= this.getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.showSoftInput(t2, InputMethodManager.SHOW_IMPLICIT);
+    end
+  }, 100);
 end

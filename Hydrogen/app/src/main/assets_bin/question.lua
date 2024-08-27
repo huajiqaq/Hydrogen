@@ -169,10 +169,6 @@ function 问题详情(code)
 
       imgReset()
 
-      task(1,function()
-        show.Visibility=0
-      end)
-
     end,
 
     onProgressChanged=function(view,Progress)
@@ -184,6 +180,7 @@ function 问题详情(code)
   show.Visibility=8
   show.BackgroundColor=转0x("#00000000",true);
   show.loadDataWithBaseURL(nil,code,"text/html","utf-8",nil);
+  show.Visibility=0
 
 end
 

@@ -317,6 +317,7 @@ function Page_Tool:createfunc()
 
     local adapter=thispage.adapter
 
+    local head
     if self.head then
       head=_G[self.head]
     end
@@ -352,11 +353,28 @@ function Page_Tool:createfunc()
           func(data,adpdata,pos)
         end
         thispage.adapter.notifyDataSetChanged()
+
+        local manager=thispage.getLayoutManager()
+        local listener=thispage.getViewTreeObserver().addOnGlobalLayoutListener(
+        ViewTreeObserver.OnGlobalLayoutListener{
+          onGlobalLayout=function()
+            local lastVisiblePosition = manager.findLastVisibleItemPosition();
+            if lastVisiblePosition >= manager.getItemCount() - 1 and pagedata[pos]["canload"] then
+              local pos=self:getCurrentItem()
+              self.referfunc(pos,isprev)
+              System.gc()
+             else
+              thispage.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
+            end
+          end
+        })
+
       end
     end)
 
     thissr.setRefreshing(true)
     pagedata[pos]["canload"]=false
+
     Handler().postDelayed(Runnable({
       run=function()
         thissr.setRefreshing(false);

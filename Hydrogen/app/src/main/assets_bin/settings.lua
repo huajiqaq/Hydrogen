@@ -70,10 +70,9 @@ data = {
 
   {__type=1,title="主页设置"},
 
-  {__type=4,subtitle="开启想法",status={Checked=Boolean.valueOf(this.getSharedData("开启想法"))}},
   {__type=4,subtitle="热榜关闭图片",status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭图片"))}},
   {__type=4,subtitle="热榜关闭热度",status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭热度"))}},
-  {__type=3,subtitle="设置默认主页"},
+  {__type=3,subtitle="设置主页排序"},
   {__type=3,subtitle="修改主页排序",rightIcon={Visibility=0}},
 
 
@@ -110,15 +109,6 @@ end
 mtip=false
 
 tab={
-
-  ["内部浏览器查看回答"]=function()
-    AlertDialog.Builder(this)
-    .setTitle("不推荐开启此选项")
-    .setMessage("开启后 回答 问题将会以知乎网页形式打开")
-    .setCancelable(false)
-    .setPositiveButton("我知道了",nil)
-    .show()
-  end,
   夜间模式=function()
     提示("返回主页面生效")
     activity.setResult(1200,nil)
@@ -248,42 +238,232 @@ tab={
   热榜关闭热度=function()
     提示("设置成功 重刷新热榜生效")
   end,
-  开启想法=function()
-    提示("下次启动软件生效")
-  end,
   修改主页排序=function()
     if not(getLogin()) then
       return 提示("请登录后使用本功能")
     end
     activity.newActivity("homesort")
   end,
-  设置默认主页=function()
-    starthome={"推荐","想法","热榜","关注"}
-    starthometab={["推荐"]=1,["想法"]=2,["热榜"]=3,["关注"]=4}
-    --每次进入主页都检查starthome是否存在 所以一般情况下都存在
-    starnum=starthometab[this.getSharedData("starthome")]
-    tipalert=AlertDialog.Builder(this)
-    .setTitle("请选择默认主页")
-    .setSingleChoiceItems({"推荐","想法","热榜","关注"}, starnum-1,{onClick=function(v,p)
-        starnum=p+1
-    end})
-    .setPositiveButton("确定", nil)
+  设置主页排序=function()
+
+    提示("可拖拽排序 选中的为主页")
+
+    local data={}
+
+    AlertDialog.Builder(activity)
+    .setView(loadlayout({
+      LinearLayout;
+      orientation="vertical";
+      Focusable=true,
+      FocusableInTouchMode=true,
+      {
+        RelativeLayout;
+        id="letgo";
+        layout_width="match_parent";
+        layout_height="wrap_content";
+        {
+          RecyclerView,
+          id="recycler_view",
+          layout_width="match_parent";
+        };
+      };
+    }))
+    .setPositiveButton("确定",function()
+      local starthome=""
+      local conf={}
+      for _,v ipairs(data)
+        if v.myt then
+          if v.myt=="其他" then
+            break
+          end
+          continue
+        end
+        if v.ishome==true then
+          starthome=v.title
+        end
+        table.insert(conf,v.title)
+      end
+      if #conf<2 then
+        return 提示("必须至少开启两个页")
+      end
+      if starthome=="" then
+        return 提示("必须选择一个主页")
+      end
+      table.insert(conf,starthome)
+      local conf=table.concat(conf,",")
+      this.setSharedData('home_cof',conf)
+      提示("保存成功 下次启动App生效")
+    end)
     .setNegativeButton("取消",nil)
-    .show();
-    tipalert.getButton(tipalert.BUTTON_POSITIVE).onClick=function()
-      if starnum==nil then
-        starnum=1
-      end
-      local starthome=starthome[starnum]
-      if starthome=="想法" and this.getSharedData("开启想法")=="false" then
-        提示("由于已关闭想法功能 所以无法选择想法")
-       else
-        this.setSharedData("starthome",starthome)
-        starnum=nil
-        提示("下次启动App生效")
-      end
-      tipalert.dismiss()
+    .show()
+
+    recycler_view.layoutManager=LinearLayoutManager(this)
+
+    local 启动页=this.getSharedData("home_cof")
+    local items = {}
+    for item in 启动页:gmatch('[^,]+') do
+      table.insert(items, item)
     end
+    local starthome=table.remove(items)
+    local allpages={"推荐"=true,"想法"=true,"热榜"=true,"关注"=true}
+
+    table.insert(data,{"myt"="当前"})
+    for i, item in ipairs(items) do
+      local ishome=false
+      if item==starthome then
+        ishome=true
+      end
+      allpages[item]=nil
+      table.insert(data,{title=item,ishome=ishome})
+    end
+
+    table.insert(data,{"myt"="其他"})
+    for key, item in pairs(allpages) do
+      table.insert(data,{title=key,ishome=false})
+    end
+
+    local item=
+    {
+      LinearLayout;
+      gravity="center_vertical";
+      layout_width="fill";
+      layout_height="50dp";
+      id="root";
+      ripple="方自适应",
+      {
+        TextView;
+        id="title";
+        textColor=textc;
+        gravity="center_vertical";
+        layout_weight="1";
+        layout_height="-1";
+        layout_marginLeft="16dp";
+        textSize="16sp";
+      };
+      {
+        RadioButton;
+        clickable=false,
+        layout_marginRight="16dp";
+        focusable=false,
+        id="status";
+      };
+    };
+
+    local item2={
+      LinearLayout;
+      layout_width="fill";
+      layout_height="wrap";
+      id="root";
+      {
+        TextView,
+        id="myt",
+        layout_margin="16dp";
+        layout_marginTop="12dp";
+        layout_marginBottom="0dp";
+        textColor=primaryc;
+        textSize="18sp";
+      };
+    };
+
+
+    adapter=LuaCustRecyclerAdapter(AdapterCreator({
+
+      getItemCount=function()
+        return #data
+      end,
+
+      getItemViewType=function(pos)
+        local newdata=data[pos+1]
+        if newdata.myt then return 1 end
+        return 0
+      end,
+      onCreateViewHolder=function(parent,type)
+        local views={}
+        local itemc
+        if type==0 then
+          itemc=item
+         else
+          itemc=item2
+        end
+        local holder=LuaCustRecyclerHolder(loadlayout(itemc,views))
+        holder.view.setTag(views)
+        return holder
+      end,
+      areContentsTheSame=function(old,new)
+        return old.title==new.title
+      end,
+      areItemsTheSame=function(old,new)
+        return old.title==new.title
+      end,
+      onBindViewHolder=function(holder,position)
+        local newdata=data[position+1]
+        local tag=holder.itemView.tag
+
+        if not(newdata.myt) then
+          tag.title.text=newdata.title
+          tag.status.Checked=newdata.ishome
+          tag.root.onClick=function()
+            for k,v in ipairs(data)
+              if v.ishome then
+                v.ishome=false
+              end
+            end
+            newdata.ishome=true
+            adapter.notifyDataSetChanged()
+          end
+         else
+          tag.myt.text=newdata.myt
+        end
+      end
+    }))
+
+    recycler_view.adapter=adapter
+
+    function table.swap(数据, 查找位置, 替换位置, ismode)
+      if ismode then
+        替换位置 = 替换位置 + 1
+        查找位置 = 查找位置 + 1
+      end
+      local 删除数据
+      xpcall(function()
+        删除数据=table.remove(数据, 查找位置)
+        end,function()
+        return false
+      end)
+      table.insert(数据, 替换位置, 删除数据)
+    end
+
+    import "androidx.recyclerview.widget.ItemTouchHelper"
+    luajava.new(luajava.bindClass("androidx.recyclerview.widget.ItemTouchHelper"), luajava.override(luajava.bindClass("androidx.recyclerview.widget.ItemTouchHelper").Callback,{
+      getMovementFlags=function(b,c,d)
+        local itemclass = luajava.bindClass "androidx.recyclerview.widget.ItemTouchHelper$Callback"
+        local dragFlags = ItemTouchHelper.UP
+        local swipeFlags = ItemTouchHelper.LEFT
+        return int(itemclass.makeMovementFlags(ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT | ItemTouchHelper.DOWN | ItemTouchHelper.UP, 0));
+      end,
+      isLongPressDragEnabled=function(a)
+        return true
+      end,
+      isItemViewSwipeEnabled=function()
+        return false
+      end,
+
+      canDropOver=function(a,recyclerView, current, target)
+        local fromPosition, toPosition = current.getAdapterPosition(), target.getAdapterPosition();
+        if toPosition==0 or fromPosition==0 then
+          return false
+        end
+        return true
+      end,
+      onMove=function(a,recyclerView, viewHolder, target)
+        local fromPosition, toPosition = viewHolder.getAdapterPosition(), target.getAdapterPosition();
+        table.swap(data, fromPosition, toPosition, true)
+        recycler_view.adapter.notifyItemMoved(fromPosition, toPosition)
+        return true;
+      end,
+      onSelectedChanged=function( viewHolder, actionState)
+      end
+    })).attachToRecyclerView(recycler_view);
 
   end,
 

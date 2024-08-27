@@ -32,7 +32,7 @@ end
 if activity.getSharedData("第一次提示") and activity.getSharedData("开源提示")==nil then
   activity.setSharedData("开源提示","true")
   双按钮对话框("提示","本软件已开源 请问是否跳转开源页面?","我知道了","跳转开源地址",function(an)
-  关闭对话框(an) end,function(an)
+    关闭对话框(an) end,function(an)
     关闭对话框(an) 浏览器打开("https://gitee.com/huajicloud/Hydrogen/")
   end)
 end
@@ -44,10 +44,6 @@ end
 
 if this.getSharedData("全屏模式") == nil then
   this.setSharedData("全屏模式","false")
-end
-
-if this.getSharedData("开启想法") == nil then
-  this.setSharedData("开启想法","false")
 end
 
 if this.getSharedData("font_size")==nil then
@@ -62,68 +58,308 @@ pagadp=SWKLuaPagerAdapter()
 
 local home_layout_table=require("layout/home_layout/page_home")
 
-m = {
-  { MenuItem,
-    title = "主页",
-    id = "home_tab",
-    enabled=true;
-    icon = 图标("home");
-  },
-  { MenuItem,
-    title = "想法",
-    id = "think_tab",
-    enabled=true;
-    icon = 图标("bubble_chart")
-  },
-  { MenuItem,
-    title = "热榜",
-    id = "hot_tab",
-    enabled=true;
-    icon = 图标("fire")
-  },
-  { MenuItem,
-    title = "关注",
-    id = "following_tab",
-    enabled=true;
-    icon = 图标("group")
-  },
+if not this.getSharedData("home_cof") then
+  --格式为底栏,底栏,启动页 最后一个为启动页
+  this.setSharedData('home_cof','推荐,热榜,关注,推荐')
+end
 
+local 启动页=this.getSharedData("home_cof")
+local home_items = {}
+for item in 启动页:gmatch('[^,]+') do
+  table.insert(home_items, item)
+end
+local starthome=table.remove(home_items)
+
+home_pageinfo={
+  推荐={
+    menu= { MenuItem,
+      title = "主页",
+      id = "home_tab",
+      enabled=true;
+      icon = 图标("home");
+    },
+    lay=home_layout_table[1],
+    init=function()
+      --推荐
+      home_pagetool=require "model.home_recommend"
+      :new()
+      :initpage(home_recy,homesr)
+      return home_pagetool
+    end,
+    refer=function(isclear)
+      if isclear==true or HometabLayout.getTabCount()==0 then
+        return 加载主页tab()
+      end
+      home_pagetool:refer(nil,nil,true)
+    end,
+    getrecy=function()
+      return home_recy
+    end
+  },
+  想法={
+    menu= { MenuItem,
+      title = "想法",
+      id = "think_tab",
+      enabled=true;
+      icon = 图标("bubble_chart")
+    },
+    lay=home_layout_table[2],
+    init=function()
+      --想法
+      thinker_pagetool=require "model.home_thinker"
+      :new()
+      :initpage(think_recy,thinksr)
+      return thinker_pagetool
+    end,
+    refer=function(isclear)
+      if isclear then
+        return thinker_pagetool
+        :clearItem(1)
+        :refer(1)
+      end
+      thinker_pagetool:refer(nil,nil,true)
+    end,
+    getrecy=function()
+      return think_recy
+    end
+  },
+  热榜={
+    menu= { MenuItem,
+      title = "热榜",
+      id = "hot_tab",
+      enabled=true;
+      icon = 图标("fire")
+    },
+    lay=home_layout_table[3],
+    init=function()
+      --热榜
+      hot_pagetool=require "model.home_hot"
+      :new()
+      :initpage(hot_recy,hotsr)
+      return hot_pagetool
+    end,
+    refer=function()
+      hot_pagetool:getData(false,true)
+    end,
+    getrecy=function()
+      return hot_recy
+    end
+  },
+  关注={
+    menu= { MenuItem,
+      title = "关注",
+      id = "following_tab",
+      enabled=true;
+      icon = 图标("group")
+    },
+    lay=home_layout_table[4],
+    init=function()
+      --关注
+      follow_pagetool=require "model.home_follow"
+      :new()
+      :initpage(follow_vpg,followTab)
+      return follow_pagetool
+    end,
+    refer=function(isclear)
+      if not(getLogin()) then
+        提示("请登录后使用本功能")
+       else
+        if isclear then
+          return follow_pagetool
+          :clearItem()
+          :refer(nil,nil,true)
+        end
+        follow_pagetool:refer(nil,nil,true)
+      end
+    end,
+    getrecy=function()
+      return follow_pagetool:getItem()
+    end
+  }
 }
 
-if not this.getSharedData("starthome") then
-  this.setSharedData("starthome","推荐")
-end
-
-if this.getSharedData("开启想法")=="true" then
-  home_list={["推荐"]=0,["想法"]=1,["热榜"]=2,["关注"]=3}
- elseif this.getSharedData("开启想法")=="false" then
-  home_list={["推荐"]=0,["热榜"]=1,["关注"]=2}
-  if this.getSharedData("starthome")=="想法" then
-    this.setSharedData("starthome","推荐")
-    提示("由于想法已关闭 主页为想法 为避免异常已调整主页为推荐")
+local menu={}
+local pageinfo_keys={}
+for i,item ipairs(home_items)
+  local home_pageinfo=home_pageinfo[item]
+  pageinfo_keys[item]=i-1
+  if home_pageinfo then
+    pagadp.add(loadlayout(home_pageinfo.lay))
+    table.insert(menu,home_pageinfo.menu)
+    home_pageinfo.init()
+   else
+    error("错误 找不到"..item)
   end
-  table.remove(home_layout_table,2)
-  table.remove(m,2)
 end
 
-for i =1,#home_layout_table do
-  pagadp.add(loadlayout(home_layout_table[i]))
-end
-
-page_home.setAdapter(pagadp)
-
-optmenu = {}
-loadmenu(bnv.getMenu(), m, optmenu, 3)
+optmenu={}
+loadmenu(bnv.getMenu(), menu, optmenu, 3)
 bnv.setLabelVisibilityMode(1)
 
-_title.setText("主页")
+page_home.setAdapter(pagadp)
+local startindex=pageinfo_keys[starthome]
+page_home.setCurrentItem(startindex,false)
 
 
-function 切换页面(z)--切换主页Page函数
-  if this.getSharedData("开启想法")~="true" and z>0 then
-    page_home.setCurrentItem(z-1)
-   else
-    page_home.setCurrentItem(z)
+bnv.getMenu().getItem(startindex).setChecked(true)
+_title.text=(bnv.getMenu().getItem(startindex).getTitle())
+
+local recommend_index=pageinfo_keys.推荐
+if recommend_index then
+  bnv.getChildAt(0).getChildAt(recommend_index).onLongClick=function()
+    if page_home.getCurrentItem()~=recommend_index or HometabLayout.getTabCount()==0 then
+      return
+    end
+    import "com.google.android.material.bottomsheet.*"
+
+    import "com.google.android.material.chip.ChipGroup"
+    import "com.google.android.material.chip.Chip"
+
+    local gd2 = GradientDrawable()
+    gd2.setColor(转0x(backgroundc))--填充
+    local radius=dp2px(16)
+    gd2.setCornerRadii({radius,radius,radius,radius,0,0,0,0})--圆角
+    gd2.setShape(0)--形状，0矩形，1圆形，2线，3环形
+    local dann={
+      LinearLayout;
+      layout_width=-1;
+      layout_height=-1;
+      {
+        LinearLayout;
+        orientation="vertical";
+        layout_width=-1;
+        layout_height=-2;
+        Elevation="4dp";
+        BackgroundDrawable=gd2;
+        id="ztbj";
+        {
+          CardView;
+          layout_gravity="center",
+          CardBackgroundColor=转0x(cardedge);
+          radius="3dp",
+          Elevation="0dp";
+          layout_height="6dp",
+          layout_width="56dp",
+          layout_marginTop="12dp";
+        };
+        {
+          TextView;
+          layout_width=-1;
+          layout_height=-2;
+          textSize="20sp";
+          layout_marginTop="24dp";
+          layout_marginLeft="24dp";
+          layout_marginRight="24dp";
+          Text="tab切换";
+          Typeface=字体("product-Bold");
+          textColor=转0x(primaryc);
+        };
+        {
+          HorizontalScrollView;
+          layout_marginTop="8dp";
+          layout_marginLeft="24dp";
+          layout_marginRight="24dp";
+          layout_marginBottom="8dp",
+          id="horizontalscrollview",
+          {
+            ChipGroup;
+            singleLine=true,
+            layout_width="match";
+            layout_height="wrap";
+            singleSelection=true,
+            id="chipgroup"
+          };
+        },
+        {
+          LinearLayout;
+          orientation="horizontal";
+          layout_width=-1;
+          layout_height=-2;
+          gravity="right|center";
+          {
+            MaterialButton;
+            layout_marginTop="16dp";
+            layout_marginLeft="16dp";
+            layout_marginRight="16dp";
+            layout_marginBottom="16dp";
+            textColor=转0x(backgroundc);
+            text="关闭";
+            id="close";
+            Typeface=字体("product-Bold");
+          };
+        };
+      };
+    };
+
+
+    local tmpview={}
+    local bottomSheetDialog = BottomSheetDialog(this)
+    bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
+    local chipdialog=bottomSheetDialog.show()
+    MDC_R=luajava.bindClass"com.google.android.material.R"
+
+    local function createchip(text)
+      return loadlayout({
+        Chip;
+        layout_width="wrap_content";
+        layout_height="wrap_content";
+        text=text;
+        checked=true,
+        checkable = true,
+        style=MDC_R.style.Widget_Material3_Chip_Filter
+      })
+    end
+
+    for i = 1,HometabLayout.getTabCount() do
+      local itemnum=i-1
+      local text=HometabLayout.getTabAt(itemnum).Text
+      tmpview.chipgroup.addView(createchip(text,itemnum))
+    end
+
+    local index=HometabLayout.getSelectedTabPosition()
+    local checkedchip=tmpview.chipgroup.getChildAt(index)
+    checkedchip.checked=true
+    tmpview.chipgroup.post{
+      run=function ()
+        tmpview.horizontalscrollview.smoothScrollTo(checkedchip.getLeft(), checkedchip.getTop());
+    end}
+
+    function getCheckedPos(str)
+      for i = 1,tmpview.chipgroup.childCount do
+        if tmpview.chipgroup.getChildAt(i-1).text==str then
+          return i-1
+        end
+      end
+    end
+
+    tmpview.chipgroup.setOnCheckedChangeListener(ChipGroup.OnCheckedChangeListener{
+      onCheckedChanged=function(chipgroup,id)
+        if id==-1 then
+          return
+        end
+        local chip=chipgroup.findViewById(id);
+        if checkedchip.text==chip.text then
+          return
+        end
+        双按钮对话框("提示","确定要选择"..chip.text.."吗","选择","取消",function (an)
+          local pos=getCheckedPos(chip.text)
+          local tab=HometabLayout.getTabAt(pos);
+          tab.select()
+          提示("选择成功")
+          chipdialog.dismiss()
+          an.dismiss()
+          end,function(an)
+          chip.checked=false
+          checkedchip.checked=true
+          an.dismiss()
+        end)
+      end
+    })
+
+    local an=bottomSheetDialog.show()
+    tmpview.close.onClick=function()
+      an.dismiss()
+    end;
   end
 end
 
@@ -154,10 +390,10 @@ function bnv.onNavigationItemSelected(item)
   end
 
   local currentTime = SystemClock.uptimeMillis()
-  local pos=home_list[item]
+  local pos=pageinfo_keys[item]
 
   if lastClickedItem == item and currentTime - lastClickTime < 200 then
-    getitemRecy(pos).smoothScrollToPosition(0)
+    home_pageinfo[item].getrecy().smoothScrollToPosition(0)
    else
     lastClickTime = currentTime
     lastClickedItem = item
@@ -171,28 +407,9 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
   end;
 
   onPageSelected=function(position)
-    local pos=position
-    if this.getSharedData("开启想法") ~="true" then
-      pos=pos+1
-    end
-    if position == 0 then
-      pos=position
-      home_pagetool:refer(nil,nil,true)
-    end
-    if pos == 1 then
-      thinker_pagetool:refer(nil,nil,true)
-    end
-    if pos == 2 then
-      hot_pagetool:getData(false,true)
-    end
-
-    if pos == 3 then
-      if not(getLogin()) then
-        提示("请登录后使用本功能")
-       else
-        follow_pagetool:refer(nil,nil,true)
-      end
-    end
+    local pos=position+1
+    local home_item=home_items[pos]
+    home_pageinfo[home_item].refer()
 
     for i=0,bnv.getChildCount() do
       bnv.getMenu().getItem(i).setChecked(false)
@@ -200,7 +417,6 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
 
     bnv.getMenu().getItem(position).setChecked(true)
     _title.text=(bnv.getMenu().getItem(position).getTitle())
-
 
   end;
 
@@ -569,30 +785,6 @@ function 侧滑列表点击事件(v)
   end)
 end
 
---推荐
-home_pagetool=require "model.home_recommend"
-:new()
-:initpage(home_recy,homesr)
-
-
-if this.getSharedData("开启想法") == "true" then
-  --想法
-  thinker_pagetool=require "model.home_thinker"
-  :new()
-  :initpage(think_recy,thinksr)
-end
-
---热榜
-hot_pagetool=require "model.home_hot"
-:new()
-:initpage(hot_recy,hotsr)
-
---关注
-follow_pagetool=require "model.home_follow"
-:new()
-:initpage(follow_vpg,followTab)
-
-
 --日报
 daily_pagetool=require "model.home_daily"
 :new()
@@ -615,11 +807,88 @@ followcontent_pagetool=require "model.follow_content"
 波纹({侧滑头},"方自适应")
 波纹({注销},"圆自适应")
 
---获取首页启动什么
-local starthome=this.getSharedData("starthome")
 
---从home_list取出启动页
-page_home.setCurrentItem(home_list[starthome],false)
+function 加载主页tab()
+
+  if not HometabLayout then
+    return
+  end
+
+  zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code,content)
+    if code==200 then
+      HometabLayout.setVisibility(0)
+      local decoded_content = luajson.decode(content)
+      if this.getSharedData("关闭全站")~="true" then
+        table.insert(decoded_content.selected_sections, 1, {
+          section_name="全站",
+          section_id=nil,
+          sub_page_id=nil,
+        })
+      end
+
+      if HometabLayout.getTabCount()>0 then
+        HometabLayout.removeAllTabs()
+      end
+
+      hometab={}
+
+      for _,v ipairs(decoded_content.selected_sections) do
+        local sub_page_id=v.sub_page_id
+        local section_id=v.section_id
+        table.insert(hometab,{
+          sub_page_id=sub_page_id,
+          section_id=section_id,
+        })
+        local tab=HometabLayout.newTab()
+        tab.setText(v.section_name)
+        HometabLayout.addTab(tab)
+      end
+
+      HometabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
+        onTabSelected=function(tab)
+          --选择时触发
+          local pos=tab.getPosition()+1
+          local section_id=hometab[pos]["section_id"]
+          local sub_page_id=hometab[pos]["sub_page_id"]
+          if section_id==nil then
+            home_pagetool:setUrlItem("https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=0&include_guide_relation=false")
+           else
+            if sub_page_id then
+              home_pagetool:setUrlItem("https://api.zhihu.com/feed-root/section/"..section_id.."?sub_page_id="..sub_page_id.."&channelStyle=0")
+             else
+              home_pagetool:setUrlItem("https://api.zhihu.com/feed-root/section/"..section_id.."?channelStyle=0")
+            end
+          end
+          home_pagetool:clearItem()
+          :refer()
+        end,
+
+        onTabUnselected=function(tab)
+          --未选择时触发
+        end,
+
+        onTabReselected=function(tab)
+          --选中之后再次点击即复选时触发
+          home_pagetool:clearItem()
+          :refer(nil,true)
+        end,
+      });
+
+
+      --延迟防止滑动
+      HometabLayout.postDelayed(Runnable{
+        run=function()
+          local tab=HometabLayout.getTabAt(0);
+          tab.select()
+      end},100);
+
+     else
+      HometabLayout.setVisibility(8)
+      home_pagetool:clearItem()
+      :refer()
+    end
+  end)
+end
 
 function 成功登录回调()
   setHead()
@@ -636,7 +905,13 @@ function 成功登录回调()
     "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_news_specials".."?limit=10",
     "https://api.zhihu.com/people/"..activity.getSharedData("idx").."/".."following_roundtables".."?limit=10",
   })
+
+  local pos=page_home.getCurrentItem()+1
+  local home_item=home_items[pos]
+  home_pageinfo[home_item].refer(true)
+
 end
+
 
 function getuserinfo()
 
@@ -662,92 +937,7 @@ function getuserinfo()
         签名id.Text=签名
       end
       sign_out.setVisibility(View.VISIBLE)
-
-      zHttp.get("https://api.zhihu.com/feed-root/sections/query/v2",head,function(code,content)
-        if code==200 then
-          成功登录回调()
-          HometabLayout.setVisibility(0)
-          local decoded_content = luajson.decode(content)
-          if this.getSharedData("关闭全站")~="true" then
-
-            table.insert(decoded_content.selected_sections, 1, {
-              section_name="全站",
-              section_id=nil,
-              sub_page_id=nil,
-            })
-          end
-
-          if HometabLayout.getTabCount()>0 then
-            for i = HometabLayout.getTabCount(), 1, -1 do
-              local itemnum=i-1
-              HometabLayout.removeTabAt(itemnum)
-            end
-          end
-
-          hometab={}
-          for i=1, #decoded_content.selected_sections do
-            if HometabLayout.getTabCount()<i+1 and decoded_content.selected_sections[i].section_name~="圈子" then
-              local tab=HometabLayout.newTab()
-              tab.setText(decoded_content.selected_sections[i].section_name)
-              local choose_sub=decoded_content.selected_sections[i].sub_page_id
-              local choosebutton=decoded_content.selected_sections[i].section_id
-              table.insert(hometab,{
-                choose_sub=choose_sub,
-                choosebutton=choosebutton,
-              })
-              HometabLayout.addTab(tab)
-            end
-          end
-
-
-          HometabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
-            onTabSelected=function(tab)
-              --选择时触发
-              local pos=tab.getPosition()+1
-              local choosebutton=hometab[pos]["choosebutton"]
-              local choose_sub=hometab[pos]["choose_sub"]
-              if choosebutton==nil then
-                home_pagetool:setUrlItem("https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=0&include_guide_relation=false")
-               else
-                if choose_sub then
-                  home_pagetool:setUrlItem("https://api.zhihu.com/feed-root/section/"..choosebutton.."?sub_page_id="..(choose_sub).."&channelStyle=0")
-                 else
-                  home_pagetool:setUrlItem("https://api.zhihu.com/feed-root/section/"..choosebutton.."?channelStyle=0")
-                end
-              end
-              home_pagetool:clearItem()
-              home_pagetool:refer()
-
-            end,
-
-            onTabUnselected=function(tab)
-              --未选择时触发
-            end,
-
-            onTabReselected=function(tab)
-              --选中之后再次点击即复选时触发
-              local pos=tab.getPosition()+1
-              local choosebutton=hometab[pos]["choosebutton"]
-              local choose_sub=hometab[pos]["choose_sub"]
-              if choosebutton==nil then
-                home_pagetool:setUrlItem("https://api.zhihu.com/topstory/recommend?tsp_ad_cardredesign=0&feed_card_exp=card_corner|1&v_serial=1&isDoubleFlow=0&action=down&refresh_scene=0&scroll=up&limit=10&start_type=cold&device=phone&short_container_setting_value=0&include_guide_relation=false")
-               else
-                if choose_sub then
-                  home_pagetool:setUrlItem("https://api.zhihu.com/feed-root/section/"..choosebutton.."?sub_page_id="..(choose_sub).."&channelStyle=0")
-                 else
-                  home_pagetool:setUrlItem("https://api.zhihu.com/feed-root/section/"..choosebutton.."?channelStyle=0")
-                end
-              end
-              home_pagetool:clearItem()
-              :refer()
-            end,
-          });
-
-         else
-          --HometabLayout.setVisibility(8)
-        end
-      end)
-
+      成功登录回调()
      else
       --状态码不为200的事件
       侧滑头.onClick=function()
@@ -769,42 +959,10 @@ getuserinfo()
 function onActivityResult(a,b,c)
   if b==100 then
     getuserinfo()
-
-    local position=page_home.getCurrentItem()
-    local pos=position
-    if this.getSharedData("开启想法") ~="true" then
-      pos=pos+1
-    end
-    if position == 0 then
-      pos=position
-      home_pagetool
-      :clearItem()
-      :refer(nil,nil,true)
-    end
-    if pos == 1 then
-      thinker_pagetool
-      :clearItem()
-      :refer(nil,nil,true)
-    end
-
-    if pos == 2 then
-      hot_pagetool:getData(false,true)
-    end
-
-    if pos == 3 then
-      if not(getLogin()) then
-        提示("请登录后使用本功能")
-       else
-        follow_pagetool
-        :clearItem()
-        :refer(nil,nil,true)
-      end
-    end
-
    elseif b==1200 then --夜间模式开启
     设置主题()
-   elseif b==200 then
-    activity.finish()
+   elseif b==1300 then
+    加载主页tab()
    elseif b==1600 then
     collection_pagetool
     :clearItem(1)
