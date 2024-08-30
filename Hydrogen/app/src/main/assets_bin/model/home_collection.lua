@@ -23,7 +23,7 @@ function base.getfuncs()
       local add={}
       add.标题=v.title
       add.is_lock=v.is_public==false and 图标("https") or nil
-      add.预览内容="由 "..v.creator.name.." 创建"
+      add.预览内容=v.item_count.." 个内容"
       add.评论数=math.floor(v.comment_count)..""
       add.关注数=math.floor(v.follower_count).."人关注"
       add.id内容=tostring(v.id)
@@ -38,7 +38,7 @@ function base.getfuncs()
       end
       local add={}
       add.图像=图片
-      add.预览内容="由 "..v.creator.name.." 创建"
+      add.预览内容="由"..v.creator.name.."创建 "..v.item_count.."个内容"
       add.标题=v.title
       add.关注数=math.floor(v.follower_count).."人关注"
       add.id内容=tostring(v.id)
