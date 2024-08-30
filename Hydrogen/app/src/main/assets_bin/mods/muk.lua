@@ -18,7 +18,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.54
+versionCode=0.541
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
@@ -1684,13 +1684,26 @@ function 加入收藏夹(回答id,收藏类型,func)
       if addstr=="" and removestr=="" then
         return
       end
+
+      local 提示内容=function(code)
+        local 状态="失败"
+        if code==200 then
+          状态="成功"
+        end
+        if #dotab.add>0 then
+          提示("收藏"..状态)
+         else
+          提示("取消收藏"..状态)
+        end
+      end
+
       zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..addstr.."&remove_collections="..removestr,head,function(code,json)
         local func=func or function() end
         if code==200 then
-          提示("收藏成功")
+          提示内容(code)
           func(i)
          else
-          提示("收藏失败")
+          提示内容(code)
           func(orii)
         end
       end)

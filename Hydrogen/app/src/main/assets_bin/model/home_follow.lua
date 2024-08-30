@@ -355,7 +355,7 @@ end
 function base:initpage(view,tabview)
   followhead = table.clone(apphead)
   followhead["x-moments-ab-param"] = "follow_tab=1";
-  return MyPageTool2:new({
+  local pagetool=MyPageTool2:new({
     view=view,
     tabview=tabview,
     addcanclick=true,
@@ -364,14 +364,21 @@ function base:initpage(view,tabview)
     adapters_func=self.getAdapter,
     func=self.resolvedata,
     urls={
-      "https://api.zhihu.com/moments_v3?feed_type=timeline",
       "https://api.zhihu.com/moments_v3?feed_type=recommend",
+      "https://api.zhihu.com/moments_v3?feed_type=timeline",
       "https://api.zhihu.com/moments_v3?feed_type=pin"
     }
   })
-  :addPage(2,{"最新","精选","想法"})
+  :addPage(2,{"精选","最新","想法"})
   :createfunc()
   :setOnTabListener()
+
+  if this.getSharedData("startfollow") then
+    local page_key={精选=0,最新=1,想法=2}
+    tabview.getTabAt(page_key[this.getSharedData("startfollow")]).select()
+  end
+
+  return pagetool
 end
 
 return base

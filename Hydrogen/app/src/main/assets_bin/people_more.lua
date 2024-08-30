@@ -10,6 +10,14 @@ import "com.google.android.material.tabs.TabLayout"
 
 id,title=...
 
+task(1,function()
+  a=MUKPopu({
+    tittle=title,
+    list={
+    },
+  })
+end)
+
 
 --判断是否为收藏夹
 if title:find("收藏") then

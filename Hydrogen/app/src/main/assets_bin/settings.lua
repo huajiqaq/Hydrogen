@@ -60,7 +60,7 @@ data = {
   {__type=4,subtitle="热榜关闭热度",status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭热度"))}},
   {__type=3,subtitle="设置主页排序"},
   {__type=3,subtitle="修改主页排序",rightIcon={Visibility=0}},
-
+  {__type=3,subtitle="设置关注默认选中栏"},
 
   {__type=1,title="缓存设置"},
 
@@ -169,6 +169,30 @@ tab={
     end})
     .setNegativeButton("取消", nil)
     .show()
+  end,
+  设置关注默认选中栏=function()
+    local startfollow={"精选","最新","想法"}
+    local startfollowtab={["精选"]=1,["最新"]=2,["想法"]=3}
+    local starnum=startfollowtab[this.getSharedData("startfollow")] or 1
+    tipalert=AlertDialog.Builder(this)
+    .setTitle("请选择关注默认选中栏")
+    .setSingleChoiceItems(startfollow, starnum-1,{onClick=function(v,p)
+        starnum=p+1
+    end})
+    .setPositiveButton("确定", nil)
+    .setNegativeButton("取消",nil)
+    .show();
+    tipalert.getButton(tipalert.BUTTON_POSITIVE).onClick=function()
+      if starnum==nil then
+        starnum=1
+      end
+      local startfollow=startfollow[starnum]
+
+      this.setSharedData("startfollow",startfollow)
+      starnum=nil
+      提示("下次启动App生效")
+      tipalert.dismiss()
+    end
   end,
   切换webview=function(self,index)
     import "com.norman.webviewup.lib.WebViewUpgrade"
