@@ -32,6 +32,11 @@ local fastImport = {
   MaterialButton_OutlinedButton = "com.jesse205.widget.StyleWidget",
   MaterialButton_TextButton_Normal = "com.jesse205.widget.StyleWidget",
   MaterialButton_TextButton_Icon = "com.jesse205.widget.StyleWidget",
+  Chip_Assist = "com.jesse205.widget.StyleWidget",
+  Chip_Filter = "com.jesse205.widget.StyleWidget",
+  Chip_Input = "com.jesse205.widget.StyleWidget",
+  Chip_Suggestion = "com.jesse205.widget.StyleWidget",
+  Chip_Suggestion_Elevated = "com.jesse205.widget.StyleWidget",
   -- 导入各种布局表
   MyTextInputLayout = "com.jesse205.layout.MyTextInputLayout"
 }
@@ -109,9 +114,6 @@ if activity then
   --动态配色
   import "com.google.android.material.color.DynamicColors"
   DynamicColors.applyToActivitiesIfAvailable(activity.getApplication())
-  --将AlertDialog全部替换为md风格弹窗
-  AlertDialog={}
-  AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.MaterialAlertDialogBuilder"
  else
   -- 没有activity不加载主题
   notLoadTheme = true
@@ -333,11 +335,14 @@ end
 ---@param title string 标题
 ---@param message string 信息
 function showSimpleDialog(title, message)
-  return AlertDialog.Builder(context)
+  local dialog=AlertDialog.Builder(context)
   .setTitle(title)
   .setMessage(message)
   .setPositiveButton(android.R.string.ok, nil)
   .show()
+  dialog.findViewById(R.id.alertTitle).TextIsSelectable=true
+  dialog.findViewById(android.R.id.message).TextIsSelectable=true
+  return dialog
 end
 
 showErrorDialog = showSimpleDialog

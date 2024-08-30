@@ -265,11 +265,7 @@ function base.getAdapter(home_pagetool,pos)
           if comment_type=="comments" then
             return 提示("当前已在该对话列表内")
           end
-          local cardinfo={}
-          for k,v in pairs(data)
-            cardinfo[k]=tostring(v)
-          end
-          activity.newActivity("comment",{data.id内容,"comments",comment_id,comment_type,保存路径,luajson.encode(cardinfo)})
+          activity.newActivity("comment",{data.id内容,"comments",comment_id,comment_type,保存路径})
         end
       end
 
@@ -373,6 +369,12 @@ function base:initpage(view,sr)
     head="head",
     adapters_func=self.getAdapter,
     func=self.resolvedata,
+    firstfunc=function(data,adpdata)
+      --针对对话列表 添加父评论
+      if self.type=="comments" then
+        self.resolvedata(data.root,adpdata)
+      end
+    end
   })
   :initPage()
   :createfunc()

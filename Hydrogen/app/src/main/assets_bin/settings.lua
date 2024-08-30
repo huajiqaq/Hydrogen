@@ -7,22 +7,7 @@ import "mods.muk"
 import "com.google.android.material.materialswitch.MaterialSwitch"
 设置视图("layout/settings")
 设置toolbar(toolbar)
-
-activity.SupportActionBar.setDisplayHomeAsUpEnabled(true)
-
-toolbar.Title="设置"
-local originalTitle = toolbar.Title
-
-import "androidx.appcompat.widget.Toolbar"
-for i=0,toolbar.getChildCount() do
-  local view = toolbar.getChildAt(i);
-  if luajava.instanceof(view,TextView) then
-    if view.getText()==originalTitle then
-      local textView = view;
-      textView.setTextSize(18)
-    end
-  end
-end
+设置toolbar属性(toolbar,"设置")
 
 function onOptionsItemSelected()
   activity.finish()
@@ -60,6 +45,7 @@ data = {
 
   }},
   {__type=4,subtitle="回答单页模式",status={Checked=Boolean.valueOf(this.getSharedData("回答单页模式"))}},
+  {__type=4,subtitle="关闭热门搜索",status={Checked=Boolean.valueOf(this.getSharedData("关闭热门搜索"))}},
 
 
   {__type=4,subtitle="全屏模式",status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},

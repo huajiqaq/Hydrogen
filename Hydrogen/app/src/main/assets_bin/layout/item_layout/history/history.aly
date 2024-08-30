@@ -26,15 +26,33 @@
         LinearLayout;
         orientation="horizontal";
         padding="16dp";
+        layout_width="fill",
         {
           LinearLayout;
           orientation="vertical";
+          layout_width="fill",
+          {
+            LinearLayout;
+            orientation="horizontal";
+            layout_width="fill",
+            {
+              TextView;
+              textColor=textc;
+              textSize="14sp";
+              Typeface=字体("product-Bold");
+              id="标题",
+              layout_weight=1
+            };
+          };
           {
             TextView;
-            textColor=textc;
-            textSize="14sp";
-            Typeface=字体("product-Bold");
-            id="标题",
+            textSize="12sp";
+            MaxLines=3;
+            ellipsize="end",
+            id="预览内容";
+            textColor=stextc;
+            layout_marginTop="2dp";
+            Typeface=字体("product-Medium");
           };
           {
             TextView;

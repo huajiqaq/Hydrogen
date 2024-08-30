@@ -254,7 +254,7 @@ function 数据添加(t,b)
 
   if not(已记录) then
     初始化历史记录数据(true)
-    保存历史记录(_title.Text,问题id.."分割"..回答id,50)
+    保存历史记录("回答分割"..回答id,b.question.title,b.excerpt)
     已记录=true
   end
 
@@ -797,7 +797,7 @@ task(1,function()
 
           local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
           local pgids=数据表[pgnum].ids
-          
+
           local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
           创建文件(内置存储文件("Download/".._title.Text.."/"..username.Text.."/detail.txt"))
           写入内容='question_id="'..问题id..'"\n'

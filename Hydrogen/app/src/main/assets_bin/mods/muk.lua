@@ -18,11 +18,71 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.538
+versionCode=0.54
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
-logopng=this.getLuaDir().."/logo.png"
 
+function findDirectoryUpward(startPath)
+  local path = startPath
+  local targetDirs = {'files', 'assets_bin'}
+
+  while true do
+    for _, dir in ipairs(targetDirs) do
+      if path:match('/' .. dir .. '/?$') then
+        -- 确保返回的路径以斜杠结尾
+        if path:sub(-1) ~= '/' then
+          path = path .. '/'
+        end
+        return path
+      end
+    end
+
+    -- 移除最后一个目录
+    path = path:gsub('[^/]+/?$', '')
+    -- 检查是否已经到达根目录
+    if path == '/' then
+      break
+    end
+  end
+
+  -- 如果没有找到目标目录，则返回this.getLuaDir()，同样确保以斜杠结尾
+  local result = this.getLuaDir()
+  if result:sub(-1) ~= '/' then
+    result = result .. '/'
+  end
+  return result
+end
+
+srcLuaDir = findDirectoryUpward(this.getLuaDir()) or this.getLuaDir()
+logopng=srcLuaDir.."/logo.png"
+
+function 设置toolbar属性(toolbar,title)
+  local PorterDuffColorFilter=luajava.bindClass "android.graphics.PorterDuffColorFilter"
+  local PorterDuff=luajava.bindClass "android.graphics.PorterDuff"
+  local bitmap=loadbitmap(图标("arrow_back"))
+  local imgdp = 26
+  local imgpx=TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, imgdp, activity.Resources.DisplayMetrics)
+  local colorFilter = PorterDuffColorFilter(res.color.attr.colorPrimary, PorterDuff.Mode.SRC_ATOP)
+  local scaledBitmap = Bitmap.createScaledBitmap(bitmap, imgpx, imgpx, true)
+  local bitmap=BitmapDrawable(activity.Resources,scaledBitmap)
+  .setColorFilter(colorFilter)
+  toolbar.setNavigationIcon(bitmap)
+  toolbar.setNavigationContentDescription("转到上一层级")
+
+  toolbar.title=title
+
+  import "androidx.appcompat.widget.Toolbar"
+  for i=0,toolbar.getChildCount() do
+    local view = toolbar.getChildAt(i);
+    if luajava.instanceof(view,TextView) then
+      local textView = view;
+      textView.setTextSize(18)
+      textView.Typeface=字体("product-Bold")
+      textView.textColor=转0x(primaryc)
+    end
+  end
+
+end
 
 function onConfigurationChanged(config)
 end
@@ -309,31 +369,35 @@ end
 function 初始化历史记录数据()
   recordtitle = {}
   recordid = {}
+  recordcontent = {}
   -- 从 SharedPreferences 中加载数据
   local titles = loadSharedPreferences("Historyrecordtitle")
   local ids = loadSharedPreferences("Historyrecordid")
+  local content = loadSharedPreferences("Historyrecordcontent")
   -- 将数据排序并存储到记录数组中
   local keys = {}
-  for key in pairs(titles) do
+  for key in pairs(ids) do
     table.insert(keys, tonumber(key))
   end
   table.sort(keys, function(a, b) return a > b end)
   for i, key in ipairs(keys) do
     recordtitle[i] = titles[key]
     recordid[i] = ids[key]
+    recordcontent[i] = content[key]
   end
 end
 
 
-function saveHistoryRecord(title, id)
+function saveHistoryRecord(id,title,content)
   table.insert(recordtitle, title)
+  table.insert(recordcontent, content)
   table.insert(recordid, id)
-
   清空并保存历史记录("Historyrecordtitle", recordtitle)
   清空并保存历史记录("Historyrecordid", recordid)
+  清空并保存历史记录("Historyrecordcontent", recordcontent)
 end
 
-if custom_onstart~=true then
+if need_save_history==true then
   function onStart()
     初始化历史记录数据()
   end
@@ -348,24 +412,19 @@ function 清空并保存历史记录(name, data)
   end
 end
 
-function 保存历史记录(title, id)
-  -- 查找记录是否已存在
-  local found = false
+function 保存历史记录(id,title,content)
   local id=tostring(id)
   for i, existingId in ipairs(recordid) do
     if id == existingId then
       -- 如果记录已存在，先删除再添加
       table.remove(recordtitle, i)
+      table.remove(recordcontent, i)
       table.remove(recordid, i)
-      saveHistoryRecord(title, id)
-      found = true
       break
     end
   end
 
-  if not found then
-    saveHistoryRecord(title, id)
-  end
+  saveHistoryRecord(id,title,content)
 end
 
 
@@ -428,15 +487,7 @@ function 主题(str)
     ripplec="#559E9E9E"
     cardedge=dec2hex(res.color.attr.colorSurface)
     oricardedge="#FFF6F6F6"
-    pcall(function()
-      local _window = activity.getWindow();
-      _window.setBackgroundDrawable(ColorDrawable(0xffffffff));
-      local _wlp = _window.getAttributes();
-      _wlp.gravity = Gravity.BOTTOM;
-      _wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
-      _wlp.height = WindowManager.LayoutParams.MATCH_PARENT;--WRAP_CONTENT
-      _window.setAttributes(_wlp);
-    end)
+
     if 获取主题夜间模式() == true then
       if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
@@ -497,10 +548,8 @@ end
 
 设置主题()
 
+activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(0);
 
-function 沉浸状态栏()
-  activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-end
 
 function 转0x(j,isAndroid)
   if #j==7 then
@@ -533,7 +582,7 @@ function 提示(t)
       layout_width="-1";
       layout_height="-2";
       CardElevation="0",
-      CardBackgroundColor=转0x(textc)-0x3f000000,
+      CardBackgroundColor=转0x(backgroundc)-0xf00000000,
       StrokeWidth=0,
       layout_margin="16dp";
       layout_marginBottom="64dp";
@@ -547,7 +596,7 @@ function 提示(t)
         paddingBottom="12dp";
         {
           TextView,
-          textColor=转0x(backgroundc),
+          textColor=转0x(textc),
           textSize="14sp";
           layout_height=-2,
           layout_width=-2,
@@ -658,7 +707,7 @@ function 关闭对话框(an)
   an.dismiss()
 end
 
-function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr)
+function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,iscancelable)
 
   import "com.google.android.material.bottomsheet.*"
 
@@ -766,10 +815,14 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr)
     };
   };
 
+  if iscancelable==nil then
+    iscancelable=true
+  end
   local tmpview={}
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
   local an=bottomSheetDialog.show()
+  .setCancelable(iscancelable);
   tmpview.dsnr_c.onClick=function()
     dsnr(an)
   end;
@@ -782,7 +835,7 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr)
 end
 
 
-function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr)
+function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,iscancelable)
 
   import "com.google.android.material.bottomsheet.*"
 
@@ -872,10 +925,14 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr)
     };
   };
 
+  if iscancelable==nil then
+    iscancelable=true
+  end
   local tmpview={}
   local bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
   local an=bottomSheetDialog.show()
+  .setCancelable(iscancelable);
   tmpview.qxnr_c.onClick=function()
     qxnr(an)
   end;
@@ -1006,7 +1063,7 @@ if this.getSharedData("全屏模式")=="true" then
 end
 
 function 图标(n)
-  return "res/twotone_"..n.."_black_24dp.png"
+  return srcLuaDir.."res/twotone_"..n.."_black_24dp.png"
 end
 
 function 下载文件(链接,文件名,配置)
@@ -1217,7 +1274,7 @@ if this.getSharedData("使用系统字体")=="true" then
   end
  else
   function 字体(t)
-    return Typeface.createFromFile(File(activity.getLuaDir().."/res/"..t..".ttf"))
+    return Typeface.createFromFile(File(srcLuaDir.."/res/"..t..".ttf"))
   end
 end
 
@@ -1630,10 +1687,10 @@ function 加入收藏夹(回答id,收藏类型,func)
       zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,"add_collections="..addstr.."&remove_collections="..removestr,head,function(code,json)
         local func=func or function() end
         if code==200 then
-          提示("成功")
+          提示("收藏成功")
           func(i)
          else
-          提示("失败")
+          提示("收藏失败")
           func(orii)
         end
       end)
@@ -1950,9 +2007,9 @@ function 加入专栏(回答id,收藏类型)
       if 选中专栏 then
         zHttp.post("https://api.zhihu.com/"..收藏类型.."s/"..回答id.."/republish",'{"action":"create","column":"'..选中专栏..'"}',apphead,function(code,json)
           if code==200 then
-            提示("成功")
+            提示("收入专栏成功")
            else
-            提示("失败")
+            提示("收入专栏失败")
           end
         end)
       end

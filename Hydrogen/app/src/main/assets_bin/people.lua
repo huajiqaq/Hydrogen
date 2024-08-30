@@ -21,7 +21,7 @@ end
 
 
 local base_people=require "model.people":new(people_id)
-:getData(function(data)
+:getData(function(data,self)
   if data==false then
     _title.Text="获取用户信息失败"
     card.Visibility=8
@@ -37,7 +37,7 @@ local base_people=require "model.people":new(people_id)
     签名="无签名"
   end
 
-  保存历史记录(名字,"用户分割"..用户id,50)
+  保存历史记录("用户分割"..用户id,名字,签名)
 
   if 用户id~=nil and 用户id~="" and 用户id~=activity.getSharedData("idx") then
     people_o.setVisibility(View.VISIBLE)
@@ -71,7 +71,7 @@ local base_people=require "model.people":new(people_id)
     following.Text="关注";
   end
 
-  mpop={
+  pop={
     tittle="用户",
     list={
       {
@@ -157,14 +157,14 @@ local base_people=require "model.people":new(people_id)
   }
 
   if data.is_blocking then
-    mpop.list[1].src=图标("close")
-    mpop.list[1].text="取消拉黑"
+    pop.list[1].src=图标("close")
+    pop.list[1].text="取消拉黑"
    else
-    mpop.list[1].src=图标("add")
-    mpop.list[1].text="拉黑"
+    pop.list[1].src=图标("add")
+    pop.list[1].text="拉黑"
   end
 
-  a=MUKPopu(mpop)
+  a=MUKPopu(pop)
 
   _title.Text=名字
   people_name.Text=名字
@@ -177,6 +177,24 @@ local base_people=require "model.people":new(people_id)
   end
 
   loadglide(图像,大头像)
+
+  self:getTab(function(self,tabname,urlinfo,answerindex)
+    _G["urlinfo"]=urlinfo
+    self:initpage(people_vpg,PeotabLayout)
+    :setUrls(urlinfo)
+    :addPage(2,tabname)
+    :createfunc()
+    :setOnTabListener(function(self,pos)
+      _G["pos"]=pos
+      if pos==answerindex then
+        _sortvis.setVisibility(0)
+       else
+        _sortvis.setVisibility(8)
+      end
+    end)
+    :refer(nil,nil,true)
+  end)
+
 
 end)
 
@@ -219,25 +237,6 @@ function _sort.onClick(view)
   pop.show()--显示
 end
 
-
-base_people:getTab(function(self,tabname,urlinfo,answerindex)
-  _G["urlinfo"]=urlinfo
-  people_pagetool=self:initpage(people_vpg,PeotabLayout)
-  :setUrls(urlinfo)
-  :addPage(2,tabname)
-  :createfunc()
-  :setOnTabListener(function(self,pos)
-    _G["pos"]=pos
-    if pos==answerindex then
-      _sortvis.setVisibility(0)
-     else
-      _sortvis.setVisibility(8)
-    end
-  end)
-  :refer(nil,nil,true)
-end)
-
-base_people:initpage(people_vpg,PeotabLayout)
 
 波纹({fh,_more},"圆主题")
 

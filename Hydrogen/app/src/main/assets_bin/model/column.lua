@@ -85,7 +85,7 @@ function base:getData(cb,issave)
           end
           --修复想法标题获取异常的问题
           b.title=title
-          保存历史记录(title,type1.."分割"..self.id)
+          保存历史记录(type1.."分割"..self.id,title,b.excerpt_title or b.excerpt or "")
         end
       end
       cb(b)

@@ -104,7 +104,6 @@ function base:getAdapter(home_pagetool,pos)
          elseif tostring(data.id内容):find("想法分割") then
           activity.newActivity("column",{tostring(data.id内容):match("想法分割(.+)"),"想法"})
          elseif not(data.id内容):find("分割") then
-          保存历史记录(view.标题.Text,data.id内容,50)
           activity.newActivity("question",{data.id内容})
         end
       end

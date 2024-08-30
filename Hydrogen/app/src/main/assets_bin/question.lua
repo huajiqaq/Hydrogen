@@ -199,8 +199,8 @@ question_base:getData(function(tab)
 
   title.text=tab.title
 
-  初始化历史记录数据(true)
-  保存历史记录(title.Text,question_id)
+  初始化历史记录数据()
+  保存历史记录("问题分割"..question_id,tab.title,tab.excerpt)
 
   _comment.Text=tostring((tab.comment_count))
   _star.Text=tostring((tab.follower_count))

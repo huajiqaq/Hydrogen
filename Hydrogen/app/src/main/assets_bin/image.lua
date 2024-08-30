@@ -17,8 +17,6 @@ activity.setContentView(loadlayout("layout/image"))
 
 波纹({download},"方自适应")
 
-沉浸状态栏()
-
 全屏()
 
 local ls= this.getSharedData("imagedata")

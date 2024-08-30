@@ -5,13 +5,8 @@ import "mods.muk"
 import "android.text.method.LinkMovementMethod"
 activity.setContentView(loadlayout("layout/comment"))
 
-comment_id,comment_type,oricomment_id,oricomment_type,保存路径,卡片信息=...
+comment_id,comment_type,oricomment_id,oricomment_type,保存路径=...
 波纹({fh,_more},"圆主题")
-
---评论列表默认显示原评论
-if 卡片信息 then
-  卡片信息=luajson.decode(卡片信息)
-end
 
 function 发送评论(send_text,当前回复人)
 

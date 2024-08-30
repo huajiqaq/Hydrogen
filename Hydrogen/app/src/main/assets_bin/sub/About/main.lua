@@ -26,22 +26,15 @@ import "com.google.android.material.appbar.MaterialToolbar"
 import "androidx.appcompat.widget.LinearLayoutCompat"
 import "androidx.core.widget.NestedScrollView"
 
-activity.setTitle(R.string.jesse205_about)
+--activity.setTitle(R.string.jesse205_about)
 activity.setContentView(loadlayout("layout"))
 activity.setSupportActionBar(toolbar)
 --actionBar.setDisplayHomeAsUpEnabled(true)
-activity.SupportActionBar.setDisplayHomeAsUpEnabled(true)
 
-local originalTitle = toolbar.getTitle();
-for i=0,toolbar.getChildCount() do
-  local view = toolbar.getChildAt(i);
-  if luajava.instanceof(view,TextView) then
-    local textView = view;
-    if textView.getText()==originalTitle then
-      textView.setTextSize(18)
-    end
-  end
-end
+local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
+package.path = package.path..";"..luapath.."/?.lua"
+require("mods.muk")
+设置toolbar属性(toolbar,R.string.jesse205_about)
 
 loadlayout2("iconLayout")
 loadlayout2("portraitCardParentView")
@@ -192,9 +185,6 @@ if appInfo then
   end
 end
 
-local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
-package.path = package.path..";"..luapath.."/?.lua"
-require("mods.muk")
 data={
   {--软件图标
     -1;

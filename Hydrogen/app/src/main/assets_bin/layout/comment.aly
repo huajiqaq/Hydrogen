@@ -74,7 +74,7 @@
         };
       };
     };
-    {--滚动布局下必须有线性竖直布
+    {
       LinearLayout,
       id="internetnet",
       orientation="vertical",
@@ -82,53 +82,61 @@
       layout_height="fill",
       background=backgroundc,
       {
-        SwipeRefreshLayout;
-        id="commentsr";
-        layout_height="fill";
-        layout_width="fill";
-        layout_weight=1;
+        CoordinatorLayout,
+        layout_width="fill",
+        layout_height="fill",
+        background=backgroundc,
         {
-          RecyclerView;
-          id="comment_recy";
-          layout_width="-1";
-          layout_height="-1";
-        };
-      };
-
-      {
-        MaterialCardView;
-        layout_width="fill";
-        StrokeWidth=0,
-        radius=cardradius;
-        CardBackgroundColor=barbackgroundc;
-        id="inputLay";
-        --开启动画可能造成卡顿
-        --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-        {
-          LinearLayout;
-          layout_width="fill";
+          SwipeRefreshLayout;
+          id="commentsr";
           layout_height="fill";
-          gravity="center";
-          Focusable=true;
-          FocusableInTouchMode=true;
+          layout_width="fill";
+          {
+            RecyclerView;
+            id="comment_recy";
+            layout_width="-1";
+            layout_height="-1";
+            paddingBottom="56dp";
+          };
+        };
+
+        {
+          MaterialCardView;
+          layout_width="fill";
+          layout_height="56dp";
+          StrokeWidth=0,
+          radius=cardradius;
+          CardBackgroundColor=barbackgroundc;
+          id="inputLay";
+          layout_gravity="bottom";
           --开启动画可能造成卡顿
           --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
           {
-            EditText;
-            id="edit";
-            layout_weight=1;
-            layout_marginLeft="16dp";
-            layout_margin="8dp";
-            maxLines=10;
-            hint="输入评论";
-          };
-          {
-            MaterialButton;
-            layout_marginRight="10dp";
-            id="send";
-            textColor=backgroundc;
-            text="发送";
-            Typeface=字体("product-Bold");
+            LinearLayout;
+            layout_width="fill";
+            layout_height="fill";
+            gravity="center";
+            Focusable=true;
+            FocusableInTouchMode=true;
+            --开启动画可能造成卡顿
+            --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+            {
+              EditText;
+              id="edit";
+              layout_weight=1;
+              layout_marginLeft="16dp";
+              layout_margin="8dp";
+              maxLines=10;
+              hint="输入评论";
+            };
+            {
+              MaterialButton;
+              layout_marginRight="10dp";
+              id="send";
+              textColor=backgroundc;
+              text="发送";
+              Typeface=字体("product-Bold");
+            };
           };
         };
       };

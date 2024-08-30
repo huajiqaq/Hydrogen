@@ -15,7 +15,7 @@ function base:getData(callback)
     if code==200 then
       local data=luajson.decode(content)
       self.id=data.id
-      callback(data)
+      callback(data,self)
      elseif luajson.decode(content).error then
       提示(luajson.decode(content).error.message)
       callback(false)

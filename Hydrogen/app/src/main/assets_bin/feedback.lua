@@ -4,24 +4,10 @@ import "mods.muk"
 
 activity.setContentView(loadlayout("layout/feedback"))
 设置toolbar(toolbar)
+设置toolbar属性(toolbar,"反馈")
 波纹({fh,_more},"圆主题")
 波纹({send},"圆自适应")
 
-activity.SupportActionBar.setDisplayHomeAsUpEnabled(true)
-
-toolbar.Title="反馈内容"
-local originalTitle = toolbar.Title
-
-import "androidx.appcompat.widget.Toolbar"
-for i=0,toolbar.getChildCount() do
-  local view = toolbar.getChildAt(i);
-  if luajava.instanceof(view,TextView) then
-    if view.getText()==originalTitle then
-      local textView = view;
-      textView.setTextSize(18)
-    end
-  end
-end
 
 
 help_item={

@@ -1,5 +1,6 @@
 local widgets={
   MaterialButton={"TextButton","OutlinedButton","TextButton_Normal","TextButton_Icon"},
+  Chip={"Assist","Filter","Input","Suggestion","Suggestion_Elevated"},
 }
 
 local types={}

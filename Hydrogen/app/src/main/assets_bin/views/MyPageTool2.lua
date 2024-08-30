@@ -10,6 +10,7 @@ local Page_Tool={
   urls={},
   adapters={},
   funcs={},
+  listeners={},
   allcount=0,
   addpos=0,
 }--父类
@@ -63,6 +64,10 @@ function Page_Tool:initPage()
     nexturl=false,
     isend=false,
     canload=true,
+    --是否为首次加载
+    isfirst=true,
+    --是否需要检查首次加载是否未满第一页
+    needcheck=true
   })
   --添加用于限制点击的标识
   if self.addcanclick then
@@ -268,6 +273,16 @@ function Page_Tool:setOnTabListener(callback)
   return self
 end
 
+local function checkIfRecyclerViewIsFullPage(recyclerView)
+  local layoutManager = recyclerView.getLayoutManager();
+  local lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+  local totalItemCount = recyclerView.getAdapter().getItemCount();
+  if lastVisiblePosition >= totalItemCount - 1 then
+    return true;
+  end
+  return false;
+end
+
 function Page_Tool:createfunc()
 
   if self.referfunc then
@@ -344,30 +359,37 @@ function Page_Tool:createfunc()
         end
 
         local adpdata=self:getItemData(pos)
+        if pagedata[pos].isfirst then
+          pagedata[pos].isfirst=false
+          if self.firstfunc then
+            self.firstfunc(data,adpdata,pos)
+          end
+        end
+
+        if pagedata[pos].needcheck then
+          --延迟一毫秒 防止获取不准确
+          task(1,function()
+            if checkIfRecyclerViewIsFullPage(thispage) then
+              if pagedata[pos]["canload"] then
+                self.referfunc(pos,isprev)
+                System.gc()
+              end
+             else
+              pagedata[pos].needcheck=false
+            end
+          end)
+        end
+
         local func=self.funcs[pos]
         if data.data then
           for _,v in ipairs(data.data) do
             func(v,adpdata)
           end
          else
-          func(data,adpdata,pos)
+          func(data,adpdata)
         end
-        thispage.adapter.notifyDataSetChanged()
 
-        local manager=thispage.getLayoutManager()
-        local listener=thispage.getViewTreeObserver().addOnGlobalLayoutListener(
-        ViewTreeObserver.OnGlobalLayoutListener{
-          onGlobalLayout=function()
-            local lastVisiblePosition = manager.findLastVisibleItemPosition();
-            if lastVisiblePosition >= manager.getItemCount() - 1 and pagedata[pos]["canload"] then
-              local pos=self:getCurrentItem()
-              self.referfunc(pos,isprev)
-              System.gc()
-             else
-              thispage.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
-            end
-          end
-        })
+        thispage.adapter.notifyDataSetChanged()
 
       end
     end)
@@ -422,6 +444,8 @@ function Page_Tool:clearItem(index)
     nexturl=false,
     isend=false,
     canload=true,
+    isfirst=true,
+    needcheck=true
   }
   local list=self:getItem(index)
   if list.adapter then

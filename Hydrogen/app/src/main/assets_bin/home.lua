@@ -15,7 +15,7 @@ activity.setContentView(loadlayout("layout/home"))
 
 设置toolbar(toolbar)
 
-初始化历史记录数据(true)
+初始化历史记录数据()
 
 if activity.getSharedData("第一次提示") ==nil then
   双按钮对话框("注意","该软件仅供交流学习，严禁用于商业用途，请于下载后的24小时内卸载","登录","知道了",function(an)
@@ -295,12 +295,13 @@ if recommend_index then
     local tmpview={}
     local bottomSheetDialog = BottomSheetDialog(this)
     bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
+
     local chipdialog=bottomSheetDialog.show()
     MDC_R=luajava.bindClass"com.google.android.material.R"
 
     local function createchip(text)
-      return loadlayout({
-        Chip;
+      return loadlayout2({
+        Chip_Suggestion_Elevated;
         layout_width="wrap_content";
         layout_height="wrap_content";
         text=text;
@@ -313,7 +314,7 @@ if recommend_index then
     for i = 1,HometabLayout.getTabCount() do
       local itemnum=i-1
       local text=HometabLayout.getTabAt(itemnum).Text
-      tmpview.chipgroup.addView(createchip(text,itemnum))
+      tmpview.chipgroup.addView(createchip(text))
     end
 
     local index=HometabLayout.getSelectedTabPosition()
@@ -352,7 +353,7 @@ if recommend_index then
           chip.checked=false
           checkedchip.checked=true
           an.dismiss()
-        end)
+        end,false)
       end
     })
 
@@ -360,23 +361,6 @@ if recommend_index then
     tmpview.close.onClick=function()
       an.dismiss()
     end;
-  end
-end
-
-function getitemRecy(pos)
-  local pos=pos+1
-  local itemc={
-    home_recy,
-    think_recy,
-    hot_recy,
-    follow_pagetool
-  }
-  local view=itemc[pos]
-  if luajava.instanceof(view,RecyclerView) then
-    return view
-    --不是recyclerview就是pagetool
-   else
-    return view:getItem()
   end
 end
 
@@ -880,7 +864,7 @@ function 加载主页tab()
         run=function()
           local tab=HometabLayout.getTabAt(0);
           tab.select()
-      end},100);
+      end},300);
 
      else
       HometabLayout.setVisibility(8)

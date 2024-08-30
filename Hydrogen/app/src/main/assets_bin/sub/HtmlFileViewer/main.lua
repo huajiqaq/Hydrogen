@@ -7,7 +7,7 @@ import "com.onegravity.rteditor.RTEditorMovementMethod"--可以选择与点击�
 import "me.zhanghai.android.fastscroll.FastScrollerBuilder"
 import "me.zhanghai.android.fastscroll.FastScrollScrollView"
 
-activity.setTitle(R.string.jesse205_htmlFileViewer)
+--activity.setTitle(R.string.jesse205_htmlFileViewer)
 
 import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.appbar.MaterialToolbar"
@@ -17,18 +17,11 @@ import "androidx.core.widget.NestedScrollView"
 activity.setContentView(loadlayout("layout"))
 activity.setSupportActionBar(toolbar)
 --actionBar.setDisplayHomeAsUpEnabled(true)
-activity.SupportActionBar.setDisplayHomeAsUpEnabled(true)
 
-local originalTitle = toolbar.getTitle();
-for i=0,toolbar.getChildCount() do
-  local view = toolbar.getChildAt(i);
-  if luajava.instanceof(view,TextView) then
-    local textView = view;
-    if textView.getText()==originalTitle then
-      textView.setTextSize(18)
-    end
-  end
-end
+local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
+package.path = package.path..";"..luapath.."/?.lua"
+require("mods.muk")
+设置toolbar属性(toolbar,R.string.jesse205_htmlFileViewer)
 
 ---传入的数据
 local data=...

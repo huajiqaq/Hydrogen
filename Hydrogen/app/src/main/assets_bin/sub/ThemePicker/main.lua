@@ -14,22 +14,15 @@ import "android.widget.GridView"
 import "com.jesse205.layout.innocentlayout.GridViewLayout"
 import "item"
 activity.getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-activity.setTitle(R.string.jesse205_themePicker)
+--activity.setTitle(R.string.jesse205_themePicker)
 activity.setContentView(loadlayout("layout"))
 --content.setBackgroundColor(MaterialColors.getColor(this, R.attr.colorSurface,0))
 activity.setSupportActionBar(toolbar)
-activity.SupportActionBar.setDisplayHomeAsUpEnabled(true)
+local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
+package.path = package.path..";"..luapath.."/?.lua"
+require("mods.muk")
+设置toolbar属性(toolbar,R.string.jesse205_themePicker)
 
-local originalTitle = toolbar.getTitle();
-for i=0,toolbar.getChildCount() do
-  local view = toolbar.getChildAt(i);
-  if luajava.instanceof(view,TextView) then
-    local textView = view;
-    if textView.getText()==originalTitle then
-      textView.setTextSize(18)
-    end
-  end
-end
 
 
 MaterialSharedAxis=luajava.bindClass("com.google.android.material.transition.platform.MaterialSharedAxis")
@@ -39,8 +32,7 @@ enter.addTarget(mainLay)
 activity.getWindow().setEnterTransition(enter)
 activity.getWindow().setAllowEnterTransitionOverlap(true)
 
-toolbar.Title=activity.getTitle()
-activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true)
+--activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true)
 
 function onOptionsItemSelected()
   activity.finish()

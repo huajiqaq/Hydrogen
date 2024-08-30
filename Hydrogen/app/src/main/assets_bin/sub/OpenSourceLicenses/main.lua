@@ -8,7 +8,7 @@ import "android.text.util.Linkify"
 import "licences"
 import "item"
 
-activity.setTitle(R.string.jesse205_openSourceLicense)
+--activity.setTitle(R.string.jesse205_openSourceLicense)
 
 import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.appbar.MaterialToolbar"
@@ -18,18 +18,10 @@ import "androidx.core.widget.NestedScrollView"
 activity.setContentView(loadlayout("layout",_ENV))
 --actionBar.setDisplayHomeAsUpEnabled(true)
 activity.setSupportActionBar(toolbar)
-activity.SupportActionBar.setDisplayHomeAsUpEnabled(true)
-
-local originalTitle = toolbar.getTitle();
-for i=0,toolbar.getChildCount() do
-  local view = toolbar.getChildAt(i);
-  if luajava.instanceof(view,TextView) then
-    local textView = view;
-    if textView.getText()==originalTitle then
-      textView.setTextSize(18)
-    end
-  end
-end
+local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
+package.path = package.path..";"..luapath.."/?.lua"
+require("mods.muk")
+设置toolbar属性(toolbar,R.string.jesse205_openSourceLicense)
 
 
 fileBasePath=activity.getLuaPath("../../licences/%s.txt")
