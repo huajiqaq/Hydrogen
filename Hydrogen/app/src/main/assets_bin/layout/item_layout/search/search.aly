@@ -8,8 +8,6 @@
     CardElevation="0dp";
     radius=cardradius;
     layout_width="-1";
-    layout_height="48dp";
-    layout_margin="8dp";
     CardBackgroundColor=cardedge;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
@@ -39,6 +37,7 @@
           SingleLine=true;
           ellipsize='end',
           Selected=true,
+          layout_margin="10dp";
           Typeface=字体("product-Bold");
         };
       };
