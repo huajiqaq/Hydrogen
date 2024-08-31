@@ -766,7 +766,7 @@ task(1,function()
             return
           end
 
-          local format="【%s】%s:… %s"
+          local format="【回答】【%s】%s: %s"
 
           分享文本(string.format(format,_title.Text,username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
 

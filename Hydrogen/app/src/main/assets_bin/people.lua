@@ -71,6 +71,18 @@ local base_people=require "model.people":new(people_id)
     following.Text="关注";
   end
 
+  _title.text=名字
+  people_name.text=名字
+  people_sign.text=签名
+
+  图像.onClick=function()
+    local data={["0"]=大头像,["1"]=1}
+    this.setSharedData("imagedata",luajson.encode(data))
+    activity.newActivity("image")
+  end
+
+  loadglide(图像,大头像)
+
   pop={
     tittle="用户",
     list={
@@ -151,7 +163,8 @@ local base_people=require "model.people":new(people_id)
 
       end},
       {src=图标("share"),text="分享",onClick=function()
-          分享文本("https://www.zhihu.com/people/"..用户id)
+          local format="【用户】%s：%s"
+          分享文本(string.format(format,名字,"https://www.zhihu.com/people/"..用户id))
       end},
     }
   }
@@ -165,18 +178,6 @@ local base_people=require "model.people":new(people_id)
   end
 
   a=MUKPopu(pop)
-
-  _title.Text=名字
-  people_name.Text=名字
-  people_sign.Text=签名
-
-  图像.onClick=function()
-    local data={["0"]=大头像,["1"]=1}
-    this.setSharedData("imagedata",luajson.encode(data))
-    activity.newActivity("image")
-  end
-
-  loadglide(图像,大头像)
 
   self:getTab(function(self,tabname,urlinfo,answerindex)
     _G["urlinfo"]=urlinfo

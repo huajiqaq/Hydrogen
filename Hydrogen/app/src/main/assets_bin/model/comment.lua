@@ -374,6 +374,7 @@ function base:initpage(view,sr)
       if self.type=="comments" then
         self.resolvedata(data.root,adpdata)
       end
+      _title.text=_title.text.." "..tostring(data.counts.total_counts).."条"
     end
   })
   :initPage()

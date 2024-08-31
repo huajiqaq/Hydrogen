@@ -125,7 +125,10 @@ function Page_Tool:initPage()
 
     thispage.addOnScrollListener(RecyclerView.OnScrollListener{
       onScrollStateChanged=function(recyclerView,newState)
-        if newState == RecyclerView.SCROLL_STATE_IDLE then
+        if newState == RecyclerView.SCROLL_STATE_DRAGGING or newState == RecyclerView.SCROLL_STATE_SETTLING then
+          Glide.with(this).pauseRequests();
+         elseif newState == RecyclerView.SCROLL_STATE_IDLE then
+          Glide.with(this).resumeRequests();
           local lastVisiblePosition = manager.findLastVisibleItemPosition();
           if lastVisiblePosition >= manager.getItemCount() - 1 and pagedata[pos]["canload"] then
             local pos=self:getCurrentItem()
@@ -142,7 +145,7 @@ function Page_Tool:initPage()
   return self
 end
 
-function Page_Tool:addPage(addtype,mydata)--新建Page
+function Page_Tool:addPage(addtype,mydata,deftab)--新建Page
   if luajava.instanceof(self.view,RecyclerView) then
     error("RecyclerView单页不支持addPage")
   end
@@ -164,7 +167,11 @@ function Page_Tool:addPage(addtype,mydata)--新建Page
     for i=1, #mydata do
       local itemnum=i-1
       local tab=self.tabview.getTabAt(itemnum)
-      tab.setText(mydata[i]);
+      local text=mydata[i]
+      tab.setText(text);
+      if deftab and deftab==text then
+        tab.select()
+      end
     end
 
     return self
@@ -367,18 +374,22 @@ function Page_Tool:createfunc()
         end
 
         if pagedata[pos].needcheck then
-          --延迟一毫秒 防止获取不准确
-          task(1,function()
-            if checkIfRecyclerViewIsFullPage(thispage) then
-              if pagedata[pos]["canload"] then
-                self.referfunc(pos,isprev)
-                System.gc()
+          --延迟 防止获取不准确
+          self.view.postDelayed(Runnable{
+            run=function()
+              if checkIfRecyclerViewIsFullPage(thispage) then
+                if pagedata[pos]["canload"] then
+                  self.referfunc(pos,isprev)
+                  System.gc()
+                end
+               else
+                pagedata[pos].needcheck=false
               end
-             else
-              pagedata[pos].needcheck=false
             end
-          end)
+          }, 50);
         end
+
+        local old_size=#adpdata
 
         local func=self.funcs[pos]
         if data.data then
@@ -389,7 +400,10 @@ function Page_Tool:createfunc()
           func(data,adpdata)
         end
 
-        thispage.adapter.notifyDataSetChanged()
+        local add_count=#adpdata-old_size
+
+        --notifyItemRangeInserted第一个参数是开始插入的位置 adp数据的下标是0 table下标是1 所以直接使用table的长度即可
+        thispage.adapter.notifyItemRangeInserted(old_size,add_count)
 
       end
     end)

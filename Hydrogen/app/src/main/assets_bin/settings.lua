@@ -58,9 +58,9 @@ data = {
 
   {__type=4,subtitle="热榜关闭图片",status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭图片"))}},
   {__type=4,subtitle="热榜关闭热度",status={Checked=Boolean.valueOf(this.getSharedData("热榜关闭热度"))}},
+  {__type=3,subtitle="设置关注默认选中栏"},
   {__type=3,subtitle="设置主页排序"},
   {__type=3,subtitle="修改主页排序",rightIcon={Visibility=0}},
-  {__type=3,subtitle="设置关注默认选中栏"},
 
   {__type=1,title="缓存设置"},
 
@@ -101,14 +101,6 @@ tab={
   end,
   夜间模式追随系统=function(self)
     self.夜间模式()
-  end,
-  关闭硬件加速=function()
-    AlertDialog.Builder(this)
-    .setTitle("小提示")
-    .setMessage("开启后 可能会造成滑动卡顿 请酌情开启")
-    .setCancelable(false)
-    .setPositiveButton("我知道了",nil)
-    .show()
   end,
   字体大小=function(slider,value,fromUser)
     activity.setResult(1200,nil)
@@ -228,8 +220,6 @@ tab={
      else
       提示("当前已替换")
     end
-
-    this.setSharedData("webview包名","true")
 
     AlertDialog.Builder(this)
     .setTitle("提示")
@@ -408,18 +398,22 @@ tab={
       onBindViewHolder=function(holder,position)
         local newdata=data[position+1]
         local tag=holder.itemView.tag
-
         if not(newdata.myt) then
           tag.title.text=newdata.title
           tag.status.Checked=newdata.ishome
           tag.root.onClick=function()
-            for k,v in ipairs(data)
-              if v.ishome then
+            local position=holder.getBindingAdapterPosition()
+            for i,v in ipairs(data)
+              local index=i-1
+              if v.ishome and index~=position then
                 v.ishome=false
+                adapter.notifyItemChanged(index)
               end
             end
-            newdata.ishome=true
-            adapter.notifyDataSetChanged()
+            if tag.status.Checked==false then
+              newdata.ishome=true
+              tag.status.Checked=true
+            end
           end
          else
           tag.myt.text=newdata.myt

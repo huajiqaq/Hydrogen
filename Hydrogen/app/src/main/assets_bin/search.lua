@@ -77,8 +77,8 @@ search.onClick=function()
 end
 
 _delete.onClick=function()
+  this.getSharedPreferences("search_history", 0).edit().clear().commit()
   search_history={}
-  清空并保存历史记录("search_history", search_history)
   chipgroup.removeAllViews()
 end
 
@@ -115,7 +115,7 @@ search_history=loadSharedPreferences("search_history")
 search_view.requestFocus()
 search_view.postDelayed(Runnable{
   run=function()
-    imm= this.getSystemService(Context.INPUT_METHOD_SERVICE);
+    local imm= this.getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.showSoftInput(search_view, InputMethodManager.SHOW_IMPLICIT);
   end
 }, 100);

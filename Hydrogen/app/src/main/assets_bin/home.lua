@@ -167,7 +167,7 @@ home_pageinfo={
         if isclear then
           return follow_pagetool
           :clearItem()
-          :refer(nil,nil,true)
+          :refer()
         end
         follow_pagetool:refer(nil,nil,true)
       end
@@ -724,7 +724,7 @@ function 侧滑列表点击事件(v)
     end
     collection_pagetool:refer(nil,nil,true)
    case "日报"
-    daily_pagetool:getData()
+    daily_pagetool:getData(nil,true)
    case "关注"
     if getLogin()~=true then
       提示("请登录后使用本功能")

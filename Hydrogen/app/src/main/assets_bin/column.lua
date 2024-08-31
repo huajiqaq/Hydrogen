@@ -369,13 +369,8 @@ if 类型=="本地" then
       },
       {
         src=图标("share"),text="分享",onClick=function()
-          if autoname and fxurl then
-            local format="【%s】%s:… %s"
-            分享文本(string.format(format,_title.Text,autoname,fxurl))
-           else
-            local format="【%s】 %s"
-            分享文本(string.format(format,_title.Text,content.getUrl()))
-          end
+          local format="【%s】【%s】%s：%s"
+          分享文本(string.format(format,类型,_title.Text,aurhor_name,fxurl))
         end
       },
       {

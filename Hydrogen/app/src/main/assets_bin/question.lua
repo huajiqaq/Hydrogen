@@ -230,7 +230,8 @@ question_base:getData(function(tab)
     tittle="问题",
     list={
       {src=图标("share"),text="分享",onClick=function()
-          分享文本("https://www.zhihu.com/question/"..question_id)
+          local format="【问题】%s：%s"
+          分享文本(string.format(format,title.text,"https://www.zhihu.com/question/"..question_id))
       end},
       {src=图标("format_align_left"),text="按时间顺序",onClick=function()
           question_pagetool:setUrlItem(question_base:getUrl("updated"))

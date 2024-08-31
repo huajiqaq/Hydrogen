@@ -369,14 +369,9 @@ function base:initpage(view,tabview)
       "https://api.zhihu.com/moments_v3?feed_type=pin"
     }
   })
-  :addPage(2,{"精选","最新","想法"})
+  :addPage(2,{"精选","最新","想法"},this.getSharedData("startfollow"))
   :createfunc()
   :setOnTabListener()
-
-  if this.getSharedData("startfollow") then
-    local page_key={精选=0,最新=1,想法=2}
-    tabview.getTabAt(page_key[this.getSharedData("startfollow")]).select()
-  end
 
   return pagetool
 end

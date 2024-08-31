@@ -52,8 +52,8 @@ function base:getData(isclear,isinit)
         table.insert(self.myhotdata,add)
 
       end
-
-      self.view.adapter.notifyDataSetChanged()
+      --notifyItemRangeInserted第一个参数是开始插入的位置 adp数据的下标是0 table下标是1 所以直接使用table的长度即可
+      self.view.adapter.notifyItemRangeInserted(0,#self.myhotdata)
      else
       --错误时的操作
     end
