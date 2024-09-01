@@ -363,6 +363,7 @@ end
 function base:initpage(view,sr)
   self.view=view
   self.sr=sr
+  orititle=_title.text
   return MyPageTool2:new({
     view=view,
     sr=sr,
@@ -374,7 +375,7 @@ function base:initpage(view,sr)
       if self.type=="comments" then
         self.resolvedata(data.root,adpdata)
       end
-      _title.text=_title.text.." "..tostring(data.counts.total_counts).."条"
+      _title.text=orititle.." "..tostring(data.counts.total_counts).."条"
     end
   })
   :initPage()
