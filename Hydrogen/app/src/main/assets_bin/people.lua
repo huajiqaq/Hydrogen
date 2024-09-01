@@ -181,8 +181,8 @@ local base_people=require "model.people":new(people_id)
 
   self:getTab(function(self,tabname,urlinfo,answerindex)
     _G["urlinfo"]=urlinfo
-    self:initpage(people_vpg,PeotabLayout)
-    :setUrls(urlinfo)
+    people_pagetool=self:initpage(people_vpg,PeotabLayout)
+    people_pagetool:setUrls(urlinfo)
     :addPage(2,tabname)
     :createfunc()
     :setOnTabListener(function(self,pos)
