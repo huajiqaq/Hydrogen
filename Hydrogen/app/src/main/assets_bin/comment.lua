@@ -28,7 +28,7 @@ function 发送评论(send_text,当前回复人)
   --测试不通过unicode编码也可以 暂时这么解决
   local mytext=send_text
 
-  if _title.text=="对话列表" then
+  if comment_type=="comments" then
     --防止在对话列表内回复id为空
     if 回复id=="" then
       回复id=comment_id
@@ -57,7 +57,6 @@ end
 
 
 if comment_type=="local_chat" then
-  _title.text="对话列表"
   internetnet.setVisibility(8)
   localcomment.setVisibility(0)
 
@@ -132,8 +131,9 @@ if comment_type=="local_chat" then
       end
   end})
 
+  _title.text="对话列表".." "..(#local_comment_list.adapter.getData()-1).."条"
+
  elseif comment_type=="local" then
-  _title.text="保存的评论"
   internetnet.setVisibility(8)
   local_comment_list.setVisibility(0)
 
@@ -186,6 +186,7 @@ if comment_type=="local_chat" then
 
   end
 
+  _title.text="保存的评论".." "..#local_comment_list.adapter.getData().."条"
 
   local_comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
@@ -206,14 +207,14 @@ if not(comment_type:find("local")) then
   task(1,function()
     comment_recy.setPadding(0,0,0,inputLay.height)
   end)
+  if comment_type=="comments" then
+    _title.text="对话列表"
+  end
   --评论
   comment_base=require "model.comment"
   :new(comment_id,comment_type)
   comment_pagetool=comment_base
   :initpage(comment_recy,commentsr)
-  if comment_type=="comments" then
-    _title.text="对话列表"
-  end
 end
 
 

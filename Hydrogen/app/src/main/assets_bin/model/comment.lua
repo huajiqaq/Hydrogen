@@ -68,7 +68,7 @@ function base.resolvedata(v,data)
   local myspan
   pcall(function()
     名字=isauthor(v.author).. "  →  "..isauthor(v.reply_to_author)
-    if _title.text~="对话列表" then id=(v.id) end
+    if comment_type~="comments" then id=v.id end
   end)
   local 包含url
   if 内容:find("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]") then
