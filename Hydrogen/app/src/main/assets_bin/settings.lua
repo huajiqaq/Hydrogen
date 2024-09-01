@@ -273,6 +273,14 @@ tab={
           end
           if edit.Text=="" or File(edit.Text).canRead() then
             this.setSharedData("网页自定义字体",edit.Text)
+
+            AlertDialog.Builder(this)
+            .setTitle("提示")
+            .setMessage("软件仅支持ttf格式文件自定义字体 此提示只是提醒 并非代表输入有误 如果无效果请检查输入文件是否为ttf文件（为空可以无视 因为使用的是软件默认内置字体）")
+            .setCancelable(false)
+            .setPositiveButton("我知道了",nil)
+            .show()
+
            else
             提示("无法读取文件夹 请检查输入是否正确或是否可读")
             return

@@ -67,7 +67,7 @@
         style.innerHTML = `
     @font-face {
         font-family: 'myappfont';
-        src: url('${fontUrl}') format('woff');
+        src: url('${fontUrl}') format('truetype');
     }
     * {
         font-family: 'myappfont';
