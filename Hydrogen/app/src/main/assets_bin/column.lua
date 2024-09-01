@@ -118,9 +118,18 @@ function 刷新()
       _title.Text="加载失败"
       return
     end
-    author_id=data.author.id
-    aurhor_name=data.author.name
-    _title.text=data.title
+    --针对没有通过请求直接回调的内容的处理
+    if type(data)=="table" then
+      --针对直播需要特殊判断
+      if 类型~="直播" then
+        author_id=data.author.id
+        aurhor_name=data.author.name
+        page_title=data.title
+        _title.text=page_title
+       else
+        author_id=data.theater.actor.id
+      end
+    end
     content.setVisibility(8)
     content.loadUrl(base_column.weburl)
   end,true)
@@ -142,14 +151,17 @@ content.setWebViewClient{
         检查意图(url)
       end
      else
-      if url:find("https://www.zhihu.com/oia/"..urltype.."/"..id) then
+      if urltype and url:find("https://www.zhihu.com/oia/"..urltype.."/"..id) then
         return false
       end
       检查链接(url)
     end
   end,
   onPageStarted=function(view,url,favicon)
-    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+    --直播会直接跳转到图片 而且直播一般不查看图片
+    if 类型~="直播" then
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+    end
     网页字体设置(view)
     加载js(view,获取js("native"))
     等待doc(view)
@@ -190,6 +202,11 @@ content.addJSInterface(z,"androlua")
 import "com.lua.LuaWebChrome"
 import "android.content.pm.ActivityInfo"
 content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
+  onReceivedTitle=function(view, title)
+    if not page_title then
+      _title.text=title
+    end
+  end,
   onProgressChanged=function(view,p)
     setProgress(p)
     if p==100 then
@@ -230,7 +247,7 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
     if consoleMessage.message()=="显示评论" then
-      activity.newActivity("comment",{id,mtype.."s"})
+      activity.newActivity("comment",{id,urltype.."s"})
      elseif consoleMessage.message()=="查看用户" then
       activity.newActivity("people",{author_id})
      elseif consoleMessage.message():find("收藏") then
@@ -242,17 +259,17 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
         func=function(count)
           if count==0 then
             local callbackid=tostring(consoleMessage.message()):match("收藏分割(.+)")
-            local sendobj='{"id":"'..callbackid..'","type":"success","params":{"contentType":"'..mtype..'","contentId":"'..result..'","collected":false}}'
+            local sendobj='{"id":"'..callbackid..'","type":"success","params":{"contentType":"'..urltype..'","contentId":"'..id..'","collected":false}}'
             加载js(content,'window.zhihuWebApp && window.zhihuWebApp.callback('..sendobj..')')
           end
         end
       end
-      加入收藏夹(result,mtype,func)
+      加入收藏夹(id,urltype,func)
      elseif consoleMessage.message()=="申请转载" then
       if not(getLogin()) then
         return 提示("请登录后使用本功能")
       end
-      加入专栏(result,mtype)
+      加入专栏(id,urltype)
      elseif consoleMessage.message():find("关注分割") then
       if not(getLogin()) then
         return 提示("请登录后使用本功能")
@@ -260,13 +277,13 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
 
       local mtext=consoleMessage.message():match("关注分割(.+)")
       if mtext:find("已关注") then
-        zHttp.delete("https://api.zhihu.com/people/"..authorid.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
+        zHttp.delete("https://api.zhihu.com/people/"..author_id.."/followers/"..activity.getSharedData("idx"),posthead,function(a,b)
           if a==200 then
             加载js(content,followdoc..'.innerText="关注"')
           end
         end)
        elseif mtext:find("关注") then
-        zHttp.post("https://api.zhihu.com/people/"..authorid.."/followers","",posthead,function(a,b)
+        zHttp.post("https://api.zhihu.com/people/"..author_id.."/followers","",posthead,function(a,b)
           if a==200 then
             加载js(content,followdoc..'.innerText="已关注"')
            elseif a==500 then
@@ -375,25 +392,33 @@ if 类型=="本地" then
       },
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
+          if not urltype then
+            return 提示("该页不支持该操作")
+          end
           activity.newActivity("comment",{id,urltype.."s"})
 
         end
       },
       {
         src=图标("explore"),text="收藏文件夹",onClick=function()
+          if not urltype then
+            return 提示("该页不支持该操作")
+          end
           加入收藏夹(id,urltype)
-
         end
       },
       {
         src=图标("explore"),text="举报",onClick=function()
+          if not urltype then
+            return 提示("该页不支持该操作")
+          end
           local url="https://www.zhihu.com/report?id="..id.."&type="..urltype
           activity.newActivity("browser",{url.."&source=android&ab_signature=","举报"})
         end
       },
       {
         src=图标("save"),text="保存在本地",onClick=function()
-          if 类型~="想法" or 类型~="想法" then
+          if 类型~="想法" and 类型~="文章" then
             return 提示(类型.."不支持保存")
           end
 

@@ -1,8 +1,7 @@
 --想法 专栏 视频项目的获取类
 --author huajiqaq
---time 2023-7-09
+--time 2023-9-1
 --self:对象本身
---TODO 针对pageinfo的获取是即时性的 也就代表如果pageinfo再次多加一个内容 可能会导致内容错位 一个解决方法是使用table本地存储 不过出现几率极低
 
 
 local base={}
@@ -43,16 +42,16 @@ function base:getinfo()
     type2="zvideo"
     fxurl="https://www.zhihu.com/zvideo/"
    case "直播"
-    weburl="https://www.zhihu.com/api/v4/drama/dramas/"
+    geturl="https://api.zhihu.com/drama/theaters/"
+    weburl="https://www.zhihu.com/theater/"
+    type2="drama"
     fxurl=weburl
    case "圆桌"
     weburl="https://www.zhihu.com/roundtable/"
-    type2="roundtable"
     fxurl="https://www.zhihu.com/roundtable/"
    case "专题"
     weburl="https://www.zhihu.com/special/"
-    type2="special"
-    fxurl="https://www.zhihu.com/special/"..result
+    fxurl="https://www.zhihu.com/special/"
   end
 
   self.urltype=type2
@@ -66,6 +65,9 @@ end
 function base:getData(cb,issave)
   local url=self.geturl
   if not url then
+    if self.weburl then
+      return cb(true)
+    end
     return
   end
   zHttp.get(url,apphead,function(a,b)
