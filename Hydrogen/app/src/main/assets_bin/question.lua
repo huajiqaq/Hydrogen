@@ -159,6 +159,7 @@ function 问题详情(code)
       检查链接(url)
     end,
     onPageStarted=function(view,url,favicon)
+      网页字体设置(view)
     end,
     onPageFinished=function(view,url)
       view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
@@ -166,7 +167,6 @@ function 问题详情(code)
       if 全局主题值=="Night" then
         夜间模式回答页(view)
       end
-
       imgReset()
 
     end,
@@ -175,7 +175,7 @@ function 问题详情(code)
     end,
     onLoadResource=function(view,url)
     end,
-  }
+    shouldInterceptRequest=拦截加载}
 
   show.Visibility=8
   show.BackgroundColor=转0x("#00000000",true);

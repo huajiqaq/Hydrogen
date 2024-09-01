@@ -9,6 +9,11 @@ initApp=true
 useCustomAppToolbar=true
 import "jesse205"
 
+标题文字大小="15sp"
+内容文字大小="14sp"
+标题行高="18sp"
+内容行高="17sp"
+
 oldTheme=ThemeUtil.getAppTheme()
 oldDarkActionBar=getSharedData("theme_darkactionbar")
 MyPageTool2 = require "views/MyPageTool2"
@@ -18,7 +23,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.543
+versionCode=0.544
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
@@ -84,8 +89,14 @@ function 设置toolbar属性(toolbar,title)
 
 end
 
-function onConfigurationChanged(config)
-end
+task(1,function()
+  local old_onConfigurationChanged=onConfigurationChanged
+  function onConfigurationChanged(config)
+    if old_onConfigurationChanged~=nil then
+      old_onConfigurationChanged(config)
+    end
+  end
+end)
 
 --更新字号相关逻辑已移动到import.lua
 
@@ -588,7 +599,7 @@ function 提示(t)
       layout_width="-1";
       layout_height="-2";
       CardElevation="0",
-      CardBackgroundColor=转0x(backgroundc)-0xf00000000,
+      CardBackgroundColor=转0x(textc)-0x3f000000,
       StrokeWidth=0,
       layout_margin="16dp";
       layout_marginBottom="64dp";
@@ -602,12 +613,12 @@ function 提示(t)
         paddingBottom="12dp";
         {
           TextView,
-          textColor=转0x(textc),
-          textSize="14sp";
+          textColor=转0x(backgroundc),
           layout_height=-2,
           layout_width=-2,
           text=t;
-          Typeface=字体("product")
+          Typeface=字体("product");
+          textSize=标题文字大小;
         },
       }
     }
@@ -764,7 +775,6 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,iscancelable)
           TextView;
           layout_width=-1;
           layout_height=-2;
-          textSize="14sp";
           layout_marginTop="8dp";
           layout_marginLeft="24dp";
           layout_marginRight="24dp";
@@ -773,6 +783,8 @@ function 三按钮对话框(bt,nr,qd,qx,ds,qdnr,qxnr,dsnr,iscancelable)
           Text=nr;
           textColor=转0x(textc);
           id="sandhk_wb";
+          textSize=内容文字大小;
+          lineHeight=内容行高;
         };
       };
       {
@@ -892,7 +904,6 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,iscancelable)
           TextView;
           layout_width=-1;
           layout_height=-2;
-          textSize="14sp";
           layout_marginTop="8dp";
           layout_marginLeft="24dp";
           layout_marginRight="24dp";
@@ -901,6 +912,8 @@ function 双按钮对话框(bt,nr,qd,qx,qdnr,qxnr,iscancelable)
           Text=nr;
           textColor=转0x(textc);
           id="sandhk_wb";
+          textSize=内容文字大小;
+          lineHeight=内容行高;
         };
       };
       {
@@ -1349,10 +1362,11 @@ function MUKPopu(t)
             {
               TextView;
               id="popadp_text";
+              textSize=内容文字大小;
+              lineHeight=内容行高;
               textColor=textc;
               layout_width="-1";
               layout_height="-1";
-              textSize="14sp";
               gravity="left|center";
               paddingLeft="16dp";
               Typeface=字体("product");
@@ -1513,11 +1527,12 @@ function showPopMenu(tab,title)
     {
       TextView;
       id="popadp_text";
+      textSize=内容文字大小;
+      lineHeight=内容行高;
       Typeface=Typeface.DEFAULT_BOLD,
       textColor=0xFF2196F3;
       layout_width="-1";
       layout_height="-1";
-      textSize="14sp";
       gravity="left|center";
       paddingLeft="16dp";
       Enabled=false,
@@ -1538,11 +1553,12 @@ function showPopMenu(tab,title)
     {
       TextView;
       id="popadp_text";
+      textSize=内容文字大小;
+      lineHeight=内容行高;
       textColor=stextc;
       Typeface=字体("product");
       layout_width="-1";
       layout_height="-1";
-      textSize="14sp";
       gravity="left|center";
       paddingLeft="16dp";
     };
@@ -2226,6 +2242,80 @@ function 夜间模式回答页(view)
   local gsub_str='"'..backgroundc:sub(4,#backgroundc)..'"'
   js=js:gsub("appbackgroudc",gsub_str)
   加载js(view,js)
+end
+
+
+function getFont_b64(filePath)
+  local FileInputStream=luajava.bindClass"java.io.FileInputStream"
+  local Base64=luajava.bindClass "android.util.Base64";
+
+  local fis = FileInputStream(filePath)
+  local fileContent = byte[fis.available()];
+  fis.read(fileContent);
+  if fileContent then
+    return Base64.encodeToString(fileContent, Base64.NO_WRAP);
+  end
+end
+
+function getFont_b64(filePath,callback)
+  local function main(filePath)
+    local FileInputStream=luajava.bindClass"java.io.FileInputStream"
+    local Base64=luajava.bindClass "android.util.Base64";
+
+    local fis = FileInputStream(filePath)
+    local fileContent = byte[fis.available()];
+    fis.read(fileContent);
+    if fileContent then
+      return Base64.encodeToString(fileContent, Base64.NO_WRAP);
+    end
+  end
+
+  local file=activity.getExternalFilesDir(nil).toString() .. "/font_b64"
+
+  activity.newTask(main,function(content)
+    写入文件(file,content)
+    callback(content)
+  end).execute({filePath})
+end
+
+--需将webview的shouldInterceptRequest设置为拦截加载
+function 网页字体设置(view)
+  if this.getSharedData("网页自定义字体")==nil then
+    return
+  end
+  local js=获取js("font")
+  加载js(view,js)
+end
+
+function 拦截加载(view,url)
+  local 提示=function(text)
+    this.runOnUiThread(Runnable{
+      run=function()
+        提示(text)
+      end
+    });
+  end
+  if this.getSharedData("网页自定义字体")==nil then
+    return
+  end
+  local 自定义字体路径=this.getSharedData("网页自定义字体")
+  if 自定义字体路径=="" then
+    自定义字体路径=srcLuaDir.."/res/product.ttf";
+  end
+  if url:find("myappfont") then
+    local FileInputStream=luajava.bindClass"java.io.FileInputStream"
+    local fis
+    _=pcall(function() fis= FileInputStream(自定义字体路径) end)
+    if _==false then
+      this.setSharedData("网页自定义字体",nil)
+      提示("当前自定义字体文件不可读 已自动清空")
+    end
+    local WebResourceResponse=luajava.bindClass "android.webkit.WebResourceResponse"
+    return WebResourceResponse(
+    "application/x-font-ttf",
+    "utf-8",
+    fis)
+  end
 end
 
 function matchtext(str,regex)
@@ -3145,12 +3235,12 @@ function 加载内容页(data,recy)
           id="root";
           {
             TextView;
-            id="text",
             Typeface=字体("product");
-            textSize="16sp";
-            LineHeight="20sp";
             layout_width="match";
             TextIsSelectable=true,
+            id="text",
+            textSize=内容文本大小;
+            lineHeight=内容文本行高;
           };
         };
        case 1
@@ -3200,29 +3290,29 @@ function 加载内容页(data,recy)
        case 3
         itemc={
           TextView;
-          id="text",
           Typeface=字体("product-Bold");
-          textSize="16sp";
-          LineHeight="20sp";
-          TextIsSelectable=true
+          TextIsSelectable=true;
+          id="text",
+          textSize=内容文本大小;
+          lineHeight=内容文本行高;
         }
        case 4
         itemc={
           TextView;
-          id="text",
           Typeface=字体("product");
-          textSize="16sp";
-          LineHeight="20sp";
-          TextIsSelectable=true
+          TextIsSelectable=true;
+          id="text",
+          textSize=内容文本大小;
+          lineHeight=内容文本行高;
         }
        case 5
         itemc={
           TextView;
-          id="text",
           Typeface=字体("product");
-          textSize="16sp";
-          LineHeight="20sp";
-          TextIsSelectable=true
+          TextIsSelectable=true;
+          id="text",
+          textSize=内容文本大小;
+          lineHeight=内容文本行高;
         }
        case 6
         itemc= {
@@ -3300,10 +3390,11 @@ function 加载内容页(data,recy)
                 {
                   TextView;
                   textColor=textc;
-                  textSize="14sp";
                   Typeface=字体("product-Bold");
-                  id="标题",
                   layout_weight="1";
+                  id="标题",
+                  textSize=标题文字大小;
+                  lineHeight=标题行高;
                 };
                 {
                   AppCompatImageView;
@@ -3346,16 +3437,18 @@ function 加载内容页(data,recy)
               {
                 TextView;
                 textColor=textc;
-                textSize="14sp";
                 Typeface=字体("product-Bold");
                 id="标题",
+                textSize=标题文字大小;
+                lineHeight=标题行高;
               };
               {
                 TextView;
                 textColor=textc;
-                textSize="14sp";
                 Typeface=字体("product");
                 id="底部内容",
+                textSize=内容文字大小;
+                lineHeight=内容行高;
               };
             };
           };
@@ -3385,11 +3478,11 @@ function 加载内容页(data,recy)
           };
           {
             TextView;
-            id="text",
             Typeface=字体("product");
-            textSize="16sp";
-            LineHeight="20sp";
             TextIsSelectable=true,
+            id="text",
+            textSize=内容文本大小;
+            lineHeight=内容文本行高;
           },
           {
             TextView;
@@ -3430,32 +3523,31 @@ function 加载内容页(data,recy)
             },
             {
               TextView,
-              text="",
-              textSize="16sp",
-              id="username",
               Typeface=字体("product-Bold");
               layout_marginTop="15dp",
               layout_marginLeft="60dp",
               gravity="left|center",
               textColor=textc,
+              id="username",
+              textSize=标题文本大小,
+              lineHeight=标题行高;
             },
             {
               TextView,
-              text="",
-              id="userheadline",
               Typeface=字体("product");
-              textSize="14sp",
               layout_marginLeft="60dp",
               layout_marginRight="5dp",
               layout_marginTop="40dp",
               layout_marginBottom="10dp",
               gravity="left|bottom",
               textColor="#FF767676",
+              id="userheadline",
+              textSize=内容文本大小,
+              lineHeight=内容行高;
             },
           };
           {
             TextView;
-            text="";
             layout_gravity="center";
             gravity="center";
             layout_width="match";
@@ -3522,11 +3614,11 @@ function 加载内容页(data,recy)
        case 100
         itemc={
           TextView;
-          id="text",
           Typeface=字体("product");
-          textSize="14sp";
-          LineHeight="20sp";
           TextIsSelectable=true,
+          id="text",
+          textSize=标题文字大小;
+          lineHeight=标题行高;
         }
        case 500
         itemc={TextView;text="未知类型"}

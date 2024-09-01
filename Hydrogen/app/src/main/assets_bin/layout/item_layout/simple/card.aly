@@ -28,27 +28,30 @@
         orientation="vertical";
         {
           TextView;
-          textSize="14sp";
-          id="标题";
           textColor=textc;
           Typeface=字体("product-Bold");
+          id="标题";
+          textSize=标题文字大小;
+          lineHeight=标题行高;
         };
         {
           TextView;
-          textSize="12sp";
           MaxLines=3;
           ellipsize="end",
-          id="预览内容";
           textColor=stextc;
           layout_marginTop="2dp";
           Typeface=字体("product-Medium");
+          id="预览内容";
+          textSize=内容文字大小;
+          lineHeight=内容行高;
         };
         {
           TextView;
-          id="底部内容";
           textColor=textc;
-          textSize="12sp",
           Typeface=字体("product-Medium");
+          id="底部内容";
+          textSize=内容文字大小,
+          lineHeight=内容行高;
         };
       };
     };

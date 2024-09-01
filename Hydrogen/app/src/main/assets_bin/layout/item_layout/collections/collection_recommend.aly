@@ -52,28 +52,30 @@
               textColor=textc;
               layout_gravity="center_vertical",
               Typeface=字体("product");
-              textSize="12sp";
+              textSize="15sp";
             };
           };
           {
             TextView;
-            textSize="14sp";
-            id="标题";
             textColor=textc;
             letterSpacing="0.02";
             layout_marginTop="8dp";
             Typeface=字体("product-Bold");
+            id="标题";
+            textSize=标题文字大小;
+            lineHeight=标题行高;
           };
           {
             TextView;
-            textSize="12sp";
-            id="预览内容";
             textColor=textc;
             MaxLines=3;
             letterSpacing="0.02";
             ellipsize="end",
             layout_marginTop="8dp";
             Typeface=字体("product");
+            id="预览内容";
+            textSize=内容文字大小;
+            lineHeight=内容行高;
           };
           {
             LinearLayout;
@@ -81,10 +83,11 @@
             orientation="horizontal";
             {
               TextView;
-              id="底部内容";
               textColor=textc;
-              textSize="12sp",
               Typeface=字体("product-Medium");
+              id="底部内容";
+              textSize=内容文字大小;
+              lineHeight=内容行高;
             };
           };
         };

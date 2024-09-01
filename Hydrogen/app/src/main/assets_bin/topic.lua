@@ -7,46 +7,51 @@ activity.setContentView(loadlayout("layout/topic"))
 topic_id=...
 波纹({fh,_more},"圆主题")
 
-初始化历史记录数据(true)
+初始化历史记录数据()
 
 local topic_pages={
-  LinearLayout;
-  layout_height="-1",
-  layout_width="-1",
+  ScrollView;
+  nestedScrollingEnabled=true,
+  layout_width=-1;
+  layout_height=-1;
   {
-    MaterialCardView;
-    layout_height="-2";
-    CardBackgroundColor=cardedge,
-    Elevation="0";
-    layout_width="-1";
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="8dp";
-    radius=cardradius;
-    StrokeColor=cardedge;
-    StrokeWidth=dp2px(1),
-
+    LinearLayout;
+    layout_height="-1",
+    layout_width="-1",
     {
-      LinearLayout;
-      layout_width="-1",
-      orientation="vertical";
+      MaterialCardView;
+      layout_height="-2";
+      CardBackgroundColor=cardedge,
+      Elevation="0";
+      layout_width="-1";
+      layout_margin="16dp";
+      layout_marginTop="8dp";
+      layout_marginBottom="8dp";
+      radius=cardradius;
+      StrokeColor=cardedge;
+      StrokeWidth=dp2px(1),
       {
-        CircleImageView;
-        layout_gravity="center";
-        layout_marginTop="16dp",
-        layout_height="72dp",
-        layout_width="72dp",
-        id="_bigimage"
-      };
-      {
-        TextView;
-        id="_excerpt",
-        textColor=textc,
-        textSize="14sp",
-        Typeface=字体("product");
-        textIsSelectable=true;
-        layout_margin="16dp",
-        layout_marginBottom="8dp",
+        LinearLayout;
+        layout_width="-1",
+        orientation="vertical";
+        {
+          CircleImageView;
+          layout_gravity="center";
+          layout_marginTop="16dp",
+          layout_height="72dp",
+          layout_width="72dp",
+          id="_bigimage"
+        };
+        {
+          TextView;
+          id="_excerpt",
+          textColor=textc,
+          textSize=内容文字大小,
+          Typeface=字体("product");
+          textIsSelectable=true;
+          layout_margin="16dp",
+          layout_marginBottom="8dp",
+        };
       };
     };
   };

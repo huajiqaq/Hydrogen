@@ -106,7 +106,7 @@
               TextView;
               text="热门搜索";
               textColor=primaryc;
-              textSize="14sp";
+              textSize="15sp";
               SingleLine=true;
               ellipsize='end',
               layout_width="wrap",
@@ -148,7 +148,7 @@
               TextView;
               text="历史记录";
               textColor=primaryc;
-              textSize="14sp";
+              textSize="15sp";
               SingleLine=true;
               ellipsize='end',
               layout_width="wrap",

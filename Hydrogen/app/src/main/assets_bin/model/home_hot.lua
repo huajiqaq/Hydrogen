@@ -81,9 +81,11 @@ function base:getAdapter(home_pagetool,pos)
       holder=LuaCustRecyclerHolder(loadlayout(获取适配器项目布局("home/home_hot"),views))
       if viewType==1 or activity.getSharedData("热榜关闭图片")=="true" then
         views.热图片布局.getParent().removeView(views.热图片布局)
+        views.热图片布局=nil
       end
       if activity.getSharedData("热榜关闭热度")=="true" then
         views.热度.getParent().removeView(views.热度)
+        views.热度=nil
       end
       holder.view.setTag(views)
       return holder

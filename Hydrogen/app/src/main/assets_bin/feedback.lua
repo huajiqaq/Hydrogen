@@ -22,20 +22,22 @@ help_item={
       layout_marginBottom="0dp";
       gravity="center_vertical";
       Typeface=字体("product-Bold");
-      id="title";
-      textSize="15sp";
       textColor=primaryc;
       layout_marginLeft="16dp";
+      id="title";
+      textSize=标题文字大小;
+      lineHeight=标题行高;
     };
     {
       TextView;
-      id="content";
       Typeface=字体("product");
-      textSize="14sp";
       textColor=textc;
       layout_marginRight="16dp",
       layout_marginLeft="16dp",
       layout_margin="8dp";
+      id="content";
+      textSize=内容文字大小;
+      lineHeight=内容行高;
     };
   };
 
@@ -90,9 +92,9 @@ help_item={
         {
           TextView;
           layout_marginRight="16dp";
-          id="title";
-          textSize="16sp",
           textColor=backgroundc,
+          id="title";
+          textSize=标题文字大小,
         };
       };
       {

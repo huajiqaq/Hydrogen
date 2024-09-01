@@ -269,6 +269,7 @@ function 数据添加(t,b)
     end,
     onPageStarted=function(view,url,favicon)
       加载js(view,获取js("native"))
+      网页字体设置(view)
       t.content.setVisibility(8)
       if t.progress~=nil then
         t.progress.setVisibility(0)
@@ -333,7 +334,7 @@ function 数据添加(t,b)
     end,
     onLoadResource=function(view,url)
     end,
-  }
+    shouldInterceptRequest=拦截加载}
 
   local v,s;
 

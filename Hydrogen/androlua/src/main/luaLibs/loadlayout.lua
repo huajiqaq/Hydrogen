@@ -870,19 +870,13 @@ local function loadlayout(t,root,group)
     view=activity.getLayoutInflater().inflate(t[1],nil);
    else
     --如果是类就创建对象
+    local ContextThemeWrapper=luajava.bindClass ("androidx.appcompat.view.ContextThemeWrapper")
+
     if style then
-      view = t[1](context,nil,style)
+      view = t[1](ContextThemeWrapper(context,style),nil,style)
      else
       view = t[1](context) --创建view
     end
-  end
-
-  local ContextThemeWrapper=luajava.bindClass ("androidx.appcompat.view.ContextThemeWrapper")
-
-  if style then
-    view = t[1](ContextThemeWrapper(context,style),nil,style)
-   else
-    view = t[1](context) --创建view
   end
 
 

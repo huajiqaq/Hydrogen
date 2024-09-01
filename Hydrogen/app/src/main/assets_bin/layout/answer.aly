@@ -140,27 +140,27 @@
           },
           {
             TextView,
-            text="",
-            textSize="16sp",
-            id="username",
             Typeface=字体("product-Bold");
             layout_marginTop="15dp",
             layout_marginLeft="60dp",
             gravity="left|center",
             textColor=textc,
+            id="username",
+            textSize=标题文字大小,
+            lineHeight=标题行高;
           },
           {
             TextView,
-            text="",
-            id="userheadline",
             Typeface=字体("product");
-            textSize="14sp",
             layout_marginLeft="60dp",
             layout_marginRight="5dp",
             layout_marginTop="40dp",
             layout_marginBottom="10dp",
             gravity="left|bottom",
             textColor="#FF767676",
+            id="userheadline",
+            textSize=内容文字大小,
+            lineHeight=内容行高;
           },
         };
 
@@ -223,11 +223,11 @@
               {
                 TextView;
                 layout_marginLeft="4dp",
-                textSize="12sp";
                 Text="0";
-                id="vote_count";
                 Typeface=字体("product-Bold");
                 textColor=stextc;
+                id="vote_count";
+                textSize="12sp";
               };
             };
             {
@@ -252,11 +252,11 @@
               {
                 TextView;
                 textSize="12sp";
-                Text="0";
                 layout_marginLeft="4dp",
-                id="thanks_count";
                 textColor=stextc;
                 Typeface=字体("product-Bold");
+                id="thanks_count";
+                Text="0";
               };
             };
             {
@@ -282,11 +282,11 @@
               {
                 TextView;
                 textSize="12sp";
-                Text="0";
                 layout_marginLeft="4dp",
-                id="comment_count";
                 textColor=stextc;
                 Typeface=字体("product-Bold");
+                id="comment_count";
+                Text="0";
               };
             };
             {

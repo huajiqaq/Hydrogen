@@ -28,10 +28,11 @@
         padding="16dp";
         {
           TextView;
-          textSize="14sp";
-          id="标题";
           textColor=textc;
           Typeface=字体("product-Bold");
+          id="标题";
+          textSize=标题文字大小;
+          lineHeight=标题行高;
         };
         {
           LinearLayout;
@@ -39,10 +40,11 @@
           orientation="horizontal";
           {
             TextView;
-            id="底部内容";
-            textSize="12sp",
             textColor=textc;
             Typeface=字体("product");
+            id="底部内容";
+            textSize=内容文字大小,
+            lineHeight=内容行高;
           };
         };
       };

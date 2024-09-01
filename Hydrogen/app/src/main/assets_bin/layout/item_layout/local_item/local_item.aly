@@ -31,11 +31,12 @@
           orientation="vertical";
           {
             TextView;
-            textSize="14sp";
-            id="标题";
             textColor=textc;
             layout_marginTop="2dp";
             Typeface=字体("product-Bold");
+            id="标题";
+            textSize=标题文字大小;
+            lineHeight=标题行高;
           };
         };
       };

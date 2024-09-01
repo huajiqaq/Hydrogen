@@ -40,32 +40,33 @@
         orientation="vertical";
         {
           TextView;
-          textSize="14sp";
-          id="标题",
           Typeface=字体("product-Bold");
           textColor=textc;
+          id="标题",
+          textSize=标题文字大小;
+          lineHeight=标题行高;
         };
         {
           TextView;
           Typeface=字体("product");
           textColor=stextc;
           SingleLine=true;
-          textSize="12sp",
           layout_gravity="left|bottom",
           gravity="left|bottom",
           id="预览内容",
-          y="17dp",
+          textSize=内容文字大小,
+          lineHeight=内容行高;
         };
         {
           TextView;
           layout_width="wrap",
-          textSize="12sp",
           layout_gravity="right|bottom";
           layout_marginLeft="20dp";
           Typeface=字体("product");
           SingleLine=true;
           textColor=stextc;
           id="关注数",
+          textSize=内容文字大小,
         };
       };
     };

@@ -96,14 +96,13 @@
             id="comment_recy";
             layout_width="-1";
             layout_height="-1";
-            paddingBottom="56dp";
           };
         };
 
         {
           MaterialCardView;
           layout_width="fill";
-          layout_height="56dp";
+          layout_height="wrap";
           StrokeWidth=0,
           radius=cardradius;
           CardBackgroundColor=barbackgroundc;

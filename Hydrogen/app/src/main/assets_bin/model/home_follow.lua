@@ -293,10 +293,14 @@ function base.getAdapter(follow_pagetool,pos)
        case 0
         views.顶部文字.getParent().removeView(views.顶部文字)
         views.底部文字.getParent().removeView(views.底部文字)
+        views.顶部文字=nil
+        views.底部文字=nil
        case 1
         views.顶部文字.getParent().removeView(views.顶部文字)
+        views.顶部文字=nil
        case 2
         views.底部内容.getParent().removeView(views.底部内容)
+        views.底部文字=nil
       end
       holder.view.setTag(views)
       return holder

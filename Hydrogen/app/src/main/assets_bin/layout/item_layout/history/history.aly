@@ -38,21 +38,23 @@
             {
               TextView;
               textColor=textc;
-              textSize="14sp";
               Typeface=字体("product-Bold");
+              layout_weight=1;
               id="标题",
-              layout_weight=1
+              textSize=标题文字大小;
+              lineHeight=标题行高;
             };
           };
           {
             TextView;
-            textSize="12sp";
             MaxLines=3;
             ellipsize="end",
-            id="预览内容";
             textColor=stextc;
             layout_marginTop="2dp";
             Typeface=字体("product-Medium");
+            id="预览内容";
+            textSize=内容文字大小;
+            lineHeight=内容行高;
           };
           {
             TextView;

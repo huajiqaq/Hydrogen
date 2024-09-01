@@ -42,10 +42,11 @@
           {
             TextView;
             layout_marginLeft="8dp",
-            textSize="14sp";
-            id="标题",
             Typeface=字体("product-Bold");
             textColor=textc;
+            id="标题",
+            textSize=标题文字大小;
+            lineHeight=标题行高;
           };
         };
         {
@@ -57,10 +58,11 @@
             TextView;
             Typeface=字体("product");
             textColor=textc;
-            id="预览内容",
             textIsSelectable=true;
             linksClickable=true;
-            textSize="12sp";
+            id="预览内容",
+            textSize=内容文字大小;
+            lineHeight=内容行高;
           };
           {
             LinearLayout;
@@ -74,10 +76,11 @@
               TextView;
               Typeface=字体("product");
               textColor=stextc;
-              id="提示内容",
-              textSize="12sp";
               gravity="left";
               text="查看对话列表",
+              id="提示内容",
+              textSize=内容文字大小;
+              lineHeight=内容行高;
               Visibility=8;
             };
             {
@@ -86,8 +89,8 @@
               gravity="right";
               Typeface=字体("product");
               textColor=stextc;
-              textSize="12sp";
               id="底部内容",
+              textSize=内容文字大小;
             };
             {
               TextView;
@@ -95,8 +98,8 @@
               gravity="right";
               Typeface=字体("product");
               textColor=stextc;
-              textSize="12sp";
               id="时间",
+              textSize=内容文字大小;
             };
           };
         }

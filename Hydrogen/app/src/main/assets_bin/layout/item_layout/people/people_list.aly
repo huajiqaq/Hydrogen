@@ -40,21 +40,23 @@
           orientation="vertical";
           {
             TextView;
-            id="标题";
             layout_marginLeft="6dp",
             textColor=textc;
             layout_gravity="center_vertical",
             Typeface=字体("product-Bold");
-            textSize="14sp";
+            id="标题";
+            textSize=标题文字大小;
+            lineHeight=标题行高;
           };
           {
             TextView;
-            textSize="14sp";
-            id="预览内容";
             textColor=textc;
             layout_marginLeft="6dp",
             layout_marginTop="8dp";
             Typeface=字体("product");
+            id="预览内容";
+            textSize=内容文字大小;
+            lineHeight=内容行高;
           };
         };
       };

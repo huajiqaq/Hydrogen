@@ -218,6 +218,7 @@ t.content.setWebViewClient{
     view.goBack()
   end,
   onPageStarted=function(view,url,favicon)
+    网页字体设置(view)
   end,
   onPageFinished=function(view,l)
     t.content.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
@@ -225,7 +226,7 @@ t.content.setWebViewClient{
   end,
   onLoadResource=function(view,url)
   end,
-}
+  shouldInterceptRequest=拦截加载}
 
 t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onProgressChanged=function(view,url,favicon)

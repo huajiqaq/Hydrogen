@@ -308,6 +308,26 @@ function 本地列表(path)
 
 end
 
+function zip(input,output,callback)
+  local function main(input,output)
+    local ZipUtil=luajava.bindClass "com.androlua.util.ZipUtil"
+    ZipUtil.zip(input,output)
+  end
+  activity.newTask(main,function()
+    callback()
+  end).execute({input,output})
+end
+
+function unzip(filePath,output,callback)
+  local function main(filePath,output)
+    local ZipUtil=luajava.bindClass "com.androlua.util.ZipUtil"
+    ZipUtil.zip(filePath,output)
+  end
+  activity.newTask(main,function()
+    callback()
+  end).execute({filePath,output})
+end
+
 task(1,function()
   a=MUKPopu({
     tittle="已保存的内容",
@@ -352,24 +372,22 @@ task(1,function()
           local 单选列表={"导出数据","导入数据"}
           local dofun={
             function()
-
               local path=Environment.getExternalStorageDirectory().toString()
-              ZipUtil.zip(内置存储文件(""),path)
-              提示("导出成功,导出文件在"..path.."/Hydrogen.zip")
-
+              zip(内置存储文件(""),path,function()
+                提示("导出成功,导出文件在"..path.."/Hydrogen.zip")
+              end)
             end,
             function()
-
               local path=Environment.getExternalStorageDirectory().toString().."/Hydrogen.zip"
               local filesdir=activity.getExternalFilesDir(nil).toString()
               if 文件是否存在(path) then
-                ZipUtil.unzip(path,内置存储文件(""))
-                删除文件(path)
-                提示("导入成功 已将导出文件自动删除")
+                unzip(path,内置存储文件(""),function()
+                  删除文件(path)
+                  提示("导入成功 已将导出文件自动删除")
+                end)
                else
                 return 提示("导入失败 请检查是否导出或误删文件")
               end
-
           end}
           dialog=AlertDialog.Builder(this)
           .setTitle("请选择")

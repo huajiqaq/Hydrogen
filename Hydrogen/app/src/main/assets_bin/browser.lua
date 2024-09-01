@@ -264,7 +264,7 @@ content.setWebViewClient{
   end,
   onPageStarted=function(view,url,favicon)
     view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-
+    网页字体设置(view)
     等待doc(view)
     if url:find("zhihu.com/search") then
       加载js(view,'window.open=function() { return false }')
@@ -303,10 +303,12 @@ content.setWebViewClient{
 
   end,
   onLoadResource=function(view,url)
+
   end,
   onPageFinished=function(view,url)
     屏蔽元素(view,{"SignFlowHomepage-footer"})
-end}
+  end,
+  shouldInterceptRequest=拦截加载}
 
 --设置网页图片点击事件，
 local z=JsInterface{

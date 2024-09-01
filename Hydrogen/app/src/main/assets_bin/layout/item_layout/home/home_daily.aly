@@ -33,9 +33,10 @@
           {
             TextView;
             textColor=textc;
-            textSize="14sp";
             Typeface=字体("product-Bold");
             id="标题",
+            textSize=标题文字大小;
+            lineHeight=标题行高;
           };
         };
       };

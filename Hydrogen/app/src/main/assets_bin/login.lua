@@ -76,6 +76,7 @@ login_web.setWebViewClient{
     if 全局主题值=="Night" then
       夜间模式主题(view)
     end
+    网页字体设置(view)
   end,
   onPageFinished=function(view,url)
     if url:find("https://www.zhihu.com/%?utm_id") or url=="https://www.zhihu.com" or url=="https://www.zhihu.com/" then
@@ -110,8 +111,8 @@ login_web.setWebViewClient{
       progress.setVisibility(8)
       login_web.setVisibility(0)
     end
-
-end}
+  end,
+  shouldInterceptRequest=拦截加载}
 
 
 function onDestroy()

@@ -189,19 +189,30 @@
     };
   };
 
+
   {--侧滑
     NestedScrollView;
-    layout_width="80%w";
     layout_height="-1";
     backgroundColor=0,
     layout_gravity="left";
-    id="_drawer_root";
     background=backgroundc;
     {
       LinearLayout;
       layout_height="-1";
       layout_width="-1";
       orientation="vertical";
+      id="_drawer_root";
+      layout_width=(function()
+        local width=activity.getWidth()
+        if width<dp2px(704) then--屏幕宽度小于704dp，那就占有80%
+          --固定 不能设置为match 否则处理会很麻烦 因为需要处理translationX
+          return "80%w"
+         elseif width<dp2px(1000) then--屏幕宽度大于等于704dp且小于1000dp，固定宽度为704dp
+          return "704px"
+         else--屏幕宽度大于等于1000dp，固定宽度为800dp
+          return "800px"
+        end
+      end)();
       {
         LinearLayout;
         layout_height="-2";
@@ -316,5 +327,5 @@
         DividerHeight=0;
       };
     };
-  }
-};
+  };
+}

@@ -36,7 +36,7 @@
           orientation="vertical";
           {
             TextView;
-            textSize="14sp";
+            textSize="15sp";
             id="catitle";
             textColor=textc;
             layout_marginTop="2dp";

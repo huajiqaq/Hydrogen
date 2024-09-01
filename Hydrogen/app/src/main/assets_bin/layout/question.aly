@@ -208,11 +208,11 @@
                               textColor=textc;
                               layout_gravity="center_vertical",
                               Typeface=字体("product-Bold");
-                              textSize="14sp";
+                              textSize="15sp";
                             };
                             {
                               TextView;
-                              textSize="14sp";
+                              textSize="15sp";
                               id="userheadline";
                               textColor=textc;
                               layout_marginLeft="6dp",
@@ -300,7 +300,7 @@
                         {
                           TextView;
                           typeface=字体("product");
-                          textSize="12sp";
+                          textSize="15sp";
                           letterSpacing="0.02";
                           textColor=textc,
                           MaxLines=3;

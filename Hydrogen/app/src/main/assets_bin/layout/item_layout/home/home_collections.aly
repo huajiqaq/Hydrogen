@@ -28,15 +28,15 @@
         orientation="horizontal";
         {
           TextView;
-          textSize="14sp";
+          textSize=标题文字大小;
           Typeface=字体("product-Bold");
           textColor=textc;
           id="标题",
         };
         {
           ImageView;
-          layout_height="16dp",
-          layout_width="16dp",
+          layout_height=内容文字大小,
+          layout_width=内容文字大小,
           layout_marginLeft="2dp",
           id="is_lock",
           layout_gravity="center",
@@ -51,9 +51,10 @@
         {
           TextView;
           textColor=stextc;
-          textSize="12sp",
           Typeface=字体("product");
           id="预览内容",
+          textSize=内容文字大小,
+          lineHeight=内容行高;
         };
       };
       {
@@ -61,39 +62,57 @@
         padding="8dp";
         paddingTop="0dp";
         orientation="horizontal";
+
         {
-          ImageView;
-          src=图标("chat_bubble"),
-          layout_gravity="center",
-          ColorFilter=textc;
-          layout_height="16dp",
-          layout_width="16dp",
+          LinearLayout;
+          id="评论数布局";
+          layout_gravity="center";
+          gravity="center";
+          {
+            ImageView;
+            src=图标("chat_bubble"),
+            ColorFilter=textc;
+            id="评论图标";
+            layout_height="wrap",
+            layout_width=内容文字大小,
+          };
+          {
+            TextView;
+            layout_marginLeft="6dp",
+            textColor=textc;
+            Typeface=字体("product");
+            id="评论数";
+            textSize=内容文字大小,
+            padding=0;
+            IncludeFontPadding=false
+          };
         };
         {
-          TextView;
-          layout_marginLeft="6dp",
-          textColor=textc;
-          textSize="12sp",
-          Typeface=字体("product");
-          id="评论数",
+          LinearLayout;
+          id="关注布局";
+          layout_gravity="center";
+          gravity="center";
+          {
+            ImageView;
+            layout_marginLeft="24dp",
+            src=图标("eye"),
+            ColorFilter=textc;
+            id="关注图标";
+            layout_height="wrap",
+            layout_width=内容文字大小,
+          };
+          {
+            TextView;
+            layout_marginLeft="6dp",
+            textColor=textc;
+            Typeface=字体("product");
+            id="关注数";
+            textSize=内容文字大小,
+            padding=0;
+            IncludeFontPadding=false
+          };
         };
-        {
-          ImageView;
-          layout_marginLeft="18dp",
-          src=图标("eye"),
-          ColorFilter=textc;
-          layout_gravity="center",
-          layout_height="16dp",
-          layout_width="16dp",
-        };
-        {
-          TextView;
-          layout_marginLeft="6dp",
-          textColor=textc;
-          Typeface=字体("product");
-          textSize="12sp",
-          id="关注数",
-        };
+      
       };
     };
   };

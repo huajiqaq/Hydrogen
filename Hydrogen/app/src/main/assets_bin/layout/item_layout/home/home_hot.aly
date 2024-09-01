@@ -30,10 +30,10 @@
           layout_weight=1;
           {
             TextView;
-            textSize="16sp";
             Typeface=字体("product");
-            id="排行";
             textColor=primaryc;
+            id="排行";
+            textSize="16sp";
           };
           {
             LinearLayout;
@@ -42,16 +42,18 @@
             {
               TextView;
               textColor=textc;
-              textSize="14sp";
               Typeface=字体("product-Bold");
               id="标题",
+              textSize=标题文字大小;
+              lineHeight=标题行高;
             };
             {
               TextView;
               textColor=stextc;
-              textSize="13sp";
-              id="热度",
               Typeface=字体("product");
+              id="热度",
+              textSize=内容文字大小;
+              lineHeight=内容行高;
             };
           };
         };

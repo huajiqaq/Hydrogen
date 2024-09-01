@@ -150,7 +150,7 @@ content.setWebViewClient{
   end,
   onPageStarted=function(view,url,favicon)
     view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-
+    网页字体设置(view)
     加载js(view,获取js("native"))
     等待doc(view)
     if 全局主题值=="Night" then
@@ -170,7 +170,7 @@ content.setWebViewClient{
   end,
   onLoadResource=function(view,url)
   end,
-}
+  shouldInterceptRequest=拦截加载}
 
 刷新()
 

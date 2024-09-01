@@ -52,6 +52,7 @@ data = {
   {__type=4,subtitle="代码块自动换行",status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
   {__type=4,subtitle="切换webview",status={Checked=Boolean.valueOf(this.getSharedData("切换webview"))}},
   {__type=4,subtitle="使用系统字体",status={Checked=Boolean.valueOf(this.getSharedData("使用系统字体"))}},
+  {__type=3,subtitle="自定义网页字体(beta)"},
   {__type=3,subtitle="设置屏蔽词"},
 
   {__type=1,title="主页设置"},
@@ -185,6 +186,104 @@ tab={
       提示("下次启动App生效")
       tipalert.dismiss()
     end
+  end,
+  ["自定义网页字体(beta)"]=function()
+    local result=get_write_permissions(true)
+    if result~=true then
+      return false
+    end
+    local 自定义字体路径=this.getSharedData("网页自定义字体")
+    local editDialog=AlertDialog.Builder(this)
+    .setTitle("设置网页自定义字体")
+    .setView(loadlayout({
+      LinearLayout;
+      layout_height="fill";
+      layout_width="fill";
+      orientation="vertical";
+      {
+        LinearLayout;
+        gravity="center_vertical";
+        layout_width="fill";
+        layout_height="64dp";
+        ripple="方自适应",
+        onClick=function()
+          --没选中就先选中 显示布局
+          if font_status.Checked==false then
+            font_status.Checked=true
+            font_layout_bottom.Visibility=0
+           else
+            --选中了就取消选中 隐藏布局
+            font_status.Checked=false
+            font_layout_bottom.Visibility=8
+          end
+        end,
+        {
+          TextView;
+          Typeface=字体("product");
+          textSize="16sp";
+          textColor=textc;
+          text="开启自定义字体";
+          gravity="center_vertical";
+          layout_weight="1";
+          layout_height="-1";
+          layout_marginLeft="16dp";
+        };
+        {
+          MaterialSwitch;
+          id="font_status";
+          layout_marginRight="16dp";
+          focusable=false;
+          clickable=false;
+          Checked=this.getSharedData("网页自定义字体")~=nil;
+        };
+      };
+      {--标题,switch type4
+        LinearLayout;
+        layout_width="fill";
+        layout_height="wrap";
+        orientation="vertical";
+        id="font_layout_bottom";
+        Visibility=this.getSharedData("网页自定义字体")~=nil and 0 or 8;
+        {
+          TextView;
+          TextIsSelectable=true;
+          layout_marginTop="10dp";
+          layout_marginLeft="10dp",
+          layout_marginRight="10dp",
+          Text='部分页面使用网页加载 开启可自定义字体 理论支持绝大多数网页 请输入字体的路径 例如/sdcard/a.ttf 留空则为使用默认App字体 关闭则使用默认网页自带字体';
+          Typeface=字体("product-Medium");
+        },
+        {
+          EditText;
+          layout_width="match";
+          layout_height="match";
+          layout_marginTop="5dp";
+          layout_marginLeft="10dp",
+          layout_marginRight="10dp",
+          id="edit";
+          Text=自定义字体路径;
+          Typeface=字体("product");
+        }
+      };
+    }))
+    .setPositiveButton("确定", {onClick=function()
+        if font_status.Checked==true then
+          if edit.Text:gsub(" ","")=="" then
+            edit.Text=""
+          end
+          if edit.Text=="" or File(edit.Text).canRead() then
+            this.setSharedData("网页自定义字体",edit.Text)
+           else
+            提示("无法读取文件夹 请检查输入是否正确或是否可读")
+            return
+          end
+         else
+          this.setSharedData("网页自定义字体",nil)
+        end
+        提示("设置成功 重启App生效")
+    end})
+    .setNegativeButton("取消", nil)
+    .show()
   end,
   切换webview=function(self,index)
     import "com.norman.webviewup.lib.WebViewUpgrade"
@@ -699,8 +798,7 @@ about_item={
         TextView;
         textColor=stextc;
         id="message";
-        textSize="14sp";
-
+        textSize="15sp";
         Typeface=字体("product");
         layout_marginLeft="16dp";
       };
@@ -759,8 +857,6 @@ about_item={
       clickable=false;
       layout_marginRight="16dp";
     };
-
-
   };
 
   {--标题 描述 选框 type5

@@ -41,17 +41,14 @@ function base.getAdapter(people_pagetool,pos)
       local holder=LuaCustRecyclerHolder(loadlayout(people_itemc,views))
       switch viewType
        case 1
-        views.点赞图标.getParent().removeView(views.点赞图标)
-        views.点赞数.getParent().removeView(views.点赞数)
-        local 评论图标=views.评论图标
-        local layoutParams = 评论图标.getLayoutParams();
-        layoutParams.setMargins(0, 0, 0, 0);
-        评论图标.setLayoutParams(layoutParams);
+        views.点赞数布局.getParent().removeView(views.点赞数布局)
+        views.点赞数布局=nil
        case 2
-        views.评论图标.getParent().removeView(views.点赞图标)
-        views.评论数.getParent().removeView(views.点赞数)
+        views.评论数布局.getParent().removeView(views.点赞数布局)
+        views.评论数布局=nil
        case 3
         views.底部内容.getParent().removeView(views.底部内容)
+        views.底部内容=nil
       end
       holder.view.setTag(views)
       return holder

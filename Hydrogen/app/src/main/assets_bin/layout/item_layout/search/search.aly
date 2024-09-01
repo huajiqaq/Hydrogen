@@ -29,16 +29,17 @@
         };
         {
           TextView;
-          id="标题";
           singleLine=true;
           textColor=textc;
-          textSize="14sp";
           gravity="center";
           SingleLine=true;
           ellipsize='end',
           Selected=true,
           layout_margin="10dp";
           Typeface=字体("product-Bold");
+          id="标题";
+          textSize=标题文字大小;
+          lineHeight=标题行高;
         };
       };
     };

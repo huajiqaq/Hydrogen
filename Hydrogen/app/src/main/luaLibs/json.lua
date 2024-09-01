@@ -84,7 +84,7 @@ local function encode_table(val, stack)
     stack[val] = nil
     return "[" .. table.concat(res, ",") .. "]"
 
-  else
+   else
     -- Treat as an object
     for k, v in pairs(val) do
       if type(k) ~= "string" then
@@ -113,10 +113,10 @@ end
 
 
 local type_func_map = {
-  [ "nil"     ] = encode_nil,
-  [ "table"   ] = encode_table,
-  [ "string"  ] = encode_string,
-  [ "number"  ] = encode_number,
+  [ "nil" ] = encode_nil,
+  [ "table" ] = encode_table,
+  [ "string" ] = encode_string,
+  [ "number" ] = encode_number,
   [ "boolean" ] = tostring,
 }
 
@@ -150,15 +150,15 @@ local function create_set(...)
   return res
 end
 
-local space_chars   = create_set(" ", "\t", "\r", "\n")
-local delim_chars   = create_set(" ", "\t", "\r", "\n", "]", "}", ",")
-local escape_chars  = create_set("\\", "/", '"', "b", "f", "n", "r", "t", "u")
-local literals      = create_set("true", "false", "null")
+local space_chars = create_set(" ", "\t", "\r", "\n")
+local delim_chars = create_set(" ", "\t", "\r", "\n", "]", "}", ",")
+local escape_chars = create_set("\\", "/", '"', "b", "f", "n", "r", "t", "u")
+local literals = create_set("true", "false", "null")
 
 local literal_map = {
-  [ "true"  ] = true,
+  [ "true" ] = true,
   [ "false" ] = false,
-  [ "null"  ] = nil,
+  [ "null" ] = nil,
 }
 
 
@@ -189,27 +189,31 @@ end
 local function codepoint_to_utf8(n)
   -- http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=iws-appendixa
   local f = math.floor
+  --可能会出现问题 只能暂时这样写
+  if n==nil then
+    return
+  end
   if n <= 0x7f then
     return string.char(n)
-  elseif n <= 0x7ff then
+   elseif n <= 0x7ff then
     return string.char(f(n / 64) + 192, n % 64 + 128)
-  elseif n <= 0xffff then
+   elseif n <= 0xffff then
     return string.char(f(n / 4096) + 224, f(n % 4096 / 64) + 128, n % 64 + 128)
-  elseif n <= 0x10ffff then
+   elseif n <= 0x10ffff then
     return string.char(f(n / 262144) + 240, f(n % 262144 / 4096) + 128,
-                       f(n % 4096 / 64) + 128, n % 64 + 128)
+    f(n % 4096 / 64) + 128, n % 64 + 128)
   end
   error( string.format("invalid unicode codepoint '%x'", n) )
 end
 
 
 local function parse_unicode_escape(s)
-  local n1 = tonumber( s:sub(3, 6),  16 )
+  local n1 = tonumber( s:sub(3, 6), 16 )
   local n2 = tonumber( s:sub(9, 12), 16 )
   -- Surrogate pair?
   if n2 then
     return codepoint_to_utf8((n1 - 0xd800) * 0x400 + (n2 - 0xdc00) + 0x10000)
-  else
+   else
     return codepoint_to_utf8(n1)
   end
 end
@@ -235,10 +239,10 @@ local function parse_string(str, i)
         end
         if hex:find("^[dD][89aAbB]") then
           has_surrogate_escape = true
-        else
+         else
           has_unicode_escape = true
         end
-      else
+       else
         local c = string.char(x)
         if not escape_chars[c] then
           decode_error(str, j, "invalid escape char '" .. c .. "' in string")
@@ -247,7 +251,7 @@ local function parse_string(str, i)
       end
       last = nil
 
-    elseif x == 34 then -- '"' (end of string)
+     elseif x == 34 then -- '"' (end of string)
       local s = str:sub(i + 1, j - 1)
       if has_surrogate_escape then
         s = s:gsub("\\u[dD][89aAbB]..\\u....", parse_unicode_escape)
@@ -260,7 +264,7 @@ local function parse_string(str, i)
       end
       return s, j + 1
 
-    else
+     else
       last = x
     end
   end

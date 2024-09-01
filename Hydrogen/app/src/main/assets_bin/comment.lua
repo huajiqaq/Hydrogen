@@ -202,6 +202,10 @@ if not(comment_type:find("local")) then
   end
   踩tab={}
   comment_item=获取适配器项目布局("comment/comment")
+  --延迟一毫秒测量设置PaddingBottom 防止无法获取
+  task(1,function()
+    comment_recy.setPadding(0,0,0,inputLay.height)
+  end)
   --评论
   comment_base=require "model.comment"
   :new(comment_id,comment_type)

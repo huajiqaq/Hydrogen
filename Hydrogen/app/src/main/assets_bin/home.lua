@@ -409,6 +409,17 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
   end
 });
 
+local function set_drawer(z)
+  local z=z or 1
+  _drawer.getChildAt(0).translationX=_drawer_root.width*z
+end
+
+function onStart()
+  --防止偶尔出现的显示bug
+  if _drawer.isDrawerOpen(Gravity.LEFT) then
+    set_drawer()
+  end
+end
 
 _drawer.setDrawerListener(DrawerLayout.DrawerListener{
   onDrawerSlide=function(v,z)
@@ -439,7 +450,7 @@ _drawer.setDrawerListener(DrawerLayout.DrawerListener{
     _menu_3.setTranslationY(-z*3.2)
     _menu_3.setTranslationX(z*8)
     _drawer.setScrimColor(0)
-    _drawer.getChildAt(0).translationX=_drawer.getChildAt(1).getChildAt(0).width*z
+    set_drawer(z)
 end})
 
 ch_item_checked_background = GradientDrawable()
@@ -503,11 +514,11 @@ drawer_item={
         };
         {
           TextView;
-          id="tv";
           layout_marginLeft="16dp";
-          textSize="14sp";
           Typeface=字体("product");
           textColor=textc;
+          id="tv";
+          textSize=标题文字大小;
         };
       };
     };
