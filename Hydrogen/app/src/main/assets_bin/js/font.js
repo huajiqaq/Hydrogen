@@ -82,7 +82,7 @@
     const style = getStyle()
     // 判断是否在本地文件
     if (window.location.href.startsWith("http://") || window.location.href.startsWith("file://")) {
-        document.appendChild(style)
+        document.head.appendChild(style)
         return
     }
 

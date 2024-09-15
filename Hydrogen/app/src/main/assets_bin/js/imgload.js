@@ -38,7 +38,7 @@
         }
 
         if (isLocalPage) {
-            if (document.querySelectorAll(".pin-header-image")) {
+            if (document.querySelector(".pin-header-image")) {
                 getImgs = function () {
                     return document.querySelectorAll(".pin-header-image")
                 }
@@ -91,7 +91,7 @@
         function checkClickTarget(event) {
             let target = event.target;
 
-            if (target.tagName.toLowerCase() === 'div') {
+            if (target.tagName.toLowerCase() === 'div' || target.tagName.toLowerCase() === 'video') {
                 while (target && target.tagName.toLowerCase() !== 'body') {
                     const parent = target.parentElement;
 
@@ -115,10 +115,14 @@
         document.addEventListener('click', function (event) { // 判断点击的目标是否为img元素 
             let doc = event.target
             if (isImageIsEnabled(doc) == false) return
+            if (doc.tagName !== 'IMG') {
+                doc = checkClickTarget(event)
+            }
             if (isZhihuPage) {
                 if (doc.parentNode.className.includes("GifPlayer")) {
                     // 禁止父元素接受事件
                     doc.parentNode.style.pointerEvents = "none"
+                    console.log(doc)
                     doc.src = replaceSrcWithGif(doc.src);
                     doc.dataset.original = doc.src;
                     event.stopPropagation()
@@ -131,9 +135,6 @@
                     }
                     return false
                 }
-            }
-            if (doc.tagName !== 'IMG') {
-                doc = checkClickTarget(event)
             }
             if (doc.tagName === 'IMG') {
                 window.androlua.execute(JSON.stringify(getImageIndexAndSrc(doc.src)));

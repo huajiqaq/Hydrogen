@@ -23,7 +23,7 @@ local function setstyle(text)
   local function MyClickableSpan(url)
     local myspan=ClickableSpan{
       onClick=function(v)
-        if v.Text=="查看图片" then
+        if v.Text:find("图片") then
           local data={["0"]=url,["1"]=1}
           this.setSharedData("imagedata",luajson.encode(data))
           activity.newActivity("image")
@@ -57,7 +57,7 @@ function base.resolvedata(v,data)
   local 内容=v.content
   local 点赞数=v.vote_count
   local 时间=时间戳(v.created_time)
-  local 名字,id=v.author.name,"没有id"
+  local 名字=v.author.name
   local function isauthor(v)
     local a=""
     if v.role=="author" then
@@ -68,7 +68,6 @@ function base.resolvedata(v,data)
   local myspan
   pcall(function()
     名字=isauthor(v.author).. "  →  "..isauthor(v.reply_to_author)
-    if comment_type~="comments" then id=v.id end
   end)
   local 包含url
   if 内容:find("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]") then
@@ -87,12 +86,12 @@ function base.resolvedata(v,data)
   local 预览内容=myspan
   local 标题=名字
   local 图像=头像
-  local 时间=时间
+  local 时间=v.like_count.." 喜欢 · "..时间
   local isme=(v.is_author==true and "true" or "false")
   pcall(function()
     local comment_tag=v.comment_tag[1]
     if comment_tag.type=="ip_info" then
-      时间=comment_tag.text.."  "..时间
+      时间=comment_tag.text.." · "..时间
     end
   end)
 

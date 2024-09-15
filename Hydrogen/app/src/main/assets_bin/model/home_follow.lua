@@ -243,6 +243,8 @@ function base.resolvedata(v,data)
   end
 end
 
+MaterialDivider=luajava.bindClass "com.google.android.material.divider.MaterialDivider"
+
 local function 加载主页关注折叠adp(data,views)
   --创建第二个适配器对象
   local adapter2=LuaRecyclerAdapter(activity,data,获取适配器项目布局("home/hone_follow_carditem"))
@@ -292,15 +294,15 @@ function base.getAdapter(follow_pagetool,pos)
       switch viewType
        case 0
         views.顶部文字.getParent().removeView(views.顶部文字)
-        views.底部文字.getParent().removeView(views.底部文字)
+        views.底部recy.getParent().removeView(views.底部recy)
         views.顶部文字=nil
-        views.底部文字=nil
+        views.底部recy=nil
        case 1
         views.顶部文字.getParent().removeView(views.顶部文字)
         views.顶部文字=nil
        case 2
-        views.底部内容.getParent().removeView(views.底部内容)
-        views.底部文字=nil
+        views.底部recy.getParent().removeView(views.底部recy)
+        views.底部recy=nil
       end
       holder.view.setTag(views)
       return holder
@@ -318,30 +320,13 @@ function base.getAdapter(follow_pagetool,pos)
       end
       views.评论数.Text=data.评论数
       views.预览内容.Text=data.预览内容
-      views.动作.Text=data.动作
-      views.时间.Text=data.时间
+      views.动作.Text=data.动作.." · "..data.时间
       loadglide(views.图像,data.图像)
 
       switch type1
        case 1
-        local text=data.组文本.." 点击展开"
-        views.底部文字.text=text
-        --是否展开Flag，默认为隐藏
-        local isExpand = false
         local data=data.extra_data
-        views.底部文字.onClick=function(v)
-          if not isExpand then --未展开
-            v.text="点击关闭"
-            加载主页关注折叠adp(data,views)
-           else --展开
-            v.text=text
-            views.底部recy.removeAllViews()
-            views.底部recy.setAdapter(nil)
-            local recy=home_pagetool:getItem(pos)
-            task(300,function() recy.scrollToPosition(position) end)
-          end
-          isExpand = not isExpand
-        end
+        加载主页关注折叠adp(data,views)
        case 2
         local text=data.组文本
         views.顶部文字.text=text

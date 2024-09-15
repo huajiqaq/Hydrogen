@@ -28,13 +28,9 @@ if xxx:match("article") or xxx:match("pin") then
   return
 end
 
---暂时这么解决闪屏问题 第二种解决方法添加 layoutTransition=LayoutTransition()
-local 加载内容=读取文件(filedir)
-if 全局主题值=="Night" then
-  加载内容=加载内容:gsub('light','dark')
-end
 task(1,function()
-  t.content.loadDataWithBaseURL(nil,加载内容,"text/html","utf-8",nil)
+  local loaduri = Uri.fromFile(File(filedir)).toString();
+  t.content.loadUrl(loaduri)
 end)
 
 --new 0.53 引入mhtml2html解析mhtml 去除大量mhtml替换逻辑
@@ -91,12 +87,13 @@ local 加入view=loadlayout({
   layout_width="fill";
   layout_height="fill";
   id="root";
+  layoutTransition=LayoutTransition(),
   {
     NestedLuaWebView,
     id="content",
     layout_width="-1";
     layout_height="-1";
-    Visibility=8,
+    Visibility=8;
   };
 },t)
 
@@ -191,6 +188,7 @@ end
 
 t.content.BackgroundColor=转0x("#00000000",true);
 
+
 t.content.setDownloadListener({
   onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
     提示("本地暂不支持下载")
@@ -216,12 +214,14 @@ t.content.setWebViewClient{
     检查链接(url)
     view.stopLoading()
     view.goBack()
+    t.content.setVisibility(8)
   end,
   onPageStarted=function(view,url,favicon)
-    网页字体设置(view)
+    t.content.setVisibility(8)
+    t.content.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
   end,
   onPageFinished=function(view,l)
-    t.content.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+    网页字体设置(view)
     t.content.setVisibility(0)
   end,
   onLoadResource=function(view,url)

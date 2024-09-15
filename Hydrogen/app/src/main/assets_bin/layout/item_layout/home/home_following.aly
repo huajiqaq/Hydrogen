@@ -23,6 +23,7 @@
       layout_height="fill";
       id="background";
       layout_width="fill";
+      orientation="vertical";
       {
         LinearLayout;
         orientation="horizontal";
@@ -47,27 +48,18 @@
               CircleImageView;
               padding="2dp",
               id="图像",
-              layout_width="32dp",
-              layout_height="32dp",
+              layout_width="28dp",
+              layout_height="28dp",
             };
             {
-              LinearLayout;
-              orientation="vertical";
+              TextView;
+              textColor=stextc;
               layout_marginLeft="8dp";
-              {
-                TextView;
-                textColor=stextc;
-                Typeface=字体("product");
-                id="动作";
-                textSize=内容文字大小;
-              };
-              {
-                TextView;
-                textColor=stextc;
-                Typeface=字体("product");
-                id="时间";
-                textSize=内容文字大小;
-              };
+              Typeface=字体("product");
+              id="动作";
+              textSize=内容文字大小;
+              layout_gravity="center";
+              gravity="center";
             };
           };
           {
@@ -142,30 +134,15 @@
                 IncludeFontPadding=false
               };
             };
-
-          };
-          {
-            LinearLayout;
-            orientation="vertical";
-            layout_width="fill",
-            id="底部内容";
-            {
-              RecyclerView;
-              layout_width="fill",
-              id="底部recy",
-              NestedScrollingEnabled=false,
-            };
-            {
-              TextView;
-              textColor=textc;
-              layout_width="fill",
-              layout_marginTop="4dp";
-              Typeface=字体("product");
-              id="底部文字";
-              textSize=内容文字大小;
-            };
           };
         };
+      };
+      {
+        RecyclerView;
+        layout_width="fill",
+        layout_height="wrap",
+        id="底部recy",
+        NestedScrollingEnabled=false,
       };
     };
   };

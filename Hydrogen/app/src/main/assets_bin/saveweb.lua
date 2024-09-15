@@ -199,8 +199,11 @@ pop={
         创建文件(详情文件夹)
         写入文件(详情文件夹,写入内容)
         content.saveWebArchive(保存路径.."/mht.mht")
-        content.loadUrl(mhtml2html)
-        提示("保存成功")
+        提示("保存成功 一秒后转换")
+        task(1000,function()
+          content.loadUrl(mhtml2html)
+          提示("转换中")
+        end)
     end},
 
     {src=图标("share"),text="分享",onClick=function()
