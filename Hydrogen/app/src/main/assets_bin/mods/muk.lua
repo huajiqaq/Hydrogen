@@ -11,8 +11,8 @@ import "jesse205"
 
 标题文字大小="15sp"
 内容文字大小="14sp"
-标题行高="18sp"
-内容行高="17sp"
+标题行高="20sp"
+内容行高="19sp"
 
 oldTheme=ThemeUtil.getAppTheme()
 oldDarkActionBar=getSharedData("theme_darkactionbar")
@@ -23,7 +23,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.544
+versionCode=0.546
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
@@ -599,7 +599,7 @@ function 提示(t)
       layout_width="-1";
       layout_height="-2";
       CardElevation="0",
-      CardBackgroundColor=转0x(textc)-0x3f000000,
+      CardBackgroundColor=转0x(primaryc),
       StrokeWidth=0,
       layout_margin="16dp";
       layout_marginBottom="64dp";
