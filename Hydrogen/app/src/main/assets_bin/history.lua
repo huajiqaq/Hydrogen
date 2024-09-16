@@ -104,6 +104,9 @@ function 加载历史记录()
         local add={}
         add.标题=标题
         add.id内容=id
+        if 预览内容=="" then
+          预览内容="无预览内容"
+        end
         add.预览内容=Html.fromHtml(预览内容)
         adp.add(add)
       end

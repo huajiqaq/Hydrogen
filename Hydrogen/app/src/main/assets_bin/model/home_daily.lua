@@ -123,7 +123,7 @@ function base:getAdapter(home_pagetool,pos)
 
       views.标题.text=标题
       views.card.onClick=function()
-        activity.newActivity("huida",{data.id内容})
+        activity.newActivity("browser",{data.id内容})
       end
     end,
   })
