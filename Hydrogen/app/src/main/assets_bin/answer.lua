@@ -52,6 +52,7 @@ local function 设置滑动跟随(t)
   end
 end
 
+
 comment.onClick=function()
   local pos=pg.getCurrentItem()
   local mview=数据表[pg.adapter.getItem(pos).id]
@@ -784,7 +785,8 @@ task(1,function()
             return 提示("加载中")
           end
 
-          activity.newActivity("comment",{回答id,"answers"})
+          local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
+          activity.newActivity("comment",{回答id,"answers",nil,nil,保存路径})
 
         end
       },

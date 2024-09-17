@@ -250,6 +250,8 @@ function base.getAdapter(home_pagetool,pos)
 
       if 提示内容 then
         views.提示内容.Visibility=0
+       else
+        views.提示内容.Visibility=8
       end
 
 
@@ -291,6 +293,10 @@ function base.getAdapter(home_pagetool,pos)
         local result=get_write_permissions()
         if result~=true then
           return true
+        end
+
+        if not 保存路径 then
+          return 提示("该内容下评论不支持保存")
         end
 
         if not(文件夹是否存在(保存路径))then
