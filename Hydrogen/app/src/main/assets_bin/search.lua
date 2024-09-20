@@ -110,7 +110,6 @@ local function createchip(text)
   })
 end
 
-search_history=loadSharedPreferences("search_history")
 
 search_view.requestFocus()
 search_view.postDelayed(Runnable{
@@ -121,8 +120,9 @@ search_view.postDelayed(Runnable{
 }, 100);
 
 function onStart()
+  search_history=loadSharedPreferences("search_history")
   chipgroup.removeAllViews()
-  for i=#search_history,1,-1 do
+  for i=1,#search_history do
     local text=search_history[i]
     chipgroup.addView(createchip(text,itemnum))
   end

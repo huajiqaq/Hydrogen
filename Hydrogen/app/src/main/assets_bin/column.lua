@@ -126,6 +126,8 @@ function 刷新()
         aurhor_name=data.author.name
         page_title=data.title
         _title.text=page_title
+        --软件自己拼接成的保存路径
+        保存路径=data.savepath
        else
         author_id=data.theater.actor.id
       end
@@ -133,8 +135,6 @@ function 刷新()
     content.setVisibility(8)
     content.loadUrl(base_column.weburl)
 
-    --软件自己拼接成的保存路径
-    保存路径=data.savepath
 
   end,true)
 
@@ -143,7 +143,7 @@ function 刷新()
   end
 
 end
-
+content.setWebContentsDebuggingEnabled(true)
 content.setWebViewClient{
   onReceivedError=function(view,a,b)
 
@@ -162,10 +162,7 @@ content.setWebViewClient{
     end
   end,
   onPageStarted=function(view,url,favicon)
-    --直播会直接跳转到图片 而且直播一般不查看图片
-    if 类型~="直播" then
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-    end
+    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
     网页字体设置(view)
     加载js(view,获取js("native"))
     等待doc(view)

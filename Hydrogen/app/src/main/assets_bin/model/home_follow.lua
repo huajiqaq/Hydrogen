@@ -261,8 +261,13 @@ local function 加载主页关注折叠adp(data,views)
 
       views.标题.text=标题
       views.预览内容.text=预览内容
-      views.评论数.text=评论数
       views.点赞数.text=点赞数
+      if 评论数 then
+        views.评论数布局.Visibility=0
+        views.评论数.text=评论数
+       else
+        views.评论数布局.Visibility=8
+      end
       views.card.onClick=function()
         点击事件判断(data.id内容,data.标题)
       end
@@ -313,12 +318,20 @@ function base.getAdapter(follow_pagetool,pos)
       local data=follow_pagetool:getData()[pos][position+1]
       local type1=data.type
 
+      local 标题=data.标题
+      local 预览内容=data.预览内容
+      local 评论数=data.评论数
+      local 点赞数=data.点赞数
+      local id内容=data.id内容
+
       views.标题.Text=data.标题
       views.点赞数.Text=data.点赞数
-      if not data.评论数 then
-        data.评论数=""
+      if 评论数 then
+        views.评论数布局.Visibility=0
+        views.评论数.text=评论数
+       else
+        views.评论数布局.Visibility=8
       end
-      views.评论数.Text=data.评论数
       views.预览内容.Text=data.预览内容
       views.动作.Text=data.动作.." · "..data.时间
       loadglide(views.图像,data.图像)

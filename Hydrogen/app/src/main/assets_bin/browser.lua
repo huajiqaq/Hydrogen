@@ -263,7 +263,9 @@ content.setWebViewClient{
 
   end,
   onPageStarted=function(view,url,favicon)
-    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+    if not url:find("https://www.zhihu.com/appview") then     
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+    end
     网页字体设置(view)
     等待doc(view)
     if url:find("zhihu.com/search") then

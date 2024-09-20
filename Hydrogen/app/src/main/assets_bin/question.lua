@@ -159,11 +159,10 @@ function 问题详情(code)
       检查链接(url)
     end,
     onPageStarted=function(view,url,favicon)
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
       网页字体设置(view)
     end,
     onPageFinished=function(view,url)
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-
       if 全局主题值=="Night" then
         夜间模式回答页(view)
       end
