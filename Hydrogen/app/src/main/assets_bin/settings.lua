@@ -25,7 +25,6 @@ data = {
 
   {__type=1,title="浏览设置"},
 
-  --  {__type=4,subtitle="内部浏览器查看回答",status={Checked=Boolean.valueOf(this.getSharedData("内部浏览器查看回答"))}},
   {__type=4,subtitle="自动打开剪贴板上的知乎链接",status={Checked=Boolean.valueOf(this.getSharedData("自动打开剪贴板上的知乎链接"))}},
 
   {__type=4,subtitle="夜间模式追随系统",status={Checked=Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))}},
@@ -80,6 +79,7 @@ data = {
   {__type=4,subtitle="显示虚拟滑动按键",status={Checked=Boolean.valueOf(this.getSharedData("显示虚拟滑动按键"))}},
   {__type=4,subtitle="显示报错信息",status={Checked=Boolean.valueOf(this.getSharedData("调式模式"))}},
   {__type=4,subtitle="允许加载代码",status={Checked=Boolean.valueOf(this.getSharedData("允许加载代码"))}},
+  {__type=4,subtitle="自动检测更新",status={Checked=Boolean.valueOf(this.getSharedData("自动检测更新"))}},
 
 }
 
@@ -306,27 +306,7 @@ tab={
       return showSimpleDialog("提示","你还没有安装谷歌浏览器 请安装后开启 本功能开启后将会默认使用谷歌浏览器的WebView而并非系统WebView")
     end
 
-    if WebViewUpgrade.isProcessing()~=true and WebViewUpgrade.isCompleted()~=true then
-      import "android.util.Log"
-      local webViewUpgrade=WebViewUpgrade.addUpgradeCallback(UpgradeCallback({
-        onUpgradeProcess=function()
-          提示("进行中")
-        end,
-        onUpgradeComplete=function()
-          提示("完成")
-        end,
-        onUpgradeError=function(throwable)
-          error("错误信息:"..throwable.getMessage().."\n".."堆栈回溯"..Log.getStackTraceString(throwable))
-        end
-      }))
-      local upgradeSource = UpgradePackageSource(this.getApplicationContext(),webview_packagename);
-      webViewUpgrade.upgrade(upgradeSource);
-    end
-    if WebViewUpgrade.getUpgradeWebViewPackageName()~=webview_packagename then
-      提示("你需要重启App来生效")
-     else
-      提示("当前已替换")
-    end
+    提示("你需要重启App来生效")
 
     AlertDialog.Builder(this)
     .setTitle("提示")

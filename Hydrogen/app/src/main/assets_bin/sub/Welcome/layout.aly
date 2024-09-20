@@ -3,6 +3,7 @@
   layout_height="fill";
   layout_width="fill";
   id="mainLay";
+  background="#ffffffff";
   {
     LinearLayoutCompat;
     layout_height="fill";

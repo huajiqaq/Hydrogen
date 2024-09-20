@@ -3,6 +3,7 @@
   id="mainLay";
   layout_height="fill";
   layout_width="fill";
+  background="#ffffffff";
   {
     LinearLayout,
     layout_width="fill",

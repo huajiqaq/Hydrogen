@@ -994,82 +994,84 @@ function onResume()
 end
 
 
-local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
-Http.get(update_api,head,function(code,content)
-  if code==200 then
-    local content_json=luajson.decode(content)
-    local content=base64dec(content_json.content)
-    updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
-    isstart=content:match("start%=(.+),start")
-    support_version=tonumber(content:match("supportversion%=(.+),supportversion"))
-    this.setSharedData("解析zse开关",isstart)
-    if updateversioncode > versionCode and tonumber(activity.getSharedData("version"))~=updateversioncode then
-      updateversionname=content:match("updateversionname%=(.+),updateversionname")
-      updateinfo=content:match("updateinfo%=(.+),updateinfo")
-      updateurl=tostring(content:match("updateurl%=(.+),updateurl"))
-      if versionCode >= support_version then
-        myupdatedialog=AlertDialog.Builder(this)
-        .setTitle("检测到最新版本")
-        .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
-        .setCancelable(false)
-        .setPositiveButton("立即更新",nil)
-        .setNeutralButton("忽略本次更新",{onClick=function() activity.setSharedData("version",tostring(updateversioncode)) end})
-        .show()
-        myupdatedialog.create()
-        myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
-          local result=get_write_permissions()
-          if result~=true then
-            return false
-          end
-          下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
-        end
-       else
-        下载方法=content:match("nosupportWay%=(.+),nosupportWay")
-        下载提示=content:match("nosupportTip%=(.+),nosupportTip")
-        myupdatedialog=AlertDialog.Builder(this)
-        .setTitle("检测到最新版本")
-        .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
-        .setCancelable(false)
-        .setPositiveButton("立即更新",nil)
-        .setNeutralButton("暂不更新",{onClick=function() 提示("本次更新为强制更新 下次打开软件会再次提示哦") end})
-        .show()
-        myupdatedialog.create()
-        myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
-          if 下载方法=="native" then
+if this.getSharedData("自动检测更新")=="true" then
+  local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
+  Http.get(update_api,head,function(code,content)
+    if code==200 then
+      local content_json=luajson.decode(content)
+      local content=base64dec(content_json.content)
+      updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
+      isstart=content:match("start%=(.+),start")
+      support_version=tonumber(content:match("supportversion%=(.+),supportversion"))
+      this.setSharedData("解析zse开关",isstart)
+      if updateversioncode > versionCode and tonumber(activity.getSharedData("version"))~=updateversioncode then
+        updateversionname=content:match("updateversionname%=(.+),updateversionname")
+        updateinfo=content:match("updateinfo%=(.+),updateinfo")
+        updateurl=tostring(content:match("updateurl%=(.+),updateurl"))
+        if versionCode >= support_version then
+          myupdatedialog=AlertDialog.Builder(this)
+          .setTitle("检测到最新版本")
+          .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
+          .setCancelable(false)
+          .setPositiveButton("立即更新",nil)
+          .setNeutralButton("忽略本次更新",{onClick=function() activity.setSharedData("version",tostring(updateversioncode)) end})
+          .show()
+          myupdatedialog.create()
+          myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
             local result=get_write_permissions()
             if result~=true then
               return false
             end
             下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
-           else
-            提示(下载提示)
-            浏览器打开(updateurl)
+          end
+         else
+          下载方法=content:match("nosupportWay%=(.+),nosupportWay")
+          下载提示=content:match("nosupportTip%=(.+),nosupportTip")
+          myupdatedialog=AlertDialog.Builder(this)
+          .setTitle("检测到最新版本")
+          .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
+          .setCancelable(false)
+          .setPositiveButton("立即更新",nil)
+          .setNeutralButton("暂不更新",{onClick=function() 提示("本次更新为强制更新 下次打开软件会再次提示哦") end})
+          .show()
+          myupdatedialog.create()
+          myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+            if 下载方法=="native" then
+              local result=get_write_permissions()
+              if result~=true then
+                return false
+              end
+              下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
+             else
+              提示(下载提示)
+              浏览器打开(updateurl)
+            end
           end
         end
       end
-    end
-   else
-    myupdatedialog=AlertDialog.Builder(this)
-    .setTitle("提示")
-    .setMessage("检测版本失败 如若是网络问题 请找到网络信号良好的地方使用 如果检查网络后不是网络问题 请打开官网更新 或前往项目页查看往下滑查看最新下载链接 如果开源项目页没了 软件就是寄了")
-    .setCancelable(false)
-    .setPositiveButton("官网",nil)
-    .setNeutralButton("忽略",nil)
-    .setNegativeButton("项目页",nil)
-    .show()
-    myupdatedialog.findViewById(android.R.id.message).TextIsSelectable=true
-    myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
-      浏览器打开("https://huajiqaq.github.io/myhydrogen")
-    end
-    myupdatedialog.getButton(myupdatedialog.BUTTON_NEGATIVE).onClick=function()
-      浏览器打开("https://gitee.com/huajicloud/hydrogen")
-    end
-    myupdatedialog.getButton(myupdatedialog.BUTTON_NEUTRAL).onClick=function()
-      myupdatedialog.dismiss()
-    end
+     else
+      myupdatedialog=AlertDialog.Builder(this)
+      .setTitle("提示")
+      .setMessage("检测版本失败 如若是网络问题 请找到网络信号良好的地方使用 如果检查网络后不是网络问题 请打开官网更新 或前往项目页查看往下滑查看最新下载链接 如果开源项目页没了 软件就是寄了")
+      .setCancelable(false)
+      .setPositiveButton("官网",nil)
+      .setNeutralButton("忽略",nil)
+      .setNegativeButton("项目页",nil)
+      .show()
+      myupdatedialog.findViewById(android.R.id.message).TextIsSelectable=true
+      myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+        浏览器打开("https://huajiqaq.github.io/myhydrogen")
+      end
+      myupdatedialog.getButton(myupdatedialog.BUTTON_NEGATIVE).onClick=function()
+        浏览器打开("https://gitee.com/huajicloud/hydrogen")
+      end
+      myupdatedialog.getButton(myupdatedialog.BUTTON_NEUTRAL).onClick=function()
+        myupdatedialog.dismiss()
+      end
 
-  end
-end)
+    end
+  end)
+end
 
 if activity.getSharedData("自动清理缓存")=="true" then
   清理内存()
