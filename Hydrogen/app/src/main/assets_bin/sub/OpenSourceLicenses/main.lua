@@ -15,12 +15,14 @@ import "com.google.android.material.appbar.MaterialToolbar"
 import "androidx.appcompat.widget.LinearLayoutCompat"
 import "androidx.core.widget.NestedScrollView"
 
-activity.setContentView(loadlayout("layout",_ENV))
---actionBar.setDisplayHomeAsUpEnabled(true)
-activity.setSupportActionBar(toolbar)
 local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
 package.path = package.path..";"..luapath.."/?.lua"
 require("mods.muk")
+
+activity.setContentView(loadlayout("layout",_ENV))
+--actionBar.setDisplayHomeAsUpEnabled(true)
+activity.setSupportActionBar(toolbar)
+
 设置toolbar属性(toolbar,R.string.jesse205_openSourceLicense)
 
 

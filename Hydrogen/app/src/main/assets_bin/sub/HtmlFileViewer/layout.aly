@@ -3,7 +3,7 @@
   layout_width="fill",
   layout_height="fill",
   orientation="vertical";
-  background="#ffffffff";
+  backgroundColor=backgroundc;
   {
     MaterialToolbar;
     id="toolbar";

@@ -15,12 +15,14 @@ import "com.jesse205.layout.innocentlayout.GridViewLayout"
 import "item"
 activity.getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
 --activity.setTitle(R.string.jesse205_themePicker)
-activity.setContentView(loadlayout("layout"))
---content.setBackgroundColor(MaterialColors.getColor(this, R.attr.colorSurface,0))
-activity.setSupportActionBar(toolbar)
+
 local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
 package.path = package.path..";"..luapath.."/?.lua"
 require("mods.muk")
+
+activity.setContentView(loadlayout("layout"))
+--content.setBackgroundColor(MaterialColors.getColor(this, R.attr.colorSurface,0))
+activity.setSupportActionBar(toolbar)
 设置toolbar属性(toolbar,R.string.jesse205_themePicker)
 
 
