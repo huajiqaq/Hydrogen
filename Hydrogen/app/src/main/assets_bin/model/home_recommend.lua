@@ -182,6 +182,7 @@ function base:initpage(view,sr)
     head="head",
     adapters_func=self.getAdapter,
     func=self.resolvedata,
+    allow_prev=true
   })
   :initPage()
   :createfunc()

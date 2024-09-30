@@ -864,7 +864,7 @@ function 加载主页tab()
 
         onTabReselected=function(tab)
           --选中之后再次点击即复选时触发
-          home_pagetool:clearItem()
+          home_pagetool:clearItem(pos,true)
           :refer(nil,true)
         end,
       });

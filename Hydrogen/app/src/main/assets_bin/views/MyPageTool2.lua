@@ -324,12 +324,12 @@ function Page_Tool:createfunc()
       return 提示("已经到底了")
     end
 
-    local posturl
+    local posturl = pagedata[pos].nexturl
     if isprev then
-      --防止prev不存在一直加载的bug
-      posturl = pagedata[pos].prev or pagedata[pos].nexturl
-     else
-      posturl = pagedata[pos].nexturl
+      --防止prev不存在一直加载的bug或prev为""无法加载
+      if pagedata[pos].prev and pagedata[pos].prev~="" then
+        posturl = pagedata[pos].prev
+      end
     end
 
     local posturl= posturl or self.urls[pos]
@@ -456,7 +456,9 @@ end
 function Page_Tool:clearItem(index,isprev)
   local index=index or self:getCurrentItem()
   local prev,nexturl
-  if isprev then
+  --是否允许向上查看上面内容
+  local allow_prev=self.allow_prev
+  if isprev and allow_prev then
     prev=self.pagedata[index].prev
     nexturl=self.pagedata[index].nexturl
   end

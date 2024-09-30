@@ -80,7 +80,8 @@ function base:initpage(view,sr)
     sr=sr,
     head="head",
     adapters_func=self.getAdapter,
-    func=self.resolvedata
+    func=self.resolvedata,
+    allow_prev=true
   })
   :initPage()
   :createfunc()
