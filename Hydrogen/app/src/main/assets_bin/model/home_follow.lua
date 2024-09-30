@@ -278,14 +278,15 @@ local function 加载主页关注折叠adp(data,views)
 end
 
 function base.getAdapter(follow_pagetool,pos)
+  local data=follow_pagetool:getItemData(pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      return #follow_pagetool:getData()[pos]
+      return #data
     end,
 
     getItemViewType=function(position)
-      local data=follow_pagetool:getData()[pos][position+1]
+      local data=data[position+1]
       return data.type or 0
     end,
 
@@ -315,7 +316,7 @@ function base.getAdapter(follow_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=follow_pagetool:getData()[pos][position+1]
+      local data=data[position+1]
       local type1=data.type
 
       local 标题=data.标题

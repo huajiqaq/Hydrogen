@@ -21,11 +21,11 @@ function base:getUrl()
 end
 
 function base.getAdapter(search_result_pagetool,pos)
-
+  local data=search_result_pagetool:getItemData(pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      return #search_result_pagetool:getItemData(pos)
+      return #data
     end,
 
     getItemViewType=function(position)
@@ -41,7 +41,7 @@ function base.getAdapter(search_result_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=search_result_pagetool:getItemData(pos)[position+1]
+      local data=data[position+1]
       views.活动.text=data.活动
       views.标题.text=data.标题
       views.点赞数.text=data.点赞数
@@ -97,7 +97,7 @@ function base.resolvedata(v,data)
   add.id内容=id内容
   add.标题=Html.fromHtml(标题)
   add.图像=头像
-  if add.预览内容 then
+  if 预览内容 then
     add.预览内容=Html.fromHtml(预览内容)
    else
     add.预览内容="无"

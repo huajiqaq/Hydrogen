@@ -37,10 +37,11 @@ end
 
 
 function base.getAdapter(thinker_pagetool,pos)
+  local data=thinker_pagetool:getItemData(pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      return #thinker_pagetool:getItemData()
+      return #data
     end,
 
     getItemViewType=function(position)
@@ -56,7 +57,7 @@ function base.getAdapter(thinker_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=thinker_pagetool:getItemData()[position+1]
+      local data=data[position+1]
       local 图像=data.图像
 
       loadglide(views.图像,图像)

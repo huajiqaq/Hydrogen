@@ -66,10 +66,11 @@ end
 
 
 function base.getAdapter(home_pagetool,pos)
+  local data=home_pagetool:getItemData(pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      return #home_pagetool:getItemData()
+      return #data
     end,
 
     getItemViewType=function(position)
@@ -86,7 +87,7 @@ function base.getAdapter(home_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=home_pagetool:getItemData()[position+1]
+      local data=data[position+1]
       local type=data.datatype
 
       local 标题=data.标题

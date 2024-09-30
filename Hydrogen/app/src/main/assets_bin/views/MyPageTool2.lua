@@ -102,7 +102,7 @@ function Page_Tool:initPage()
       thissr.setColorSchemeColors({转0x(primaryc)});
       thissr.setOnRefreshListener({
         onRefresh=function()
-          self:clearItem(pos)
+          self:clearItem(pos,true)
           self:refer(pos,true)
           Handler().postDelayed(Runnable({
             run=function()
@@ -273,7 +273,7 @@ function Page_Tool:setOnTabListener(callback)
           end,
         }),1050)
       end
-      self:clearItem(pos)
+      self:clearItem(pos,true)
       referfunc(pos,true)
     end,
   });
@@ -326,7 +326,8 @@ function Page_Tool:createfunc()
 
     local posturl
     if isprev then
-      posturl = pagedata[pos].prev
+      --防止prev不存在一直加载的bug
+      posturl = pagedata[pos].prev or pagedata[pos].nexturl
      else
       posturl = pagedata[pos].nexturl
     end
@@ -451,11 +452,17 @@ function Page_Tool:getItemData(index)
   return datas[index]
 end
 
-function Page_Tool:clearItem(index)
+--isprev 是否保留nexturl和prev
+function Page_Tool:clearItem(index,isprev)
   local index=index or self:getCurrentItem()
+  local prev,nexturl
+  if isprev then
+    prev=self.pagedata[index].prev
+    nexturl=self.pagedata[index].nexturl
+  end
   self.pagedata[index]={
-    prev=false,
-    nexturl=false,
+    prev=prev,
+    nexturl=nexturl,
     isend=false,
     canload=true,
     isfirst=true,

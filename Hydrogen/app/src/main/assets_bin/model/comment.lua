@@ -212,11 +212,11 @@ local function 多选菜单(data,v)
   return true
 end
 
-function base.getAdapter(home_pagetool,pos)
+function base.getAdapter(comment_pagetool,pos)
+  local data=comment_pagetool:getItemData(pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      local data=home_pagetool:getItemData()
       if 卡片信息 and #data==0 then
         table.insert(data,卡片信息)
       end
@@ -236,7 +236,7 @@ function base.getAdapter(home_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=home_pagetool:getItemData()[position+1]
+      local data=data[position+1]
       local type=data.datatype
 
       local 标题=data.标题
@@ -380,7 +380,22 @@ function base:initpage(view,sr)
       if self.type=="comments" then
         self.resolvedata(data.root,adpdata)
       end
-      _title.text=orititle.." "..tostring(data.counts.total_counts).."条"
+      if data.counts then
+        _title.text=orititle.." "..tostring(data.counts.total_counts).."条"
+       else
+        local tip="当前页无评论"
+        if data.comment_status and data.comment_status.text then
+          tip=data.comment_status.text
+        end
+        AlertDialog.Builder(this)
+        .setTitle("提示")
+        .setCancelable(false)
+        .setMessage(tip)
+        .setPositiveButton("我知道了",{onClick=function()
+            this.finish()
+        end})
+        .show()
+      end
     end
   })
   :initPage()

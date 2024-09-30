@@ -50,12 +50,13 @@ end
 
 
 function base.getAdapter(collection_pagetool,pos)
+  local data=collection_pagetool:getItemData(pos)
   switch pos
    case 1
     return LuaCustRecyclerAdapter(AdapterCreator({
 
       getItemCount=function()
-        return #collection_pagetool:getItemData()
+        return #data
       end,
 
       getItemViewType=function(position)
@@ -71,7 +72,7 @@ function base.getAdapter(collection_pagetool,pos)
 
       onBindViewHolder=function(holder,position)
         local views=holder.view.getTag()
-        local data=collection_pagetool:getItemData()[position+1]
+        local data=data[position+1]
 
         views.标题.Text=data.标题
         if data.is_lock then
@@ -92,7 +93,6 @@ function base.getAdapter(collection_pagetool,pos)
     return LuaCustRecyclerAdapter(AdapterCreator({
 
       getItemCount=function()
-        local data=collection_pagetool:getItemData(2)
         if #data==0 then
           local add={}
           add.图像=logopng
@@ -103,7 +103,7 @@ function base.getAdapter(collection_pagetool,pos)
           table.insert(data,add)
         end
 
-        return #collection_pagetool:getItemData(2)
+        return #data
       end,
 
       getItemViewType=function(position)
@@ -119,7 +119,7 @@ function base.getAdapter(collection_pagetool,pos)
 
       onBindViewHolder=function(holder,position)
         local views=holder.view.getTag()
-        local data=collection_pagetool:getItemData(2)[position+1]
+        local data=data[position+1]
 
         views.标题.Text=data.标题
         if data.is_lock then

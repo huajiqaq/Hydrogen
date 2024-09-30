@@ -25,7 +25,7 @@ end
 
 
 function base.getAdapter(topic_pagetool,pos)
-
+  local data=topic_pagetool:getItemData(pos)
   local itemc
   local onclick=function(data)
     if data.标题 then
@@ -44,7 +44,7 @@ function base.getAdapter(topic_pagetool,pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      return #topic_pagetool:getItemData(pos)
+      return #data
     end,
 
     getItemViewType=function(position)
@@ -60,7 +60,7 @@ function base.getAdapter(topic_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=topic_pagetool:getItemData(pos)[position+1]
+      local data=data[position+1]
 
       if data.预览内容 then
         views.预览内容.Text=data.预览内容

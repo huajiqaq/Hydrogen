@@ -25,15 +25,15 @@ function base:getData(callback)
 end
 
 function base.getAdapter(people_pagetool,pos)
-
+  local data=people_pagetool:getItemData(pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      return #people_pagetool:getItemData(pos)
+      return #data
     end,
 
     getItemViewType=function(position)
-      return people_pagetool:getItemData(pos)[position+1].type or 0
+      return data[position+1].type or 0
     end,
 
     onCreateViewHolder=function(parent,viewType)
@@ -56,7 +56,7 @@ function base.getAdapter(people_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=people_pagetool:getItemData(pos)[position+1]
+      local data=data[position+1]
 
       views.活动.Text=data.活动
       views.预览内容.Text=data.预览内容

@@ -133,6 +133,7 @@ end
 
 
 function base.getAdapter(followcontent_pagetool,pos)
+  local data=followcontent_pagetool:getItemData(pos)
   local itemc=table.clone(获取适配器项目布局("simple/card"))
   local onclick=function(data)
     点击事件判断(data.id内容)
@@ -163,7 +164,6 @@ function base.getAdapter(followcontent_pagetool,pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      local data=followcontent_pagetool:getItemData(pos)
       if pos==2 and #data==0 then
         local add={}
         add.图像=logopng
@@ -189,7 +189,7 @@ function base.getAdapter(followcontent_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=followcontent_pagetool:getItemData(pos)[position+1]
+      local data=data[position+1]
       views.标题.Text=data.标题
 
       views.card.onClick=function()

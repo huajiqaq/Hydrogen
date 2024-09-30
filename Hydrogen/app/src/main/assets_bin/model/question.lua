@@ -38,10 +38,11 @@ end
 
 
 function base_question.getAdapter(question_pagetool,pos)
+  local data=question_pagetool:getItemData(pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      return #question_pagetool:getItemData(pos)
+      return #data
     end,
 
     getItemViewType=function(position)
@@ -57,7 +58,7 @@ function base_question.getAdapter(question_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=question_pagetool:getItemData(pos)[position+1]
+      local data=data[position+1]
       views.标题.Text=data.标题
       views.点赞数.Text=data.点赞数
       views.评论数.Text=data.评论数
@@ -93,7 +94,7 @@ function base_question.resolvedata(v,data)
   add.点赞数=v.voteup_count..""
   add.评论数=v.comment_count..""
   add.id内容=v.id..""
-  add.预览内容=v.excerpt
+  add.预览内容=Html.fromHtml(v.excerpt or "无")
   add.图像=图片
   table.insert(data,add)
 end

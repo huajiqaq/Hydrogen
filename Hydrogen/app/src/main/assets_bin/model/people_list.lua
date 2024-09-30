@@ -78,11 +78,11 @@ function base:getUrl(type)
 end
 
 function base.getAdapter(people_list_pagetool,pos)
-
+  local data=people_list_pagetool:getItemData(pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      return #people_list_pagetool:getItemData(pos)
+      return #data
     end,
 
     getItemViewType=function(position)
@@ -98,7 +98,7 @@ function base.getAdapter(people_list_pagetool,pos)
 
     onBindViewHolder=function(holder,position)
       local views=holder.view.getTag()
-      local data=people_list_pagetool:getItemData(pos)[position+1]
+      local data=data[position+1]
       views.标题.text=data.标题
       views.预览内容.text=data.预览内容
       views.following.text=data.following
