@@ -51,6 +51,7 @@
             layout_marginLeft="8dp";
             layout_marginTop="8dp";
             textSize="27sp";
+            Typeface=字体("product-Medium");
           };
           {
             MaterialCardView;
@@ -70,6 +71,7 @@
               textColor="#ffffffff";
               id="nowtext";
               layout_width="fill";
+              Typeface=字体("product-Bold");
             };
           };
         };

@@ -1,11 +1,9 @@
 appInfo={
-  {
-    name=R.string.app_name,
-    message="一个基于androlua+开发的第三方安卓知乎客户端",
-    iconResource=R.mipmap.ic_launcher,
-    browserUrl="https://huajiqaq.github.io/myhydrogen/",
-    clickable=true,
-  },
+  name=R.string.app_name,
+  message="一个基于androlua+开发的第三方安卓知乎客户端",
+  iconResource=R.mipmap.ic_launcher,
+  browserUrl="https://huajiqaq.github.io/myhydrogen/",
+  clickable=true,
 }
 
 --检查更新
@@ -27,7 +25,7 @@ function onUpdate()
         local update_message="发现新版本"..updateversionname.."("..updateversioncode..")"
         updateinfo=content:match("updateinfo%=(.+),updateinfo")
         local editDialog=AlertDialog.Builder(this)
-        .setTitle("搜索")
+        .setTitle("发现新版本")
         .setMessage(update_message)
         .setPositiveButton("立即更新", {onClick=function()
             --在mods.muk中 已经导入所以可以直接用

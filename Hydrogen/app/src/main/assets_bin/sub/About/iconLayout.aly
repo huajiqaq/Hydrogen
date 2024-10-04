@@ -12,20 +12,47 @@
     layout_height="fill";
     layout_marginBottom="8dp";
     id="iconCard";
+
     {
-      ScrollView;
+      LinearLayoutCompat;
       layout_width="fill";
       layout_height="fill";
-      fillViewport=true;
-      id="appIconGroupScrollView";
+      id="mainIconLay",
       {
         LinearLayoutCompat;
-        gravity="center|top";
+        orientation="vertical";
+        gravity="center";
         layout_width="fill";
         layout_height="fill";
-        padding="8dp";
-        id="appIconGroup";
+        {
+          View;
+          layout_height="80dp";
+          layout_width="80dp";
+          id="iconView";
+          elevation="4dp";
+          layout_margin="8dp";
+          layout_marginBottom=0;
+        };
+        {
+          AppCompatTextView;
+          id="nameView";
+          textSize="16sp";
+          gravity="center";
+          layout_marginTop="4dp";
+          layout_margin="8dp";
+          layout_marginBottom=0;
+          textColor=theme.color.textColorPrimary;
+        };
+        {
+          AppCompatTextView;
+          id="messageView";
+          gravity="center";
+          textSize="12sp";
+          layout_marginTop=0;
+          layout_margin="8dp";
+        };
       };
     };
+
   };
 }

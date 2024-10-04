@@ -44,8 +44,6 @@ portraitCardParent.addView(iconLayout)
 adapterEvents=SettingsLayUtil.adapterEvents
 packageInfo=activity.getPackageManager().getPackageInfo(getPackageName(),0)
 landscapeState=false--是否是横屏。此Activity按竖屏做的，因此默认为false
-LastCard2Elevation=0
-topCardItems={}
 
 function onOptionsItemSelected(item)
   local id=item.getItemId()
@@ -132,57 +130,23 @@ end
 
 function onConfigurationChanged(config)
   screenConfigDecoder:decodeConfiguration(config)
-  local newLandscapeState=config.orientation==Configuration.ORIENTATION_LANDSCAPE--新的横屏状态
-  if landscapeState~=newLandscapeState then--因为有时候的调节可能不是屏幕方向改变，所以要判断一下
-    landscapeState=newLandscapeState
-    local screenWidthDp=config.screenWidthDp
-    if newLandscapeState then--横屏时
-      --将工具栏阴影设置为0，启用虚拟阴影区域
-      LastActionBarElevation=0
-      actionBar.setElevation(0)
-      appBarElevationCard.setVisibility(View.VISIBLE)
-      local linearParams=iconLayout.getLayoutParams()
-      if screenWidthDp>theme.number.width_dp_pc then--根据窗口宽度调整卡片宽度，保证在小屏手机显示效果良好
-        linearParams.width=math.dp2int(200+16*2)
-       else
-        linearParams.width=math.dp2int(152+16*2)
-      end
-      iconLayout.setLayoutParams(linearParams)
-      portraitCardParent.removeView(iconLayout)
-      mainLayChild.addView(iconLayout,0)
-     else
-      --将虚拟阴影设置为0，启用工具栏阴影
-      appBarElevationCard.setVisibility(View.GONE)
-      local linearParams=iconLayout.getLayoutParams()
-      linearParams.width=-1
-      iconLayout.setLayoutParams(linearParams)
-      mainLayChild.removeView(iconLayout)
-      portraitCardParent.addView(iconLayout)
-    end
-  end
 end
 
 --插入大软件图标
 if appInfo then
-  for index,content in ipairs(appInfo) do
-    local ids={}
-    appIconGroup.addView(loadlayout2("iconItem",ids,LinearLayoutCompat))
-    local mainIconLay=ids.mainIconLay--主布局
-    local iconView,nameView,messageView=ids.icon,ids.name,ids.message
-    table.insert(topCardItems,mainIconLay)
-    local iconResource=content.iconResource
-    iconView.setBackgroundResource(iconResource)
-    nameView.setText(content.name)
-    messageView.setText(content.message)
-    if content.clickable then
-      mainIconLay.setBackground(ThemeUtil.getRippleDrawable(theme.color.rippleColorPrimary))
-      mainIconLay.onClick=lambda view: callItem(appIconGroup,view,content)
-    end
-    local pain=ids.name.getPaint()
-    pain.setTypeface(content.typeface or Typeface.defaultFromStyle(Typeface.BOLD))
-    if content.nameColor then
-      nameView.setTextColor(content.nameColor)
-    end
+  local content=appInfo
+  local iconResource=content.iconResource
+  iconView.setBackgroundResource(iconResource)
+  nameView.setText(content.name)
+  messageView.setText(content.message)
+  if content.clickable then
+    iconCard.clickable=true
+    iconCard.onClick=lambda view: callItem(appIconGroup,view,content)
+  end
+  local pain=nameView.getPaint()
+  pain.setTypeface(content.typeface or Typeface.defaultFromStyle(Typeface.BOLD))
+  if content.nameColor then
+    nameView.setTextColor(content.nameColor)
   end
 end
 
@@ -353,9 +317,6 @@ recyclerView.addOnScrollListener(RecyclerView.OnScrollListener{
 })
 
 screenConfigDecoder=ScreenFixUtil.ScreenConfigDecoder({
-  orientation={
-    different={appIconGroup},
-  },
   fillParentViews={topCard},
   onDeviceChanged = function(device, oldDevice)
     if device=="pc" then

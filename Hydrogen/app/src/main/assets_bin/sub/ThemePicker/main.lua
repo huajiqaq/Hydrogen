@@ -12,7 +12,7 @@ import "androidx.core.widget.NestedScrollView"
 
 import "android.widget.GridView"
 import "com.jesse205.layout.innocentlayout.GridViewLayout"
-import "item"
+
 activity.getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
 --activity.setTitle(R.string.jesse205_themePicker)
 
@@ -46,11 +46,12 @@ end
 local nowTheme=ThemeUtil.getAppTheme()
 
 data={}
-adapter=LuaAdapter(activity, data,item)
+import "item"
+adapter=LuaAdapter(activity,data,item)
 gridView.setAdapter(adapter)
 
 for index,content in pairs(ThemeUtil.getAppThemes()) do
-  --print(index)
+  local themestr
   if content.name=="Default" then
     themestr="blue"
    elseif content.name=="Monet" then
