@@ -133,8 +133,12 @@ function 刷新()
       end
     end
     content.setVisibility(8)
-    content.loadUrl(base_column.weburl)
 
+    if 类型=="文章" then
+      content.loadUrl(base_column.weburl.."?use_hybrid_toolbar=1")
+     else
+      content.loadUrl(base_column.weburl)
+    end
 
   end,true)
 
@@ -143,7 +147,7 @@ function 刷新()
   end
 
 end
-content.setWebContentsDebuggingEnabled(true)
+
 content.setWebViewClient{
   onReceivedError=function(view,a,b)
 
@@ -292,7 +296,9 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
           end
         end)
       end
-
+     elseif consoleMessage.message():find("toast分割") then
+      local text=tostring(consoleMessage.message()):match("toast分割(.+)")
+      提示(text)
     end
 end}))
 
@@ -389,8 +395,11 @@ if 类型=="本地" then
         src=图标("share"),text="分享",onClick=function()
           local format="【%s】【%s】%s：%s"
           分享文本(string.format(format,类型,_title.Text,aurhor_name,fxurl))
-        end
-      },
+        end,
+        onLongClick=function()
+          local format="【%s】【%s】%s：%s"
+          分享文本(string.format(format,类型,_title.Text,aurhor_name,fxurl),true)
+      end},
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
           if not urltype then
@@ -401,11 +410,17 @@ if 类型=="本地" then
         end
       },
       {
-        src=图标("explore"),text="收藏文件夹",onClick=function()
+        src=图标("explore"),text="加入收藏夹",onClick=function()
           if not urltype then
             return 提示("该页不支持该操作")
           end
           加入收藏夹(id,urltype)
+        end,
+        onLongClick=function()
+          if not urltype then
+            return 提示("该页不支持该操作")
+          end
+          加入默认收藏夹(id,urltype)
         end
       },
       {
@@ -452,7 +467,7 @@ end
 task(1,function()
   a=MUKPopu(pop)
 
-  if 类型=="文章" or 类型=="视频" then
+  if 类型=="视频" then
     fab.Visibility=0
     local mylist=pop.list
     for i = 1, #mylist do

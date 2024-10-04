@@ -132,6 +132,9 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
       progress.setVisibility(0)
      elseif consoleMessage.message()=="显示评论" then
       activity.newActivity("comment",{mresult,mmtype.."s"})
+     elseif consoleMessage.message():find("toast分割") then
+      local text=tostring(consoleMessage.message()):match("toast分割(.+)")
+      提示(text)
     end
   end,
 
@@ -189,8 +192,10 @@ pop={
     end},
 
     {src=图标("share"),text="分享",onClick=function()
-        复制文本(content.getUrl())
-        提示("已复制网页链接到剪切板")
+        分享文本(content.getUrl())
+      end,
+      onLongClick=function()
+        分享文本(content.getUrl(),true)
     end},
     {
       src=图标("search"),text="在网页查找内容",onClick=function()
@@ -263,7 +268,7 @@ content.setWebViewClient{
 
   end,
   onPageStarted=function(view,url,favicon)
-    if not url:find("https://www.zhihu.com/appview") then     
+    if not url:find("https://www.zhihu.com/appview") then
       view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
     end
     网页字体设置(view)

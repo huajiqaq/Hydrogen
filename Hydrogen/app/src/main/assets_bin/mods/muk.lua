@@ -23,7 +23,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.5483
+versionCode=0.5484
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
@@ -1332,9 +1332,19 @@ function MUKPopu(t)
         id="poplist";
         OnItemClickListener={
           onItemClick=function(i,v,p,l)
-            t.list[l].onClick(v.Tag.popadp_text.Text)
-            tab.pop.dismiss()
+            if t.list[l].onClick then
+              t.list[l].onClick(v.Tag.popadp_text.Text)
+              tab.pop.dismiss()
+            end
           end,
+        },
+        OnItemLongClickListener={
+          onItemLongClick=function(i,v,p,l)
+            if t.list[l].onLongClick then
+              t.list[l].onLongClick(v.Tag.popadp_text.Text)
+              tab.pop.dismiss()
+            end
+          end
         },
         adapter=LuaAdapter(activity,{
           LinearLayout;
@@ -1594,7 +1604,13 @@ function showpop(view,pop)
   pop.showAsDropDown(view)
 end
 
-function 分享文本(t)
+function 分享文本(t,onlycopy)
+
+  if onlycopy then
+    复制文本(t)
+    提示("已复制到剪切板")
+    return
+  end
 
   import "android.content.*"
   intent=Intent(Intent.ACTION_SEND)
@@ -1627,6 +1643,51 @@ function table.join(old,add)
   for k,v in pairs(add) do
     old[k]=v
   end
+end
+
+function 加入默认收藏夹(回答id,收藏类型,func)
+
+  local collections_url="https://www.zhihu.com/api/v4/collections/contents/"..收藏类型.."/"..回答id
+  zHttp.get(collections_url,head,function(code,content)
+    if code==200 then
+      local defcoll=luajson.decode(content).data[1]
+      local is_favorited=defcoll.is_favorited
+      local str
+
+      --我们取反操作 所以判断false
+      if is_favorited==false then
+        str="add"
+       else
+        str="remove"
+      end
+
+      local 提示内容=function(code)
+        local 状态="失败"
+        if code==200 then
+          状态="成功"
+        end
+        --我们取反操作 所以判断false
+        if is_favorited==false then
+          提示("收藏"..状态)
+         else
+          提示("取消收藏"..状态)
+        end
+      end
+
+      zHttp.put("https://api.zhihu.com/collections/contents/"..收藏类型.."/"..回答id,str.."_collections="..defcoll.id,head,function(code,json)
+        local func=func or function() end
+        if code==200 then
+          提示内容(code)
+          func(true)
+         else
+          提示内容(code)
+          func(false)
+        end
+      end)
+
+    end
+  end)
+
 end
 
 function 加入收藏夹(回答id,收藏类型,func)

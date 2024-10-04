@@ -370,6 +370,9 @@ function 数据添加(t,b)
         pg.setUserInputEnabled(true);
        elseif consoleMessage.message():find("打印") then
         print(consoleMessage.message())
+       elseif consoleMessage.message():find("toast分割") then
+        local text=tostring(consoleMessage.message()):match("toast分割(.+)")
+        提示(text)
       end
     end,
 
@@ -720,6 +723,11 @@ mark.onClick=function()
   加入收藏夹(url:match("answer/(.+)"),"answer")
 end
 
+mark.onLongClick=function()
+  local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
+  加入默认收藏夹(url:match("answer/(.+)"),"answer")
+end
+
 function onKeyDown(code,event)
   if this.getSharedData("音量键选择tab")~="true" or 全屏模式==true then
     return false
@@ -760,18 +768,22 @@ task(1,function()
 
       {
         src=图标("share"),text="分享",onClick=function()
-
           local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
-
           if url==nil then
             提示("加载中")
             return
           end
-
           local format="【回答】【%s】%s: %s"
-
           分享文本(string.format(format,_title.Text,username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
-
+        end,
+        onLongClick=function()
+          local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
+          if url==nil then
+            提示("加载中")
+            return
+          end
+          local format="【回答】【%s】%s: %s"
+          分享文本(string.format(format,_title.Text,username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")),true)
         end
       },
 
@@ -818,6 +830,10 @@ task(1,function()
         src=图标("book"),text="加入收藏夹",onClick=function()
           local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
           加入收藏夹(url:match("answer/(.+)"),"answer")
+        end,
+        onLongClick=function()
+          local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
+          加入默认收藏夹(url:match("answer/(.+)"),"answer")
         end
       },
 

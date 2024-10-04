@@ -113,7 +113,6 @@ function 加载历史记录()
     end
   end)
   if _==false then
-    error(err)
     提示("获取数据异常 请先清理历史记录")
   end
 end

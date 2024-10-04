@@ -231,6 +231,10 @@ question_base:getData(function(tab)
       {src=图标("share"),text="分享",onClick=function()
           local format="【问题】%s：%s"
           分享文本(string.format(format,title.text,"https://www.zhihu.com/question/"..question_id))
+        end,
+        onLongClick=function()
+          local format="【问题】%s：%s"
+          分享文本(string.format(format,title.text,"https://www.zhihu.com/question/"..question_id),true)
       end},
       {src=图标("format_align_left"),text="按时间顺序",onClick=function()
           question_pagetool:setUrlItem(question_base:getUrl("updated"))

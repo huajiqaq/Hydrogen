@@ -14,6 +14,8 @@ function constructCallback(data) {
     // 构造新的params.values数组
     const values = data.params.paramKeys.map(key => ({ paramKey: key, value: "0" }));
 
+    console.log(values)
+
     // 构建新的callback对象
     const callbackData = {
         id: data.callbackID,
@@ -109,6 +111,73 @@ function showCollectionPanel(data) {
     console.log("收藏分割" + data.callbackID)
 }
 
+function checkHadViewAppeared(data) {
+    // 不知道有什么用 直接返回true
+    const callbackData = {
+        id: data.callbackID,
+        type: "success",
+        params: {
+            hadViewAppeared: true
+        }
+    }
+    sendZhihuWebAppCustomRequest(callbackData)
+}
+
+function getCurrentTheme(data) {
+    // 软件使用js设置夜间 不需要使用这个api
+    const callbackData = {
+        id: data.callbackID,
+        type: "success",
+        params: {
+            theme: "light"
+        }
+    }
+    sendZhihuWebAppCustomRequest(callbackData)
+}
+
+function getPageLifecycleStatus(data) {
+    // 不知道有什么用 直接返回true
+    const callbackData = {
+        id: data.callbackID,
+        type: "success",
+        params: {
+            show: true
+        }
+    }
+    sendZhihuWebAppCustomRequest(callbackData)
+}
+
+function showToast(data) {
+    console.log("toast分割" + data.params.text)
+    triggerZhihuWebAppSuccessCallback(data)
+}
+
+// 打开图片
+function openImage(data) {
+    let params = data.params
+    let images = params.image
+    let index = params.index
+    console.log(JSON.stringify(images))
+    images.push(index)
+    window.androlua.execute(JSON.stringify(images));
+}
+
+// supportEvent没什么需要为true
+function supportEvent(data) {
+    const action = data.params.action
+    const keywords = [];
+    let isSupported = false
+    if (keywords.some(keyword => action.includes(keyword))) {
+        isSupported = true
+    }
+    const callbackData = {
+        id: data.callbackID,
+        type: "success",
+        params: { "isSupported": isSupported }
+    };
+
+    sendZhihuWebAppCustomRequest(callbackData)
+}
 
 // 创建Proxy来代理zhihuNativeApp对象
 window.zhihuNativeApp = new Proxy({}, {
@@ -138,11 +207,28 @@ window.zhihuNativeApp = new Proxy({}, {
                     "checkSupportedShareType": checkSupportedShareType,
                     "shareLongImage": shareLongImage,
                     "showCollectionPanel": showCollectionPanel,
+                    "checkHadViewAppeared": checkHadViewAppeared,
+                    // 获取主题的
+                    "getCurrentTheme": getCurrentTheme,
+                    "getPageLifecycleStatus": getPageLifecycleStatus,
+                    "showToast": showToast,
                     // 暂不支持的操作
                     "showShareActionSheet": () => alert("Hydrogen 暂不支持在网页内分享"),
+                    "shareGoldenSentences": () => alert("Hydrogen 暂不支持在网页内分享"),
                     "closeCurrentPage": () => alert("Hydrogen 暂不支持在网页内返回"),
-                    "askQuestion":  () => alert("Hydrogen 暂不支持在网页内提问"),
+                    "askQuestion": () => alert("Hydrogen 暂不支持在网页内提问"),
                     "writeAnswer": () => alert("Hydrogen 暂不支持在网页内回答"),
+                    // 好像没什么用 在params传入HybridConfig
+                    "getHybridConfig": () => { },
+                    // 未知 看名字像获取广告推广信息
+                    "getAdPromotion": () => { },
+                    "getContentSign": () => { },
+                    // 未知 好像是获取引导图 格式params传入 "imgUrls":[]
+                    "getGuidingImgUrl": () => { },
+                    // 软件自己处理打开图片 不需要
+                    "openImage": () => { },
+                    // supportEvent设置了会导致默认长按出现 所以不返回任何数据 同supportAction
+                    "supportEvent": () => { },
                 };
 
                 const handler = actionHandlers[action];
@@ -160,4 +246,17 @@ window.zhihuNativeApp = new Proxy({}, {
         }
 
     },
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.location.href.includes("www.zhihu.com/appview/p/")) {
+        if (document.querySelector(".PreviewCommentSkeleton")) {
+            var style
+            style = document.createElement('style');
+            style.innerHTML += `.${document.querySelector(".PreviewCommentSkeleton").parentElement.className}{display:none !important}`
+            document.head.appendChild(style);
+        }
+        if (document.querySelector(".css-0").previousElementSibling) document.querySelector(".css-0").previousElementSibling.remove()
+
+    }
 });

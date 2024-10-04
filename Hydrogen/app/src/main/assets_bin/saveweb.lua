@@ -116,6 +116,10 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   end,
 
   onConsoleMessage=function(consoleMessage)
+    if consoleMessage.message():find("toast分割") then
+      local text=tostring(consoleMessage.message()):match("toast分割(.+)")
+      提示(text)
+    end
   end,
 
   onShowCustomView=function(view,url)
@@ -207,8 +211,10 @@ pop={
     end},
 
     {src=图标("share"),text="分享",onClick=function()
-        复制文本(content.getUrl())
-        提示("已复制网页链接到剪切板")
+        分享文本(content.getUrl())
+      end,
+      onLongClick=function()
+        分享文本(content.getUrl(),true)
     end},
 
   }
