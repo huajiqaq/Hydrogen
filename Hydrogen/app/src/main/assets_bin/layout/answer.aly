@@ -207,7 +207,6 @@
               orientation="horizontal";
               layout_height="-1";
               layout_width=activity.getWidth()/4,
-              tooltip="点赞数",
               gravity="center";
               layout_weight="1";
               id="voteup";
@@ -236,7 +235,6 @@
               layout_height="-1";
               layout_width=activity.getWidth()/4,
               gravity="center";
-              tooltip="感谢数",
               layout_weight="1";
               id="thank";
               {
@@ -264,7 +262,6 @@
               orientation="horizontal";
               layout_height="-1";
               layout_width=activity.getWidth()/4;
-              tooltip="评论数",
               gravity="center";
               layout_weight="1";
               id="mark",

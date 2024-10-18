@@ -23,7 +23,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.5485
+versionCode=0.5486
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
@@ -77,9 +77,10 @@ function 设置toolbar属性(toolbar,title)
   toolbar.title=title
 
   import "androidx.appcompat.widget.Toolbar"
-  for i=0,toolbar.getChildCount() do
+  local AppCompatTextView=luajava.bindClass "androidx.appcompat.widget.AppCompatTextView"
+  for i=0,toolbar.getChildCount()-1 do
     local view = toolbar.getChildAt(i);
-    if luajava.instanceof(view,TextView) then
+    if luajava.instanceof(view,AppCompatTextView) then
       local textView = view;
       textView.setTextSize(18)
       textView.Typeface=字体("product-Bold")

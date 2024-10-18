@@ -37,7 +37,7 @@ import "android.text.style.LineHeightSpan"
 --https://itimetraveler.github.io/2017/01/03/%E3%80%90Android%E3%80%91TextView%E4%B8%AD%E4%B8%8D%E5%90%8C%E5%A4%A7%E5%B0%8F%E5%AD%97%E4%BD%93%E5%A6%82%E4%BD%95%E4%B8%8A%E4%B8%8B%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD%EF%BC%9F/
 function getCustomTextPaint(sourcePaint)
   local customPaint = TextPaint(sourcePaint)
-  customPaint.setTextSize(dp2px(11))
+  customPaint.setTextSize(dp2px(12))
   return customPaint
 end
 
@@ -60,10 +60,12 @@ CustomVerticalCenterSpan = luajava.override(ReplacementSpan, {
     local customPaint = getCustomTextPaint(paint)
     -- 获取自定义 TextPaint 的字体度量信息
     local fontMetrics = customPaint.getFontMetricsInt()
-    -- 计算文本的垂直中心点
-    local centerY = (bottom + top) / 2
-    -- 计算文本应该绘制的 y 坐标，使得文本垂直居中
-    local textY = y - ((y + fontMetrics.descent + y + fontMetrics.ascent) / 2 - centerY)
+    -- 获取当前布局的行高
+    local lineHeight = paint.getFontSpacing() -- 这里简化了行高的获取，实际可能需要从 Layout 对象获取
+    -- 行高 = 字体高度 + 额外间距
+    -- 文本的基线位置 = top + 额外间距的一半
+    local extraSpacing = lineHeight - (fontMetrics.bottom - fontMetrics.top)
+    local textY = top + math.floor(extraSpacing / 2) - fontMetrics.ascent
     -- 绘制文本
     canvas.drawText(subText.toString(), x, textY, customPaint)
   end

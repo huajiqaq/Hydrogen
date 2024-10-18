@@ -97,14 +97,14 @@ local base_people=require "model.people":new(people_id)
           .setTitle("提示")
           .setMessage("屏蔽过后如果想查看屏蔽的所有用户 可以在软件内主页右划 点击消息 选择设置 之后打开屏蔽即可管理屏蔽 你也可以选择管理屏蔽用户 但是这样没有选择设置可设置的多 如果只想查看屏蔽的用户 推荐选择屏蔽用户管理")
           .setPositiveButton("我知道了", {onClick=function()
-              local mview=mpop.list[1]
+              local mview=pop.list[1]
               if text=="拉黑" then
                 zHttp.post("https://api.zhihu.com/settings/blocked_users","people_id="..people_id,apphead,function(code,json)
                   if code==200 or code==201 then
                     mview.src=图标("close")
                     mview.text="取消拉黑"
                     提示("已拉黑")
-                    a=MUKPopu(mpop)
+                    a=MUKPopu(pop)
                   end
                 end)
                else
@@ -113,7 +113,7 @@ local base_people=require "model.people":new(people_id)
                     mview.src=图标("add")
                     mview.text="拉黑"
                     提示("已取消拉黑")
-                    a=MUKPopu(mpop)
+                    a=MUKPopu(pop)
                   end
                 end)
               end

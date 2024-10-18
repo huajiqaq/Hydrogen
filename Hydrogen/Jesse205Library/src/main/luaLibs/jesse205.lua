@@ -62,9 +62,16 @@ local normalkeys = {
 
 jesse205.normalkeys = normalkeys
 
---将AlertDialog全部替换为md风格弹窗
-local AlertDialog={}
-AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.MaterialAlertDialogBuilder"
+
+normalvalues={
+  AlertDialog=(function()
+    --将AlertDialog全部替换为md风格弹窗
+    local AlertDialog={}
+    AlertDialog.Builder=luajava.bindClass "com.google.android.material.dialog.MaterialAlertDialogBuilder"
+    return AlertDialog
+  end)(),
+  TextView=luajava.bindClass "com.google.android.material.textview.MaterialTextView"
+}
 
 local oldMetatable = getmetatable(_G)
 local newMetatable = {
@@ -82,9 +89,7 @@ local newMetatable = {
     end
   end,
   __newindex = function (self, key, value)
-    if key == "AlertDialog" then
-      value = AlertDialog
-    end
+    local value=normalvalues[key] or value
     rawset(self, key, value)
   end
 }

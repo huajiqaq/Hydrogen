@@ -69,7 +69,7 @@ local function resolve_moments_feed(v,data)
       预览内容=作者名称.." : "..预览内容
     end
    else
-    预览内容="无预览内容"
+    预览内容=nil
   end
   if 无图模式 then
     头像=logopng
@@ -160,7 +160,7 @@ local function resolve_feed_item_index_group(v,data)
       预览内容=名称.." : "..预览内容
     end
    else
-    预览内容="无预览内容"
+    预览内容=nil
   end
   if 无图模式 then
     头像=logopng
@@ -259,8 +259,14 @@ local function 加载主页关注折叠adp(data,views)
       local 点赞数=data.点赞数
       local id内容=data.id内容
 
+      if 预览内容 then
+        views.预览内容.Visibility=0
+        views.预览内容.text=预览内容
+       else
+        views.预览内容.Visibility=8
+      end
+
       views.标题.text=标题
-      views.预览内容.text=预览内容
       views.点赞数.text=点赞数
       if 评论数 then
         views.评论数布局.Visibility=0
@@ -333,7 +339,14 @@ function base.getAdapter(follow_pagetool,pos)
        else
         views.评论数布局.Visibility=8
       end
-      views.预览内容.Text=data.预览内容
+
+      if 预览内容 then
+        views.预览内容.Visibility=0
+        views.预览内容.text=预览内容
+       else
+        views.预览内容.Visibility=8
+      end
+
       views.动作.Text=data.动作.." · "..data.时间
       loadglide(views.图像,data.图像)
 

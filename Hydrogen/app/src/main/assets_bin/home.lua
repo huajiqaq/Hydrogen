@@ -204,11 +204,18 @@ page_home.setCurrentItem(startindex,false)
 bnv.getMenu().getItem(startindex).setChecked(true)
 _title.text=(bnv.getMenu().getItem(startindex).getTitle())
 
+
+for i=0,bnv.getMenu().size()-1 do
+  bnv.getChildAt(0).getChildAt(i).onLongClick=function()
+    return true
+  end
+end
+
 local recommend_index=pageinfo_keys.推荐
 if recommend_index then
   bnv.getChildAt(0).getChildAt(recommend_index).onLongClick=function()
     if page_home.getCurrentItem()~=recommend_index or HometabLayout.getTabCount()==0 then
-      return
+      return true
     end
     import "com.google.android.material.bottomsheet.*"
 
@@ -361,6 +368,7 @@ if recommend_index then
     tmpview.close.onClick=function()
       an.dismiss()
     end;
+    return true
   end
 end
 

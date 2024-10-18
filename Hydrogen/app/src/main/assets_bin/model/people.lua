@@ -59,7 +59,12 @@ function base.getAdapter(people_pagetool,pos)
       local data=data[position+1]
 
       views.活动.Text=data.活动
-      views.预览内容.Text=data.预览内容
+      if data.预览内容 then
+        views.预览内容.Visibility=0
+        views.预览内容.text=data.预览内容
+       else
+        views.预览内容.Visibility=8
+      end
       if data.点赞数 then
         views.点赞数.Text=data.点赞数
       end
@@ -119,7 +124,7 @@ function base.resolvedata(v,data)
   end
 
   local 活动=v.action_text
-  local 头像
+  local 头像=大头像
   xpcall(function()
     头像=v.actor.avatar_url
     end,function()
@@ -198,8 +203,8 @@ function base.resolvedata(v,data)
     标题="未知"
     活动="未知"
   end
-  if not 预览内容 or 预览内容=="" then
-    预览内容="无预览内容"
+  if not 预览内容 or 预览内容=="" or 预览内容=="无预览内容" then
+    预览内容=nil
    else
     预览内容=Html.fromHtml(预览内容)
   end
@@ -246,7 +251,8 @@ function base:putTabData(tabname,tabinfo)
     more = "https://api.zhihu.com/people/" .. people_id .. "/profile/tab/more?tab_type=1",
     article = "https://api.zhihu.com/people/" .. people_id .. "/articles?offset=0&limit=20",
     column="https://api.zhihu.com/people/"..people_id.."/columns?offset=0&limit=20",
-    pin="https://api.zhihu.com/v2/pins/"..people_id.."/moments"
+    pin="https://api.zhihu.com/v2/pins/"..people_id.."/moments",
+    question="https://api.zhihu.com/people/"..people_id.."/questions?offset=0&limit=20",
   }
 
   for i, v in ipairs(tabinfo) do

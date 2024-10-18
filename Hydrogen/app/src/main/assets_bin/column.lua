@@ -354,7 +354,7 @@ if 类型=="本地" then
 
       {
         src=图标("cloud"),text="使用网络打开",onClick=function()
-          activity.newActivity("column",{myid,mytype})
+          activity.newActivity("column",{id,类型})
         end
       },
 

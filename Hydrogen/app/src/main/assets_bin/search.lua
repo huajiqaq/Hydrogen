@@ -31,7 +31,7 @@ function 搜索(text)
 
     table.insert(search_history, search_text)
     清空并保存历史记录("search_history", search_history)
-    activity.newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..search_text})
+    activity.newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..urlEncode(search_text)})
   end
 end
 
