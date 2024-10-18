@@ -86,7 +86,9 @@ local function resolve_moments_feed(v,data)
   end
   add.点赞数=点赞数
   add.标题=标题
-  add.预览内容=Html.fromHtml(预览内容)
+  if 预览内容 then
+    add.预览内容=Html.fromHtml(预览内容)
+  end
   add.评论数=评论数
   add.id内容=id内容
   add.动作=动作
@@ -177,7 +179,9 @@ local function resolve_feed_item_index_group(v,data)
   end
   add.点赞数=点赞数
   add.标题=标题
-  add.预览内容=Html.fromHtml(预览内容)
+  if 预览内容 then
+    add.预览内容=Html.fromHtml(预览内容)
+  end
   add.评论数=评论数
   add.id内容=id内容
   add.动作=动作
