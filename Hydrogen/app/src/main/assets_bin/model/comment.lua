@@ -23,7 +23,7 @@ local function setstyle(text)
   local function MyClickableSpan(url)
     local myspan=ClickableSpan{
       onClick=function(v)
-        if v.Text:find("图片") then
+        if v.Text:find("图片") or v.Text:find("动图") then
           local data={["0"]=url,["1"]=1}
           this.setSharedData("imagedata",luajson.encode(data))
           activity.newActivity("image")
