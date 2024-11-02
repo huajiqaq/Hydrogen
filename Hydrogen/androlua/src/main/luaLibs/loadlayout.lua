@@ -614,6 +614,7 @@ local function setattribute(root,view,params,k,v,ids)
     --针对小于api26报错问题的解决
    elseif string.lower(k)=="tooltip" then
     setmyToolip(view,v)
+    view.setContentDescription(v)
    elseif rules[k] and (v==true or v=="true") then
     params.addRule(rules[k])
    elseif rules[k] then

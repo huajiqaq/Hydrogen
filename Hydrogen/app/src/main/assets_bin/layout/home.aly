@@ -257,6 +257,7 @@
                   ColorFilter=textc;
                   src=图标("exit");
                   id="注销",
+                  contentDescription="注销",
                   layout_width="25dp";
                   layout_height="25dp",
                   onClick=function()

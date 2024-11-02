@@ -214,8 +214,9 @@
                 ImageView;
                 layout_height="24dp";
                 layout_width="24dp";
-                src=图标("vote_up");
+                src=图标("vote_up_outline");
                 ColorFilter=primaryc;
+                id="vote_icon";
                 PivotX="12dp";
                 PivotY="24dp";
               };
@@ -241,9 +242,9 @@
                 ImageView;
                 layout_height="24dp";
                 layout_width="24dp";
-                id="thank_icon";
-                src=图标("favorite");
+                src=图标("favorite_outline");
                 ColorFilter=primaryc;
+                id="thanks_icon";
                 PivotX="12dp";
                 PivotY="24dp";
               };

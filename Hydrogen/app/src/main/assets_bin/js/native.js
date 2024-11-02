@@ -226,9 +226,7 @@ window.zhihuNativeApp = new Proxy({}, {
                     // 未知 好像是获取引导图 格式params传入 "imgUrls":[]
                     "getGuidingImgUrl": () => { },
                     // 软件自己处理打开图片 不需要
-                    "openImage": () => { },
-                    // supportEvent设置了会导致默认长按出现 所以不返回任何数据 同supportAction
-                    "supportEvent": () => { },
+                    "openImage": () => { }
                 };
 
                 const handler = actionHandlers[action];
@@ -248,15 +246,20 @@ window.zhihuNativeApp = new Proxy({}, {
     },
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    if (window.location.href.includes("www.zhihu.com/appview/p/")) {
-        if (document.querySelector(".PreviewCommentSkeleton")) {
-            var style
-            style = document.createElement('style');
-            style.innerHTML += `.${document.querySelector(".PreviewCommentSkeleton").parentElement.className}{display:none !important}`
-            document.head.appendChild(style);
-        }
-        if (document.querySelector(".css-0").previousElementSibling) document.querySelector(".css-0").previousElementSibling.remove()
+if (window.location.href.includes("www.zhihu.com/appview/p/")) {
+    const originalAddEventListener = EventTarget.prototype.addEventListener;
 
+    function handleSelectionChange(event) {
+        return true;
     }
-});
+
+    // 重写 addEventListener 方法
+    EventTarget.prototype.addEventListener = function (type, listener, options) {
+        if (type === 'selectionchange') {
+            originalAddEventListener.call(this, type, handleSelectionChange, options);
+        } else {
+            // 对于其他事件类型，直接调用原始的 addEventListener 方法
+            originalAddEventListener.call(this, type, listener, options);
+        }
+    };
+}

@@ -9,6 +9,7 @@ import "android.net.Uri"
 import "model.zHttp"
 import "model.zhihu_url"
 
+
 if (activity.getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)~=0 then
   local intent=tostring(activity.getIntent().getData())
   检查意图(intent)

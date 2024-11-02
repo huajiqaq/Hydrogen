@@ -386,6 +386,7 @@ local attributeSetterMap = {
   end,
   tooltip = function()
     TooltipCompat.setTooltipText(nowView, nowValue)
+    nowView.setContentDescription(nowValue)
   end,
   src = function()
     if nowValue:find("^%?") then

@@ -242,14 +242,18 @@ function 数据添加(t,b)
   感谢状态[回答id]=b.relationship.is_thanked
 
   if 点赞状态[回答id] then
+    vote_icon.setImageBitmap(loadbitmap(图标("vote_up")))
     vote_count.setTextColor(转0x(primaryc))
    else
+    vote_icon.setImageBitmap(loadbitmap(图标("vote_up_outline")))
     vote_count.setTextColor(转0x(stextc))
   end
 
   if 感谢状态[回答id] then
+    thanks_icon.setImageBitmap(loadbitmap(图标("favorite")))
     thanks_count.setTextColor(转0x(primaryc))
    else
+    thanks_icon.setImageBitmap(loadbitmap(图标("favorite_outline")))
     thanks_count.setTextColor(转0x(stextc))
   end
 
@@ -438,16 +442,23 @@ function 初始化页(mviews)
     end
     username.Text=mviews.data.author.name
     local 回答id=mviews.data.id
+
     if 点赞状态[回答id] then
+      vote_icon.setImageBitmap(loadbitmap(图标("vote_up")))
       vote_count.setTextColor(转0x(primaryc))
      else
+      vote_icon.setImageBitmap(loadbitmap(图标("vote_up_outline")))
       vote_count.setTextColor(转0x(stextc))
     end
+
     if 感谢状态[回答id] then
+      thanks_icon.setImageBitmap(loadbitmap(图标("favorite")))
       thanks_count.setTextColor(转0x(primaryc))
      else
+      thanks_icon.setImageBitmap(loadbitmap(图标("favorite_outline")))
       thanks_count.setTextColor(转0x(stextc))
     end
+
   end
 end
 
@@ -643,6 +654,7 @@ voteup.onClick=function()
         local data=luajson.decode(content)
         vote_count.text=voteup_data[回答id][1]
         mview.data.voteup_count=vote_count.text
+        vote_icon.setImageBitmap(loadbitmap(图标("vote_up")))
         vote_count.setTextColor(转0x(primaryc))
        elseif code==401 then
         提示("请登录后使用本功能")
@@ -656,6 +668,7 @@ voteup.onClick=function()
         local data=luajson.decode(content)
         vote_count.text=voteup_data[回答id][2]
         mview.data.voteup_count=vote_count.text
+        vote_icon.setImageBitmap(loadbitmap(图标("vote_up_outline")))
         vote_count.setTextColor(转0x(stextc))
        elseif code==401 then
         提示("请登录后使用本功能")
@@ -695,6 +708,7 @@ thank.onClick=function()
         local data=luajson.decode(content)
         thanks_count.text=thank_data[回答id][1]
         mview.data.thanks_count=thanks_count.text
+        thanks_icon.setImageBitmap(loadbitmap(图标("favorite")))
         thanks_count.setTextColor(转0x(primaryc))
        elseif code==401 then
         提示("请登录后使用本功能")
@@ -708,6 +722,7 @@ thank.onClick=function()
         local data=luajson.decode(content)
         thanks_count.text=thank_data[回答id][2]
         mview.data.thanks_count=thanks_count.text
+        thanks_icon.setImageBitmap(loadbitmap(图标("favorite_outline")))
         thanks_count.setTextColor(转0x(stextc))
        elseif code==401 then
         提示("请登录后使用本功能")
@@ -726,6 +741,7 @@ end
 mark.onLongClick=function()
   local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
   加入默认收藏夹(url:match("answer/(.+)"),"answer")
+  return true
 end
 
 function onKeyDown(code,event)
