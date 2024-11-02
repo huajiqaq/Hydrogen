@@ -1220,6 +1220,9 @@ if this.getSharedData("切换webview")=="true" then
 end
 
 function onStart()
+  if 无图模式提醒==true then
+    return
+  end
   connMgr= this.getSystemService(Context.CONNECTIVITY_SERVICE);
   networkInfo=connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
   isWifiConn=networkInfo.isConnected();
@@ -1233,6 +1236,7 @@ function onStart()
       提示("关闭不加载图片成功")
       关闭对话框(an)
       end,function(an)
+      无图模式提醒=true
       关闭对话框(an)
     end)
    elseif isMobileConn and 无图模式==false then
@@ -1241,6 +1245,7 @@ function onStart()
       提示("开启不加载图片成功")
       关闭对话框(an)
       end,function(an)
+      无图模式提醒=true
       关闭对话框(an)
     end)
   end
