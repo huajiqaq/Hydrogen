@@ -113,7 +113,20 @@ function Page_Tool:initPage()
       });
     end
 
-    local manager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
+    --自定义LinearLayoutManager尝试解决闪退问题
+    local MyLinearLayoutManager=luajava.override(LinearLayoutManager,{
+      onLayoutChildren=function(super,recycler,state)
+        _,err=pcall(function()
+          super(recycler,state)
+        end)
+        if err then
+          error(err)
+          return false
+        end
+      end,
+    },this,RecyclerView.VERTICAL,false)
+
+    local manager=MyLinearLayoutManager
     thispage.setLayoutManager(manager)
 
     local adp=self.adapters[pos]
@@ -473,9 +486,9 @@ function Page_Tool:clearItem(index,isprev)
   local list=self:getItem(index)
   if list.adapter then
     table.clear(self:getItemData(index))
+    list.adapter.notifyDataSetChanged()
     list.removeAllViews();
     list.getRecycledViewPool().clear();
-    list.adapter.notifyDataSetChanged()
   end
   return self
 end
