@@ -114,17 +114,7 @@ function Page_Tool:initPage()
     end
 
     --自定义LinearLayoutManager尝试解决闪退问题
-    local MyLinearLayoutManager=luajava.override(LinearLayoutManager,{
-      onLayoutChildren=function(super,recycler,state)
-        _,err=pcall(function()
-          super(recycler,state)
-        end)
-        if err then
-          error(err)
-          return false
-        end
-      end,
-    },this,RecyclerView.VERTICAL,false)
+    local MyLinearLayoutManager=luajava.bindClass("com.hydrogen.MyLinearLayoutManager")(this,RecyclerView.VERTICAL,false)
 
     local manager=MyLinearLayoutManager
     thispage.setLayoutManager(manager)
