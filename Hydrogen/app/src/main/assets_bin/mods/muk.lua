@@ -3931,3 +3931,23 @@ function replace_or_add_order_by(url, new_value)
   -- 构建新的URL
   return base_url .. "?" .. modified_query
 end
+
+  --新建文件复写onActivityResult
+task(1,function()
+  CREATE_FILE_REQUEST_CODE=9999
+  local old_onActivityResult=onActivityResult
+  function onActivityResult(requestCode, resultCode, data)
+    if requestCode == CREATE_FILE_REQUEST_CODE then
+      if data then
+        local uri = data.getData();
+        local outputStream = this.getContentResolver().openOutputStream(uri);
+
+        local content = String(b);
+        outputStream.write(content.getBytes());
+        outputStream.close();
+      end
+     else
+      old_onActivityResult(requestCode, resultCode, data)
+    end
+  end
+end)

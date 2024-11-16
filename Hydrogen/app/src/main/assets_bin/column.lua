@@ -24,6 +24,17 @@ activity.setContentView(loadlayout("layout/column_parent"))
 if 类型=="本地" then
   task(1,function()
     _title.text="本地内容"
+
+    local file_path=id:gsub(内置存储文件("Download"),"")
+    -- 使用 / 分隔路径
+    local parts = {}
+    for part in string.gmatch(file_path, "[^/]+") do
+      table.insert(parts, part)
+    end
+
+    --解析有点问题 用户名带有/可能解析错误 懒得管了 
+    page_title,author_name=parts[1],parts[2]
+
     local html=File(id)
     local 详情=读取文件(tostring(html.getParent()).."/detail.txt")
     if 详情:match("article")
@@ -123,7 +134,7 @@ function 刷新()
       --针对直播需要特殊判断
       if 类型~="直播" then
         author_id=data.author.id
-        aurhor_name=data.author.name
+        author_name=data.author.name
         page_title=data.title
         _title.text=page_title
         --软件自己拼接成的保存路径
@@ -361,12 +372,38 @@ if 类型=="本地" then
       },
 
       {
-        src=图标("cloud"),text="另存为pdf",onClick=function()
-          import "android.print.PrintAttributes"
+        src=图标("cloud"),text="另存为pdf/md",onClick=function()
 
-          printManager = this.getSystemService(Context.PRINT_SERVICE);
-          printAdapter = content.createPrintDocumentAdapter();
-          printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
+          local 单选列表={"另存pdf","另存为md"}
+          local dofun={
+            function()
+              import "android.print.PrintAttributes"
+              printManager = this.getSystemService(Context.PRINT_SERVICE);
+              printAdapter = t.content.createPrintDocumentAdapter();
+              printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
+
+            end,
+            function()
+              content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
+                  提示("请选择一个保存位置")
+                  import "android.content.Intent"
+                  intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
+                  intent.addCategory(Intent.CATEGORY_OPENABLE);
+                  intent.setType("application/octet-stream");
+                  intent.putExtra(Intent.EXTRA_TITLE, page_title.."_"..author_name..".md");
+                  this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
+
+              end})
+          end}
+          dialog=AlertDialog.Builder(this)
+          .setTitle("请选择")
+          .setSingleChoiceItems(单选列表,-1,{onClick=function(v,p)
+              dofun[p+1]()
+              dialog.dismiss()
+          end})
+          .setPositiveButton("关闭",nil)
+          .show()
+
         end
       },
 
@@ -396,11 +433,11 @@ if 类型=="本地" then
       {
         src=图标("share"),text="分享",onClick=function()
           local format="【%s】【%s】%s：%s"
-          分享文本(string.format(format,类型,_title.Text,aurhor_name,fxurl))
+          分享文本(string.format(format,类型,_title.Text,author_name,fxurl))
         end,
         onLongClick=function()
           local format="【%s】【%s】%s：%s"
-          分享文本(string.format(format,类型,_title.Text,aurhor_name,fxurl),true)
+          分享文本(string.format(format,类型,_title.Text,author_name,fxurl),true)
       end},
       {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
@@ -445,7 +482,7 @@ if 类型=="本地" then
             return false
           end
 
-          local 保存路径=内置存储文件("Download/".._title.Text.."/"..aurhor_name)
+          local 保存路径=内置存储文件("Download/".._title.Text.."/"..author_name)
           local 写入内容='pin_url="'..content.getUrl()
           this.newActivity("saveweb",{content.getUrl(),保存路径,写入内容})
 
@@ -458,24 +495,8 @@ if 类型=="本地" then
               intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
               intent.addCategory(Intent.CATEGORY_OPENABLE);
               intent.setType("application/octet-stream");
-              intent.putExtra(Intent.EXTRA_TITLE, page_title.."_"..aurhor_name..".md");
+              intent.putExtra(Intent.EXTRA_TITLE, page_title.."_"..author_name..".md");
               this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
-
-              local old_onActivityResult=onActivityResult
-              function onActivityResult(requestCode, resultCode, data)
-                if requestCode == CREATE_FILE_REQUEST_CODE then
-                  if data then
-                    local uri = data.getData();
-                    local outputStream = this.getContentResolver().openOutputStream(uri);
-
-                    local content = String(b);
-                    outputStream.write(content.getBytes());
-                    outputStream.close();
-                  end
-                 else
-                  old_onActivityResult(requestCode, resultCode, data)
-                end
-              end
 
           end})
         end

@@ -219,6 +219,7 @@ t.content.setWebViewClient{
   onPageStarted=function(view,url,favicon)
     t.content.setVisibility(8)
     t.content.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+    加载js(t.content,获取js("mdcopy"))
   end,
   onPageFinished=function(view,l)
     网页字体设置(view)
@@ -258,11 +259,39 @@ task(1,function()
       },
 
       {
-        src=图标("cloud"),text="另存为pdf",onClick=function()
-          import "android.print.PrintAttributes"
-          printManager = this.getSystemService(Context.PRINT_SERVICE);
-          printAdapter = t.content.createPrintDocumentAdapter();
-          printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
+        src=图标("cloud"),text="另存为pdf/md",onClick=function()
+
+          local 单选列表={"另存pdf","另存为md"}
+          local dofun={
+            function()
+              import "android.print.PrintAttributes"
+              printManager = this.getSystemService(Context.PRINT_SERVICE);
+              printAdapter = t.content.createPrintDocumentAdapter();
+              printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
+
+            end,
+            function()
+              content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
+                  提示("请选择一个保存位置")
+                  CREATE_FILE_REQUEST_CODE=9999
+                  import "android.content.Intent"
+                  intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
+                  intent.addCategory(Intent.CATEGORY_OPENABLE);
+                  intent.setType("application/octet-stream");
+                  intent.putExtra(Intent.EXTRA_TITLE, title.."_"..author..".md");
+                  this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
+
+              end})
+          end}
+          dialog=AlertDialog.Builder(this)
+          .setTitle("请选择")
+          .setSingleChoiceItems(单选列表,-1,{onClick=function(v,p)
+              dofun[p+1]()
+              dialog.dismiss()
+          end})
+          .setPositiveButton("关闭",nil)
+          .show()
+
         end
       },
 
