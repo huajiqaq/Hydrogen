@@ -367,7 +367,7 @@ if 类型=="本地" then
 
       {
         src=图标("cloud"),text="使用网络打开",onClick=function()
-          activity.newActivity("column",{id,类型})
+          activity.newActivity("column",{myid,mytype})
         end
       },
 
@@ -379,7 +379,7 @@ if 类型=="本地" then
             function()
               import "android.print.PrintAttributes"
               printManager = this.getSystemService(Context.PRINT_SERVICE);
-              printAdapter = t.content.createPrintDocumentAdapter();
+              printAdapter = content.createPrintDocumentAdapter();
               printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
 
             end,
