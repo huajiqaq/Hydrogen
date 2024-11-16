@@ -167,6 +167,8 @@ content.setWebViewClient{
   end,
   onPageStarted=function(view,url,favicon)
     view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+    加载js(view,获取js("imgplus"))
+    加载js(view,获取js("mdcopy"))
     网页字体设置(view)
     加载js(view,获取js("native"))
     等待doc(view)
@@ -447,6 +449,35 @@ if 类型=="本地" then
           local 写入内容='pin_url="'..content.getUrl()
           this.newActivity("saveweb",{content.getUrl(),保存路径,写入内容})
 
+        end,
+        onLongClick=function()
+          content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
+              提示("请选择一个保存位置")
+              CREATE_FILE_REQUEST_CODE=9999
+              import "android.content.Intent"
+              intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
+              intent.addCategory(Intent.CATEGORY_OPENABLE);
+              intent.setType("application/octet-stream");
+              intent.putExtra(Intent.EXTRA_TITLE, page_title.."_"..aurhor_name..".md");
+              this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
+
+              local old_onActivityResult=onActivityResult
+              function onActivityResult(requestCode, resultCode, data)
+                if requestCode == CREATE_FILE_REQUEST_CODE then
+                  if data then
+                    local uri = data.getData();
+                    local outputStream = this.getContentResolver().openOutputStream(uri);
+
+                    local content = String(b);
+                    outputStream.write(content.getBytes());
+                    outputStream.close();
+                  end
+                 else
+                  old_onActivityResult(requestCode, resultCode, data)
+                end
+              end
+
+          end})
         end
       },
       {

@@ -263,6 +263,7 @@ function 数据添加(t,b)
     已记录=true
   end
 
+
   t.content.removeView(t.content.getChildAt(0))
   t.content.setWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
@@ -282,6 +283,8 @@ function 数据添加(t,b)
       等待doc(view)
       加载js(view,获取js("answer_pages"))
       view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+      加载js(view,获取js("imgplus"))
+      加载js(view,获取js("mdcopy"))
     end,
     onPageFinished=function(view,url,favicon)
       t.content.setVisibility(0)
@@ -839,6 +842,39 @@ task(1,function()
           写入内容=写入内容..'headline="'..userheadline.Text..'"\n'
           写入文件(保存路径.."/detail.txt",写入内容)
           this.newActivity("saveweb",{pgids.content.getUrl(),保存路径,写入内容})
+        end,
+        onLongClick=function()
+          local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
+          local pgids=数据表[pgnum].ids
+          local content=pgids.content
+
+          content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
+              提示("请选择一个保存位置")
+              CREATE_FILE_REQUEST_CODE=9999
+              import "android.content.Intent"
+              intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
+              intent.addCategory(Intent.CATEGORY_OPENABLE);
+              intent.setType("application/octet-stream");
+              intent.putExtra(Intent.EXTRA_TITLE, _title.Text.."_"..username.Text..".md");
+              this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
+
+              local old_onActivityResult=onActivityResult
+              function onActivityResult(requestCode, resultCode, data)
+                if requestCode == CREATE_FILE_REQUEST_CODE then
+                  if data then
+                    local uri = data.getData();
+                    local outputStream = this.getContentResolver().openOutputStream(uri);
+
+                    local content = String(b);
+                    outputStream.write(content.getBytes());
+                    outputStream.close();
+                  end
+                 else
+                  old_onActivityResult(requestCode, resultCode, data)
+                end
+              end
+
+          end})
         end
       },
 

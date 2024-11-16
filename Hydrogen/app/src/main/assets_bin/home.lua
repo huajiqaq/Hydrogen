@@ -1219,34 +1219,42 @@ if this.getSharedData("切换webview")=="true" then
   end
 end
 
-function onStart()
-  if 无图模式提醒==true then
-    return
-  end
-  connMgr= this.getSystemService(Context.CONNECTIVITY_SERVICE);
-  networkInfo=connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-  isWifiConn=networkInfo.isConnected();
-  networkInfo=connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-  isMobileConn=networkInfo.isConnected();
+if this.getSharedData("智能无图模式")=="true" then
+  function onStart()
+    if 无图模式提醒==true then
+      return
+    end
+    connMgr= this.getSystemService(Context.CONNECTIVITY_SERVICE);
+    info=connMgr.getActiveNetworkInfo()
+    netType=info.getType()
 
-  无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
-  if isWifiConn and 无图模式==true then
-    双按钮对话框("提示","当前在WiFi下 是否关闭不加载图片","关闭","暂不关闭",function(an)
-      activity.setSharedData("不加载图片","false")
-      提示("关闭不加载图片成功")
-      关闭对话框(an)
-      end,function(an)
-      无图模式提醒=true
-      关闭对话框(an)
-    end)
-   elseif isMobileConn and 无图模式==false then
-    双按钮对话框("提示","当前在流量下 是否开启不加载图片","开启","暂不开启",function(an)
-      activity.setSharedData("不加载图片","true")
-      提示("开启不加载图片成功")
-      关闭对话框(an)
-      end,function(an)
-      无图模式提醒=true
-      关闭对话框(an)
-    end)
+    if netType==ConnectivityManager.TYPE_WIFI then
+      isWifiConn=info.isConnected();
+    end
+
+    if netType==ConnectivityManager.TYPE_MOBILE then
+      isMobileConn=info.isConnected();
+    end
+
+    无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
+    if isWifiConn and 无图模式==true then
+      双按钮对话框("提示","当前在WiFi下 是否关闭不加载图片","关闭","暂不关闭",function(an)
+        activity.setSharedData("不加载图片","false")
+        提示("关闭不加载图片成功")
+        关闭对话框(an)
+        end,function(an)
+        无图模式提醒=true
+        关闭对话框(an)
+      end)
+     elseif isMobileConn and 无图模式==false then
+      双按钮对话框("提示","当前在流量下 是否开启不加载图片","开启","暂不开启",function(an)
+        activity.setSharedData("不加载图片","true")
+        提示("开启不加载图片成功")
+        关闭对话框(an)
+        end,function(an)
+        无图模式提醒=true
+        关闭对话框(an)
+      end)
+    end
   end
 end

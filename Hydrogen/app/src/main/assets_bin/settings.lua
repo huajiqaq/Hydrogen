@@ -31,6 +31,7 @@ data = {
   {__type=4,subtitle="夜间模式",status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
 
   {__type=4,subtitle="不加载图片",status={Checked=Boolean.valueOf(this.getSharedData("不加载图片"))}},
+  {__type=4,subtitle="智能无图模式",status={Checked=Boolean.valueOf(this.getSharedData("智能无图模式"))}}, 
   {__type=5,subtitle="字体大小",status={
       valueFrom=10,
       value=tonumber(activity.getSharedData("font_size")),

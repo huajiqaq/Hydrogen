@@ -90,103 +90,125 @@
         orientation="vertical";
         {
           LinearLayout;
+          layout_height="-1";
+          layout_width="-1";
           orientation="vertical";
-          layout_height="wrap";
-          layout_width="fill";
-          gravity="center";
-          layout_margin="10dp",
-          id="热门搜索布局",
+          id="未搜索布局";
           {
             LinearLayout;
-            orientation="horizontal";
+            orientation="vertical";
             layout_height="wrap";
             layout_width="fill";
             gravity="center";
+            layout_margin="10dp",
+            id="热门搜索布局",
             {
-              TextView;
-              text="热门搜索";
-              textColor=primaryc;
-              textSize="15sp";
-              SingleLine=true;
-              ellipsize='end',
-              layout_width="wrap",
-              gravity="center|left";
-              Typeface=字体("product-Bold");
-              layout_weight="1",
+              LinearLayout;
+              orientation="horizontal";
+              layout_height="wrap";
+              layout_width="fill";
+              gravity="center";
+              {
+                TextView;
+                text="热门搜索";
+                textColor=primaryc;
+                textSize="15sp";
+                SingleLine=true;
+                ellipsize='end',
+                layout_width="wrap",
+                gravity="center|left";
+                Typeface=字体("product-Bold");
+                layout_weight="1",
+              };
+            };
+
+            {
+              NoScrollGridView;
+              layout_marginTop="10dp";
+              layout_width="-1";
+              NumColumns=2;
+              layout_height="-1";
+              id="search_list",
+              --两列间距
+              HorizontalSpacing="6dp";
+              --两行间距
+              VerticalSpacing="6dp";
             };
           };
 
           {
-            NoScrollGridView;
-            layout_marginTop="10dp";
-            layout_width="-1";
-            NumColumns=2;
-            layout_height="-1";
-            id="search_list",
-            --两列间距
-            HorizontalSpacing="6dp";
-            --两行间距
-            VerticalSpacing="6dp";
+            LinearLayout;
+            orientation="vertical";
+            layout_height="wrap";
+            layout_width="fill";
+            gravity="center";
+            layout_margin="10dp";
+            id="历史记录布局",
+            {
+              LinearLayout;
+              orientation="horizontal";
+              layout_height="wrap";
+              layout_width="fill";
+              gravity="center";
+              {
+                TextView;
+                text="历史记录";
+                textColor=primaryc;
+                textSize="15sp";
+                SingleLine=true;
+                ellipsize='end',
+                layout_width="wrap",
+                gravity="center|left";
+                Typeface=字体("product-Bold");
+                layout_weight="1",
+              };
+              {
+                ImageView;
+                src=图标("delete");
+                ColorFilter=primaryc;
+                layout_width="24dp",
+                layout_height="24dp",
+                id="_delete";
+                tooltip="删除",
+                layout_gravity="end";
+                onClick=function()
+                  showpop(_more_lay,a.pop)
+                end;
+              };
+            };
+            {
+              LinearLayout;
+              layout_height="-1";
+              layout_width="-1";
+              orientation="vertical";
+              layout_marginTop="10dp",
+              {
+                ChipGroup;
+                layout_width="match";
+                layout_height="wrap";
+                id="chipgroup"
+              };
+            };
           };
         };
 
         {
           LinearLayout;
+          layout_height="-1";
+          layout_width="-1";
           orientation="vertical";
-          layout_height="wrap";
-          layout_width="fill";
-          gravity="center";
-          layout_margin="10dp";
-          id="历史记录布局",
+          id="搜索布局";
           {
-            LinearLayout;
-            orientation="horizontal";
-            layout_height="wrap";
-            layout_width="fill";
-            gravity="center";
-            {
-              TextView;
-              text="历史记录";
-              textColor=primaryc;
-              textSize="15sp";
-              SingleLine=true;
-              ellipsize='end',
-              layout_width="wrap",
-              gravity="center|left";
-              Typeface=字体("product-Bold");
-              layout_weight="1",
-            };
-            {
-              ImageView;
-              src=图标("delete");
-              ColorFilter=primaryc;
-              layout_width="24dp",
-              layout_height="24dp",
-              id="_delete";
-              tooltip="删除",
-              layout_gravity="end";
-              onClick=function()
-                showpop(_more_lay,a.pop)
-              end;
-            };
-          };
-          {
-            LinearLayout;
-            layout_height="-1";
+            NoScrollListView;
+            layout_marginTop="10dp";
             layout_width="-1";
-            orientation="vertical";
-            layout_marginTop="10dp",
-            {
-              ChipGroup;
-              layout_width="match";
-              layout_height="wrap";
-              id="chipgroup"
-            };
+            layout_height="-1";
+            id="suggest_list",
           };
-
-        };
+        }
 
       };
+
     };
   };
 };

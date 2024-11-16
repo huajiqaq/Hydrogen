@@ -72,6 +72,42 @@ search_view.setOnQueryTextListener(SearchView.OnQueryTextListener{
   end
 })
 
+
+array_adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1)
+suggest_list.setAdapter(array_adp)
+suggest_list.onItemClick=function(l,v,p,s)--列表点击事件
+  搜索(tostring(v.Text))
+  task(300,function()
+    search_editor.text=""
+  end)
+end
+
+local androidxR=luajava.bindClass "androidx.appcompat.R"
+search_editor=search_view.findViewById(androidxR.id.search_src_text)
+search_editor.addTextChangedListener{
+  onTextChanged=function(s)
+    if #(tostring(search_editor.text):gsub("\n",""):gsub(" ",""))<1 then
+      未搜索布局.Visibility=0
+      搜索布局.Visibility=8
+     else
+      未搜索布局.Visibility=8
+      搜索布局.Visibility=0
+      local url = "https://www.zhihu.com/api/v4/search/suggest?q="..urlEncode(tostring(s))
+      array_adp.clear()
+      zHttp.get(url,head,function(code,content)
+        if code==200 then
+          local data=luajson.decode(content)
+          for k,v in ipairs(data.suggest) do
+            task(50,function()array_adp.add(v.query)end)
+          end
+         else
+          提示("获取搜索关键词失败 "..content)
+        end
+      end)
+    end
+  end
+}
+
 search.onClick=function()
   搜索()
 end
