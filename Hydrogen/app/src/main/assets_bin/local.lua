@@ -280,7 +280,7 @@ task(1,function()
                   intent.setType("application/octet-stream");
                   intent.putExtra(Intent.EXTRA_TITLE, title.."_"..author..".md");
                   this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
-
+                  saf_writeText=b
               end})
           end}
           dialog=AlertDialog.Builder(this)

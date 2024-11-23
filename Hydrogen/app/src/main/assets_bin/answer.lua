@@ -857,7 +857,7 @@ task(1,function()
               intent.setType("application/octet-stream");
               intent.putExtra(Intent.EXTRA_TITLE, _title.Text.."_"..username.Text..".md");
               this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
-
+              saf_writeText=b
           end})
         end
       },

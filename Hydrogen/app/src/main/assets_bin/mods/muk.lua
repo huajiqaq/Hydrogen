@@ -23,7 +23,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.5492
+versionCode=0.5493
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
@@ -3932,7 +3932,7 @@ function replace_or_add_order_by(url, new_value)
   return base_url .. "?" .. modified_query
 end
 
-  --新建文件复写onActivityResult
+--新建文件复写onActivityResult
 task(1,function()
   CREATE_FILE_REQUEST_CODE=9999
   local old_onActivityResult=onActivityResult
@@ -3942,7 +3942,7 @@ task(1,function()
         local uri = data.getData();
         local outputStream = this.getContentResolver().openOutputStream(uri);
 
-        local content = String(b);
+        local content = String(saf_writeText);
         outputStream.write(content.getBytes());
         outputStream.close();
       end
@@ -3951,3 +3951,16 @@ task(1,function()
     end
   end
 end)
+
+function vectortopng(name)
+  import "android.graphics.Canvas"
+  import "java.io.FileOutputStream"
+  vectorDrawable = ContextCompat.getDrawable(this, R.drawable[name])
+  bitmap = Bitmap.createBitmap(vectorDrawable.intrinsicWidth, vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+  canvas = Canvas(bitmap)
+  vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
+  vectorDrawable.draw(canvas)
+  outputStream = FileOutputStream("/sdcard/"..name..".png")
+  bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+  outputStream.close()
+end

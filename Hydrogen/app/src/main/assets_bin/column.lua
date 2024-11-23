@@ -32,7 +32,7 @@ if 类型=="本地" then
       table.insert(parts, part)
     end
 
-    --解析有点问题 用户名带有/可能解析错误 懒得管了 
+    --解析有点问题 用户名带有/可能解析错误 懒得管了
     page_title,author_name=parts[1],parts[2]
 
     local html=File(id)
@@ -392,7 +392,7 @@ if 类型=="本地" then
                   intent.setType("application/octet-stream");
                   intent.putExtra(Intent.EXTRA_TITLE, page_title.."_"..author_name..".md");
                   this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
-
+                  saf_writeText=b
               end})
           end}
           dialog=AlertDialog.Builder(this)
@@ -497,7 +497,7 @@ if 类型=="本地" then
               intent.setType("application/octet-stream");
               intent.putExtra(Intent.EXTRA_TITLE, page_title.."_"..author_name..".md");
               this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
-
+              saf_writeText=b
           end})
         end
       },

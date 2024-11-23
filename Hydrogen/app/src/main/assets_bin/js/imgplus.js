@@ -31,7 +31,7 @@ function createImageStyleManager() {
     function updateImageStyles(isLandscape) {
         const landscapeCSS = `
             img {
-                height: 100vmin !important;
+                max-height: 100vmin !important;
                 width: auto !important;
             }
         `;

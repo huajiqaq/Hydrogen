@@ -887,8 +887,7 @@ function 加载主页tab()
 
      else
       HometabLayout.setVisibility(8)
-      home_pagetool:clearItem()
-      :refer()
+      home_pagetool:refer(nil,nil,true)
     end
   end)
 end

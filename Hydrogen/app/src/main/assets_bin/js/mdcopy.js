@@ -15,13 +15,13 @@ function getmd() {
         }
     });
 
-    // 自定义规则：忽略以 data: 开头的图片
+    // 自定义规则：忽略以 data:image/svg+xml;utf8 开头的图片
     turndownService.addRule('ignoreDataImages', {
         filter: 'img',
         replacement: function (content, node) {
             const src = node.getAttribute('src');
-            if (src && src.startsWith('data:')) {
-                return ''; // 忽略以 data: 开头的图片
+            if (src && src.startsWith('data:image/svg+xml;utf8,')) {
+                return ''; // 忽略以 data:image/svg+xml;utf8, 开头的图片
             }
             return `![](${src})`; // 默认处理其他图片
         }

@@ -263,3 +263,5 @@ if (window.location.href.includes("www.zhihu.com/appview/p/")) {
         }
     };
 }
+
+if (document.documentElement.innerText.includes("请求存在异常")) alert("知乎限制只能登录后访问 请检查是否登录账号 如果已登录 请注销后重新登录重试")
