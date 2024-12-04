@@ -130,7 +130,7 @@ local base_people=require "model.people":new(people_id)
           end
 
           local url="https://www.zhihu.com/report?id="..people_id.."&type=member"
-          activity.newActivity("huida",{url.."&source=android&ab_signature=","举报"})
+          activity.newActivity("browser",{url.."&source=android&ab_signature=","举报"})
 
       end},
       {

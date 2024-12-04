@@ -52,7 +52,7 @@ login_web.setWebViewClient{
   shouldOverrideUrlLoading=function(view,url)
 
     if url:sub(1,4)~="http" then
-      return
+      return true
     end
 
     if not view.getUrl():find("https://www.zhihu.com/%?utm_id") and view.getUrl()~="https://www.zhihu.com/" then
