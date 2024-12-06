@@ -132,6 +132,7 @@ local function createchip(text)
     layout_width="wrap_content";
     layout_height="wrap_content";
     text=text;
+    id="hhh";
     checkable=false;
     EnsureMinTouchTargetSize=false,
     OnCloseIconClickListener=function(view)
