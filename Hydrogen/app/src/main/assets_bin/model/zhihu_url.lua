@@ -16,6 +16,13 @@ function string:getUrlArg(arg)
   return self:match(arg.."(.-)/%?") or self:match(arg.."(.-)/") or self:match(arg.."(.-)%?") or self:match(arg.."(.-)&") or self:match(arg.."(.+)")
 end
 
+--获取第一个数字 找不到就返回原字符串
+local function getFirstNumber(str)
+    local number = str:match("%d+")
+    return tonumber(number) or str
+end
+
+
 function 检查链接(url,b)
   --  local url="https"..url:match("https(.+)")
   if url:find("zhihu.com/question") or url:find("zhihu.com/answer") then
@@ -39,7 +46,7 @@ function 检查链接(url,b)
       this.newActivity("question",{questions})
       return
     end
-    this.newActivity("answer",{questions,answer})
+    this.newActivity("answer",{getFirstNumber(questions),getFirstNumber(answer)})
    elseif url:find("zhihu.com/column/republish_apply") then
     if b then return true end
     -- 网页端加入专栏
