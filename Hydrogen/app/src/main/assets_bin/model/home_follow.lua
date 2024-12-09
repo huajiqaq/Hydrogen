@@ -285,7 +285,7 @@ local function 加载主页关注折叠adp(data,views)
   })
   --自定义LinearLayoutManager尝试解决闪退问题
   local MyLinearLayoutManager=luajava.bindClass("com.hydrogen.MyLinearLayoutManager")(this,RecyclerView.VERTICAL,false)
-  views.底部recy.setLayoutManager(MyLinearLayoutManager(this,RecyclerView.VERTICAL,false))
+  views.底部recy.setLayoutManager(MyLinearLayoutManager)
   views.底部recy.setAdapter(adapter2)
 end
 

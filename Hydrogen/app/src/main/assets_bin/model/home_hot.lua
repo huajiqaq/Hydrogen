@@ -125,7 +125,7 @@ function base:initpage(view,sr)
   view.setAdapter(self:getAdapter())
   --自定义LinearLayoutManager尝试解决闪退问题
   local MyLinearLayoutManager=luajava.bindClass("com.hydrogen.MyLinearLayoutManager")(this,RecyclerView.VERTICAL,false)
-  view.setLayoutManager(MyLinearLayoutManager(this,RecyclerView.VERTICAL,false))
+  view.setLayoutManager(MyLinearLayoutManager)
 
   sr.setProgressBackgroundColorSchemeColor(转0x(backgroundc));
   sr.setColorSchemeColors({转0x(primaryc)});
