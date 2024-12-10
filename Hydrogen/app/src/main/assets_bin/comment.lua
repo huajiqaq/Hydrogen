@@ -25,8 +25,7 @@ function 发送评论(send_text,当前回复人)
 
   local unicode=require "unicode"
 
-  --测试不通过unicode编码也可以 暂时这么解决
-  local mytext=send_text
+  local mytext=unicode(send_text)
 
   if comment_type=="comments" then
     --防止在对话列表内回复id为空
