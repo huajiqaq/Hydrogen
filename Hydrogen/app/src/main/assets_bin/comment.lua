@@ -23,9 +23,15 @@ function 发送评论(send_text,当前回复人)
 
   local 回复id=当前回复人 or ""
 
-  local unicode=require "unicode"
+  --测试不通过unicode编码也可以 暂时这么解决
+  --或许之后知乎会仅支持unicode 到时候下载知乎app分析一下
 
-  local mytext=unicode(send_text)
+  --替换 防止发表评论提交多行知乎api报错
+  local mytext=send_text
+  --回车
+  :gsub("\r","\\u000D")
+  --换行
+  :gsub("\n","\\u000A")
 
   if comment_type=="comments" then
     --防止在对话列表内回复id为空
