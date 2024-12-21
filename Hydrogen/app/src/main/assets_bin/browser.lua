@@ -281,13 +281,14 @@ content.setWebViewClient{
     end
 
     local pop=table.clone(pop)
-
     if urltitle=="举报" then
       加载js内容=获取js("report")
      elseif urltitle=="提问" then
       加载js内容=获取js("ask")
      elseif urltitle=="新建专栏" then
       加载js内容=获取js("addcolumn")
+     elseif url:find("https://www.zhihu.com/creator/hot%-question/hot") then
+      加载js内容=获取js("hot_question")
      elseif url:find("https://www.zhihu.com/messages") then
       加载js内容=获取js("messages")
      elseif url:find("https://www.zhihu.com/notifications") then
