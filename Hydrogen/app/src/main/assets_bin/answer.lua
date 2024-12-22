@@ -436,7 +436,7 @@ function 初始化页(mviews)
   if mviews.load==true then
     vote_count.Text=(mviews.data.voteup_count)..""
     thanks_count.Text=(mviews.data.thanks_count)..""
-    comment_count.Text=(mviews.data.comment_count)..""
+    favlists_count.Text=(mviews.data.favlists_count)..""
     loadglide(usericon,mviews.data.author.avatar_url)
     if mviews.data.author.headline=="" then
       userheadline.Text="Ta还没有签名哦~"
@@ -492,7 +492,7 @@ function 加载页(mviews,isleftadd)
         mviews.data={
           voteup_count=cb.voteup_count,
           thanks_count=cb.thanks_count,
-          comment_count=cb.comment_count,
+          favlists_count=cb.favlists_count,
           id=cb.id,
           author={
             avatar_url=cb.author.avatar_url,
@@ -837,7 +837,7 @@ task(1,function()
           写入内容=写入内容..'answer_id="'..回答id..'"\n'
           写入内容=写入内容..'thanks_count="'..thanks_count.Text..'"\n'
           写入内容=写入内容..'vote_count="'..vote_count.Text..'"\n'
-          写入内容=写入内容..'comment_count="'..comment_count.Text..'"\n'
+          写入内容=写入内容..'favlists_count="'..favlists_count.Text..'"\n'
           写入内容=写入内容..'author="'..username.Text..'"\n'
           写入内容=写入内容..'headline="'..userheadline.Text..'"\n'
           写入文件(保存路径.."/detail.txt",写入内容)

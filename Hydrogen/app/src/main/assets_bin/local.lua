@@ -129,7 +129,7 @@ if userheadline.text=="" then
 end
 
 thanks_count.text=xxx:match[[thanks_count="(.-)"]]
-comment_count.text=xxx:match[[comment_count="(.-)"]]
+favlists_count.text=xxx:match[[favlists_count="(.-)"]] or "未知"
 vote_count.text=xxx:match[[vote_count="(.-)"]]
 
 comment.onClick=function()

@@ -281,7 +281,7 @@
                 layout_marginLeft="4dp",
                 textColor=stextc;
                 Typeface=字体("product-Bold");
-                id="comment_count";
+                id="favlists_count";
                 Text="0";
               };
             };
