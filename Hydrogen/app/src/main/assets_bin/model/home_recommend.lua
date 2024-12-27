@@ -47,6 +47,18 @@ function base.resolvedata(v,data)
     分割字符串="直播分割"
   end
 
+  if not 预览内容 or 预览内容=="" or 预览内容=="无预览内容" then
+    预览内容=nil
+   else
+    预览内容=Html.fromHtml(预览内容)
+  end
+
+  if 点赞数 then
+    点赞数=tostring(点赞数)
+   else
+    点赞数="未知"
+  end
+
   local id内容=分割字符串..id
 
 

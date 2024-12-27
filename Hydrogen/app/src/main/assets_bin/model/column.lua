@@ -62,6 +62,7 @@ function base:getinfo()
   return self
 end
 
+
 function base:getData(cb,issave)
   local url=self.geturl
   if not url then
@@ -70,7 +71,9 @@ function base:getData(cb,issave)
     end
     return
   end
-  zHttp.get(url,apphead,function(a,b)
+  local testhead=table.clone(apphead)
+  testhead["x-zse-93"] = "101_4_3.0"
+  zHttp.get(url,testhead,function(a,b)
     if a==200 then
       local b=luajson.decode(b)
       local type1=self.type

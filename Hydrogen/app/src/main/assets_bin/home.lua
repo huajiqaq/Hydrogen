@@ -561,6 +561,7 @@ ch_table={
   {"收藏","book"},
   {"日报","work"},
   {"关注","list_alt"},
+  {"通知","list_alt"},
   {"更多","menu"},
   "分割线",
   {"本地","inbox"},
@@ -750,6 +751,8 @@ function 侧滑列表点击事件(v)
       return true
     end
     followcontent_pagetool:refer(nil,nil,true)
+   case "通知"
+    task(300,function()activity.newActivity("browser",{"https://www.zhihu.com/notifications"})end)
    case "本地"
     task(300,function()activity.newActivity("local_list")end)
    case "设置"
@@ -762,10 +765,10 @@ function 侧滑列表点击事件(v)
       return 提示("请登录后使用本功能")
     end
     task(20,function()
+      local mtab={"https://www.zhihu.com/messages","https://www.zhihu.com/settings/account","屏蔽用户管理","https://www.zhihu.com/appview/roundtable","https://www.zhihu.com/appview/special","https://www.zhihu.com/creator/hot-question/hot/0/hour"}
       AlertDialog.Builder(this)
       .setTitle("请选择")
-      .setSingleChoiceItems({"通知","私信","设置","屏蔽用户管理","圆桌","专题"}, 0,{onClick=function(v,p)
-          local mtab={"https://www.zhihu.com/notifications","https://www.zhihu.com/messages","https://www.zhihu.com/settings/account","屏蔽用户管理","https://www.zhihu.com/appview/roundtable","https://www.zhihu.com/appview/special"}
+      .setSingleChoiceItems({"私信","设置","屏蔽用户管理","圆桌","专题","近期热点"}, 0,{onClick=function(v,p)
           jumpurl=mtab[p+1]
       end})
       .setNegativeButton("确定", {onClick=function()
@@ -774,7 +777,7 @@ function 侧滑列表点击事件(v)
             return activity.newActivity("people_list",{"我的屏蔽用户列表"})
           end
           --防止没选中 nil
-          activity.newActivity("browser",{jumpurl or "https://www.zhihu.com/notifications"})
+          activity.newActivity("browser",{jumpurl or mtab[1]})
           jumpurl=nil
       end})
       .show();

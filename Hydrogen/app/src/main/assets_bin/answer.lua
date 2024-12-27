@@ -763,11 +763,12 @@ function onKeyUp(code,event)
   if this.getSharedData("音量键选择tab")~="true" or 全屏模式==true then
     return false
   end
+  --上键上一页 下键下一页
   if code==KeyEvent.KEYCODE_VOLUME_UP then
-    pg.setCurrentItem(pg.getCurrentItem()+1)
+    pg.setCurrentItem(pg.getCurrentItem()-1)
     return true;
    elseif code== KeyEvent.KEYCODE_VOLUME_DOWN then
-    pg.setCurrentItem(pg.getCurrentItem()-1)
+    pg.setCurrentItem(pg.getCurrentItem()+1)
     return true;
   end
 end
