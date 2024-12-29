@@ -18,8 +18,11 @@ end
 
 --获取第一个数字 找不到就返回原字符串
 local function getFirstNumber(str)
-    local number = str:match("%d+")
-    return tonumber(number) or str
+  if not str then
+    return nil
+  end
+  local number = str:match("%d+")
+  return tonumber(number) or str
 end
 
 
