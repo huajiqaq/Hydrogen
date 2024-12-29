@@ -78,7 +78,7 @@ public class AppBarLayoutBehavior extends AppBarLayout.Behavior {
     private Field getScrollerField() throws NoSuchFieldException {
         try {
             Class<?> headerBehaviorType = this.getClass().getSuperclass().getSuperclass().getSuperclass();
-            return headerBehaviorType.getDeclaredField("flingRunnable");
+            return headerBehaviorType.getDeclaredField("scroller");
         } catch (NoSuchFieldException e) {
             Log.e(TAG, "The field does not exist.", e);
             return null;
