@@ -196,6 +196,11 @@ question_base:getData(function(tab)
 
   question_pagetool=question_base:initpage(question_recy,questionsr)
 
+
+  if tab==false then
+    return
+  end
+
   title.text=tab.title
 
   初始化历史记录数据()
@@ -213,7 +218,6 @@ question_base:getData(function(tab)
   end
 
   问题预览=tab.detail
-
 
   if tab.relationship.is_following then
     关注数量={[1]=tointeger(_star.Text),[2]=tointeger(_star.Text)-1}

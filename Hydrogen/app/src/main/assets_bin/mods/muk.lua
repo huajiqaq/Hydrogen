@@ -405,6 +405,7 @@ function saveHistoryRecord(id,title,content)
   table.insert(recordtitle, title)
   table.insert(recordcontent, content)
   table.insert(recordid, id)
+
   清空并保存历史记录("Historyrecordtitle", recordtitle)
   清空并保存历史记录("Historyrecordid", recordid)
   清空并保存历史记录("Historyrecordcontent", recordcontent)
@@ -417,10 +418,16 @@ if need_save_history==true then
 end
 
 function 清空并保存历史记录(name, data)
-  local index = #data
+  -- 确保只保留最新的50条记录
+  local max_records = 50
+  if #data > max_records then
+    -- 截取最后50个元素
+    data = { unpack(data, math.max(1, #data - max_records + 1), #data) }
+  end
   local editor = this.getSharedPreferences(name, 0).edit()
   editor.clear().commit()
-  for i = 1, index do
+  -- 反向遍历保存，以保证最新的记录保存为 "1" 键
+  for i = 1, #data do
     editor.putString(tostring(i), tostring(data[#data - i + 1])).apply()
   end
 end

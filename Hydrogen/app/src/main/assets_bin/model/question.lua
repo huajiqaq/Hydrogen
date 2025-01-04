@@ -22,11 +22,17 @@ end
 
 
 function base_question:getData(callback)
-  zHttp.get("https://api.zhihu.com/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,excerpt",apphead
+  zse96_encrypt=require "model.zse96_encrypt"
+  local url,head
+  url="https://www.zhihu.com/api/v4/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,detail,excerpt,author"
+  url,head=zse96_encrypt(url)
+  zHttp.get(url,head
   ,function(code,content)
     if code==200 then
       local data=luajson.decode(content)
       callback(data)
+      else
+      callback(false)
     end
   end)
   return self

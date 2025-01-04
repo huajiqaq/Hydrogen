@@ -637,7 +637,7 @@ tab={
           pcall(function()
             _check=luajson.decode(edit.Text)
             if _check.access_token then
-              _check=_check.access_token
+              _check="Bearer ".._check.access_token
             end
           end)
           if _check then
@@ -649,7 +649,7 @@ tab={
             zHttp.get(myurl,head,function(code,content)
 
               if code==200 then--判断网站状态
-                local oridata=this.getShatedData("signdata")
+                local oridata=this.getSharedData("signdata")
                 this.setSharedData("usersign",oridata)
                 this.setSharedData("signdata",edit.Text)
                 提示("保存成功")

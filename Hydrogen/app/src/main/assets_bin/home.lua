@@ -731,6 +731,9 @@ function 切换布局(s)
 
 end
 
+this.window.setNavigationBarColor(res.color.attr.colorSurfaceContainer);
+
+
 --侧滑列表点击事件
 function 侧滑列表点击事件(v)
   --项目点击事件

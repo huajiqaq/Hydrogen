@@ -4,7 +4,6 @@
   layout_height="match_parent";
   id="_drawer";
   background=backgroundc;
-
   {
     CoordinatorLayout;
     id="mainLay";
@@ -195,7 +194,6 @@
     layout_height="-1";
     backgroundColor=0,
     layout_gravity="left";
-    background=backgroundc;
     {
       LinearLayout;
       layout_height="-1";
