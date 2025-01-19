@@ -444,6 +444,9 @@ function 初始化页(mviews)
     vote_count.Text=(mviews.data.voteup_count)..""
     thanks_count.Text=(mviews.data.thanks_count)..""
     favlists_count.Text=(mviews.data.favlists_count)..""
+    comment.onLongClick=function()
+      提示((mviews.data.comment_count).."条评论")
+      end
     loadglide(usericon,mviews.data.author.avatar_url)
     if mviews.data.author.headline=="" then
       userheadline.Text="Ta还没有签名哦~"
@@ -500,6 +503,7 @@ function 加载页(mviews,isleftadd)
           voteup_count=cb.voteup_count,
           thanks_count=cb.thanks_count,
           favlists_count=cb.favlists_count,
+          comment_count=cb.comment_count,
           id=cb.id,
           author={
             avatar_url=cb.author.avatar_url,

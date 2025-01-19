@@ -1,7 +1,7 @@
 local base={
   日报data={},
   可以加载日报=true,
-  thisdata=1,
+  thisdata=0,
   news={},
   ZUOTIAN=nil,
   needcheck=true
@@ -26,7 +26,7 @@ function base:getData(isclear,isinit)
 
   if isclear then
     self.可以加载日报=true
-    self.thisdata=1
+    self.thisdata=0
     self.news={}
     self.ZUOTIAN=nil
     self.needcheck=true
