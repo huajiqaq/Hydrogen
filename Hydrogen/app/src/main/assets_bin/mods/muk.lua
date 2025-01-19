@@ -128,16 +128,15 @@ logopng=srcLuaDir.."/logo.png"
 function 设置toolbar属性(toolbar,title)
   local PorterDuffColorFilter=luajava.bindClass "android.graphics.PorterDuffColorFilter"
   local PorterDuff=luajava.bindClass "android.graphics.PorterDuff"
-  local bitmap=loadbitmap(("arrow_back"))
+  local bitmap=loadbitmap(图标("arrow_back"))
   local imgdp = 26
   local imgpx=TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, imgdp, activity.Resources.DisplayMetrics)
   local colorFilter = PorterDuffColorFilter(res.color.attr.colorPrimary, PorterDuff.Mode.SRC_ATOP)
-  --[[local scaledBitmap = Bitmap.createScaledBitmap(bitmap, imgpx, imgpx, true)
+  local scaledBitmap = Bitmap.createScaledBitmap(bitmap, imgpx, imgpx, true)
   local bitmap=BitmapDrawable(activity.Resources,scaledBitmap)
-  bitmap=BitmapDrawable(activity.Resources,bitmap)
   .setColorFilter(colorFilter)
   toolbar.setNavigationIcon(bitmap)
-  toolbar.setNavigationContentDescription("转到上一层级")]]
+  --toolbar.setNavigationContentDescription("转到上一层级")
 
   toolbar.title=title
 
