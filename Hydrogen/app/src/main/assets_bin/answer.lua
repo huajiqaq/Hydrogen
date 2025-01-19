@@ -445,7 +445,8 @@ function 初始化页(mviews)
     favlists_count.Text=(mviews.data.favlists_count)..""
     comment.onLongClick=function()
       提示((mviews.data.comment_count).."条评论")
-      end
+      return true
+    end
     loadglide(usericon,mviews.data.author.avatar_url)
     if mviews.data.author.headline=="" then
       userheadline.Text="Ta还没有签名哦~"
