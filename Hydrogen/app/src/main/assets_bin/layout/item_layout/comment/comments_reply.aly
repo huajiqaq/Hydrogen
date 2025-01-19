@@ -1,7 +1,7 @@
 {
   LinearLayout;
   layout_width="-1";
-  BackgroundColor=backgroundc;
+  BackgroundColor=cardedge;
   {
     MaterialCardView;
     Elevation="0";

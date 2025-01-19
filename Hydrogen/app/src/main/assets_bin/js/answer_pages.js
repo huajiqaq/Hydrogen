@@ -1,12 +1,11 @@
 (function () {
-    function init() {
-
+    function init() {    
         var style
         style = document.createElement('style');
         // 优化figure下的figure
+        style.paddingBottom = '这里是要动态修改的底部偏移dp';
         style.innerHTML = '.RichText figure > figure{width:100% !important;margin:unset !important}'
         document.head.appendChild(style)
-
         // 返回找到的index
         function findMatchingTextIndexInSecondElement(dom, dom1) {
             let dom_children = [...dom.children];

@@ -14,7 +14,6 @@ function base.resolvedata(v,data)
 
   local isread='"t"'
   local readdata=v.brief
-
   local v=v.target or v
   local 标题=v.title
   local 点赞数=tostring(v.voteup_count or v.vote_count)

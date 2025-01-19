@@ -1,37 +1,55 @@
-{
-  RelativeLayout;
-  layout_width="-1";
-  background=backgroundc;
-  layout_height="-1";
+{MaterialCardView; 
+  StrokeWidth=0,
+    radius=cardradius;
+  CardBackgroundColor=0x00000000;
+  layout_width="fill";
+  layout_height=activity.getHeight()+导航栏高度;
   {
     LinearLayout;
+    backgroundColor=backgroundc;
     layout_width="-1";
     layout_height="-1";
-    orientation="vertical";
+    orientation="vertical";--[[
+    {MaterialCardView;
+      layout_marginTop="12dp";
+      layout_marginLeft="35%w";
+      layout_marginBottom="12dp";
+      layout_width="30%w";
+      layout_height="6dp";
+      onClick=function()
+        bottomSheetDialog.dismiss()
+      end;
+      {LinearLayout,layout_height="fill";layout_width="fill";
+        background=primaryc;
+      };
+    };]]
     {
       LinearLayout;
       layout_width="-1";
       layout_height="-2";
-layout_marginTop=状态栏高度;
-      elevation="0";
-      background=backgroundc;
+      elevation="1";
       orientation="vertical";
       {
         LinearLayout;
         layout_width="-1";
         layout_height="56dp";
+        background=backgroundc;
         gravity="center|left";
+        id="barbb";
+        onClick=function()
+          comment_recy.smoothScrollToPosition(0)
+        end;
         {
           LinearLayout;
           orientation="horizontal";
           layout_height="56dp";
           layout_width="56dp";
           gravity="center";
-          onClick=function()关闭页面()end;
+          onClick=function()bottomSheetDialog.dismiss()end;
           {
             ImageView;
             ColorFilter=primaryc;
-            src=图标("arrow_back");
+            src=图标("keyboard_arrow_down");
             layout_height="32dp";
             layout_width="32dp";
             padding="4dp";
@@ -53,18 +71,25 @@ layout_marginTop=状态栏高度;
           Typeface=字体("product-Bold");
         };
         {
-          ImageView;
-          src=图标("more_vert");
-          ColorFilter=primaryc;
-          layout_width="32dp",
-          layout_height="32dp",
-          padding="4dp";
-          id="_more";
-          tooltip="更多",
-          layout_margin="8dp";
-          onClick=function()
-            showpop(_more_lay,a.pop)
-          end;
+          LinearLayout;
+          orientation="horizontal";
+          layout_height="56dp";
+          layout_width="56dp";
+          gravity="center";
+          {
+            ImageView;
+            src=图标("more_vert");
+            ColorFilter=primaryc;
+            layout_width="32dp",
+            layout_height="32dp",
+            padding="4dp";
+            id="_more";
+            tooltip="更多",
+            layout_margin="8dp";
+            onClick=function()
+              showpop(_more_lay,a.pop)
+            end;
+          };
         };
         {
           TextView;
@@ -80,7 +105,7 @@ layout_marginTop=状态栏高度;
       id="internetnet",
       orientation="vertical",
       layout_width="fill",
-      layout_height="fill",
+      layout_height="match",
       background=backgroundc,
       {
         CoordinatorLayout,
@@ -89,12 +114,13 @@ layout_marginTop=状态栏高度;
         background=backgroundc,
         {
           SwipeRefreshLayout;
-          id="commentsr";
+          id="commentsrl";
           layout_height="fill";
           layout_width="fill";
           {
             RecyclerView;
-            id="comment_recy";
+            NestedScrollingEnabled=true,
+            id="comment_recyl";
             layout_width="-1";
             layout_height="-1";
           };
@@ -106,7 +132,7 @@ layout_marginTop=状态栏高度;
           layout_height="wrap";
           StrokeWidth=0,
           radius=cardradius;
-          CardBackgroundColor=res.color.attr.colorSurfaceContainer;
+          CardBackgroundColor=barbackgroundc;
           id="inputLay";
           layout_gravity="bottom";
           --开启动画可能造成卡顿
@@ -115,7 +141,6 @@ layout_marginTop=状态栏高度;
             LinearLayout;
             layout_width="fill";
             layout_height="fill";
-            layout_marginBottom=导航栏高度;
             gravity="center";
             Focusable=true;
             FocusableInTouchMode=true;

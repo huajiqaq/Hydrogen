@@ -12,6 +12,7 @@ question_id=...
 设置toolbar(toolbar)
 
 question_itemc=获取适配器项目布局("question/question")
+activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
 波纹({fh,_more},"圆主题")
 波纹({discussion,view,description,follow,open,star},"方自适应")
@@ -23,7 +24,7 @@ function 问题详情(code)
   local dann={
     LinearLayout;
     layout_width=-1;
-    layout_height=-1;
+    layout_height=this.getHeight()+导航栏高度;
     {
       LinearLayout;
       orientation="vertical";
@@ -91,17 +92,25 @@ function 问题详情(code)
   };
 
   local tmpview={}
-  local bottomSheetDialog = BottomSheetDialog(this)
+    bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
   local an=bottomSheetDialog.show()
+  bottomSheetDialog.setCancelable(true);
   bottomSheetDialog.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
   bottomSheetDialog.behavior.setDraggable(false)
+  --bottomSheetDialog.behavior.setHideable(false)
+  bottomSheetDialog.behavior.setPeekHeight(this.getHeight()+导航栏高度)
+  bottomSheetDialog.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
   tmpview.close_button.onClick=function()
     an.cancel()
   end
 
   local show=tmpview.show
-
+  --[[bottomSheetDialog.setOnTouchListener(function(v,e)
+ local y = show.scrollY
+print(y)
+return true
+end)]]
   function imgReset()
     加载js(show,"(function(){" ..
     "var objs = document.getElementsByTagName('img'); " ..

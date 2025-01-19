@@ -1,6 +1,7 @@
 {
   LinearLayout;
   layout_width="-1";
+  layout_height="wrap";
   orientation="horizontal";
   BackgroundColor=backgroundc;
   id="rootview";
@@ -14,7 +15,7 @@
     layout_marginTop="8dp";
     layout_marginBottom="8dp";
     radius=cardradius;
-    CardBackgroundColor=cardedge;
+    CardBackgroundColor=barbackgroundc;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
     clickable=true,

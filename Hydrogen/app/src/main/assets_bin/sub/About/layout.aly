@@ -8,6 +8,7 @@
     LinearLayout,
     layout_width="fill",
     layout_height="fill",
+    layout_marginTop=状态栏高度;
     orientation="vertical";
     {
       MaterialToolbar;

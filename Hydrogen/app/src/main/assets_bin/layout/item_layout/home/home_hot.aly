@@ -12,7 +12,7 @@
     layout_width='fill';
     layout_height='-2';
     radius=cardradius;
-    CardBackgroundColor=cardedge;
+    CardBackgroundColor=barbackgroundc;
     StrokeColor=cardedge;
     StrokeWidth=dp2px(1),
     id="card",

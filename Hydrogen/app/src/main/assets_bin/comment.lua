@@ -3,9 +3,15 @@ import "android.widget.*"
 import "android.view.*"
 import "mods.muk"
 import "android.text.method.LinkMovementMethod"
-activity.setContentView(loadlayout("layout/comment"))
+import "com.google.android.material.bottomsheet.*"
+import "com.google.android.material.chip.ChipGroup"
+import "com.google.android.material.chip.Chip"
 
 comment_id,comment_type,oricomment_id,oricomment_type,保存路径=...
+activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+activity.setContentView(loadlayout("layout/comment"))
+
 波纹({fh,_more},"圆主题")
 
 function 发送评论(send_text,当前回复人)
@@ -136,8 +142,7 @@ if comment_type=="local_chat" then
       end
   end})
 
-  _title.text="对话列表".." "..(#local_comment_list.adapter.getData()-1).."条"
-
+  _title.text="对话列表" 
  elseif comment_type=="local" then
   internetnet.setVisibility(8)
   local_comment_list.setVisibility(0)
@@ -213,7 +218,9 @@ if not(comment_type:find("local")) then
     comment_recy.setPadding(0,0,0,inputLay.height)
   end)
   if comment_type=="comments" then
+    --楼中楼
     _title.text="对话列表"
+    
   end
   --评论
   comment_base=require "model.comment"

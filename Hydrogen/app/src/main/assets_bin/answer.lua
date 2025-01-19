@@ -17,6 +17,12 @@ import "com.google.android.material.progressindicator.LinearProgressIndicator"
 问题id,回答id=...
 
 --new 0.46 删除滑动监听
+local resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android")
+状态栏高度= activity.getResources().getDimensionPixelSize(resourceId)
+local resourceId = activity.getResources().getIdentifier("navigation_bar_height", "dimen", "android")
+导航栏高度 = activity.getResources().getDimensionPixelSize(resourceId)
+activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
 activity.setContentView(loadlayout("layout/answer"))
 设置toolbar(toolbar)
 
@@ -281,7 +287,8 @@ function 数据添加(t,b)
         t.progress.setVisibility(0)
       end
       等待doc(view)
-      加载js(view,获取js("answer_pages"))
+      local ansjs=(string.gsub(tostring(获取js("answer_pages")),"这里是要动态修改的底部偏移",tostring(tointeger(56+px2dp(导航栏高度)))))
+      加载js(view,ansjs)
       view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
       加载js(view,获取js("imgplus"))
       加载js(view,获取js("mdcopy"))
@@ -923,7 +930,7 @@ if this.getSharedData("显示虚拟滑动按键")=="true" then
     local mview=数据表[pg.adapter.getItem(pos).id]
     local id表=mview.ids
     local content=id表.content
-    content.scrollBy(0, -content.height);
+    content.scrollBy(0, -content.height+dp2px(40));
     if content.getScrollY()<=0 then
       appbar.setExpanded(true,false);
     end
@@ -933,7 +940,7 @@ if this.getSharedData("显示虚拟滑动按键")=="true" then
     local mview=数据表[pg.adapter.getItem(pos).id]
     local id表=mview.ids
     local content=id表.content
-    content.scrollBy(0, content.height);
+    content.scrollBy(0, (content.height-dp2px(40)));
     appbar.setExpanded(false,false);
   end
 end

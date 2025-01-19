@@ -117,6 +117,9 @@ function Page_Tool:initPage()
     local MyLinearLayoutManager=luajava.bindClass("com.hydrogen.MyLinearLayoutManager")(this,RecyclerView.VERTICAL,false)
 
     local manager=MyLinearLayoutManager
+
+
+
     thispage.setLayoutManager(manager)
 
     local adp=self.adapters[pos]

@@ -4,15 +4,18 @@ import "mods.muk"
 import "com.lua.custrecycleradapter.*"
 import "androidx.recyclerview.widget.*"
 import "android.widget.ImageView$ScaleType"
-
+import "androidx.recyclerview.widget.GridLayoutManager"
 import "com.google.android.material.bottomnavigation.BottomNavigationView"
 import "androidx.viewpager.widget.ViewPager"
 import "androidx.swiperefreshlayout.widget.*"
 import "com.google.android.material.tabs.TabLayout"
 import "com.bumptech.glide.Glide"
 
-activity.setContentView(loadlayout("layout/home"))
 
+
+activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+activity.setContentView(loadlayout("layout/home"))
 设置toolbar(toolbar)
 
 初始化历史记录数据()
@@ -185,12 +188,17 @@ for i,item ipairs(home_items)
   pageinfo_keys[item]=i-1
   if home_pageinfo then
     pagadp.add(loadlayout(home_pageinfo.lay))
+    
     table.insert(menu,home_pageinfo.menu)
     home_pageinfo.init()
    else
     error("错误 找不到"..item)
   end
 end
+
+local glm=(GridLayoutManager(activity,rccolumn))
+home_recy.setLayoutManager(glm)
+
 
 optmenu={}
 loadmenu(bnv.getMenu(), menu, optmenu, 3)
@@ -203,7 +211,6 @@ page_home.setCurrentItem(startindex,false)
 
 bnv.getMenu().getItem(startindex).setChecked(true)
 _title.text=(bnv.getMenu().getItem(startindex).getTitle())
-
 
 for i=0,bnv.getMenu().size()-1 do
   bnv.getChildAt(0).getChildAt(i).onLongClick=function()
@@ -561,7 +568,7 @@ ch_table={
   {"收藏","book"},
   {"日报","work"},
   {"关注","list_alt"},
-  {"通知","list_alt"},
+  {"通知","notification"},
   {"更多","menu"},
   "分割线",
   {"本地","inbox"},
@@ -1108,7 +1115,7 @@ end)
 lastclick = os.time() - 2
 function onKeyDown(code,event)
   local now = os.time()
-  if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
+  --[[if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
     --监听返回键
     if a and a.pop.isShowing() then
       --如果菜单显示，关闭菜单并阻止返回键
@@ -1126,7 +1133,7 @@ function onKeyDown(code,event)
       lastclick = now
       return true
     end
-  end
+  end]]
 
   if this.getSharedData("音量键选择tab")~="true" then
     return false

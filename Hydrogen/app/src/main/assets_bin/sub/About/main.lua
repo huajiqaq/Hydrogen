@@ -9,6 +9,7 @@ normalkeys.developers=true
 normalkeys.moreItem=true
 normalkeys.copyright=true
 normalkeys.onUpdate=true
+activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
 import "android.graphics.Typeface"
 import "android.text.Spannable"

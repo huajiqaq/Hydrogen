@@ -58,17 +58,22 @@ function base.resolvedata(v,data)
   local 点赞数=v.vote_count
   local 时间=时间戳(v.created_time)
   local 名字=v.author.name
-  local function isauthor(v)
-    local a=""
-    if v.role=="author" then
-      a=" (作者) "
+  local 回复名字=""
+
+  if v.reply_to_author ~= nil
+    --名字=v.author.. "  →  "..addauthor(v.reply_to_author)
+    回复名字=" -> "..v.reply_to_author.name
+    if v.reply_author_tag[1]~=nil
+      回复名字=回复名字.."「"..v.reply_author_tag[1].text.."」"
     end
-    return v.name..a
   end
+  if v.author_tag[1] ~= nil
+    名字=名字.."「"..v.author_tag[1].text.."」"
+  end
+  名字=名字..回复名字
+
   local myspan
-  pcall(function()
-    名字=isauthor(v.author).. "  →  "..isauthor(v.reply_to_author)
-  end)
+
   local 包含url
   if 内容:find("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]") then
     myspan=setstyle(Html.fromHtml(内容))
@@ -76,7 +81,7 @@ function base.resolvedata(v,data)
    else
     myspan=Html.fromHtml(内容)
   end
-  踩tab[tostring((tostring(v.id)))]=v.disliked
+
   if 无图模式 then
     头像=logopng
   end
@@ -105,17 +110,15 @@ function base.resolvedata(v,data)
   add.图像=图像
   add.时间=时间
   add.isme=isme
+  add.liked=v.liked
+  add.disliked=v.disliked
   add.包含url=包含url
   table.insert(data,add)
 end
 
 local function 多选菜单(data,v)
   local id内容=data.id内容
-  if 踩tab[id内容]==true then
-    ctext="取消踩"
-   else
-    ctext="踩评论"
-  end
+
 
   local menu={
 
@@ -127,22 +130,54 @@ local function 多选菜单(data,v)
         activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(v.Text)
         提示("复制文本成功")
     end},
-    {ctext,function()
+    {(function()
+        if data.disliked
+          return "取消踩"
+         else
+          return "踩评论"
+        end
+        end)(),function()
         if not(getLogin()) then
           return 提示("请登录后使用本功能")
         end
-        if 踩tab[id内容]==false
+        if not(data.disliked)
           zHttp.put("https://api.zhihu.com/comment_v5/comment/"..id内容.."/reaction/dislike",'',postapphead,function(code,content)
             if code==200 then
               提示("踩成功")
-              踩tab[id内容]=true
+              data.disliked=true
             end
           end)
          else
           zHttp.delete("https://api.zhihu.com/comment_v5/comment/"..id内容.."/reaction/dislike",postapphead,function(code,content)
             if code==200 then
               提示("取消踩成功")
-              踩tab[id内容]=false
+              data.disliked=false
+            end
+          end)
+        end
+    end},
+    {(function()
+        if data.liked
+          return "取消赞"
+         else
+          return "赞评论"
+        end
+        end)(),function()
+        if not(getLogin()) then
+          return 提示("请登录后使用本功能")
+        end
+        if not(data.liked)
+          zHttp.put("https://api.zhihu.com/comment_v5/comment/"..id内容.."/reaction/like",'',postapphead,function(code,content)
+            if code==200 then
+              提示("赞成功")
+              data.liked=true
+            end
+          end)
+         else
+          zHttp.delete("https://api.zhihu.com/comment_v5/comment/"..id内容.."/reaction/like",postapphead,function(code,content)
+            if code==200 then
+              提示("取消踩赞成功")
+              data.liked=false
             end
           end)
         end
@@ -238,7 +273,6 @@ function base.getAdapter(comment_pagetool,pos)
       local views=holder.view.getTag()
       local data=data[position+1]
       local type=data.datatype
-
       local 标题=data.标题
       local 预览内容=data.预览内容
       local id内容=data.id内容
@@ -254,19 +288,74 @@ function base.getAdapter(comment_pagetool,pos)
         views.提示内容.Visibility=8
       end
 
-
+      if comment_type=="comments"
+        views.提示内容.setVisibility(8)
+        views.card.setCardBackgroundColor(转0x(cardedge))
+      end
       views.标题.text=标题
-      views.预览内容.text=预览内容
       views.时间.text=时间
+
+      --25.1.5 评论区表情 （参考于小白马）
+      local spannableString = SpannableStringBuilder()
+      spannableString.append(预览内容)
+      views.预览内容.setText(spannableString)
+      for i,d in pairs(zemoji) do
+        Spannable_Image(spannableString, "\\["..i.."\\]",d)
+      end
+      views.预览内容.setText(spannableString)
+
+
 
       loadglide(views.图像,图像)
 
       views.card.onClick=function()
         if views.提示内容.getVisibility()==0 then
-          if comment_type=="comments" then
+          if type=="comments" then
             return 提示("当前已在该对话列表内")
           end
-          activity.newActivity("comment",{data.id内容,"comments",comment_id,comment_type,保存路径})
+          bottomSheetDialog = BottomSheetDialog(this)
+          bottomSheetDialog.setContentView(loadlayout("layout/commentI"))
+          bottomSheetDialog.show()
+          bottomSheetDialog.behavior.setPeekHeight(activity.getHeight()+导航栏高度);
+          bottomSheetDialog.setCancelable(true);
+          bottomSheetDialog.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+          bottomSheetDialog.behavior.setDraggable(true)
+          comment_type="comments"
+          _title.text="对话列表"
+          bottomSheetDialog.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+          bottomSheetDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+          task(1,function()
+            comment_recyl.setPadding(0,0,0,inputLay.height)
+          end)
+          --[[barbb.onTouch=function(v,e)
+            local action = e.getAction()
+            if action == MotionEvent.ACTION_DOWN then
+              bottomSheetDialog.behavior.setDraggable(false)
+             elseif action == MotionEvent.ACTION_MOVE then
+              bottomSheetDialog.behavior.setDraggable(true)
+            end
+return false
+          end]]
+
+          oricomment_id=comment_id
+          oricomment_type=comment_type
+          comment_base=require "model.comment"
+          :new(data.id内容,"comments")
+          comment_pagetool=comment_base
+          :initpage(comment_recyl,commentsrl)
+          commentsrl.requestDisallowInterceptTouchEvent(true)
+          comment_recyl.addOnScrollListener(RecyclerView.OnScrollListener {
+            onScrollStateChanged = function(view, s)
+              if s==0 then
+                if view.canScrollVertically(-1) then
+                  bottomSheetDialog.behavior.setDraggable(false)
+                 else
+                  bottomSheetDialog.behavior.setDraggable(true)
+                end
+              end
+            end
+          })
+          --activity.newActivity("comment",{data.id内容,"comments",comment_id,comment_type,保存路径})
         end
       end
 
@@ -348,9 +437,7 @@ function base.getAdapter(comment_pagetool,pos)
         downy=event.getRawY()
       end
 
-      views.预览内容.onClick=function(view)
-        多选菜单(data,view)
-      end
+
 
       views.预览内容.onLongClick=function(view)
         多选菜单(data,view)

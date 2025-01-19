@@ -1,6 +1,6 @@
 {
   LinearLayout;
-  layout_width="-1";
+  layout_width="fill";
   BackgroundColor=backgroundc;
   descendantFocusability=ViewGroup.FOCUS_BLOCK_DESCENDANTS,
   {
@@ -9,13 +9,13 @@
     layout_gravity="center";
     layout_margin="16dp";
     layout_marginTop="8dp";
-    layout_marginBottom="8dp";
+    layout_marginBottom="3dp";
     layout_height="-2";
-    layout_width="-1";
+    layout_width="fill";
     radius=cardradius;
     CardBackgroundColor=cardedge;
-    StrokeColor=cardedge;
-    StrokeWidth=dp2px(1),
+    StrokeColor=primaryc;
+    StrokeWidth=dp2px(0),
     id="card";
     {
       LinearLayout;
@@ -24,7 +24,7 @@
       layout_width="fill";
       {
         LinearLayout;
-        padding="8dp",
+        padding="6dp",
         layout_height="fill";
         layout_width="fill";
         orientation="vertical";
@@ -36,8 +36,8 @@
           {
             CircleImageView;
             id="图像",
-            layout_width="24dp",
-            layout_height="24dp",
+            layout_width="32dp",
+            layout_height="32dp",
           };
           {
             TextView;
@@ -57,6 +57,8 @@
           {
             TextView;
             Typeface=字体("product");
+            layout_marginLeft="4dp";
+            layout_marginRight="4dp";
             textColor=textc;
             textIsSelectable=true;
             linksClickable=true;
@@ -68,14 +70,16 @@
             LinearLayout;
             orientation="horizontal";
             layout_marginTop="8dp",
-            layout_marginBottom="8dp",
+            layout_marginBottom="2dp",
+            layout_marginLeft="4dp";
+            layout_marginRight="4dp";
             gravity="bottom";
             layout_gravity="bottom";
             layout_width="fill",
             {
               TextView;
               Typeface=字体("product");
-              textColor=stextc;
+              textColor=primaryc;
               gravity="left";
               text="查看对话列表",
               id="提示内容",
@@ -88,7 +92,7 @@
               layout_weight="1",
               gravity="right";
               Typeface=字体("product");
-              textColor=stextc;
+              textColor=primaryc;
               id="底部内容",
               textSize=内容文字大小;
             };
@@ -97,7 +101,7 @@
               layout_weight="1",
               gravity="right";
               Typeface=字体("product");
-              textColor=stextc;
+              textColor=primaryc;
               id="时间",
               textSize=内容文字大小;
             };

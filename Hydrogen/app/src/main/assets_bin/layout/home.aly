@@ -1,3 +1,4 @@
+
 {--侧滑根布局
   DrawerLayout;
   layout_width="match_parent";
@@ -9,6 +10,7 @@
     id="mainLay";
     layout_height="fill";
     layout_width="fill";
+    layout_marginTop=状态栏高度;
     background=backgroundc;
 
     {
@@ -148,7 +150,7 @@
       NestedScrollView;
       fillViewport="true";
       layout_width="fill";
-      layout_height="fill";
+      layout_height=activity.height+状态栏高度+dp2px(56);
       layout_behavior="@string/appbar_scrolling_view_behavior";
       {
         LinearLayoutCompat;
@@ -179,12 +181,22 @@
       layout_width="fill";
       layout_gravity="bottom";
       {
-        BottomNavigationView;
-        id="bnv";
-        layout_width="fill";
-        layout_height="wrap";
+        LinearLayout;
+        orientation="vertical";
+        {
+          BottomNavigationView;
+          id="bnv";
+          backgroundColor=res.color.attr.colorSurfaceContainer;
+          layout_width="fill";
+          layout_height="wrap";
+        };
+        {
+          View;id="ngbar";
+          backgroundColor=res.color.attr.colorSurfaceContainer;
+          layout_width="fill";
+          layout_height=导航栏高度;
+        };
       };
-
     };
   };
 
@@ -214,7 +226,7 @@
       {
         LinearLayout;
         layout_height="-2";
-        layout_width="fill";
+        layout_width="fill";layout_marginTop=状态栏高度;
         orientation="vertical";
         id="侧滑头",
         {
