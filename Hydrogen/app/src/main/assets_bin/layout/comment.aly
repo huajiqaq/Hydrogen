@@ -12,7 +12,7 @@
       LinearLayout;
       layout_width="-1";
       layout_height="-2";
-layout_marginTop=状态栏高度;
+      layout_marginTop=状态栏高度;
       elevation="0";
       background=backgroundc;
       orientation="vertical";

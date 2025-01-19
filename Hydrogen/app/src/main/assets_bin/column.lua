@@ -265,7 +265,7 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
     if consoleMessage.message()=="显示评论" then
-      activity.newActivity("comment",{id,urltype.."s",nil,nil,保存路径})
+      activity.newActivity("comment",{id,urltype.."s",保存路径})
      elseif consoleMessage.message()=="查看用户" then
       activity.newActivity("people",{author_id})
      elseif consoleMessage.message():find("收藏") then
@@ -360,7 +360,7 @@ if 类型=="本地" then
           if getDirSize(保存路径.."/".."fold/")==0 then
             提示("你还没有收藏评论")
            else
-            activity.newActivity("comment",{nil,"local",nil,nil,保存路径})
+            activity.newActivity("comment",{nil,"local",保存路径})
           end
         end
       },
@@ -444,7 +444,7 @@ if 类型=="本地" then
           if not urltype then
             return 提示("该页不支持该操作")
           end
-          activity.newActivity("comment",{id,urltype.."s",nil,nil,保存路径})
+          activity.newActivity("comment",{id,urltype.."s",保存路径})
 
         end
       },

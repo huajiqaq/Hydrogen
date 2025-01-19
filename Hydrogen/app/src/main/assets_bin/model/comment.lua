@@ -232,8 +232,8 @@ local function 多选菜单(data,v)
         }))
         .setPositiveButton("确定", {onClick=function()
             local commentid=id内容
-            local sendtext=edit.Text
-            发送评论(sendtext,commentid)
+            local send_edit=edit
+            发送评论(send_edit,commentid)
         end})
         .setNegativeButton("取消", nil)
         .show()
@@ -252,9 +252,6 @@ function base.getAdapter(comment_pagetool,pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
 
     getItemCount=function()
-      if 卡片信息 and #data==0 then
-        table.insert(data,卡片信息)
-      end
       return #data
     end,
 
@@ -288,8 +285,8 @@ function base.getAdapter(comment_pagetool,pos)
         views.提示内容.Visibility=8
       end
 
-      if comment_type=="comments"
-        views.提示内容.setVisibility(8)
+      if comment_type=="comments" then
+        --views.提示内容.setVisibility(8)
         views.card.setCardBackgroundColor(转0x(cardedge))
       end
       views.标题.text=标题
@@ -310,20 +307,45 @@ function base.getAdapter(comment_pagetool,pos)
 
       views.card.onClick=function()
         if views.提示内容.getVisibility()==0 then
-          if type=="comments" then
+          if comment_type=="comments" then
             return 提示("当前已在该对话列表内")
           end
           bottomSheetDialog = BottomSheetDialog(this)
-          bottomSheetDialog.setContentView(loadlayout("layout/commentI"))
+          local tmpviews={}
+          bottomSheetDialog.setContentView(loadlayout("layout/commentI",tmpviews))
+
+          local comment_recyl=tmpviews.comment_recyl
+          local commentsrl=tmpviews.commentsrl
+          _title=tmpviews._title
+          _more_lay=tmpviews._more_lay
+
+          --手动初始化发送按钮
+          tmpviews.send.onClick=function()
+            local send_edit=tmpviews.edit
+            发送评论(send_edit,id内容)
+          end
+
           bottomSheetDialog.show()
           bottomSheetDialog.behavior.setPeekHeight(activity.getHeight()+导航栏高度);
           bottomSheetDialog.setCancelable(true);
           bottomSheetDialog.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
           bottomSheetDialog.behavior.setDraggable(true)
-          comment_type="comments"
-          _title.text="对话列表"
+
+          --保留原调用 关闭弹窗后恢复
+          local ori_comment_base=_G["comment_base"]
+          local ori_comment_pagetool=_G["comment_pagetool"]
+          local ori_comment_type=_G["comment_type"]
+          bottomSheetDialog.onDismiss=function()
+            _G["comment_base"]=ori_comment_base
+            _G["comment_pagetool"]=ori_comment_pagetool
+            _G["comment_type"]=ori_comment_type
+          end
           bottomSheetDialog.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
           bottomSheetDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+          comment_type="comments"
+          _title.text="对话列表"
+
           task(1,function()
             comment_recyl.setPadding(0,0,0,inputLay.height)
           end)
@@ -334,14 +356,12 @@ function base.getAdapter(comment_pagetool,pos)
              elseif action == MotionEvent.ACTION_MOVE then
               bottomSheetDialog.behavior.setDraggable(true)
             end
-return false
+           return false
           end]]
 
-          oricomment_id=comment_id
-          oricomment_type=comment_type
-          comment_base=require "model.comment"
+          _G["comment_base"]=require "model.comment"
           :new(data.id内容,"comments")
-          comment_pagetool=comment_base
+          _G["comment_pagetool"]=comment_base
           :initpage(comment_recyl,commentsrl)
           commentsrl.requestDisallowInterceptTouchEvent(true)
           comment_recyl.addOnScrollListener(RecyclerView.OnScrollListener {
@@ -456,6 +476,7 @@ function base:initpage(view,sr)
   self.view=view
   self.sr=sr
   orititle=_title.text
+
   return MyPageTool2:new({
     view=view,
     sr=sr,
@@ -489,6 +510,7 @@ function base:initpage(view,sr)
   :createfunc()
   :setUrlItem(self:getUrlByType())
   :refer()
+
 end
 
 

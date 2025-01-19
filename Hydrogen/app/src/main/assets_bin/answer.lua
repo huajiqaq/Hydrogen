@@ -67,7 +67,7 @@ comment.onClick=function()
     return 提示("加载中")
   end
   local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
-  activity.newActivity("comment",{回答id,"answers",nil,nil,保存路径})
+  activity.newActivity("comment",{回答id,"answers",保存路径})
 end;
 
 
@@ -287,8 +287,7 @@ function 数据添加(t,b)
         t.progress.setVisibility(0)
       end
       等待doc(view)
-      local ansjs=(string.gsub(tostring(获取js("answer_pages")),"这里是要动态修改的底部偏移",tostring(tointeger(56+px2dp(导航栏高度)))))
-      加载js(view,ansjs)
+      加载js(view,获取js("answer_pages"))
       view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
       加载js(view,获取js("imgplus"))
       加载js(view,获取js("mdcopy"))
@@ -829,7 +828,7 @@ task(1,function()
           end
 
           local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
-          activity.newActivity("comment",{回答id,"answers",nil,nil,保存路径})
+          activity.newActivity("comment",{回答id,"answers",保存路径})
 
         end
       },

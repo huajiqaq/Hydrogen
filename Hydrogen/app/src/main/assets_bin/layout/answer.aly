@@ -173,11 +173,11 @@
     {
       ViewPager2;
       layout_width="fill";
-      layout_height=activity.height;
-      layout_marginBottom=dp2px(56);
+      layout_height="fill";
+      --layout_marginBottom=dp2px(56);
       id="pg",
       layout_behavior="@string/appbar_scrolling_view_behavior";
-      --paddingBottom="56dp";
+      paddingBottom=dp2px(56)+导航栏高度;
     };
     {LinearLayout,
       layout_height="fill";

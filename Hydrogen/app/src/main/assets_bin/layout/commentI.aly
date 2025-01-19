@@ -1,6 +1,6 @@
-{MaterialCardView; 
+{MaterialCardView;
   StrokeWidth=0,
-    radius=cardradius;
+  radius=cardradius;
   CardBackgroundColor=0x00000000;
   layout_width="fill";
   layout_height=activity.getHeight()+导航栏高度;
@@ -102,7 +102,6 @@
     };
     {
       LinearLayout,
-      id="internetnet",
       orientation="vertical",
       layout_width="fill",
       layout_height="match",
@@ -165,31 +164,7 @@
             };
           };
         };
-      };
-
-    };
-    {
-      LinearLayout,
-      id="localcomment",
-      orientation="vertical",
-      layout_width="fill",
-      layout_height="fill",
-      background=backgroundc,
-      {
-        ScrollView,
-        layout_width="fill",
-        layout_height="fill",
-        {
-          LinearLayout,
-          orientation="vertical",
-          background=backgroundc,
-          {
-            NoScrollListView;
-            layout_width="-1",
-            DividerHeight=0;
-            id="local_comment_list";
-          };
-        };
+      
       };
     };
   },

@@ -7,15 +7,16 @@ import "com.google.android.material.bottomsheet.*"
 import "com.google.android.material.chip.ChipGroup"
 import "com.google.android.material.chip.Chip"
 
-comment_id,comment_type,oricomment_id,oricomment_type,保存路径=...
+comment_id,comment_type,保存路径=...
+oricomment_id,oricomment_type=comment_id,comment_type
+
 activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 activity.setContentView(loadlayout("layout/comment"))
 
 波纹({fh,_more},"圆主题")
 
-function 发送评论(send_text,当前回复人)
-
+function 发送评论(send_edit,当前回复人)
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
@@ -27,23 +28,20 @@ function 发送评论(send_text,当前回复人)
   local 评论id
   local 回复id
 
+  --如果当前回复人为空值就设置为"" 兼容评论
   local 回复id=当前回复人 or ""
 
   --测试不通过unicode编码也可以 暂时这么解决
   --或许之后知乎会仅支持unicode 到时候下载知乎app分析一下
 
   --替换 防止发表评论提交多行知乎api报错
-  local mytext=send_text
+  local mytext=send_edit.text
   --回车
   :gsub("\r","\\u000D")
   --换行
   :gsub("\n","\\u000A")
 
   if comment_type=="comments" then
-    --防止在对话列表内回复id为空
-    if 回复id=="" then
-      回复id=comment_id
-    end
     --将类型和id改为原来的 防止报404
     评论类型 = oricomment_type
     评论id = oricomment_id
@@ -60,7 +58,7 @@ function 发送评论(send_text,当前回复人)
     if code==200 then
       commentid=nil
       提示("发送成功 如若想看到自己发言请刷新数据")
-      edit.Text=""
+      send_edit.Text=""
     end
   end)
 end
@@ -142,7 +140,7 @@ if comment_type=="local_chat" then
       end
   end})
 
-  _title.text="对话列表" 
+  _title.text="对话列表"
  elseif comment_type=="local" then
   internetnet.setVisibility(8)
   local_comment_list.setVisibility(0)
@@ -208,8 +206,8 @@ end
 
 if not(comment_type:find("local")) then
   send.onClick=function()
-    local sendtext=edit.Text
-    发送评论(sendtext)
+    local send_edit=edit
+    发送评论(send_edit)
   end
   踩tab={}
   comment_item=获取适配器项目布局("comment/comment")
@@ -220,7 +218,7 @@ if not(comment_type:find("local")) then
   if comment_type=="comments" then
     --楼中楼
     _title.text="对话列表"
-    
+
   end
   --评论
   comment_base=require "model.comment"
@@ -235,11 +233,13 @@ task(1,function()
     tittle="评论",
     list={
       {src=图标("format_align_left"),text="按时间顺序",onClick=function()
+          local comment_pagetool,comment_base=_G["comment_pagetool"],_G["comment_base"]
           comment_pagetool:setUrlItem(comment_base:getUrlByType("ts"))
           :clearItem()
           :refer(nil,nil,true)
       end},
       {src=图标("notes"),text="按默认顺序",onClick=function()
+          local comment_pagetool,comment_base=_G["comment_pagetool"],_G["comment_base"]
           comment_pagetool:setUrlItem(comment_base:getUrlByType("score"))
           :clearItem()
           :refer(nil,nil,true)

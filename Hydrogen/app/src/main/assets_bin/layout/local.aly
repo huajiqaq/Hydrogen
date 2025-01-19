@@ -9,6 +9,7 @@
     LinearLayout;
     layout_width="-1";
     layout_height="56dp";
+    layout_marginTop=状态栏高度;
     gravity="center|left";
     {
       LinearLayout;
@@ -171,7 +172,7 @@
       layout_height="fill";
       id="pg",
       layout_behavior="@string/appbar_scrolling_view_behavior";
-      paddingBottom="56dp";
+      paddingBottom=dp2px(56)+导航栏高度;
     };
 
     {
@@ -188,6 +189,7 @@
           RelativeLayout,
           layout_width="fill",
           layout_height="56dp",
+          layout_marginBottom=导航栏高度;
           clickable="true",
           id="ll",
           {
@@ -318,6 +320,7 @@
       layout_height="wrap";
       layout_width="fill";
       layout_gravity="bottom";
+      
       {
         LinearLayout;
         layout_width="-1";

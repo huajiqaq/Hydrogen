@@ -11,6 +11,9 @@ import "android.graphics.PathMeasure"
 
 title,author=...
 
+activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+
 波纹({fh,_more,mark},"圆主题")
 波纹({all_root},"方自适应")
 
@@ -137,7 +140,7 @@ comment.onClick=function()
   if getDirSize(保存路径.."/".."fold/")==0 then
     提示("你还没有收藏评论")
    else
-    activity.newActivity("comment",{nil,"local",nil,nil,保存路径})
+    activity.newActivity("comment",{nil,"local",保存路径})
   end
 end;
 
