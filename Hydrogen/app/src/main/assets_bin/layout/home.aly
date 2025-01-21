@@ -182,6 +182,7 @@
       {
         LinearLayout;
         orientation="vertical";
+        layout_width="fill";
         {
           BottomNavigationView;
           id="bnv";

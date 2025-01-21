@@ -35,10 +35,15 @@ function edgeToedge(顶栏,底栏,callback,isMargin)
   local window = activity.getWindow()
   window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
+  if Build.VERSION.SDK_INT >= 30 then--Android R+
+    window.setDecorFitsSystemWindows(false);
+    window.setNavigationBarContrastEnforced(false);
+    window.setStatusBarContrastEnforced(false);
+  end
 
   local ViewCompat = luajava.bindClass "androidx.core.view.ViewCompat"
   local WindowInsetsCompat = luajava.bindClass "androidx.core.view.WindowInsetsCompat"
-  local view=activity.findViewById(android.R.id.content)
+  local view=window.getDecorView()
   local attachedToWindow = view.isAttachedToWindow();
   if attachedToWindow then
     local windowInsets = ViewCompat.getRootWindowInsets(view);
