@@ -71,9 +71,11 @@ function base:getData(cb,issave)
     end
     return
   end
-  local testhead=table.clone(apphead)
-  testhead["x-zse-93"] = "101_4_3.0"
-  zHttp.get(url,testhead,function(a,b)
+  zse96_encrypt=require "model.zse96_encrypt"
+  local head
+  url,head=zse96_encrypt(url)
+
+  zHttp.get(url,head,function(a,b)
     if a==200 then
       local b=luajson.decode(b)
       local type1=self.type

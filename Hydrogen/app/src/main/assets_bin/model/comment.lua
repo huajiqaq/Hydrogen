@@ -285,10 +285,6 @@ function base.getAdapter(comment_pagetool,pos)
         views.提示内容.Visibility=8
       end
 
-      if comment_type=="comments" then
-        --views.提示内容.setVisibility(8)
-        views.card.setCardBackgroundColor(转0x(cardedge))
-      end
       views.标题.text=标题
       views.时间.text=时间
 
@@ -310,72 +306,7 @@ function base.getAdapter(comment_pagetool,pos)
           if comment_type=="comments" then
             return 提示("当前已在该对话列表内")
           end
-          bottomSheetDialog = BottomSheetDialog(this)
-          local tmpviews={}
-          bottomSheetDialog.setContentView(loadlayout("layout/commentI",tmpviews))
-
-          local comment_recyl=tmpviews.comment_recyl
-          local commentsrl=tmpviews.commentsrl
-          _title=tmpviews._title
-          _more_lay=tmpviews._more_lay
-
-          --手动初始化发送按钮
-          tmpviews.send.onClick=function()
-            local send_edit=tmpviews.edit
-            发送评论(send_edit,id内容)
-          end
-
-          bottomSheetDialog.show()
-          bottomSheetDialog.behavior.setPeekHeight(activity.getHeight()+导航栏高度);
-          bottomSheetDialog.setCancelable(true);
-          bottomSheetDialog.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-          bottomSheetDialog.behavior.setDraggable(true)
-
-          --保留原调用 关闭弹窗后恢复
-          local ori_comment_base=_G["comment_base"]
-          local ori_comment_pagetool=_G["comment_pagetool"]
-          local ori_comment_type=_G["comment_type"]
-          bottomSheetDialog.onDismiss=function()
-            _G["comment_base"]=ori_comment_base
-            _G["comment_pagetool"]=ori_comment_pagetool
-            _G["comment_type"]=ori_comment_type
-          end
-          bottomSheetDialog.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-          bottomSheetDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-          comment_type="comments"
-          _title.text="对话列表"
-
-          task(1,function()
-            comment_recyl.setPadding(0,0,0,inputLay.height)
-          end)
-          --[[barbb.onTouch=function(v,e)
-            local action = e.getAction()
-            if action == MotionEvent.ACTION_DOWN then
-              bottomSheetDialog.behavior.setDraggable(false)
-             elseif action == MotionEvent.ACTION_MOVE then
-              bottomSheetDialog.behavior.setDraggable(true)
-            end
-           return false
-          end]]
-
-          _G["comment_base"]=require "model.comment"
-          :new(data.id内容,"comments")
-          _G["comment_pagetool"]=comment_base
-          :initpage(comment_recyl,commentsrl)
-          commentsrl.requestDisallowInterceptTouchEvent(true)
-          comment_recyl.addOnScrollListener(RecyclerView.OnScrollListener {
-            onScrollStateChanged = function(view, s)
-              if s==0 then
-                if view.canScrollVertically(-1) then
-                  bottomSheetDialog.behavior.setDraggable(false)
-                 else
-                  bottomSheetDialog.behavior.setDraggable(true)
-                end
-              end
-            end
-          })
-          --activity.newActivity("comment",{data.id内容,"comments",comment_id,comment_type,保存路径})
+          activity.newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
         end
       end
 
@@ -487,6 +418,11 @@ function base:initpage(view,sr)
       --针对对话列表 添加父评论
       if self.type=="comments" then
         self.resolvedata(data.root,adpdata)
+        评论类型=data.root.resource_type.."s"
+        评论id=父回复id
+       else
+        评论类型=comment_type
+        评论id=comment_id
       end
       if data.counts then
         _title.text=orititle.." "..tostring(data.counts.total_counts).."条"

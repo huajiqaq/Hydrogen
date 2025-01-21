@@ -5,7 +5,6 @@
   layout_height="-1";
   {
     LinearLayout;
-    layout_marginTop=状态栏高度;
     layout_width="-1";
     layout_height="-1";
     orientation="vertical";

@@ -8,7 +8,6 @@ import "com.google.android.material.materialswitch.MaterialSwitch"
 设置视图("layout/settings")
 设置toolbar(toolbar)
 设置toolbar属性(toolbar,"设置")
-activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
 function onOptionsItemSelected()
   activity.finish()

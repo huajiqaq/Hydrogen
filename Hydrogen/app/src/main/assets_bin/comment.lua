@@ -7,16 +7,16 @@ import "com.google.android.material.bottomsheet.*"
 import "com.google.android.material.chip.ChipGroup"
 import "com.google.android.material.chip.Chip"
 
-comment_id,comment_type,保存路径=...
-oricomment_id,oricomment_type=comment_id,comment_type
+comment_id,comment_type,保存路径,父回复id=...
 
-activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+import "com.google.android.material.floatingactionbutton.FloatingActionButton"
+
 activity.setContentView(loadlayout("layout/comment"))
+
 
 波纹({fh,_more},"圆主题")
 
-function 发送评论(send_edit,当前回复人)
+function 发送评论()
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
@@ -24,43 +24,84 @@ function 发送评论(send_edit,当前回复人)
   local mytext
   local postdata
   local 请求链接
-  local 评论类型
-  local 评论id
-  local 回复id
 
-  --如果当前回复人为空值就设置为"" 兼容评论
-  local 回复id=当前回复人 or ""
-
-  --测试不通过unicode编码也可以 暂时这么解决
-  --或许之后知乎会仅支持unicode 到时候下载知乎app分析一下
-
-  --替换 防止发表评论提交多行知乎api报错
-  local mytext=send_edit.text
-  --回车
-  :gsub("\r","\\u000D")
-  --换行
-  :gsub("\n","\\u000A")
+  local 回复id=""
 
   if comment_type=="comments" then
-    --将类型和id改为原来的 防止报404
-    评论类型 = oricomment_type
-    评论id = oricomment_id
-   else
-    评论类型 = comment_type
-    评论id = comment_id
+    回复id=comment_id
   end
 
-  local postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
-  local 请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
+  local bottomSheetDialog = BottomSheetDialog(this)
+  bottomSheetDialog.setContentView(loadlayout({
+    LinearLayoutCompat;
+    orientation="vertical";
+    layout_height="fill";
+    layout_width="fill";
+    {
+      LinearLayout;
+      layout_width="fill";
+      layout_height="fill";
+      gravity="center";
+      Focusable=true;
+      FocusableInTouchMode=true;
+      --开启动画可能造成卡顿
+      --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+      {
+        EditText;
+        id="send_edit";
+        layout_weight=1;
+        layout_marginLeft="16dp";
+        layout_margin="8dp";
+        maxLines=10;
+        hint="输入评论";
+      };
+      {
+        MaterialButton;
+        layout_marginRight="10dp";
+        id="send";
+        textColor=backgroundc;
+        text="发送";
+      };
+    };
+  }))
 
-  local url,head=require "model.zse96_encrypt"(请求链接)
-  zHttp.post(url,postdata,head,function(code,json)
-    if code==200 then
-      commentid=nil
-      提示("发送成功 如若想看到自己发言请刷新数据")
-      send_edit.Text=""
+  send_edit.requestFocus()
+  send_edit.postDelayed(Runnable{
+    run=function()
+      local imm= this.getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.showSoftInput(send_edit, InputMethodManager.SHOW_IMPLICIT);
     end
-  end)
+  }, 100);
+
+
+  bottomSheetDialog.show()
+  bottomSheetDialog.setCancelable(true);
+
+
+  send.onClick=function()
+    --测试不通过unicode编码也可以 暂时这么解决
+    --或许之后知乎会仅支持unicode 到时候下载知乎app分析一下
+
+    --替换 防止发表评论提交多行知乎api报错
+    local mytext=send_edit.text
+    --回车
+    :gsub("\r","\\u000D")
+    --换行
+    :gsub("\n","\\u000A")
+
+    --评论类型和评论id处理逻辑在comment_base
+    local postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
+    local 请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
+
+    local url,head=require "model.zse96_encrypt"(请求链接)
+    zHttp.post(url,postdata,head,function(code,json)
+      if code==200 then
+        提示("发送成功 如若想看到自己发言请刷新数据")
+        bottomSheetDialog.dismiss()
+      end
+    end)
+  end
+
 end
 
 
@@ -211,14 +252,9 @@ if not(comment_type:find("local")) then
   end
   踩tab={}
   comment_item=获取适配器项目布局("comment/comment")
-  --延迟一毫秒测量设置PaddingBottom 防止无法获取
-  task(1,function()
-    comment_recy.setPadding(0,0,0,inputLay.height)
-  end)
   if comment_type=="comments" then
     --楼中楼
     _title.text="对话列表"
-
   end
   --评论
   comment_base=require "model.comment"

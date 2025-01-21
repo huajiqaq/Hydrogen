@@ -12,7 +12,7 @@
       LinearLayout;
       layout_width="-1";
       layout_height="-2";
-      layout_marginTop=状态栏高度;
+      id="mainLay";
       elevation="0";
       background=backgroundc;
       orientation="vertical";
@@ -101,47 +101,25 @@
         };
 
         {
-          MaterialCardView;
-          layout_width="fill";
-          layout_height="wrap";
-          StrokeWidth=0,
-          radius=cardradius;
-          CardBackgroundColor=res.color.attr.colorSurfaceContainer;
-          id="inputLay";
-          layout_gravity="bottom";
-          --开启动画可能造成卡顿
-          --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-          {
-            LinearLayout;
-            layout_width="fill";
-            layout_height="fill";
-            layout_marginBottom=导航栏高度;
-            gravity="center";
-            Focusable=true;
-            FocusableInTouchMode=true;
-            --开启动画可能造成卡顿
-            --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-            {
-              EditText;
-              id="edit";
-              layout_weight=1;
-              layout_marginLeft="16dp";
-              layout_margin="8dp";
-              maxLines=10;
-              hint="输入评论";
-            };
-            {
-              MaterialButton;
-              layout_marginRight="10dp";
-              id="send";
-              textColor=backgroundc;
-              text="发送";
-              Typeface=字体("product-Bold");
-            };
-          };
-        };
-      };
+          FloatingActionButton,
+          id="send",
+          CustomSize="40dp";
+          MaxImageSize="24dp";
+          layout_gravity="bottom|end",
+          layout_marginBottom="48dp",
+          layout_marginEnd="16dp",
+          ImageBitmap=loadbitmap(图标("add_comment")),
+          ShapeAppearanceModel=(function()
+            import "com.google.android.material.shape.CornerFamily";
+            import "com.google.android.material.shape.ShapeAppearanceModel"
+            return ShapeAppearanceModel()
+            .toBuilder()
+            .setAllCorners(CornerFamily.ROUNDED, dp2px(12))
+            .build();
+          end)()
+        },
 
+      };
     };
     {
       LinearLayout,

@@ -4,7 +4,6 @@
     FrameLayout;
     layout_width="fill";
     layout_height="fill";
-    paddingBottom="72dp";
     {
       LinearLayout;
       layout_width="fill";
@@ -30,6 +29,7 @@
           nestedScrollingEnabled=true,
           layout_height="fill";
           layout_width="fill";
+          LayoutManager=(GridLayoutManager(activity,rccolumn))
         };
       };
     };
@@ -39,7 +39,6 @@
     FrameLayout;
     layout_width="fill";
     layout_height="fill";
-    paddingBottom="72dp";
     {
       LinearLayout;
       layout_width="fill";
@@ -65,7 +64,6 @@
     FrameLayout;
     layout_width="fill";
     layout_height="fill";
-    paddingBottom="72dp";
     {
       LinearLayout;
       layout_width="fill";
@@ -91,7 +89,6 @@
     FrameLayout;
     layout_width="fill";
     layout_height="fill";
-    paddingBottom="72dp";
     {
       LinearLayout;
       layout_width="fill";

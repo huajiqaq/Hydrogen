@@ -11,8 +11,6 @@ import "android.graphics.PathMeasure"
 
 title,author=...
 
-activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
 
 波纹({fh,_more,mark},"圆主题")
 波纹({all_root},"方自适应")
@@ -42,6 +40,14 @@ import "androidx.viewpager2.widget.ViewPager2"
 activity.setContentView(loadlayout("layout/local"))
 
 设置toolbar(toolbar)
+
+edgeToedge(mainLay,底栏,function()
+  pg.setPadding(
+  pg.getPaddingLeft(),
+  pg.getPaddingTop(),
+  pg.getPaddingRight(),
+  dp2px(56)+导航栏高度);
+end)
 
 
 local isDoubleTap=false

@@ -17,14 +17,17 @@ import "com.google.android.material.progressindicator.LinearProgressIndicator"
 问题id,回答id=...
 
 --new 0.46 删除滑动监听
-local resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android")
-状态栏高度= activity.getResources().getDimensionPixelSize(resourceId)
-local resourceId = activity.getResources().getIdentifier("navigation_bar_height", "dimen", "android")
-导航栏高度 = activity.getResources().getDimensionPixelSize(resourceId)
-activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
 activity.setContentView(loadlayout("layout/answer"))
 设置toolbar(toolbar)
+
+edgeToedge(mainLay,底栏,function()
+  pg.setPadding(
+  pg.getPaddingLeft(),
+  pg.getPaddingTop(),
+  pg.getPaddingRight(),
+  dp2px(56)+导航栏高度);
+end)
 
 local recyclerViewField = ViewPager2.getDeclaredField("mRecyclerView");
 recyclerViewField.setAccessible(true);

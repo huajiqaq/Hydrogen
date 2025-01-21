@@ -5,11 +5,11 @@
   elevation="0";
   background=backgroundc;
   orientation="vertical";
+  id="mainLay";
   {
     LinearLayout;
     layout_width="-1";
     layout_height="56dp";
-    layout_marginTop=状态栏高度;
     gravity="center|left";
     {
       LinearLayout;
@@ -172,7 +172,6 @@
       layout_height="fill";
       id="pg",
       layout_behavior="@string/appbar_scrolling_view_behavior";
-      paddingBottom=dp2px(56)+导航栏高度;
     };
 
     {
@@ -180,139 +179,146 @@
       layout_height="fill";
       layout_width="fill";
       layout_gravity="bottom";
+
       {
         CardView;
         elevation="6dp";
         BackgroundColor=barbackgroundc;
         layout_gravity="bottom";
+
         {
-          RelativeLayout,
-          layout_width="fill",
-          layout_height="56dp",
-          layout_marginBottom=导航栏高度;
-          clickable="true",
-          id="ll",
+          LinearLayout;
+          layout_width="-1";
+          layout_height="-1";
+          id="底栏";
           {
-            LinearLayout;
-            layout_width="-1";
-            layout_height="-1";
-            gravity="left|center";
-            paddingLeft="8dp";
-            paddingRight="8dp";
-            id="llb";
+            RelativeLayout,
+            layout_width="fill",
+            layout_height="56dp",
+            clickable="true",
+            id="ll",
             {
               LinearLayout;
-              orientation="horizontal";
+              layout_width="-1";
               layout_height="-1";
-              layout_width=activity.getWidth()/4,
-              tooltip="点赞数",
-              gravity="center";
-              layout_weight="1";
-              id="voteup";
+              gravity="left|center";
+              paddingLeft="8dp";
+              paddingRight="8dp";
+              id="llb";
               {
-                ImageView;
-                layout_height="24dp";
-                layout_width="24dp";
-                src=图标("vote_up");
-                ColorFilter=primaryc;
-                PivotX="12dp";
-                PivotY="24dp";
+                LinearLayout;
+                orientation="horizontal";
+                layout_height="-1";
+                layout_width=activity.getWidth()/4,
+                tooltip="点赞数",
+                gravity="center";
+                layout_weight="1";
+                id="voteup";
+                {
+                  ImageView;
+                  layout_height="24dp";
+                  layout_width="24dp";
+                  src=图标("vote_up");
+                  ColorFilter=primaryc;
+                  PivotX="12dp";
+                  PivotY="24dp";
+                };
+                {
+                  TextView;
+                  layout_marginLeft="4dp",
+                  textSize="12sp";
+                  Typeface=字体("product-Bold");
+                  textColor=stextc;
+                  id="vote_count";
+                  Text="0";
+                };
               };
               {
-                TextView;
-                layout_marginLeft="4dp",
-                textSize="12sp";
-                Typeface=字体("product-Bold");
-                textColor=stextc;
-                id="vote_count";
-                Text="0";
+                LinearLayout;
+                orientation="horizontal";
+                layout_height="-1";
+                layout_width=activity.getWidth()/4,
+                gravity="center";
+                tooltip="感谢数",
+                layout_weight="1";
+                id="thank";
+                {
+                  ImageView;
+                  layout_height="24dp";
+                  layout_width="24dp";
+                  id="thank_icon";
+                  src=图标("favorite");
+                  ColorFilter=primaryc;
+                  PivotX="12dp";
+                  PivotY="24dp";
+                };
+                {
+                  TextView;
+                  textSize="12sp";
+                  layout_marginLeft="4dp",
+                  textColor=stextc;
+                  Typeface=字体("product-Bold");
+                  id="thanks_count";
+                  Text="0";
+                };
               };
-            };
-            {
-              LinearLayout;
-              orientation="horizontal";
-              layout_height="-1";
-              layout_width=activity.getWidth()/4,
-              gravity="center";
-              tooltip="感谢数",
-              layout_weight="1";
-              id="thank";
               {
-                ImageView;
-                layout_height="24dp";
-                layout_width="24dp";
-                id="thank_icon";
-                src=图标("favorite");
-                ColorFilter=primaryc;
-                PivotX="12dp";
-                PivotY="24dp";
-              };
-              {
-                TextView;
-                textSize="12sp";
-                layout_marginLeft="4dp",
-                textColor=stextc;
-                Typeface=字体("product-Bold");
-                id="thanks_count";
-                Text="0";
-              };
-            };
-            {
-              LinearLayout;
-              orientation="horizontal";
-              layout_height="-1";
-              layout_width=activity.getWidth()/4;
-              tooltip="评论数",
-              gravity="center";
-              layout_weight="1";
-              id="mark",
+                LinearLayout;
+                orientation="horizontal";
+                layout_height="-1";
+                layout_width=activity.getWidth()/4;
+                tooltip="评论数",
+                gravity="center";
+                layout_weight="1";
+                id="mark",
 
-              {
-                ImageView;
-                layout_height="24dp";
-                layout_width="24dp";
-                src=图标("bookmarks");
-                ColorFilter=primaryc;
-                PivotX="12dp";
-                PivotY="24dp";
+                {
+                  ImageView;
+                  layout_height="24dp";
+                  layout_width="24dp";
+                  src=图标("bookmarks");
+                  ColorFilter=primaryc;
+                  PivotX="12dp";
+                  PivotY="24dp";
 
+                };
+                {
+                  TextView;
+                  textSize="12sp";
+                  layout_marginLeft="4dp",
+                  textColor=stextc;
+                  Typeface=字体("product-Bold");
+                  id="favlists_count";
+                  Text="0";
+                };
               };
               {
-                TextView;
-                textSize="12sp";
-                layout_marginLeft="4dp",
-                textColor=stextc;
-                Typeface=字体("product-Bold");
-                id="favlists_count";
-                Text="0";
+                LinearLayout;
+                orientation="horizontal";
+                layout_height="-1";
+                layout_width=activity.getWidth()/4;
+                gravity="center";
+                layout_weight="1";
+                onClick=function()end;
+                {
+                  ImageView;
+                  layout_height="24dp";
+                  layout_width="24dp";
+                  ColorFilter=primaryc;
+                  PivotX="12dp";
+                  PivotY="24dp";
+                };
               };
-            };
-            {
-              LinearLayout;
-              orientation="horizontal";
-              layout_height="-1";
-              layout_width=activity.getWidth()/4;
-              gravity="center";
-              layout_weight="1";
-              onClick=function()end;
               {
-                ImageView;
-                layout_height="24dp";
-                layout_width="24dp";
-                ColorFilter=primaryc;
-                PivotX="12dp";
-                PivotY="24dp";
+                LinearLayout;
+                layout_height="-1";
+                layout_width="-2";
+                layout_weight="1";
               };
-            };
-            {
-              LinearLayout;
-              layout_height="-1";
-              layout_width="-2";
-              layout_weight="1";
             };
           };
-        };
-      },
+        },
+      };
     };
 
     {
@@ -320,7 +326,7 @@
       layout_height="wrap";
       layout_width="fill";
       layout_gravity="bottom";
-      
+
       {
         LinearLayout;
         layout_width="-1";

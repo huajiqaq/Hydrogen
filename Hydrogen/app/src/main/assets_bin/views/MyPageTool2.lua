@@ -113,14 +113,13 @@ function Page_Tool:initPage()
       });
     end
 
-    --自定义LinearLayoutManager尝试解决闪退问题
-    local MyLinearLayoutManager=luajava.bindClass("com.hydrogen.MyLinearLayoutManager")(this,RecyclerView.VERTICAL,false)
+    if not thispage.getLayoutManager() then
+      --自定义LinearLayoutManager尝试解决闪退问题
+      local MyLinearLayoutManager=luajava.bindClass("com.hydrogen.MyLinearLayoutManager")(this,RecyclerView.VERTICAL,false)
+      thispage.setLayoutManager(MyLinearLayoutManager)
+    end
 
-    local manager=MyLinearLayoutManager
-
-
-
-    thispage.setLayoutManager(manager)
+    local manager=thispage.getLayoutManager()
 
     local adp=self.adapters[pos]
     if adp then

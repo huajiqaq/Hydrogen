@@ -24,14 +24,107 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.565
+versionCode=0.566
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
-local resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android")
-状态栏高度= activity.getResources().getDimensionPixelSize(resourceId)
-local resourceId = activity.getResources().getIdentifier("navigation_bar_height", "dimen", "android")
-导航栏高度 = activity.getResources().getDimensionPixelSize(resourceId)
+
+function edgeToedge(顶栏,底栏,callback,isMargin)
+
+
+  local window = activity.getWindow()
+  window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+
+  local ViewCompat = luajava.bindClass "androidx.core.view.ViewCompat"
+  local WindowInsetsCompat = luajava.bindClass "androidx.core.view.WindowInsetsCompat"
+  local view=activity.findViewById(android.R.id.content)
+  local attachedToWindow = view.isAttachedToWindow();
+  if attachedToWindow then
+    local windowInsets = ViewCompat.getRootWindowInsets(view);
+    local top = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+    local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).bottom;
+    local height = Math.abs(bottom - top);
+    状态栏高度=height
+    local top = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).top;
+    local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+    local height = Math.abs(bottom - top);
+    导航栏高度=height
+
+    if 顶栏 then
+      if isMargin then
+        local layoutParams = 顶栏.LayoutParams;
+        layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+        顶栏.setLayoutParams(layoutParams);
+        return
+      end
+      顶栏.setPadding(
+      顶栏.getPaddingLeft(),
+      状态栏高度,
+      顶栏.getPaddingRight(),
+      顶栏.getPaddingBottom()
+      );
+    end
+    if 底栏 then
+      if isMargin then
+        local layoutParams = 底栏.LayoutParams;
+        layoutParams.setMargins(layoutParams.leftMargin, layoutParams.bottomMargin, layoutParams.rightMargin,导航栏高度);
+        底栏.setLayoutParams(layoutParams);
+        return
+      end
+      底栏.setPadding(
+      底栏.getPaddingLeft(),
+      底栏.getPaddingTop(),
+      底栏.getPaddingRight(),
+      导航栏高度
+      );
+    end
+    if callback then
+      callback()
+    end
+
+   else
+
+    view.addOnAttachStateChangeListener(View.OnAttachStateChangeListener({
+      onViewAttachedToWindow=function(v)
+        local windowInsets = ViewCompat.getRootWindowInsets(v);
+        local top = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+        local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).bottom;
+        local height = Math.abs(bottom - top);
+        状态栏高度=height
+        local top = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).top;
+        local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+        local height = Math.abs(bottom - top);
+        导航栏高度=height
+
+        if 顶栏 then
+          顶栏.setPadding(
+          顶栏.getPaddingLeft(),
+          状态栏高度,
+          顶栏.getPaddingRight(),
+          顶栏.getPaddingBottom()
+          );
+        end
+        if 底栏 then
+          底栏.setPadding(
+          底栏.getPaddingLeft(),
+          底栏.getPaddingTop(),
+          底栏.getPaddingRight(),
+          导航栏高度
+          );
+        end
+        if callback then
+          callback()
+        end
+
+      end,
+      onViewDetachedFromWindow=function()
+      end
+    }))
+  end
+
+end
+
 
 zemoji={
   知乎益蜂 = [[https://pica.zhimg.com/v2-11d9b8b6edaae71e992f95007c777446.png]];
@@ -335,7 +428,7 @@ function sp2px(spValue,isreal)
 end
 rccolumn=px2dp(activity.getWidth())//300
 if rccolumn ==0
-rccolumn=1
+  rccolumn=1
 end
 function 写入文件(路径,内容)
   xpcall(function()
@@ -1187,7 +1280,7 @@ function getImageDrawable(image_path)
   --使用Bitmap对象创建一个BitmapDrawable对象并返回
   return BitmapDrawable(activity.getResources(), bitmap)
 end
- SpannableStringBuilder = luajava.bindClass "android.text.SpannableStringBuilder"
+SpannableStringBuilder = luajava.bindClass "android.text.SpannableStringBuilder"
 local Spannable = luajava.bindClass "android.text.Spannable"
 local ImageSpan = luajava.bindClass "android.text.style.ImageSpan"
 function Spannable_Image(spannable, str, drawable, start, _end, flags) -- SpannableString,要更改的内容（支持正则）,图片[,开始位置,结束位置,flags]
@@ -1204,7 +1297,7 @@ pcall(function()LuaUtil.unZip(srcLuaDir.."/res/zemoji.zip",activity.getExternalC
 for i,url in pairs(zemoji) do
   local drawable = getImageDrawable(表情(i))
   -- 设置Drawable  的图片的高度和宽度。 后面注释是获取设置图片原来的高度和宽度
- zemoji[i]= drawable.setBounds(0, -sp2px(2), sp2px(18), sp2px(16))--drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight())
+  zemoji[i]= drawable.setBounds(0, -sp2px(2), sp2px(18), sp2px(16))--drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight())
 
 end
 

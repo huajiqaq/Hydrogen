@@ -133,9 +133,9 @@ local function x_zse_96_b64encode(md5_bytes)
   local local_55 = '6fpLRqJO8M/c3jnYxFkUVC4ZIG12SiH=5v0mXDazWBTsuw7QetbKdoPyAl+hN9rgE'
   local local_56 = 0
   local local_57 = ''
-  
+
   local local_58,local_59
-  
+
   for local_13 = #local_53, 1, -3 do
     local_58 = 8 * (local_56 % 4)
     local_56 = local_56 + 1
@@ -163,6 +163,9 @@ local function getmd5(url)
    elseif url:find("https://api.zhihu.com") then
     path="/api/v4"..url:match("zhihu.com(.+)")
     url=判断url..path
+  end
+  if not 获取Cookie("https://www.zhihu.com/") or not 获取Cookie("https://www.zhihu.com/"):match("d_c0=(.-);") then
+    return error("合成参数失败 请检查登录状态 (如若想不登录浏览跳转主页登录页即可 不用登录)")
   end
   加密前数据="101_3_3.0+"..path.."+"..获取Cookie("https://www.zhihu.com/"):match("d_c0=(.-);")
   md5str=string.lower(MD5(加密前数据))

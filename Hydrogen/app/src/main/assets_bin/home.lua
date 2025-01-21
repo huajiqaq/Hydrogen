@@ -12,9 +12,6 @@ import "com.google.android.material.tabs.TabLayout"
 import "com.bumptech.glide.Glide"
 
 
-
-activity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
 activity.setContentView(loadlayout("layout/home"))
 设置toolbar(toolbar)
 
@@ -181,203 +178,221 @@ home_pageinfo={
   }
 }
 
-local menu={}
-local pageinfo_keys={}
-for i,item ipairs(home_items)
-  local home_pageinfo=home_pageinfo[item]
-  pageinfo_keys[item]=i-1
-  if home_pageinfo then
-    pagadp.add(loadlayout(home_pageinfo.lay))
-    
-    table.insert(menu,home_pageinfo.menu)
-    home_pageinfo.init()
-   else
-    error("错误 找不到"..item)
+function 初始化主页()
+
+  local menu={}
+  pageinfo_keys={}
+  for i,item ipairs(home_items)
+    local home_pageinfo=home_pageinfo[item]
+    pageinfo_keys[item]=i-1
+    if home_pageinfo then
+      local lay=home_pageinfo.lay
+      --手动设置高度
+      lay.paddingBottom=dp2px(72)+导航栏高度
+      pagadp.add(loadlayout(lay))
+
+      table.insert(menu,home_pageinfo.menu)
+      home_pageinfo.init()
+     else
+      error("错误 找不到"..item)
+    end
   end
-end
-
-local glm=(GridLayoutManager(activity,rccolumn))
-home_recy.setLayoutManager(glm)
 
 
-optmenu={}
-loadmenu(bnv.getMenu(), menu, optmenu, 3)
-bnv.setLabelVisibilityMode(1)
+  optmenu={}
+  loadmenu(bnv.getMenu(), menu, optmenu, 3)
+  bnv.setLabelVisibilityMode(1)
 
-page_home.setAdapter(pagadp)
-local startindex=pageinfo_keys[starthome]
-page_home.setCurrentItem(startindex,false)
+  page_home.setAdapter(pagadp)
+  local startindex=pageinfo_keys[starthome]
 
-
-bnv.getMenu().getItem(startindex).setChecked(true)
-_title.text=(bnv.getMenu().getItem(startindex).getTitle())
-
-for i=0,bnv.getMenu().size()-1 do
-  bnv.getChildAt(0).getChildAt(i).onLongClick=function()
-    return true
+  --默认为首页 所以setCurrentItem不会触发 手动触发一下
+  if startindex==0 then
+    home_pageinfo[starthome].refer()
   end
-end
 
-local recommend_index=pageinfo_keys.推荐
-if recommend_index then
-  bnv.getChildAt(0).getChildAt(recommend_index).onLongClick=function()
-    if page_home.getCurrentItem()~=recommend_index or HometabLayout.getTabCount()==0 then
+  page_home.setCurrentItem(startindex,false)
+
+
+  bnv.getMenu().getItem(startindex).setChecked(true)
+  _title.text=(bnv.getMenu().getItem(startindex).getTitle())
+
+  for i=0,bnv.getMenu().size()-1 do
+    bnv.getChildAt(0).getChildAt(i).onLongClick=function()
       return true
     end
-    import "com.google.android.material.bottomsheet.*"
+  end
 
-    import "com.google.android.material.chip.ChipGroup"
-    import "com.google.android.material.chip.Chip"
+  local recommend_index=pageinfo_keys.推荐
+  if recommend_index then
+    bnv.getChildAt(0).getChildAt(recommend_index).onLongClick=function()
+      if page_home.getCurrentItem()~=recommend_index or HometabLayout.getTabCount()==0 then
+        return true
+      end
+      import "com.google.android.material.bottomsheet.*"
 
-    local gd2 = GradientDrawable()
-    gd2.setColor(转0x(backgroundc))--填充
-    local radius=dp2px(16)
-    gd2.setCornerRadii({radius,radius,radius,radius,0,0,0,0})--圆角
-    gd2.setShape(0)--形状，0矩形，1圆形，2线，3环形
-    local dann={
-      LinearLayout;
-      layout_width=-1;
-      layout_height=-1;
-      {
+      import "com.google.android.material.chip.ChipGroup"
+      import "com.google.android.material.chip.Chip"
+
+      local gd2 = GradientDrawable()
+      gd2.setColor(转0x(backgroundc))--填充
+      local radius=dp2px(16)
+      gd2.setCornerRadii({radius,radius,radius,radius,0,0,0,0})--圆角
+      gd2.setShape(0)--形状，0矩形，1圆形，2线，3环形
+      local dann={
         LinearLayout;
-        orientation="vertical";
         layout_width=-1;
-        layout_height=-2;
-        Elevation="4dp";
-        BackgroundDrawable=gd2;
-        id="ztbj";
-        {
-          CardView;
-          layout_gravity="center",
-          CardBackgroundColor=转0x(cardedge);
-          radius="3dp",
-          Elevation="0dp";
-          layout_height="6dp",
-          layout_width="56dp",
-          layout_marginTop="12dp";
-        };
-        {
-          TextView;
-          layout_width=-1;
-          layout_height=-2;
-          textSize="20sp";
-          layout_marginTop="24dp";
-          layout_marginLeft="24dp";
-          layout_marginRight="24dp";
-          Text="tab切换";
-          Typeface=字体("product-Bold");
-          textColor=转0x(primaryc);
-        };
-        {
-          HorizontalScrollView;
-          layout_marginTop="8dp";
-          layout_marginLeft="24dp";
-          layout_marginRight="24dp";
-          layout_marginBottom="8dp",
-          id="horizontalscrollview",
-          {
-            ChipGroup;
-            singleLine=true,
-            layout_width="match";
-            layout_height="wrap";
-            singleSelection=true,
-            id="chipgroup"
-          };
-        },
+        layout_height=-1;
         {
           LinearLayout;
-          orientation="horizontal";
+          orientation="vertical";
           layout_width=-1;
           layout_height=-2;
-          gravity="right|center";
+          Elevation="4dp";
+          BackgroundDrawable=gd2;
+          id="ztbj";
           {
-            MaterialButton;
-            layout_marginTop="16dp";
-            layout_marginLeft="16dp";
-            layout_marginRight="16dp";
-            layout_marginBottom="16dp";
-            textColor=转0x(backgroundc);
-            text="关闭";
-            id="close";
+            CardView;
+            layout_gravity="center",
+            CardBackgroundColor=转0x(cardedge);
+            radius="3dp",
+            Elevation="0dp";
+            layout_height="6dp",
+            layout_width="56dp",
+            layout_marginTop="12dp";
+          };
+          {
+            TextView;
+            layout_width=-1;
+            layout_height=-2;
+            textSize="20sp";
+            layout_marginTop="24dp";
+            layout_marginLeft="24dp";
+            layout_marginRight="24dp";
+            Text="tab切换";
             Typeface=字体("product-Bold");
+            textColor=转0x(primaryc);
+          };
+          {
+            HorizontalScrollView;
+            layout_marginTop="8dp";
+            layout_marginLeft="24dp";
+            layout_marginRight="24dp";
+            layout_marginBottom="8dp",
+            id="horizontalscrollview",
+            {
+              ChipGroup;
+              singleLine=true,
+              layout_width="match";
+              layout_height="wrap";
+              singleSelection=true,
+              id="chipgroup"
+            };
+          },
+          {
+            LinearLayout;
+            orientation="horizontal";
+            layout_width=-1;
+            layout_height=-2;
+            gravity="right|center";
+            {
+              MaterialButton;
+              layout_marginTop="16dp";
+              layout_marginLeft="16dp";
+              layout_marginRight="16dp";
+              layout_marginBottom="16dp";
+              textColor=转0x(backgroundc);
+              text="关闭";
+              id="close";
+              Typeface=字体("product-Bold");
+            };
           };
         };
       };
-    };
 
 
-    local tmpview={}
-    local bottomSheetDialog = BottomSheetDialog(this)
-    bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
+      local tmpview={}
+      local bottomSheetDialog = BottomSheetDialog(this)
+      bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
 
-    local chipdialog=bottomSheetDialog.show()
-    MDC_R=luajava.bindClass"com.google.android.material.R"
+      local chipdialog=bottomSheetDialog.show()
+      MDC_R=luajava.bindClass"com.google.android.material.R"
 
-    local function createchip(text)
-      return loadlayout2({
-        Chip_Suggestion_Elevated;
-        layout_width="wrap_content";
-        layout_height="wrap_content";
-        text=text;
-        checked=true,
-        checkable = true,
-        style=MDC_R.style.Widget_Material3_Chip_Filter
+      local function createchip(text)
+        return loadlayout2({
+          Chip_Suggestion_Elevated;
+          layout_width="wrap_content";
+          layout_height="wrap_content";
+          text=text;
+          checked=true,
+          checkable = true,
+          style=MDC_R.style.Widget_Material3_Chip_Filter
+        })
+      end
+
+      for i = 1,HometabLayout.getTabCount() do
+        local itemnum=i-1
+        local text=HometabLayout.getTabAt(itemnum).Text
+        tmpview.chipgroup.addView(createchip(text))
+      end
+
+      local index=HometabLayout.getSelectedTabPosition()
+      local checkedchip=tmpview.chipgroup.getChildAt(index)
+      checkedchip.checked=true
+      tmpview.chipgroup.post{
+        run=function ()
+          tmpview.horizontalscrollview.smoothScrollTo(checkedchip.getLeft(), checkedchip.getTop());
+      end}
+
+      function getCheckedPos(str)
+        for i = 1,tmpview.chipgroup.childCount do
+          if tmpview.chipgroup.getChildAt(i-1).text==str then
+            return i-1
+          end
+        end
+      end
+
+      tmpview.chipgroup.setOnCheckedChangeListener(ChipGroup.OnCheckedChangeListener{
+        onCheckedChanged=function(chipgroup,id)
+          if id==-1 then
+            return
+          end
+          local chip=chipgroup.findViewById(id);
+          if checkedchip.text==chip.text then
+            return
+          end
+          双按钮对话框("提示","确定要选择"..chip.text.."吗","选择","取消",function (an)
+            local pos=getCheckedPos(chip.text)
+            local tab=HometabLayout.getTabAt(pos);
+            tab.select()
+            提示("选择成功")
+            chipdialog.dismiss()
+            an.dismiss()
+            end,function(an)
+            chip.checked=false
+            checkedchip.checked=true
+            an.dismiss()
+          end,false)
+        end
       })
+
+      local an=bottomSheetDialog.show()
+      tmpview.close.onClick=function()
+        an.dismiss()
+      end;
+      return true
     end
-
-    for i = 1,HometabLayout.getTabCount() do
-      local itemnum=i-1
-      local text=HometabLayout.getTabAt(itemnum).Text
-      tmpview.chipgroup.addView(createchip(text))
-    end
-
-    local index=HometabLayout.getSelectedTabPosition()
-    local checkedchip=tmpview.chipgroup.getChildAt(index)
-    checkedchip.checked=true
-    tmpview.chipgroup.post{
-      run=function ()
-        tmpview.horizontalscrollview.smoothScrollTo(checkedchip.getLeft(), checkedchip.getTop());
-    end}
-
-    function getCheckedPos(str)
-      for i = 1,tmpview.chipgroup.childCount do
-        if tmpview.chipgroup.getChildAt(i-1).text==str then
-          return i-1
-        end
-      end
-    end
-
-    tmpview.chipgroup.setOnCheckedChangeListener(ChipGroup.OnCheckedChangeListener{
-      onCheckedChanged=function(chipgroup,id)
-        if id==-1 then
-          return
-        end
-        local chip=chipgroup.findViewById(id);
-        if checkedchip.text==chip.text then
-          return
-        end
-        双按钮对话框("提示","确定要选择"..chip.text.."吗","选择","取消",function (an)
-          local pos=getCheckedPos(chip.text)
-          local tab=HometabLayout.getTabAt(pos);
-          tab.select()
-          提示("选择成功")
-          chipdialog.dismiss()
-          an.dismiss()
-          end,function(an)
-          chip.checked=false
-          checkedchip.checked=true
-          an.dismiss()
-        end,false)
-      end
-    })
-
-    local an=bottomSheetDialog.show()
-    tmpview.close.onClick=function()
-      an.dismiss()
-    end;
-    return true
   end
+
 end
+
+edgeToedge(mainLay,bnv,function()
+  local layoutParams = 侧滑头.LayoutParams;
+  --设置margin
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  侧滑头.setLayoutParams(layoutParams);
+  初始化主页()
+end)
 
 local NavlastClickTime = 0
 local NavlastClickedItem
