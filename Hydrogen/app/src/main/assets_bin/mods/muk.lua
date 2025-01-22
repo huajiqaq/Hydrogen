@@ -24,16 +24,17 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.566
+versionCode=0.567
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
 
-function edgeToedge(顶栏,底栏,callback,isMargin)
+function edgeToedge(顶栏,底栏,callback)
 
 
   local window = activity.getWindow()
   window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
 
   if Build.VERSION.SDK_INT >= 30 then--Android R+
     window.setDecorFitsSystemWindows(false);
@@ -57,12 +58,6 @@ function edgeToedge(顶栏,底栏,callback,isMargin)
     导航栏高度=height
 
     if 顶栏 then
-      if isMargin then
-        local layoutParams = 顶栏.LayoutParams;
-        layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
-        顶栏.setLayoutParams(layoutParams);
-        return
-      end
       顶栏.setPadding(
       顶栏.getPaddingLeft(),
       状态栏高度,
@@ -71,12 +66,6 @@ function edgeToedge(顶栏,底栏,callback,isMargin)
       );
     end
     if 底栏 then
-      if isMargin then
-        local layoutParams = 底栏.LayoutParams;
-        layoutParams.setMargins(layoutParams.leftMargin, layoutParams.bottomMargin, layoutParams.rightMargin,导航栏高度);
-        底栏.setLayoutParams(layoutParams);
-        return
-      end
       底栏.setPadding(
       底栏.getPaddingLeft(),
       底栏.getPaddingTop(),
