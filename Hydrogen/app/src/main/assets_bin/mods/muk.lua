@@ -30,8 +30,6 @@ layout_dir="layout/item_layout/"
 
 
 function edgeToedge(顶栏,底栏,callback)
-
-
   local window = activity.getWindow()
   window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
@@ -120,7 +118,12 @@ function edgeToedge(顶栏,底栏,callback)
 end
 
 
+
 zemoji={
+  握手 = [[https://pic2.zhimg.com/v2-f5aa165e86b5c9ed3b7bee821da59365.png]];
+  打招呼 = [[https://picx.zhimg.com/v2-95c560d0c9c0491f6ef404cc010878fc.png]];
+  哇 = [[https://picx.zhimg.com/v2-6a766571a6d6d3a4d8d16f433e5b284c.png]];
+  感谢 = [[https://pic1.zhimg.com/v2-694cac2ec9f3c63f774e723f77d8c840.png]];
   知乎益蜂 = [[https://pica.zhimg.com/v2-11d9b8b6edaae71e992f95007c777446.png]];
   百分百赞 = [[https://picx.zhimg.com/v2-27521d5ba23dfc1ea58fd9ebb220e304.png]];
   为爱发乎 = [[https://pic1.zhimg.com/v2-609b1f168acfa22d59fa09d3cb0846ee.png]];
@@ -661,7 +664,7 @@ function 主题(str)
     grayc="#ECEDF1"
     ripplec="#559E9E9E"
     cardedge=dec2hex(res.color.attr.colorSurface)
-    oricardedge="#FFF6F6F6"
+    oricardedge=dec2hex(res.color.attr.colorOutlineVariant)
 
     if 获取主题夜间模式() == true then
       if Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))==true then

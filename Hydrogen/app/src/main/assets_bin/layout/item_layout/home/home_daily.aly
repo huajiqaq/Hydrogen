@@ -13,8 +13,8 @@
     layout_width='-1';
     layout_height='-2';
     radius=cardradius;
-    CardBackgroundColor=barbackgroundc;
-    StrokeColor=cardedge;
+    CardBackgroundColor=backgroundc;
+    StrokeColor=oricardedge;
     StrokeWidth=dp2px(1),
     id="card";
     {

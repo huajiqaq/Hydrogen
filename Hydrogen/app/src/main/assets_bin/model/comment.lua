@@ -54,7 +54,7 @@ end
 
 function base.resolvedata(v,data)
   local 头像=v.author.avatar_url
-  local 内容=v.content
+  local 内容=string.gsub(v.content,"\n$","")
   local 点赞数=v.vote_count
   local 时间=时间戳(v.created_time)
   local 名字=v.author.name
@@ -74,6 +74,7 @@ function base.resolvedata(v,data)
 
   local myspan
 
+
   local 包含url
   if 内容:find("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]") then
     myspan=setstyle(Html.fromHtml(内容))
@@ -81,6 +82,12 @@ function base.resolvedata(v,data)
    else
     myspan=Html.fromHtml(内容)
   end
+  --25.1.5 评论区表情 （参考于小白马）
+
+  for i,d in pairs(zemoji) do
+    Spannable_Image(myspan, "\\["..i.."\\]",d)
+  end
+
 
   if 无图模式 then
     头像=logopng
@@ -287,18 +294,7 @@ function base.getAdapter(comment_pagetool,pos)
 
       views.标题.text=标题
       views.时间.text=时间
-
-      --25.1.5 评论区表情 （参考于小白马）
-      local spannableString = SpannableStringBuilder()
-      spannableString.append(预览内容)
-      views.预览内容.setText(spannableString)
-      for i,d in pairs(zemoji) do
-        Spannable_Image(spannableString, "\\["..i.."\\]",d)
-      end
-      views.预览内容.setText(spannableString)
-
-
-
+      views.预览内容.text=预览内容
       loadglide(views.图像,图像)
 
       views.card.onClick=function()

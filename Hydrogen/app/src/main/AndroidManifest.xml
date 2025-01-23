@@ -34,6 +34,7 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:usesCleartextTraffic="true"
+            android:enableOnBackInvokedCallback="true"
             android:requestLegacyExternalStorage="true"
             android:theme="@style/Theme.Jesse205.Default" tools:targetApi="n">
 
@@ -52,6 +53,7 @@
         <activity
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
+            android:enableOnBackInvokedCallback="true"
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:name="com.jesse205.superlua.Main"
             android:exported="true"
@@ -134,6 +136,7 @@
         <activity
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize|stateHidden"
+            android:enableOnBackInvokedCallback="true"
             android:exported="true"
             android:name="com.jesse205.superlua.LuaActivity"/>
 
@@ -141,6 +144,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:documentLaunchMode="intoExisting"
             android:windowSoftInputMode="adjustResize|stateHidden"
+            android:enableOnBackInvokedCallback="true"
             android:excludeFromRecents="false"
             android:exported="true"
             android:name="com.jesse205.superlua.LuaActivityX"/>
@@ -149,6 +153,7 @@
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|navigation|screenLayout|fontScale|smallestScreenSize|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:exported="true"
+            android:enableOnBackInvokedCallback="true"
             android:name="com.jesse205.superlua.Welcome"
             android:theme="@style/Theme.Jesse205.Welcome"/>
 

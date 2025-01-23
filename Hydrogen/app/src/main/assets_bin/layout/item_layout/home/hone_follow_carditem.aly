@@ -13,8 +13,8 @@
     Elevation="0";
     layout_width="-1";
     radius=0;
-    CardBackgroundColor=cardedge;
-    StrokeColor=cardedge;
+    CardBackgroundColor=backgroundc;
+    StrokeColor=oricardedge;
     StrokeWidth=dp2px(1),
     clickable=true,
     id="card";

@@ -13,8 +13,8 @@
     layout_height='-2';
     radius=cardradius;
     id="card",
-    CardBackgroundColor=cardedge;
-    StrokeColor=cardedge;
+    CardBackgroundColor=backgroundc;
+    StrokeColor=oricardedge;
     StrokeWidth=dp2px(1),
     {
       LinearLayout;
