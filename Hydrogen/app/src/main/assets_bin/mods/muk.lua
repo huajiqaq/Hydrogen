@@ -183,7 +183,7 @@ zemoji={
 
 function findDirectoryUpward(startPath)
   local path = startPath
-  local targetDirs = {'files', 'assets_bin'}
+  local targetDirs = {'files', 'assets_bin', 'assets'}
 
   while true do
     for _, dir in ipairs(targetDirs) do
@@ -197,7 +197,7 @@ function findDirectoryUpward(startPath)
     end
 
     -- 移除最后一个目录
-    path = path:gsub('[^/]+/?$', '')
+    path = string.gsub(path,'[^/]+/?$', '')
     -- 检查是否已经到达根目录
     if path == '/' then
       break
@@ -226,7 +226,7 @@ function 设置toolbar属性(toolbar,title)
   local bitmap=BitmapDrawable(activity.Resources,scaledBitmap)
   .setColorFilter(colorFilter)
   toolbar.setNavigationIcon(bitmap)
-  --toolbar.setNavigationContentDescription("转到上一层级")
+  toolbar.setNavigationContentDescription("转到上一层级")
 
   toolbar.title=title
 

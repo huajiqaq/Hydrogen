@@ -6,6 +6,10 @@ import "android.text.method.LinkMovementMethod"
 import "com.google.android.material.bottomsheet.*"
 import "com.google.android.material.chip.ChipGroup"
 import "com.google.android.material.chip.Chip"
+import "android.content.res.ColorStateList"
+import "android.view.inputmethod.InputMethodManager"
+import "com.google.android.material.textfield.TextInputLayout"
+import "com.google.android.material.textfield.TextInputEditText"
 
 comment_id,comment_type,保存路径,父回复id=...
 
@@ -46,7 +50,7 @@ function 发送评论()
       FocusableInTouchMode=true;
       --开启动画可能造成卡顿
       --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
-      {
+      --[[  {
         EditText;
         id="send_edit";
         layout_weight=1;
@@ -54,7 +58,35 @@ function 发送评论()
         layout_margin="8dp";
         maxLines=10;
         hint="输入评论";
-      };
+      };]]
+      {
+        TextInputLayout,
+        layout_height="wrap",
+        layout_weight=1;
+        layout_marginLeft="16dp";
+        layout_margin="8dp";
+        boxStrokeColor=primaryc,
+        boxCornerRadii = {dp2px(20),dp2px(20),dp2px(20),dp2px(20)},
+        --paddingBottom="16dp",
+        layout_width="match",
+        hint="输入评论",
+        id="Url_Input",
+        endIconDrawable=BitmapDrawable.createFromPath(图标("face"));
+        
+        hintTextColor=ColorStateList.valueOf(转0x(primaryc)),
+        boxBackgroundMode=TextInputLayout.BOX_BACKGROUND_OUTLINE,
+        --startIconDrawable=R.drawable.material_ic_edit_black_24dp,
+        --boxBackgroundColor=0xffffffff,
+        {
+          TextInputEditText,
+          id="send_edit",
+          HighlightColor =primaryc,
+          textColor=textc,
+          --style=R.style.Widget_MaterialComponents_TextInputEditText_OutlinedBox_Dense,
+          layout_height="wrap",
+          layout_width="match",
+        },
+      },
       {
         MaterialButton;
         layout_marginRight="10dp";

@@ -34,7 +34,7 @@ require("mods.muk")
 activity.setContentView(loadlayout("layout"))
 activity.setSupportActionBar(toolbar)
 --actionBar.setDisplayHomeAsUpEnabled(true)
-
+设置toolbar(toolbar)
 设置toolbar属性(toolbar,R.string.jesse205_about)
 
 loadlayout2("iconLayout")
