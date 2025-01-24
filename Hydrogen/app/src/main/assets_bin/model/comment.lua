@@ -54,7 +54,7 @@ end
 
 function base.resolvedata(v,data)
   local 头像=v.author.avatar_url
-  local 内容=string.gsub(v.content,"\n$","")
+  local 内容=string.gsub(v.content,"\r$","")
   local 点赞数=v.vote_count
   local 时间=时间戳(v.created_time)
   local 名字=v.author.name
@@ -218,32 +218,7 @@ local function 多选菜单(data,v)
   if isstart then
     local authortext=data.标题
     local addmenu={"回复评论",function()
-        local editDialog=AlertDialog.Builder(this)
-        .setTitle("回复"..authortext.."发送的评论")
-        .setView(loadlayout({
-          LinearLayout;
-          layout_height="fill";
-          layout_width="fill";
-          orientation="vertical";
-          {
-            EditText;
-            layout_width="match";
-            layout_height="match";
-            layout_marginTop="5dp";
-            layout_marginLeft="10dp",
-            layout_marginRight="10dp",
-            id="edit";
-            hint="输入回复内容";
-            Typeface=字体("product");
-          }
-        }))
-        .setPositiveButton("确定", {onClick=function()
-            local commentid=id内容
-            local send_edit=edit
-            发送评论(send_edit,commentid)
-        end})
-        .setNegativeButton("取消", nil)
-        .show()
+        发送评论(id内容,"回复"..authortext.."发送的评论")
     end}
     table.insert(menu,addmenu)
   end

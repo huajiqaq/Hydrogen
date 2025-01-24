@@ -20,18 +20,17 @@ edgeToedge(mainLay,send)
 
 波纹({fh,_more},"圆主题")
 
-function 发送评论()
+function 发送评论(id,title)
   if not(getLogin()) then
     return 提示("请登录后使用本功能")
   end
-
+  local stitle = title or "输入评论"
   local mytext
   local postdata
   local 请求链接
+  local 回复id=id
 
-  local 回复id=""
-
-  if comment_type=="comments" then
+  if comment_type=="comments" && title==nil then
     回复id=comment_id
   end
 
@@ -71,7 +70,7 @@ function 发送评论()
         boxCornerRadii = {dp2px(20),dp2px(20),dp2px(20),dp2px(20)},
         --paddingBottom="16dp",
         layout_width="match",
-        hint="输入评论",
+        hint=stitle,
         id="send_input",
         endIconDrawable=BitmapDrawable(Bitmap.createScaledBitmap(loadbitmap(图标("face")), dp2px(48), dp2px(48), true));
         endIconMode=1,
@@ -107,6 +106,7 @@ function 发送评论()
 
   isZemo=false
   heightmax=0
+  --不好看（zemorc.setPadding(0,dp2px(24),0,dp2px(24))
   send_edit.requestFocus()
   send_edit.postDelayed(Runnable{
     run=function()
@@ -131,7 +131,7 @@ function 发送评论()
   local GridLayoutManager = luajava.bindClass "androidx.recyclerview.widget.GridLayoutManager"
   local LuaRecyclerAdapter = luajava.bindClass "com.androlua.LuaRecyclerAdapter"
   local adapter1=LuaRecyclerAdapter(activity,zemojip,{LinearLayout,id="mainlay",gravity="center",
-    {ImageView,id="i",layout_width="32sp",layout_marginTop="8dp";layout_height="32sp";layout_marginLeft="4dp";layout_marginBottom="8dp";},
+    {ImageView,id="i",layout_width="32sp",layout_marginTop="8dp";layout_height="32sp";layout_marginLeft="4dp";layout_marginRight="4dp";layout_marginBottom="8dp";},
   })
   bottomSheetDialog.show()
   .setCancelable(true)
@@ -188,6 +188,11 @@ function 发送评论()
         viewHolder.tag.i.onClick=function()
           local s,e = send_edit.getSelectionStart(),send_edit.getSelectionEnd()
           send_edit.text=utf8.sub(send_edit.text,1,s).."["..adapter1.data[index+1].ii.."]"..utf8.sub(send_edit.text,s+1)
+          --[[ 效果不佳    myspan=Html.fromHtml(send_edit.text)
+          for i,d in pairs(zemoji) do
+    Spannable_Image(myspan, "["..i.."]",d)
+  end
+send_edit.text=myspan]]
           send_edit.setSelection(utf8.len(adapter1.data[index+1].ii)+2+s)
         end
       end,function(a) print(index) end)
