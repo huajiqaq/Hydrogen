@@ -1294,10 +1294,12 @@ pcall(function()LuaUtil.unZip(srcLuaDir.."/res/zemoji.zip",activity.getExternalC
 for i,url in pairs(zemoji) do
   local drawable = getImageDrawable(表情(i))
   -- 设置Drawable  的图片的高度和宽度。 后面注释是获取设置图片原来的高度和宽度
-  zemoji[i]= drawable.setBounds(0, -sp2px(2), sp2px(18), sp2px(16))--drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight())
-
+  zemoji[i]= drawable.setBounds(0, 0, sp2px(16), sp2px(16))--drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight())
 end
-
+zemojip={}
+for ii,j in pairs(zemoji) do
+  table.add(zemojip,{ii=ii,i=表情(ii)})
+end
 function 下载文件(链接,文件名,配置)
   downloadManager=activity.getSystemService(Context.DOWNLOAD_SERVICE);
   url=Uri.parse(链接);
