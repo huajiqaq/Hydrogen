@@ -98,7 +98,12 @@ function base.resolvedata(v,data)
   local 预览内容=myspan
   local 标题=名字
   local 图像=头像
-  local 时间=v.like_count.." 喜欢 · "..时间
+  local 时间="赞"..v.like_count.." · "..时间
+  if tostring(v.liked)=="true"
+    时间 = Spannable_Image(Html.fromHtml(时间),"赞",liked_drawable)
+   else
+    时间 = Spannable_Image(Html.fromHtml(时间),"赞",like_drawable)
+  end
   local isme=(v.is_author==true and "true" or "false")
   pcall(function()
     local comment_tag=v.comment_tag[1]
@@ -116,6 +121,8 @@ function base.resolvedata(v,data)
   add.标题=标题
   add.图像=图像
   add.时间=时间
+  add.like_count=v.like_count
+  add.created_time=v.created_time
   add.isme=isme
   add.liked=v.liked
   add.disliked=v.disliked
@@ -271,6 +278,32 @@ function base.getAdapter(comment_pagetool,pos)
       views.时间.text=时间
       views.预览内容.text=预览内容
       loadglide(views.图像,图像)
+
+      views.时间.onClick=function()
+        if not(data.liked)
+          zHttp.put("https://api.zhihu.com/comment_v5/comment/"..id内容.."/reaction/like",'',postapphead,function(code,content)
+            if code==200 then
+              提示("赞成功")
+              data.liked=true
+              data.like_count=data.like_count+1
+              local 时间="赞"..data.like_count.." · "..时间戳(data.created_time)
+              时间 = Spannable_Image(Html.fromHtml(时间),"赞",liked_drawable)
+              views.时间.text=时间
+            end
+          end)
+         else
+          zHttp.delete("https://api.zhihu.com/comment_v5/comment/"..id内容.."/reaction/like",postapphead,function(code,content)
+            if code==200 then
+              提示("取消赞成功")
+              data.liked=false
+              data.like_count=data.like_count-1
+              local 时间="赞"..data.like_count.." · "..时间戳(data.created_time)
+              时间 = Spannable_Image(Html.fromHtml(时间),"赞",like_drawable)
+              views.时间.text=时间
+            end
+          end)
+        end
+      end
 
       views.card.onClick=function()
         if views.提示内容.getVisibility()==0 then

@@ -1,6 +1,5 @@
 require "import"
 import "mods.muk"
-
 import "com.lua.custrecycleradapter.*"
 import "androidx.recyclerview.widget.*"
 import "android.widget.ImageView$ScaleType"

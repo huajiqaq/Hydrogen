@@ -47,6 +47,7 @@ function 发送评论(id,title)
       layout_width="fill";
       layout_height="fill";
       gravity="center";
+      id="sendlay";
       Focusable=true;
       FocusableInTouchMode=true;
       --开启动画可能造成卡顿
@@ -145,6 +146,9 @@ function 发送评论(id,title)
       local status = i.getInsets(WindowInsets.Type.statusBars())
       local nav = i.getInsets(WindowInsets.Type.navigationBars())
       local ime = i.getInsets(WindowInsets.Type.ime())
+      local layoutParams = sendlay.LayoutParams;
+      layoutParams.setMargins(layoutParams.leftMargin, layoutParams.rightMargin, layoutParams.rightMargin,nav.bottom);
+      sendlay.setLayoutParams(layoutParams);
       if ime.bottom>heightmax
         heightmax=ime.bottom
       end
@@ -212,6 +216,10 @@ send_edit.text=myspan]]
     --换行
     :gsub("\n","\\u000A")
 
+    if tostring(send_edit.text)==""
+      提示("你还没输入喵")
+      return
+    end
     --评论类型和评论id处理逻辑在comment_base
     local postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
     local 请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
