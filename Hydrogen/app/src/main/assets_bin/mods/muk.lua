@@ -1303,8 +1303,8 @@ end
 local PorterDuffColorFilter=luajava.bindClass "android.graphics.PorterDuffColorFilter"
 local PorterDuff=luajava.bindClass "android.graphics.PorterDuff"
 local colorFilter = PorterDuffColorFilter(res.color.attr.colorPrimary, PorterDuff.Mode.SRC_ATOP)
-like_drawable = getImageDrawable(图标("vote_up_outline")).setBounds(0, 0, sp2px(14), sp2px(14)).setColorFilter(colorFilter)
-liked_drawable = getImageDrawable(图标("vote_up")).setBounds(0, 0, sp2px(14), sp2px(14)).setColorFilter(colorFilter)
+like_drawable = getImageDrawable(图标("favorite_outline")).setBounds(sp2px(0), sp2px(0), sp2px(18), sp2px(18)).setColorFilter(colorFilter)
+liked_drawable = getImageDrawable(图标("favorite")).setBounds(sp2px(0), sp2px(0), sp2px(18), sp2px(18)).setColorFilter(colorFilter)
 function 下载文件(链接,文件名,配置)
   downloadManager=activity.getSystemService(Context.DOWNLOAD_SERVICE);
   url=Uri.parse(链接);

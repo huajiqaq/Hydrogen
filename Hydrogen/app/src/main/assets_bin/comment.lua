@@ -28,7 +28,7 @@ function 发送评论(id,title)
   local mytext
   local postdata
   local 请求链接
-  local 回复id=id
+  回复id=id
 
   if comment_type=="comments" && title==nil then
     回复id=comment_id
@@ -377,9 +377,8 @@ if comment_type=="local_chat" then
 end
 
 if not(comment_type:find("local")) then
-  send.onClick=function()
-    local send_edit=edit
-    发送评论(send_edit)
+  send.onClick=function() 
+    发送评论("")
   end
   踩tab={}
   comment_item=获取适配器项目布局("comment/comment")
