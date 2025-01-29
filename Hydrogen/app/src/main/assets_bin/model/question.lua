@@ -24,7 +24,7 @@ end
 function base_question:getData(callback)
   zse96_encrypt=require "model.zse96_encrypt"
   local url,head
-  url="https://www.zhihu.com/api/v4/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,detail,excerpt,author"
+  url="https://www.zhihu.com/api/v4/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,detail,excerpt,author,relationship.is_following"
   url,head=zse96_encrypt(url)
   zHttp.get(url,head
   ,function(code,content)
