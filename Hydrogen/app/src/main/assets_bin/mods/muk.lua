@@ -24,10 +24,14 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.567
+versionCode=0.568
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
+
+function newActivity(f,b)
+  activity.doFile(srcLuaDir..f..".lua",b)
+end
 
 function edgeToedge(顶栏,底栏,callback)
   local window = activity.getWindow()
@@ -278,30 +282,30 @@ end
 
 function 点击事件判断(myid,title)
   if tostring(myid):find("问题分割") or not(tostring(myid):find("分割")) then
-    activity.newActivity("question",{tostring(myid):match("问题分割(.+)") or myid})
+    newActivity("question",{tostring(myid):match("问题分割(.+)") or myid})
    elseif tostring(myid):find("文章分割") then
-    activity.newActivity("column",{tostring(myid):match("文章分割(.+)"),tostring(myid):match("分割(.+)")})
+    newActivity("column",{tostring(myid):match("文章分割(.+)"),tostring(myid):match("分割(.+)")})
    elseif tostring(myid):find("视频分割") then
-    activity.newActivity("column",{tostring(myid):match("视频分割(.+)"),"视频"})
+    newActivity("column",{tostring(myid):match("视频分割(.+)"),"视频"})
    elseif tostring(myid):find("想法分割") then
-    activity.newActivity("column",{tostring(myid):match("想法分割(.+)"),"想法"})
+    newActivity("column",{tostring(myid):match("想法分割(.+)"),"想法"})
    elseif tostring(myid):find("直播分割") then
-    activity.newActivity("column",{tostring(myid):match("直播分割(.+)"),"直播"})
+   newActivity("column",{tostring(myid):match("直播分割(.+)"),"直播"})
    elseif tostring(myid):find("圆桌分割") then
-    activity.newActivity("column",{tostring(myid):match("圆桌分割(.+)"),"圆桌"})
+    newActivity("column",{tostring(myid):match("圆桌分割(.+)"),"圆桌"})
    elseif tostring(myid):find("专题分割") then
-    activity.newActivity("column",{tostring(myid):match("专题分割(.+)"),"专题"})
+    newActivity("column",{tostring(myid):match("专题分割(.+)"),"专题"})
    elseif tostring(myid):find("视频合集分割") then
-    activity.newActivity("browser",{tostring(myid):match("视频分割(.+)"),"视频"})
+    newActivity("browser",{tostring(myid):match("视频分割(.+)"),"视频"})
    elseif tostring(myid):find("话题分割") then
-    activity.newActivity("topic",{tostring(myid):match("话题分割(.+)")})
+    newActivity("topic",{tostring(myid):match("话题分割(.+)")})
    elseif tostring(myid):find("用户分割") then
-    activity.newActivity("people",{tostring(myid):match("用户分割(.+)")})
+    newActivity("people",{tostring(myid):match("用户分割(.+)")})
    elseif tostring(myid):find("专栏分割") then
-    activity.newActivity("people_column",{tostring(myid):match("专栏分割(.+)")})
+    newActivity("people_column",{tostring(myid):match("专栏分割(.+)")})
 
    else
-    activity.newActivity("answer",{tostring(myid):match("(.+)分割"),tostring(myid):match("分割(.+)")})
+    newActivity("answer",{tostring(myid):match("(.+)分割"),tostring(myid):match("分割(.+)")})
   end
 end
 
@@ -795,7 +799,11 @@ function 颜色渐变(控件,左色,右色)
   --控件.setBackgroundDrawable(ColorDrawable(左色))
 end
 
+Fragment = luajava.bindClass "androidx.fragment.app.Fragment"
+LuaFragment = luajava.bindClass "com.androlua.LuaFragment"
+activity.setContentView(loadlayout("layout/fragment"))
 
+nF={}
 function 设置视图(t)
   activity.setContentView(loadlayout(t))
 end
@@ -1196,9 +1204,13 @@ function 渐变跳转页面(ym,cs)
   end
 end
 
-
+inSekai=true
 function 关闭页面()
-  activity.finish()
+  if inSekai
+    activity.getSupportFragmentManager().popBackStack()
+   else
+    activity.finish()
+  end
 end
 
 function 清除所有cookie()
@@ -1305,6 +1317,7 @@ local PorterDuff=luajava.bindClass "android.graphics.PorterDuff"
 local colorFilter = PorterDuffColorFilter(res.color.attr.colorPrimary, PorterDuff.Mode.SRC_ATOP)
 like_drawable = getImageDrawable(图标("favorite_outline")).setBounds(sp2px(0), sp2px(0), sp2px(18), sp2px(18)).setColorFilter(colorFilter)
 liked_drawable = getImageDrawable(图标("favorite")).setBounds(sp2px(0), sp2px(0), sp2px(18), sp2px(18)).setColorFilter(colorFilter)
+chat_drawable = getImageDrawable(图标("message")).setBounds(sp2px(0), sp2px(0), sp2px(18), sp2px(18)).setColorFilter(colorFilter)
 function 下载文件(链接,文件名,配置)
   downloadManager=activity.getSystemService(Context.DOWNLOAD_SERVICE);
   url=Uri.parse(链接);
@@ -4188,3 +4201,7 @@ function vectortopng(name)
   bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
   outputStream.close()
 end
+
+
+
+ 

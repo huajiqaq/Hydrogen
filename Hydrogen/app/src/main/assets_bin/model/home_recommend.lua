@@ -16,7 +16,7 @@ function base.resolvedata(v,data)
   local readdata=v.brief
   local v=v.target or v
   local 标题=v.title
-  local 点赞数=tostring(v.voteup_count or v.vote_count)
+  local 点赞数=tostring(v.voteup_count or v.vote_count or v.reaction_count)
   local 评论数=tostring(v.comment_count)
   local 作者=v.author.name
   local 预览内容=作者.." : "..(v.excerpt or v.excerpt_title)
@@ -132,6 +132,7 @@ function base.getAdapter(home_pagetool,pos)
             end
           end)
         end
+        nTView=views.card
         点击事件判断(data.id内容,data.标题)
       end
 

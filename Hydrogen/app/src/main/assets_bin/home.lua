@@ -4,14 +4,35 @@ import "com.lua.custrecycleradapter.*"
 import "androidx.recyclerview.widget.*"
 import "android.widget.ImageView$ScaleType"
 import "androidx.recyclerview.widget.GridLayoutManager"
-import "com.google.android.material.bottomnavigation.BottomNavigationView"
+import "com.google.android.material.navigation.NavigationView"
 import "androidx.viewpager.widget.ViewPager"
 import "androidx.swiperefreshlayout.widget.*"
 import "com.google.android.material.tabs.TabLayout"
 import "com.bumptech.glide.Glide"
+import "com.google.android.material.bottomnavigation.BottomNavigationView"
+import "android.view.ViewTreeObserver"
+--activity.setContentView(loadlayout("layout/home"))
+fragmentManager = activity.getSupportFragmentManager()
+local t = fragmentManager.beginTransaction()
+.replace(f1.getId(),LuaFragment(loadlayout("layout/home")))
+.commit()
 
+local rootView = activity.getDecorView()
+observer = rootView.getViewTreeObserver()
+orirh={}
+observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
+  onGlobalLayout=function()
+    if orirh[1]==tointeger(rootView.height)&&orirh[2]==tointeger(rootView.width)
+     else
+      orirh[1]=tointeger(rootView.height)
+      orirh[2]=tointeger(rootView.width)
+      local layoutParams = f1.LayoutParams;
+      layoutParams.width=orirh[2]/2
+      f1.setLayoutParams(layoutParams);
+    end
+  end
+}))
 
-activity.setContentView(loadlayout("layout/home"))
 设置toolbar(toolbar)
 
 初始化历史记录数据()
@@ -757,7 +778,6 @@ function 切换布局(s)
 
 end
 
-this.window.setNavigationBarColor(res.color.attr.colorSurfaceContainer);
 
 
 --侧滑列表点击事件

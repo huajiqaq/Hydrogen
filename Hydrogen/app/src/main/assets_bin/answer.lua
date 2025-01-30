@@ -14,11 +14,34 @@ import "android.content.pm.ActivityInfo"
 import "android.graphics.PathMeasure"
 import "android.webkit.ValueCallback"
 import "com.google.android.material.progressindicator.LinearProgressIndicator"
+import "androidx.core.view.ViewCompat"
 问题id,回答id=...
 
 --new 0.46 删除滑动监听
 
-activity.setContentView(loadlayout("layout/answer"))
+  local MaterialContainerTransform = luajava.bindClass "com.google.android.material.transition.MaterialContainerTransform"
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  .setCustomAnimations(
+android.R.anim.slide_in_left,
+android.R.anim.slide_out_right,
+android.R.anim.slide_in_left,
+android.R.anim.slide_out_right)
+  .addToBackStack(nil)
+.replace(f2.getId(),luajava.override(LuaFragment,{
+    onCreate=function(super,v) 
+      super(v) 
+      local MaterialContainerTransform = luajava.bindClass "com.google.android.material.transition.MaterialContainerTransform"
+      trs=MaterialContainerTransform()
+      .addTarget(mainLay)
+      .setDuration(300)
+      
+  end},loadlayout("layout/answer")).setSharedElementEnterTransition(trs) )
+
+  
+
+   
+  t.commit() 
+--activity.setContentView(loadlayout("layout/answer"))
 设置toolbar(toolbar)
 
 edgeToedge(mainLay,底栏,function()
@@ -70,7 +93,8 @@ comment.onClick=function()
     return 提示("加载中")
   end
   local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
-  activity.newActivity("comment",{回答id,"answers",保存路径})
+  ViewCompat.setTransitionName(comment,"t")
+  newActivity("comment",{回答id,"answers",保存路径})
 end;
 
 

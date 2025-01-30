@@ -103,12 +103,12 @@
         {
           FloatingActionButton,
           id="send",
-          CustomSize="64dp";
-          MaxImageSize="32dp";
+          CustomSize="56dp";
+          MaxImageSize="24dp";
           layout_gravity="bottom|end",
           layout_marginBottom="48dp",
           layout_marginEnd="16dp",
-          ImageBitmap=loadbitmap(图标("add_comment")),
+          ImageBitmap=loadbitmap(图标("reply")),
           ShapeAppearanceModel=(function()
             import "com.google.android.material.shape.CornerFamily";
             import "com.google.android.material.shape.ShapeAppearanceModel"

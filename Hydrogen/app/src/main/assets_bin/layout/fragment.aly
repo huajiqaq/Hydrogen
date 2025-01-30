@@ -1,0 +1,22 @@
+{
+  CoordinatorLayout;
+  backgroundColor=backgroundc ;
+  layout_height="fill";
+  layout_width="fill";
+  id="mainfLay";
+  {
+    LinearLayout,
+    layout_width="fill",
+    layout_height="fill",
+    {
+      FrameLayout,id="f1",
+      layout_width="50%w",
+      layout_height="fill",
+    },
+    {
+      FrameLayout,id="f2",
+      layout_width="match",
+      layout_height="fill",
+    },
+  },
+}

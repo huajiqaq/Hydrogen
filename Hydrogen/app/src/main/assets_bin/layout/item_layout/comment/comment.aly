@@ -1,63 +1,75 @@
 {
   LinearLayout;
   layout_width="fill";
+  orientation="vertical";
   BackgroundColor=backgroundc;
   descendantFocusability=ViewGroup.FOCUS_BLOCK_DESCENDANTS,
   {
     MaterialCardView;
     Elevation="0";
-    layout_gravity="center";
-    layout_margin="16dp";
-    layout_marginTop="8dp";
-    layout_marginBottom="3dp";
-    layout_height="-2";
+    layout_gravity="right";
+    layout_height="wrap";
     layout_width="fill";
-    radius=cardradius;
-    CardBackgroundColor=cardedge;
-    StrokeColor=primaryc;
+    radius=0,
     StrokeWidth=dp2px(0),
+    CardBackgroundColor=backgroundc;
     id="card";
     {
       LinearLayout;
       layout_height="fill";
+      layout_margin="4dp";
       id="background";
+      padding="12dp",
       layout_width="fill";
       {
         LinearLayout;
-        padding="6dp",
-        layout_height="fill";
-        layout_width="fill";
         orientation="vertical";
+        layout_marginLeft="8dp",
+        layout_weight="1";
         {
           LinearLayout;
           orientation="horizontal";
-          gravity="left|center",
           id="author_lay";
           {
             CircleImageView;
             id="图像",
-            layout_width="32dp",
-            layout_height="32dp",
+            layout_gravity="top|right";
+            layout_width="36dp",
+            layout_height="36dp",
           };
           {
-            TextView;
+            LinearLayout;
+            orientation="vertical";
             layout_marginLeft="8dp",
-            Typeface=字体("product-Bold");
-            textColor=textc;
-            id="标题",
-            textSize=标题文字大小;
-            lineHeight=标题行高;
+            {
+              TextView;
+              Typeface=字体("product-Bold");
+              textColor=textc;
+              id="标题",
+              gravity="center|bottom";
+              textSize=标题文字大小;
+              lineHeight=标题行高;
+            };
+            {
+              TextView;
+              layout_marginLeft="0dp";
+              gravity="center|bottom";
+              Typeface=字体("product");
+              textColor=textc;
+              id="时间",
+              textSize=内容文字大小;
+            };
           };
         };
         {
           LinearLayout;
-          layout_marginTop="10dp",
+          layout_marginTop="4dp",
           layout_width="-1",
           orientation="vertical";
           {
             TextView;
             Typeface=字体("product");
-            layout_marginLeft="4dp";
+            layout_marginLeft="0dp";
             layout_marginRight="4dp";
             textColor=textc;
             textIsSelectable=true;
@@ -66,48 +78,53 @@
             textSize=内容文字大小;
             lineHeight=内容行高;
           };
-          {
-            LinearLayout;
-            orientation="horizontal";
-            layout_marginTop="8dp",
-            layout_marginBottom="2dp",
-            layout_marginLeft="4dp";
-            layout_marginRight="4dp";
-            gravity="bottom";
-            layout_gravity="bottom";
-            layout_width="fill",
-            {
-              TextView;
-              Typeface=字体("product");
-              textColor=primaryc;
-              gravity="left";
-              text="查看对话列表",
-              id="提示内容",
-              textSize=内容文字大小;
-              lineHeight=内容行高;
-              Visibility=8;
-            };
-            {
-              TextView;
-              layout_weight="1",
-              gravity="right";
-              Typeface=字体("product");
-              textColor=primaryc;
-              id="底部内容",
-              textSize=内容文字大小;
-            };
-            {
-              TextView;
-              layout_weight="1",
-              gravity="right";
-              Typeface=字体("product");
-              textColor=primaryc;
-              id="时间",
-              textSize=内容文字大小;
-            };
-          };
-        }
+        };
+      };
+
+      {
+        LinearLayout;
+        orientation="vertical";
+        {Chip,
+          id="赞";
+          layout_marginTop="0dp";
+          text="赞",
+          textColor=res.color.attr.colorPrimary,
+          ChipIcon=like_drawable;
+          --ChipIconTint=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
+          ChipIconSize=dp2px(18),
+          IconStartPadding=dp2px(4),
+          TextStartPadding=dp2px(4),
+          ChipStrokeWidth="0dp",
+          ChipStrokeColor=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
+          ChipCornerRadius="16dp",
+          ChipBackgroundColor=ColorStateList.valueOf(res.color.attr.colorSurfaceContainerLow),
+        },
+        {Chip,
+          id="评论";
+          layout_marginTop="2dp";
+          text="评论",
+          textColor=res.color.attr.colorPrimary,
+          ChipIcon=chat_drawable;
+          --ChipIconTint=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
+          ChipIconSize=dp2px(18),
+          IconStartPadding=dp2px(4),
+          TextStartPadding=dp2px(4),
+          ChipStrokeWidth="0dp",
+          ChipStrokeColor=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
+          ChipCornerRadius="16dp",
+          ChipBackgroundColor=ColorStateList.valueOf(res.color.attr.colorSurfaceContainerLow),
+        },
       };
     };
+  };
+  {
+    LinearLayout;
+    layout_gravity="right";
+    layout_height="2dp";
+    --layout_marginLeft="48dp";
+    --layout_marginRight="48dp";
+    id="line";
+    layout_width="fill";
+    backgroundColor=res.color.attr.colorSurfaceContainerHighest;
   };
 };

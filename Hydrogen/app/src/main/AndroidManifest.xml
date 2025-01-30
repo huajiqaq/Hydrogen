@@ -51,7 +51,7 @@
             android:value="2f2db2934f8eb0cddf80ba54abd741b1"/>
 
         <activity
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"
             android:launchMode="singleTask"
             android:enableOnBackInvokedCallback="true"
             android:windowSoftInputMode="adjustResize|stateHidden"
@@ -134,14 +134,14 @@
         </activity>
 
         <activity
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:enableOnBackInvokedCallback="true"
             android:exported="true"
             android:name="com.jesse205.superlua.LuaActivity"/>
 
         <activity
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"
             android:documentLaunchMode="intoExisting"
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:enableOnBackInvokedCallback="true"

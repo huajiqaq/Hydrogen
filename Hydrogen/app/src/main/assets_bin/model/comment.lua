@@ -54,7 +54,7 @@ end
 
 function base.resolvedata(v,data)
   local 头像=v.author.avatar_url
-  local 内容=string.gsub(v.content,"\r$","")
+  local 内容=utf8.gsub(utf8.gsub(v.content,"%s+$",""),"\u000D+$","")
   local 点赞数=v.vote_count
   local 时间=时间戳(v.created_time)
   local 名字=v.author.name
@@ -92,17 +92,21 @@ function base.resolvedata(v,data)
   if 无图模式 then
     头像=logopng
   end
-  local 提示内容=v.child_comment_count>0
+  local 评论=""..tostring(v.child_comment_count or 0)
   local id内容=tostring(v.id)
   local 作者id=v.author.id
   local 预览内容=myspan
   local 标题=名字
   local 图像=头像
-  local 时间="赞"..v.like_count.." · "..时间
-  if tostring(v.liked)=="true"
-    时间 = Spannable_Image(Html.fromHtml(时间),"赞",liked_drawable)
+  local 赞=""..v.like_count
+  --[[if tostring(v.liked)=="true"
+    赞 = Spannable_Image(Html.fromHtml(赞),"赞",liked_drawable)
    else
-    时间 = Spannable_Image(Html.fromHtml(时间),"赞",like_drawable)
+    赞 = Spannable_Image(Html.fromHtml(赞),"赞",like_drawable)
+  end]]
+  if tostring(评论)=="0"
+
+    评论 = "false"
   end
   local isme=(v.is_author==true and "true" or "false")
   pcall(function()
@@ -114,15 +118,15 @@ function base.resolvedata(v,data)
 
 
   local add={}
-  add.提示内容=提示内容
+  add.评论=评论
   add.id内容=id内容
   add.作者id=作者id
   add.预览内容=预览内容
   add.标题=标题
   add.图像=图像
+  add.赞=赞
   add.时间=时间
   add.like_count=v.like_count
-  add.created_time=v.created_time
   add.isme=isme
   add.liked=v.liked
   add.disliked=v.disliked
@@ -190,7 +194,7 @@ local function 多选菜单(data,v)
          else
           zHttp.delete("https://api.zhihu.com/comment_v5/comment/"..id内容.."/reaction/like",postapphead,function(code,content)
             if code==200 then
-              提示("取消踩赞成功")
+              提示("取消赞成功")
               data.liked=false
             end
           end)
@@ -262,33 +266,44 @@ function base.getAdapter(comment_pagetool,pos)
       local 标题=data.标题
       local 预览内容=data.预览内容
       local id内容=data.id内容
-      local 提示内容=data.提示内容
+      local 评论=data.评论
       local 作者id=data.作者id
       local 图像=data.图像
       local 时间=data.时间
+      local 赞=data.赞
       local isme=data.isme
 
-      if 提示内容 then
-        views.提示内容.Visibility=0
+      if 评论~="false"then
+        views.评论.Visibility=0
        else
-        views.提示内容.Visibility=8
+        views.评论.Visibility=8
       end
 
+      if comment_type=="comments"&&position==0
+        local layoutParams = views.line.LayoutParams;
+        layoutParams.height=dp2px(6)
+        views.line.setLayoutParams(layoutParams);
+        --[[已有加粗分割线，没必要 elseif comment_type=="comments"
+        local layoutParams = views.card.LayoutParams;
+        layoutParams.setMargins(dp2px(20), layoutParams.rightMargin, layoutParams.rightMargin,layoutParams.bottomMargin);
+        views.card.setLayoutParams(layoutParams);]]
+      end
       views.标题.text=标题
       views.时间.text=时间
+      views.赞.text=赞
+      views.评论.text=评论
       views.预览内容.text=预览内容
       loadglide(views.图像,图像)
 
-      views.时间.onClick=function()
+      views.赞.onClick=function()
         if not(data.liked)
           zHttp.put("https://api.zhihu.com/comment_v5/comment/"..id内容.."/reaction/like",'',postapphead,function(code,content)
             if code==200 then
               提示("赞成功")
               data.liked=true
               data.like_count=data.like_count+1
-              local 时间="赞"..data.like_count.." · "..时间戳(data.created_time)
-              时间 = Spannable_Image(Html.fromHtml(时间),"赞",liked_drawable)
-              views.时间.text=时间
+              views.赞.ChipIcon=liked_drawable
+              views.赞.text=data.like_count..""
             end
           end)
          else
@@ -297,20 +312,19 @@ function base.getAdapter(comment_pagetool,pos)
               提示("取消赞成功")
               data.liked=false
               data.like_count=data.like_count-1
-              local 时间="赞"..data.like_count.." · "..时间戳(data.created_time)
-              时间 = Spannable_Image(Html.fromHtml(时间),"赞",like_drawable)
-              views.时间.text=时间
+              views.赞.ChipIcon=like_drawable
+              views.赞.text=data.like_count..""
             end
           end)
         end
       end
 
       views.card.onClick=function()
-        if views.提示内容.getVisibility()==0 then
+        if views.评论.getVisibility()==0 then
           if comment_type=="comments" then
             return 提示("当前已在该对话列表内")
-          end
-          activity.newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
+          end 
+          newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
         end
       end
 
@@ -453,5 +467,219 @@ function base:initpage(view,sr)
 
 end
 
+function 发送评论(id,title)
+  if not(getLogin()) then
+    return 提示("请登录后使用本功能")
+  end
+  local stitle = title or "输入评论"
+  local mytext
+  local postdata
+  local 请求链接
+  回复id=id
+
+  if comment_type=="comments" && title==nil then
+    回复id=comment_id
+  end
+
+  bottomSheetDialog = BottomSheetDialog(this)
+  bottomSheetDialog.setContentView(loadlayout({
+    LinearLayout;
+    id="root",
+    fitsSystemWindows=false;
+    orientation="vertical";
+    layout_height="fill";
+    layout_width="fill";
+    {
+      LinearLayout;
+      layout_width="fill";
+      layout_height="fill";
+      gravity="center";
+      id="sendlay";
+      Focusable=true;
+      FocusableInTouchMode=true;
+      --开启动画可能造成卡顿
+      --LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+      --[[  {
+        EditText;
+        id="send_edit";
+        layout_weight=1;
+        layout_marginLeft="16dp";
+        layout_margin="8dp";
+        maxLines=10;
+        hint="输入评论";
+      };]]
+      {
+        TextInputLayout,
+        layout_height="wrap",
+        layout_weight=1;
+        layout_marginLeft="16dp";
+        layout_margin="8dp";
+        boxStrokeColor=primaryc,
+        boxCornerRadii = {dp2px(20),dp2px(20),dp2px(20),dp2px(20)},
+        --paddingBottom="16dp",
+        layout_width="match",
+        hint=stitle,
+        id="send_input",
+        endIconDrawable=BitmapDrawable(Bitmap.createScaledBitmap(loadbitmap(图标("face")), dp2px(48), dp2px(48), true));
+        endIconMode=1,
+        hintTextColor=ColorStateList.valueOf(转0x(primaryc)),
+        boxBackgroundMode=TextInputLayout.BOX_BACKGROUND_OUTLINE,
+        --startIconDrawable=R.drawable.material_ic_edit_black_24dp,
+        --boxBackgroundColor=0xffffffff,
+        {
+          TextInputEditText,
+          id="send_edit",
+          HighlightColor =primaryc,
+          textColor=textc,
+          --style=R.style.Widget_MaterialComponents_TextInputEditText_OutlinedBox_Dense,
+          layout_height="wrap",
+          layout_width="match",
+        },
+      },
+      {
+        MaterialButton;
+        layout_marginRight="10dp";
+        id="send";
+        textColor=backgroundc;
+        text="发送";
+      };
+    };
+    {RecyclerView;
+      id="zemorc";
+      layout_width="fill";
+      layout_height=0;
+    };
+
+  }))
+
+  isZemo=false
+  heightmax=0
+  --不好看（zemorc.setPadding(0,dp2px(24),0,dp2px(24))
+  send_edit.requestFocus()
+  send_edit.postDelayed(Runnable{
+    run=function()
+      local imm= this.getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.showSoftInput(send_edit, InputMethodManager.SHOW_IMPLICIT);
+    end
+  }, 100);
+  send_input.setEndIconOnClickListener(View.OnClickListener{
+    onClick=function(v)
+      local view=bottomSheetDialog.window.getDecorView()
+      if isShowing then
+        local WindowInsets = luajava.bindClass "android.view.WindowInsets"
+        view.windowInsetsController.hide(WindowInsets.Type.ime())
+        isZemo=true
+       else
+        local WindowInsets = luajava.bindClass "android.view.WindowInsets"
+        view.windowInsetsController.show(WindowInsets.Type.ime())
+
+      end
+    end,
+  })
+  local GridLayoutManager = luajava.bindClass "androidx.recyclerview.widget.GridLayoutManager"
+  local LuaRecyclerAdapter = luajava.bindClass "com.androlua.LuaRecyclerAdapter"
+  local adapter1=LuaRecyclerAdapter(activity,zemojip,{LinearLayout,id="mainlay",gravity="center",
+    {ImageView,id="i",layout_width="32sp",layout_marginTop="8dp";layout_height="32sp";layout_marginLeft="4dp";layout_marginRight="4dp";layout_marginBottom="8dp";},
+  })
+  bottomSheetDialog.show()
+  .setCancelable(true)
+  .behavior.setMaxWidth(dp2px(800))
+  bottomSheetDialog.getWindow().setDecorFitsSystemWindows(false)
+  .addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+  local view=bottomSheetDialog.window.getDecorView()
+  view.setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener{
+    onApplyWindowInsets=function(v,i)
+      local WindowInsets = luajava.bindClass "android.view.WindowInsets"
+      local status = i.getInsets(WindowInsets.Type.statusBars())
+      local nav = i.getInsets(WindowInsets.Type.navigationBars())
+      local ime = i.getInsets(WindowInsets.Type.ime())
+      local layoutParams = sendlay.LayoutParams;
+      layoutParams.setMargins(layoutParams.leftMargin, layoutParams.rightMargin, layoutParams.rightMargin,nav.bottom);
+      sendlay.setLayoutParams(layoutParams);
+      if ime.bottom>heightmax
+        heightmax=ime.bottom
+      end
+      if Build.VERSION.SDK_INT<31
+        local layoutParams = zemorc.LayoutParams;
+        layoutParams.height=(function() if !isZemo then return ime.bottom else return heightmax end end)()
+        zemorc.setLayoutParams(layoutParams);
+        local layoutParams = root.LayoutParams;
+        layoutParams.height=-2
+        root.setLayoutParams(layoutParams);
+      end
+      isShowing=i.isVisible(WindowInsets.Type.ime())
+      return i
+    end
+  })
+  if Build.VERSION.SDK_INT >30
+    view.setWindowInsetsAnimationCallback(luajava.override(WindowInsetsAnimation.Callback,{
+      onProgress=function(_,i,animations)
+        local WindowInsets = luajava.bindClass "android.view.WindowInsets"
+        local status = i.getInsets(WindowInsets.Type.statusBars())
+        local nav = i.getInsets(WindowInsets.Type.navigationBars())
+        local ime = i.getInsets(WindowInsets.Type.ime())
+        local layoutParams = zemorc.LayoutParams;
+        layoutParams.height=(function() if !isZemo then return ime.bottom else return heightmax end end)()
+        zemorc.setLayoutParams(layoutParams);
+        local layoutParams = root.LayoutParams;
+        layoutParams.height=-2
+        root.setLayoutParams(layoutParams);
+        return i
+      end,
+    },1))
+  end
+  zemorc.adapter=adapter1
+  zemorc.layoutManager=GridLayoutManager(activity,8)
+  adapter1.setAdapterInterface(LuaRecyclerAdapter.AdapterInterface{
+    onBindViewHolder=function(viewHolder,index)
+      viewHolder.tag.i.setBackgroundDrawable(activity.Resources.getDrawable(ripple).setColor(ColorStateList(int[0].class{int{}},int{primaryc})))
+      --lua的adapter不支持直接调用非索引table，因此在这里脱裤子放屁（
+      xpcall(function()
+        viewHolder.tag.i.setTooltipText(tostring(adapter1.data[index+1].ii or "error"))
+        viewHolder.tag.i.onClick=function()
+          local s,e = send_edit.getSelectionStart(),send_edit.getSelectionEnd()
+          send_edit.text=utf8.sub(send_edit.text,1,s).."["..adapter1.data[index+1].ii.."]"..utf8.sub(send_edit.text,s+1)
+          --[[ 效果不佳    myspan=Html.fromHtml(send_edit.text)
+          for i,d in pairs(zemoji) do
+    Spannable_Image(myspan, "["..i.."]",d)
+  end
+send_edit.text=myspan]]
+          send_edit.setSelection(utf8.len(adapter1.data[index+1].ii)+2+s)
+        end
+      end,function(a) print(index) end)
+    end
+  })
+
+
+
+  send.onClick=function()
+    --测试不通过unicode编码也可以 暂时这么解决
+    --或许之后知乎会仅支持unicode 到时候下载知乎app分析一下
+
+    --替换 防止发表评论提交多行知乎api报错
+    local mytext=send_edit.text
+    --回车
+    :gsub("\r","\\u000D")
+    --换行
+    :gsub("\n","\\u000A")
+
+    if tostring(send_edit.text)==""
+      提示("你还没输入喵")
+      return
+    end
+    --评论类型和评论id处理逻辑在comment_base
+    local postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
+    local 请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
+
+    local url,head=require "model.zse96_encrypt"(请求链接)
+    zHttp.post(url,postdata,head,function(code,json)
+      if code==200 then
+        提示("发送成功 如若想看到自己发言请刷新数据")
+        bottomSheetDialog.dismiss()
+      end
+    end)
+  end
+
+end
 
 return base
