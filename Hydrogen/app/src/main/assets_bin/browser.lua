@@ -131,7 +131,7 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
       content.setVisibility(8)
       progress.setVisibility(0)
      elseif consoleMessage.message()=="显示评论" then
-      activity.newActivity("comment",{mresult,mmtype.."s"})
+      newActivity("comment",{mresult,mmtype.."s"})
      elseif consoleMessage.message():find("toast分割") then
       local text=tostring(consoleMessage.message()):match("toast分割(.+)")
       提示(text)

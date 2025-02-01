@@ -5,6 +5,7 @@
   layout_height="-1";
   {
     LinearLayout;
+    id="topbar";
     layout_width="-1";
     layout_height="-1";
     orientation="vertical";
@@ -203,7 +204,7 @@
                             orientation="vertical";
                             {
                               TextView;
-                              id="username";
+                              id="askername";
                               layout_marginLeft="6dp",
                               textColor=textc;
                               layout_gravity="center_vertical",
@@ -213,7 +214,7 @@
                             {
                               TextView;
                               textSize="15sp";
-                              id="userheadline";
+                              id="askerheadline";
                               textColor=textc;
                               layout_marginLeft="6dp",
                               layout_marginTop="8dp";
@@ -420,7 +421,7 @@
                       {
                         LinearLayout;
                         onClick=function()
-                          activity.newActivity("comment",{question_id,"questions"})
+                          newActivity("comment",{question_id,"questions"})
                         end;
                         id="discussion",
                         padding="4dp",

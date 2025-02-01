@@ -5,6 +5,7 @@ function urlEncode(s)
   return string.gsub(s, " ", " ")
 end
 
+ 
 
 function urlDecode(s)
   s = string.gsub(s, '%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
@@ -46,10 +47,10 @@ function 检查链接(url,b)
         return true
       end
       questions,answer=url:match("question/(.-)?") or url:match("question/(.+)"),nil
-      this.newActivity("question",{questions})
+      newActivity("question",{questions})
       return
     end
-    this.newActivity("answer",{getFirstNumber(questions),getFirstNumber(answer)})
+    newActivity("answer",{getFirstNumber(questions),getFirstNumber(answer)})
    elseif url:find("zhihu.com/column/republish_apply") then
     if b then return true end
     -- 网页端加入专栏
@@ -59,19 +60,19 @@ function 检查链接(url,b)
     activity.newActivity("browser",{url})
    elseif url:find("zhuanlan.zhihu.com/p/") then--/p/143744216
     if b then return true end
-    this.newActivity("column",{url:getUrlArg("zhihu.com/p/")})
+    newActivity("column",{url:getUrlArg("zhihu.com/p/")})
    elseif url:find("zhihu.com/appview/p/") then--/p/143744216
     if b then return true end
-    this.newActivity("column",{url:getUrlArg("appview/p/")})
+    newActivity("column",{url:getUrlArg("appview/p/")})
    elseif url:find("zhihu.com/topics/") then--/p/143744216
     if b then return true end
-    this.newActivity("topic",{url:getUrlArg("/topics/")})
+    newActivity("topic",{url:getUrlArg("/topics/")})
    elseif url:find("zhihu.com/topic/") then--/p/143744216
     if b then return true end
-    this.newActivity("topic",{url:getUrlArg("/topic/")})
+    newActivity("topic",{url:getUrlArg("/topic/")})
    elseif url:find("zhihu.com/pin/") then
     if b then return true end
-    this.newActivity("column",{url:getUrlArg("/pin/"),"想法"})
+    newActivity("column",{url:getUrlArg("/pin/"),"想法"})
    elseif url:find("zhihu.com/video/") then
     if b then return true end
     local videoid= url:getUrlArg("video/")
@@ -88,7 +89,7 @@ function 检查链接(url,b)
           end,function()
           视频链接=v.playlist.HD.play_url
         end)
-        this.newActivity("browser",{视频链接})
+        newActivity("browser",{视频链接})
        elseif code==401 then
         Toast.makeText(activity, "请登录后查看视频",Toast.LENGTH_SHORT).show()
       end
@@ -96,24 +97,24 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/zvideo/") then
     if b then return true end
     local videoid=url:getUrlArg("/zvideo/")
-    this.newActivity("column",{videoid,"视频"})
+    newActivity("column",{videoid,"视频"})
    elseif url:find("zhihu.com/people") or url:find("zhihu.com/org") then
     if b then return true end
     local people_name=url:getUrlArg("/people/") or url:getUrlArg("/org/")
-    this.newActivity("people",{people_name})
+    newActivity("people",{people_name})
    elseif url:find("zhihu.com/roundtable/") then
     if b then return true end
-    this.newActivity("column",{url:getUrlArg("/roundtable/"),"圆桌"})
+    newActivity("column",{url:getUrlArg("/roundtable/"),"圆桌"})
    elseif url:find("zhihu.com/special/") then
     if b then return true end
-    this.newActivity("column",{url:getUrlArg("/special/"),"专题"})
+    newActivity("column",{url:getUrlArg("/special/"),"专题"})
 
    elseif url:find("zhihu.com/column/") then
     if b then return true end
-    this.newActivity("people_column",{url:getUrlArg("/column/")})
+    newActivity("people_column",{url:getUrlArg("/column/")})
    elseif url:find("www.zhihu.com/theater") then
     if b then return true end
-    this.newActivity("column",{url:match("drama_id=(.-)&"),"直播"})
+    newActivity("column",{url:match("drama_id=(.-)&"),"直播"})
 
    elseif url:find("zhihu.com/signin") then
     if b then return true end
@@ -130,13 +131,13 @@ function 检查链接(url,b)
    elseif url:find("zhihu.com/comment/list") then
     if b then return true end
     local mtype=url:match("comment/list/(.-)/")
-    activity.newActivity("comment",{url:getUrlArg(mtype.."/"),mtype.."s"})
+    newActivity("comment",{url:getUrlArg(mtype.."/"),mtype.."s"})
    elseif url:find("zhihu://") then
     if b then return true end
     检查意图(url)
    else
     if b then return false end
-    this.newActivity("browser",{url})
+    newActivity("browser",{url})
   end
 end
 
@@ -145,47 +146,47 @@ function 检查意图(url,b)
     if url:find "answers" then
       if b then return true end
       local id=url:getUrlArg("answers/")
-      this.newActivity("answer",{"null",id})
+      newActivity("answer",{"null",id})
      elseif url:find "answer" then
       if b then return true end
       local id=url:getUrlArg("answer/")
-      this.newActivity("answer",{"null",id})
+      newActivity("answer",{"null",id})
      elseif url:find "questions" then
       if b then return true end
-      this.newActivity("question",{url:getUrlArg("questions/")})
+      newActivity("question",{url:getUrlArg("questions/")})
      elseif url:find "question" then
       if b then return true end
-      this.newActivity("question",{url:getUrlArg("question/")})
+      newActivity("question",{url:getUrlArg("question/")})
      elseif url:find "topic" then
       if b then return true end
-      this.newActivity("topic",{url:getUrlArg("topic/")})
+      newActivity("topic",{url:getUrlArg("topic/")})
      elseif url:find "people" then
       if b then return true end
-      this.newActivity("people",{url:getUrlArg("people/")})
+      newActivity("people",{url:getUrlArg("people/")})
      elseif url:find "columns" then
       if b then return true end
-      this.newActivity("people_column",{url:getUrlArg("columns/")})
+      newActivity("people_column",{url:getUrlArg("columns/")})
      elseif url:find "articles" then
       if b then return true end
-      this.newActivity("column",{url:getUrlArg("articles/")})
+      newActivity("column",{url:getUrlArg("articles/")})
      elseif url:find "article" then
       if b then return true end
-      this.newActivity("column",{url:getUrlArg("article/")})
+      newActivity("column",{url:getUrlArg("article/")})
      elseif url:find "pin" then
       if b then return true end
-      this.newActivity("column",{url:getUrlArg("pin/"),"想法"})
+      newActivity("column",{url:getUrlArg("pin/"),"想法"})
      elseif url:find "zvideo" then
       if b then return true end
-      this.newActivity("column",{url:getUrlArg("zvideo/"),"视频"})
+      newActivity("column",{url:getUrlArg("zvideo/"),"视频"})
      elseif url:find("roundtable") then
       if b then return true end
-      this.newActivity("column",{url:getUrlArg("/roundtable/"),"圆桌"})
+      newActivity("column",{url:getUrlArg("/roundtable/"),"圆桌"})
      elseif url:find("special") then
       if b then return true end
-      this.newActivity("column",{url:getUrlArg("/special/"),"专题"})
+      newActivity("column",{url:getUrlArg("/special/"),"专题"})
      elseif url:find("theater") then
       if b then return true end
-      this.newActivity("column",{url:match("drama_id=(.-)&"),"直播"})
+      newActivity("column",{url:match("drama_id=(.-)&"),"直播"})
 
      else
       if b then return false end

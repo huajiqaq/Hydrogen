@@ -13,15 +13,27 @@ import "com.google.android.material.chip.Chip"
 MDC_R=luajava.bindClass"com.google.android.material.R"
 
 
-设置视图("layout/search")
-
+if inSekai then
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  t.add(f1.getId(),LuaFragment(loadlayout("layout/search")))
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"search",1})
+ else
+  activity.setContentView(loadlayout("layout/search"))
+end
 function 搜索(text)
   local search_text=text or search_view.getQuery().toString();
   if #(tostring(search_text):gsub(" ",""))<1 then
     提示("请输入您要搜索的内容")
    else
 
-    for i, text in ipairs(search_history) do
+    for i, text in ipairs(search_history ) do
       if search_text == text then
         -- 如果记录已存在，先删除再添加
         table.remove(search_history, i)
@@ -31,11 +43,13 @@ function 搜索(text)
 
     table.insert(search_history, search_text)
     清空并保存历史记录("search_history", search_history)
-    activity.newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..urlEncode(search_text)})
+    newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..urlEncode(search_text)})
   end
 end
 
-
+edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  topbar.setLayoutParams(layoutParams); end)
 import "com.google.android.material.card.MaterialCardView"
 
 波纹({_back,search,_delete},"圆主题")
@@ -145,7 +159,12 @@ local function createchip(text)
     end
   })
 end
-
+search_history=loadSharedPreferences("search_history")
+  chipgroup.removeAllViews()
+  for i=1,#search_history do
+    local text=search_history[i]
+    chipgroup.addView(createchip(text,itemnum))
+  end
 
 search_view.requestFocus()
 search_view.postDelayed(Runnable{

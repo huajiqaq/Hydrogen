@@ -19,28 +19,29 @@ import "androidx.core.view.ViewCompat"
 
 --new 0.46 删除滑动监听
 
-  local MaterialContainerTransform = luajava.bindClass "com.google.android.material.transition.MaterialContainerTransform"
+local MaterialContainerTransform = luajava.bindClass "com.google.android.material.transition.MaterialContainerTransform"
+if inSekai then
+  --[[if fn[#fn][1]=="answer" then
+activity.getSupportFragmentManager().popBackStack()
+    table.remove(fn,#fn)
+end]]
   local t = activity.getSupportFragmentManager().beginTransaction()
-  .setCustomAnimations(
-android.R.anim.slide_in_left,
-android.R.anim.slide_out_right,
-android.R.anim.slide_in_left,
-android.R.anim.slide_out_right)
-  .addToBackStack(nil)
-.replace(f2.getId(),luajava.override(LuaFragment,{
-    onCreate=function(super,v) 
-      super(v) 
-      local MaterialContainerTransform = luajava.bindClass "com.google.android.material.transition.MaterialContainerTransform"
-      trs=MaterialContainerTransform()
-      .addTarget(mainLay)
-      .setDuration(300)
-      
-  end},loadlayout("layout/answer")).setSharedElementEnterTransition(trs) )
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
+  t.add(f2.getId(),LuaFragment(loadlayout("layout/answer")),"answer")
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"answer",2})
+ else
+  activity.setContentView(loadlayout("layout/answer"))
+end
 
-  
 
-   
-  t.commit() 
+
 --activity.setContentView(loadlayout("layout/answer"))
 设置toolbar(toolbar)
 
@@ -181,7 +182,7 @@ all_root.onClick=function(v)
         if 问题id==nil or 问题id=="null" then
           return 提示("加载中")
         end
-        activity.newActivity("question",{问题id})
+        newActivity("question",{问题id})
       end
     end)
   end
@@ -856,7 +857,7 @@ task(1,function()
           end
 
           local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
-          activity.newActivity("comment",{回答id,"answers",保存路径})
+          newActivity("comment",{回答id,"answers",保存路径})
 
         end
       },

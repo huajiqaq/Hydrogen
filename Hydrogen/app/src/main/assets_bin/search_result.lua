@@ -1,7 +1,19 @@
 require "import"
 import "mods.muk"
-activity.setContentView(loadlayout("layout/simple"))
-
+if inSekai then
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  t.add(f1.getId(),LuaFragment(loadlayout("layout/simple")))
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"search_result",1})
+ else
+  activity.setContentView(loadlayout("layout/simple"))
+end
 波纹({fh,_more},"圆主题")
 
 初始化历史记录数据(true)

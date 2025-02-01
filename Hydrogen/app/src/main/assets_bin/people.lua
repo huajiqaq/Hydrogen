@@ -7,8 +7,20 @@ people_id=...
 
 import "com.google.android.material.tabs.TabLayout"
 
-activity.setContentView(loadlayout("layout/people"))
-
+if inSekai then
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  t.add(f2.getId(),LuaFragment(loadlayout("layout/people")))
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"people",2})
+ else
+  activity.setContentView(loadlayout("layout/people"))
+end
 设置toolbar(toolbar)
 
 初始化历史记录数据(true)

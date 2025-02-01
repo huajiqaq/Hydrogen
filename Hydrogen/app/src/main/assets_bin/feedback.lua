@@ -144,7 +144,7 @@ data = {
               浏览器打开("https://github.com/huajiqaq/Hydrogen/issues")
             end,
             function()
-              local uri=Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=1906327347")
+              local uri=Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=3543515846")
               if not(pcall(activity.startActivity,Intent(Intent.ACTION_VIEW,uri))) then
                 提示("你没安装QQ")
                else

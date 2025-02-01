@@ -11,13 +11,19 @@ import "com.google.android.material.tabs.TabLayout"
 import "com.bumptech.glide.Glide"
 import "com.google.android.material.bottomnavigation.BottomNavigationView"
 import "android.view.ViewTreeObserver"
+
 --activity.setContentView(loadlayout("layout/home"))
+activity.setContentView(loadlayout("layout/fragment"))
 fragmentManager = activity.getSupportFragmentManager()
 local t = fragmentManager.beginTransaction()
 .replace(f1.getId(),LuaFragment(loadlayout("layout/home")))
 .commit()
 
+fn={{"home",1}}
+
+
 local rootView = activity.getDecorView()
+inSekai=activity.width>dp2px(600)
 observer = rootView.getViewTreeObserver()
 orirh={}
 observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
@@ -26,9 +32,17 @@ observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
      else
       orirh[1]=tointeger(rootView.height)
       orirh[2]=tointeger(rootView.width)
-      local layoutParams = f1.LayoutParams;
-      layoutParams.width=orirh[2]/2
-      f1.setLayoutParams(layoutParams);
+      inSekai=rootView.width>dp2px(600)
+      if rootView.width>dp2px(600)
+
+        local layoutParams = f1.LayoutParams;
+        layoutParams.width=orirh[2]/2
+        f1.setLayoutParams(layoutParams);
+       else
+        local layoutParams = f1.LayoutParams;
+        layoutParams.width=orirh[2]
+        f1.setLayoutParams(layoutParams);
+      end
     end
   end
 }))
@@ -701,7 +715,7 @@ function 切换布局(s)
               .setTitle("请输入")
               .setView(loadlayout(InputLayout))
               .setPositiveButton("确定", {onClick=function()
-                  activity.newActivity("search_result",{edit.text,"collection"})
+                  newActivity("search_result",{edit.text,"collection"})
               end})
               .setNegativeButton("取消", nil)
               .show();

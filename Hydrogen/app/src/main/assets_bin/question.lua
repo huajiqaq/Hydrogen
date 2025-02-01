@@ -8,8 +8,25 @@ import "androidx.core.widget.NestedScrollView"
 
 question_id=...
 
-设置视图("layout/question")
+if inSekai
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  t.add(f1.getId(),LuaFragment(loadlayout("layout/question")))
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"question",1})
+ else
+  activity.setContentView(loadlayout("layout/question"))
+end
 设置toolbar(toolbar)
+edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  topbar.setLayoutParams(layoutParams); end)
+import "com.google.android.material.card.MaterialCardView"
 
 question_itemc=获取适配器项目布局("question/question")
 
@@ -257,12 +274,10 @@ question_base:getData(function(tab)
   a=MUKPopu(pop)
 
   loadglide(people_image,tab.author.avatar_url)
-  username.text=tab.author.name
-  userheadline.text=tab.author.headline
+  askername.text=tab.author.name
+  askerheadline.text=tab.author.headline or "暂无签名"
 
-  if userheadline.text=="" then
-    userheadline.text="暂无签名"
-  end
+   
 
   用户id=tab.author.id
   if tab.author.is_following then

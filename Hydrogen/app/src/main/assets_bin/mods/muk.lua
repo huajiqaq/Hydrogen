@@ -27,10 +27,25 @@ BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 versionCode=0.568
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
-
-
+ 
 function newActivity(f,b)
-  activity.doFile(srcLuaDir..f..".lua",b)
+  b=b or {}
+  if inSekai or false
+    activity.doFile(srcLuaDir..f..".lua",b)
+   else
+    activity.newActivity(f,b)
+  end
+end
+
+--inSekai=true
+function 关闭页面()
+  if inSekai
+    activity.getSupportFragmentManager().popBackStackImmediate()
+    table.remove(fn,#fn)
+    
+   else
+    activity.finish()
+  end
 end
 
 function edgeToedge(顶栏,底栏,callback)
@@ -290,7 +305,7 @@ function 点击事件判断(myid,title)
    elseif tostring(myid):find("想法分割") then
     newActivity("column",{tostring(myid):match("想法分割(.+)"),"想法"})
    elseif tostring(myid):find("直播分割") then
-   newActivity("column",{tostring(myid):match("直播分割(.+)"),"直播"})
+    newActivity("column",{tostring(myid):match("直播分割(.+)"),"直播"})
    elseif tostring(myid):find("圆桌分割") then
     newActivity("column",{tostring(myid):match("圆桌分割(.+)"),"圆桌"})
    elseif tostring(myid):find("专题分割") then
@@ -801,7 +816,7 @@ end
 
 Fragment = luajava.bindClass "androidx.fragment.app.Fragment"
 LuaFragment = luajava.bindClass "com.androlua.LuaFragment"
-activity.setContentView(loadlayout("layout/fragment"))
+--activity.setContentView(loadlayout("layout/fragment"))
 
 nF={}
 function 设置视图(t)
@@ -1204,14 +1219,7 @@ function 渐变跳转页面(ym,cs)
   end
 end
 
-inSekai=true
-function 关闭页面()
-  if inSekai
-    activity.getSupportFragmentManager().popBackStack()
-   else
-    activity.finish()
-  end
-end
+
 
 function 清除所有cookie()
   local cookieManager=CookieManager.getInstance();
@@ -4204,4 +4212,3 @@ end
 
 
 
- 

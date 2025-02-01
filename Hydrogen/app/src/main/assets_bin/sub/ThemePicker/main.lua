@@ -98,7 +98,7 @@ gridView.onItemClick=function(id,v,zero,one)
     local aRanim=android.R.anim
     local pos=gridView.getFirstVisiblePosition()
     local scroll=gridView.getChildAt(0).getTop()
-    newActivity("main",aRanim.fade_in,aRanim.fade_out,{{pos,scroll}})
+    activity.newActivity("main",aRanim.fade_in,aRanim.fade_out,{{pos,scroll}})
     activity.finish()
     gridView.setEnabled(false)
   end

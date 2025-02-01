@@ -78,43 +78,45 @@
             textSize=内容文字大小;
             lineHeight=内容行高;
           };
+          {
+            LinearLayout;
+            layout_gravity="center|left";
+            -- orientation="vertical";
+            {Chip,
+              id="赞";
+              layout_marginTop="2dp";
+              text="赞",
+              textColor=res.color.attr.colorPrimary,
+              ChipIcon=like_drawable;
+              --ChipIconTint=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
+              ChipIconSize=dp2px(18),
+              IconStartPadding=dp2px(4),
+              TextStartPadding=dp2px(4),
+              ChipStrokeWidth="0dp",
+              ChipStrokeColor=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
+              ChipCornerRadius="16dp",
+              ChipBackgroundColor=ColorStateList.valueOf(res.color.attr.colorSurfaceContainerLow),
+            },
+            {Chip,
+              id="评论";
+              layout_marginTop="2dp";
+              layout_marginLeft="4dp";
+              text="评论",
+              textColor=res.color.attr.colorPrimary,
+              ChipIcon=chat_drawable;
+              --ChipIconTint=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
+              ChipIconSize=dp2px(18),
+              IconStartPadding=dp2px(4),
+              TextStartPadding=dp2px(4),
+              ChipStrokeWidth="0dp",
+              ChipStrokeColor=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
+              ChipCornerRadius="16dp",
+              ChipBackgroundColor=ColorStateList.valueOf(res.color.attr.colorSurfaceContainerLow),
+            },
+          };
         };
       };
 
-      {
-        LinearLayout;
-        orientation="vertical";
-        {Chip,
-          id="赞";
-          layout_marginTop="0dp";
-          text="赞",
-          textColor=res.color.attr.colorPrimary,
-          ChipIcon=like_drawable;
-          --ChipIconTint=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
-          ChipIconSize=dp2px(18),
-          IconStartPadding=dp2px(4),
-          TextStartPadding=dp2px(4),
-          ChipStrokeWidth="0dp",
-          ChipStrokeColor=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
-          ChipCornerRadius="16dp",
-          ChipBackgroundColor=ColorStateList.valueOf(res.color.attr.colorSurfaceContainerLow),
-        },
-        {Chip,
-          id="评论";
-          layout_marginTop="2dp";
-          text="评论",
-          textColor=res.color.attr.colorPrimary,
-          ChipIcon=chat_drawable;
-          --ChipIconTint=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
-          ChipIconSize=dp2px(18),
-          IconStartPadding=dp2px(4),
-          TextStartPadding=dp2px(4),
-          ChipStrokeWidth="0dp",
-          ChipStrokeColor=ColorStateList.valueOf(res.color.attr.colorOutlineVariant),
-          ChipCornerRadius="16dp",
-          ChipBackgroundColor=ColorStateList.valueOf(res.color.attr.colorSurfaceContainerLow),
-        },
-      };
     };
   };
   {

@@ -12,6 +12,7 @@
 
     {
       LinearLayout,
+id="topbar";
       layout_width="fill",
       layout_height="56dp",
       gravity="center|left";

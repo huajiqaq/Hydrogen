@@ -19,8 +19,20 @@ end
 
 初始化历史记录数据(true)
 
-activity.setContentView(loadlayout("layout/column_parent"))
-
+if inSekai
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  t.add(f2.getId(),LuaFragment(loadlayout("layout/column_parent")))
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"column",2})
+ else
+  activity.setContentView(loadlayout("layout/column_parent"))
+end
 if 类型=="本地" then
   task(1,function()
     _title.text="本地内容"
@@ -265,7 +277,7 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
     if consoleMessage.message()=="显示评论" then
-      activity.newActivity("comment",{id,urltype.."s",保存路径})
+      newActivity("comment",{id,urltype.."s",保存路径})
      elseif consoleMessage.message()=="查看用户" then
       activity.newActivity("people",{author_id})
      elseif consoleMessage.message():find("收藏") then
@@ -360,14 +372,14 @@ if 类型=="本地" then
           if getDirSize(保存路径.."/".."fold/")==0 then
             提示("你还没有收藏评论")
            else
-            activity.newActivity("comment",{nil,"local",保存路径})
+            newActivity("comment",{nil,"local",保存路径})
           end
         end
       },
 
       {
         src=图标("cloud"),text="使用网络打开",onClick=function()
-          activity.newActivity("column",{myid,mytype})
+          newActivity("column",{myid,mytype})
         end
       },
 
@@ -444,7 +456,7 @@ if 类型=="本地" then
           if not urltype then
             return 提示("该页不支持该操作")
           end
-          activity.newActivity("comment",{id,urltype.."s",保存路径})
+          newActivity("comment",{id,urltype.."s",保存路径})
 
         end
       },

@@ -116,7 +116,7 @@
             layout_margin="8dp";
             onClick=function()
               task(20,function()
-                activity.newActivity("search")
+                newActivity("search",{})
               end)
             end;
           };

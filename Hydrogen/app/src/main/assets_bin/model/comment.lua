@@ -321,10 +321,10 @@ function base.getAdapter(comment_pagetool,pos)
 
       views.card.onClick=function()
         if views.评论.getVisibility()==0 then
-          if comment_type=="comments" then
+          if (comment_idl or "")==data.id内容 then
             return 提示("当前已在该对话列表内")
           end 
-          newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
+          newActivity("commentl",{data.id内容,"comments",保存路径,comment_id})
         end
       end
 
@@ -477,9 +477,7 @@ function 发送评论(id,title)
   local 请求链接
   回复id=id
 
-  if comment_type=="comments" && title==nil then
-    回复id=comment_id
-  end
+  
 
   bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout({
@@ -669,7 +667,7 @@ send_edit.text=myspan]]
     end
     --评论类型和评论id处理逻辑在comment_base
     local postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
-    local 请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
+    local 请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..comment_id.."/comment"
 
     local url,head=require "model.zse96_encrypt"(请求链接)
     zHttp.post(url,postdata,head,function(code,json)

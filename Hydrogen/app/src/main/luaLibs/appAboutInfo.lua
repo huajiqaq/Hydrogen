@@ -50,6 +50,12 @@ developers={
     qq=1906327347,
     message="很棒的开发者",
     url="mqqwpa://im/chat?chat_type=wpa&uin=1906327347" },
+  {
+    name="ZL",
+    qq=3543515846,
+    message="引诱苦手",
+    url="mqqwpa://im/chat?chat_type=wpa&uin=3543515846" },
+
 }
 
 --启用开源许可

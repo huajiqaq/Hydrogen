@@ -146,7 +146,7 @@ comment.onClick=function()
   if getDirSize(保存路径.."/".."fold/")==0 then
     提示("你还没有收藏评论")
    else
-    activity.newActivity("comment",{nil,"local",保存路径})
+    newActivity("comment",{nil,"local",保存路径})
   end
 end;
 
