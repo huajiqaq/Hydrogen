@@ -68,6 +68,9 @@ fxurl=base_column.fxurl
 
 波纹({fh,_more},"圆主题")
 静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),pbar,"横")
+edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  topbar.setLayoutParams(layoutParams); end)
 
 content.getSettings()
 .setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
@@ -194,6 +197,7 @@ content.setWebViewClient{
     加载js(view,获取js("mdcopy"))
     网页字体设置(view)
     加载js(view,获取js("native"))
+加载js(view,获取js("eruda"))
     等待doc(view)
     if 全局主题值=="Night" then
       夜间模式主题(view)
@@ -276,10 +280,11 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
 
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
+    
     if consoleMessage.message()=="显示评论" then
       newActivity("comment",{id,urltype.."s",保存路径})
      elseif consoleMessage.message()=="查看用户" then
-      activity.newActivity("people",{author_id})
+      newActivity("people",{author_id})
      elseif consoleMessage.message():find("收藏") then
       if not(getLogin()) then
         return 提示("请登录后使用本功能")
@@ -480,7 +485,7 @@ if 类型=="本地" then
             return 提示("该页不支持该操作")
           end
           local url="https://www.zhihu.com/report?id="..id.."&type="..urltype
-          activity.newActivity("browser",{url.."&source=android&ab_signature=","举报"})
+          newActivity("browser",{url.."&source=android&ab_signature=","举报"})
         end
       },
       {

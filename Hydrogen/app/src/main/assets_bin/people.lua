@@ -8,20 +8,38 @@ people_id=...
 import "com.google.android.material.tabs.TabLayout"
 
 if inSekai then
+if fn[#fn][2]<2
   local t = activity.getSupportFragmentManager().beginTransaction()
   t.setCustomAnimations(
   android.R.anim.slide_in_left,
   android.R.anim.slide_out_right,
   android.R.anim.slide_in_left,
   android.R.anim.slide_out_right)
-  t.add(f2.getId(),LuaFragment(loadlayout("layout/people")))
+  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
+  t.add(f2.getId(),LuaFragment(loadlayout("layout/people")),"people")
   t.addToBackStack(nil)
   t.commit()
   table.insert(fn,{"people",2})
+else
+local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
+  t.add(f1.getId(),LuaFragment(loadlayout("layout/people")),"people")
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"people",1})
+end
  else
   activity.setContentView(loadlayout("layout/people"))
 end
 设置toolbar(toolbar)
+edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  topbar.setLayoutParams(layoutParams); end)
 
 初始化历史记录数据(true)
 people_itemc=获取适配器项目布局("people/people")
@@ -66,13 +84,13 @@ local base_people=require "model.people":new(people_id)
     if not(getLogin()) then
       return 提示("你需要登录使用本功能")
     end
-    activity.newActivity("people_list",{名字.."的粉丝列表",用户id})
+    newActivity("people_list",{名字.."的粉丝列表",用户id})
   end
   function follow.onClick()
     if not(getLogin()) then
       return 提示("你需要登录使用本功能")
     end
-    activity.newActivity("people_list",{名字.."的关注列表",用户id})
+    newActivity("people_list",{名字.."的关注列表",用户id})
   end
 
   if data.is_following then
@@ -142,7 +160,7 @@ local base_people=require "model.people":new(people_id)
           end
 
           local url="https://www.zhihu.com/report?id="..people_id.."&type=member"
-          activity.newActivity("browser",{url.."&source=android&ab_signature=","举报"})
+          newActivity("browser",{url.."&source=android&ab_signature=","举报"})
 
       end},
       {
@@ -168,7 +186,7 @@ local base_people=require "model.people":new(people_id)
           .setTitle("请输入")
           .setView(loadlayout(InputLayout))
           .setPositiveButton("确定", {onClick=function()
-              activity.newActivity("search_result",{edit.text,"people",用户id})
+             newActivity("search_result",{edit.text,"people",用户id})
           end})
           .setNegativeButton("取消", nil)
           .show();

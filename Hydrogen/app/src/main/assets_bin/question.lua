@@ -258,6 +258,9 @@ question_base:getData(function(tab)
           local format="【问题】%s：%s"
           分享文本(string.format(format,title.text,"https://www.zhihu.com/question/"..question_id),true)
       end},
+      {src=图标("list_alt"),text="问题日志",onClick=function()
+          newActivity("browser",{"https://www.zhihu.com/question/"..question_id.."/log"})
+      end},
       {src=图标("format_align_left"),text="按时间顺序",onClick=function()
           question_pagetool:setUrlItem(question_base:getUrl("updated"))
           :clearItem(pos)
@@ -277,7 +280,7 @@ question_base:getData(function(tab)
   askername.text=tab.author.name
   askerheadline.text=tab.author.headline or "暂无签名"
 
-   
+
 
   用户id=tab.author.id
   if tab.author.is_following then

@@ -59,13 +59,26 @@ function base:new(id,type)
         end
       end
     end
+   elseif child.type:find("voter") then
+    _peoplelist.showtext=function(data)
+      if data.action_type=="like" then
+        return "喜欢了";
+       else
+        --print(data.action_type)
+        return "转发了";
+      end
+    end
+    _peoplelist.onbind=function(views,data)
 
+    end
   end
   return child
 end
 
 function base:getUrl(type)
   switch type
+   case "voter"
+    return "https://api.zhihu.com/pins/"..self.id.."/actions"
    case "followees"
     return "https://api.zhihu.com/people/"..self.id.."/followers?offset=0"
    case "followers"
@@ -105,7 +118,7 @@ function base.getAdapter(people_list_pagetool,pos)
       loadglide(views.图像,data.图像)
       _peoplelist.onbind(views,data)
       views.card.onClick=function()
-        activity.newActivity("people",{data.id内容})
+        newActivity("people",{data.id内容})
       end
     end,
   }))
@@ -128,7 +141,18 @@ function base.resolvedata(v,data)
       头像=logopng
     end
   end
-
+  if v.type=="pin_action" then
+    头像=v.member.avatar_url
+    名字=v.member.name
+    签名=v.member.headline
+    用户id=v.member.id
+    if 签名=="" then
+      签名="无签名"
+    end
+    if 无图模式 then
+      头像=logopng
+    end
+  end
   local add={}
   add.id内容=用户id
   add.标题=名字

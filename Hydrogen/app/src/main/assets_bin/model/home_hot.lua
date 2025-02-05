@@ -102,11 +102,11 @@ function base:getAdapter(home_pagetool,pos)
 
       view.card.onClick=function()
         if tostring(data.id内容):find("文章分割") then
-          activity.newActivity("column",{tostring(data.id内容):match("文章分割(.+)"),tostring(data.id内容):match("分割(.+)")})
+          newActivity("column",{tostring(data.id内容):match("文章分割(.+)"),tostring(data.id内容):match("分割(.+)")})
          elseif tostring(data.id内容):find("想法分割") then
-          activity.newActivity("column",{tostring(data.id内容):match("想法分割(.+)"),"想法"})
+          newActivity("column",{tostring(data.id内容):match("想法分割(.+)"),"想法"})
          elseif not(data.id内容):find("分割") then
-          activity.newActivity("question",{data.id内容})
+          newActivity("question",{data.id内容})
         end
       end
 

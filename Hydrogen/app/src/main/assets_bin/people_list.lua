@@ -1,9 +1,38 @@
 require "import"
 import "mods.muk"
-activity.setContentView(loadlayout("layout/simple"))
-
+if inSekai then
+if fn[#fn][2]<2
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
+  t.add(f2.getId(),LuaFragment(loadlayout("layout/simple")),"pplls")
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"pplls",2})
+else
+local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
+  t.add(f1.getId(),LuaFragment(loadlayout("layout/simple")),"pplls")
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"pplls",1})
+end
+ else
+  activity.setContentView(loadlayout("layout/simple"))
+end
 波纹({fh,_more},"圆主题")
-
+edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  topbar.setLayoutParams(layoutParams); end)
 初始化历史记录数据(true)
 
 title,people_id=...
@@ -13,6 +42,8 @@ if title:find("关注") then
   类型="followees"
  elseif title:find("粉丝") then
   类型="followers"
+ elseif title:find("点赞")
+  类型="voter"
  else
   类型="block_all"
 end

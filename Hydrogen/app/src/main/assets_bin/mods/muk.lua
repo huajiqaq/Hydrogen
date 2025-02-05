@@ -27,7 +27,61 @@ BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 versionCode=0.568
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
- 
+import "android.animation.ObjectAnimator"
+import "android.view.animation.*"
+function setFragment(f,be,sx)
+  local signn=be.swipeEdge
+  if signn<1
+    signn=-1
+  end
+  f.x=(sx or 0)-(dp2px(100)*be.progress)*signn
+  --f.elevation=be.progress
+  -- f.alpha=1-math.sqrt(be.progress)/2
+  f.y=((be.getTouchY()-startBackY)/activity.height)*dp2px(100)
+  if be.progress<0.15
+    f.scaleX=1-be.progress
+    f.scaleY=1-be.progress
+   else
+    f.scaleX=0.85-math.pow(be.progress,3)/5
+    f.scaleY=0.85-math.pow(be.progress,3)/5
+  end
+end
+function back2basis(f)
+  f.x=0
+  f.y=0
+  f.elevation=1
+  f.scaleX=1
+  f.scaleY=1
+  -- f.alpha=0
+end
+function onBackProgressed(be)
+  setFragment(activity.getDecorView(),be,0)
+end
+function onBackStarted(be)
+  startBackY=be.touchY
+end
+function onBackCancelled()
+  local a1=ObjectAnimator.ofFloat(activity.getDecorView(), "x", {activity.getDecorView().x,0})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a2=ObjectAnimator.ofFloat(activity.getDecorView(), "y", {activity.getDecorView().y,0})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a3=ObjectAnimator.ofFloat(activity.getDecorView(), "scaleX", {activity.getDecorView().scaleX,1})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a4=ObjectAnimator.ofFloat(activity.getDecorView(), "scaleY", {activity.getDecorView().scaleY,1})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+end
+function onBackInvoked()
+  --onBackCancelled()
+  关闭页面()
+end
 function newActivity(f,b)
   b=b or {}
   if inSekai or false
@@ -39,10 +93,9 @@ end
 
 --inSekai=true
 function 关闭页面()
-  if inSekai
-    activity.getSupportFragmentManager().popBackStackImmediate()
+  if inSekai||#fn>0
+    activity.getSupportFragmentManager().popBackStack()
     table.remove(fn,#fn)
-    
    else
     activity.finish()
   end
@@ -815,7 +868,7 @@ function 颜色渐变(控件,左色,右色)
 end
 
 Fragment = luajava.bindClass "androidx.fragment.app.Fragment"
-LuaFragment = luajava.bindClass "com.androlua.LuaFragment"
+--LuaFragment = luajava.bindClass "com.androlua.LuaFragment"
 --activity.setContentView(loadlayout("layout/fragment"))
 
 nF={}

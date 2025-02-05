@@ -176,7 +176,7 @@
                       Visibility=8;
                       onClick=function()
                         if 用户id then
-                          activity.newActivity("people",{用户id})
+                          newActivity("people",{用户id})
                          else
                           提示("加载中")
                         end

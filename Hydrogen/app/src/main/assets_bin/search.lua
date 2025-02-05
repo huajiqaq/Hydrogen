@@ -20,10 +20,10 @@ if inSekai then
   android.R.anim.slide_out_right,
   android.R.anim.slide_in_left,
   android.R.anim.slide_out_right)
-  t.add(f1.getId(),LuaFragment(loadlayout("layout/search")))
+  t.add(f2.getId(),LuaFragment(loadlayout("layout/search")))
   t.addToBackStack(nil)
   t.commit()
-  table.insert(fn,{"search",1})
+  table.insert(fn,{"search",2})
  else
   activity.setContentView(loadlayout("layout/search"))
 end

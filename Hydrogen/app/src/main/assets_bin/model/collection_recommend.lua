@@ -37,7 +37,7 @@ function base.getAdapter(collection_recommend_pagetool,pos)
       views.活动.text=data.活动
       loadglide(views.图像,data.图像)
       views.card.onClick=function()
-        activity.newActivity("collections",{data.id内容}) end
+        newActivity("collections",{data.id内容}) end
     end,
   }))
 end

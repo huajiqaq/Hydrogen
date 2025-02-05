@@ -176,9 +176,11 @@ function MyTab(mtab)
     type=mtab.type or 1,
   }
 
-  local view=loadlayout(tab.layout,parent.ids)--加载布局
-  _G[mtab.id]=parent --设置id
-  return function() return view end --返回table
+  return function()
+    local view=loadlayout(tab.layout,parent.ids)--加载布局
+    _G[mtab.id]=parent --设置id
+    return view
+  end
 end
 
 return MyTab

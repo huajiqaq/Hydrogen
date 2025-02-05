@@ -146,17 +146,17 @@ function base.getAdapter(followcontent_pagetool,pos)
     itemc=获取适配器项目布局("home/home_shared_collections")
     onclick=function(data)
       if data.id内容=="local" then
-        activity.newActivity("collection_recommend")
+        newActivity("collection_recommend")
         return
       end
-      activity.newActivity("collections",{data.id内容,true})
+      newActivity("collections",{data.id内容,true})
     end
    case 3
     itemc[2][2][2][4]=nil
    case 5
     itemc=获取适配器项目布局("people/people_list")
     onclick=function(data)
-      activity.newActivity("people",{data.id内容})
+      newActivity("people",{data.id内容})
     end
   end
 

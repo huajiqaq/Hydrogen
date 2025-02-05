@@ -37,8 +37,35 @@ end)
 --new 0.53 引入mhtml2html解析mhtml 去除大量mhtml替换逻辑
 
 import "androidx.viewpager2.widget.ViewPager2"
-activity.setContentView(loadlayout("layout/local"))
-
+ if inSekai then
+if fn[#fn][2]<2
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
+  t.add(f2.getId(),LuaFragment(loadlayout("layout/local")),"local")
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"local",2})
+else
+local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
+  t.add(f1.getId(),LuaFragment(loadlayout("layout/local")),"local")
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"local",1})
+end
+ else
+  activity.setContentView(loadlayout("layout/local"))
+end
 设置toolbar(toolbar)
 
 edgeToedge(mainLay,底栏,function()

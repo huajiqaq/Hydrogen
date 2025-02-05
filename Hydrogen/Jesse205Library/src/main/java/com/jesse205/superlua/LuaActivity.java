@@ -7,28 +7,34 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.window.BackEvent;
+import android.window.OnBackAnimationCallback;
+import android.window.OnBackInvokedDispatcher;
 import androidx.annotation.NonNull;
 import com.luajava.LuaObject;
 import com.luajava.LuaState;
+
 import java.io.File;
 
 public class LuaActivity extends com.androlua.LuaActivity {
-	private long oldLastTime = 0;
+    private long oldLastTime = 0;
     private long lastTime = 0;
-    public boolean updating=false;
+    public boolean updating = false;
     private boolean checkUpdate = false;
 
-	private String luaPath;
+    private String luaPath;
     public String luaDir;
     private LuaState L;
     private LuaObject mOnBackPressed;
+    private OnBackAnimationCallback OnBackAnimationCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-		if (!checkUpdate)
-			checkUpdate = getIntent().getBooleanExtra("checkUpdate", false);
-		if (checkUpdate) {
+        if (!checkUpdate)
+            checkUpdate = getIntent().getBooleanExtra("checkUpdate", false);
+        if (checkUpdate) {
             try {
                 PackageInfo packageInfo = getPackageManager().getPackageInfo(this.getPackageName(), 0);
                 lastTime = packageInfo.lastUpdateTime;//更新时间
@@ -37,9 +43,9 @@ public class LuaActivity extends com.androlua.LuaActivity {
             }
             SharedPreferences info = getSharedPreferences("appInfo", 0);
             oldLastTime = info.getLong("lastUpdateTime", 0);
-			updating = oldLastTime != lastTime;
-            if (updating) 
-				setDebug(false);
+            updating = oldLastTime != lastTime;
+            if (updating)
+                setDebug(false);
         }
 
         super.onCreate(savedInstanceState);
@@ -56,45 +62,77 @@ public class LuaActivity extends com.androlua.LuaActivity {
         if (mOnBackPressed.isNil())
             mOnBackPressed = null;
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            OnBackAnimationCallback = new OnBackAnimationCallback() {
+                @Override
+                public void onBackInvoked() {
+                    // 调用返回事件处理方法
+                    runFunc("onBackInvoked");
+                }
+
+                @Override
+                public void onBackStarted(@NonNull BackEvent backEvent) {
+                    runFunc("onBackStarted",backEvent);
+                }
+
+                @Override
+                public void onBackProgressed(@NonNull BackEvent backEvent) {
+                    runFunc("onBackProgressed",backEvent);
+                }
+
+                @Override
+                public void onBackCancelled() {
+                    runFunc("onBackCancelled");
+                }
+            };
+
+
+            // 注册返回回调，优先级为默认值
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_OVERLAY,
+                    OnBackAnimationCallback
+            );
+        }
+
     }
 
-	//Androlua本身这个仅在Main出现
-	@Override
-	protected void onNewIntent(Intent intent) {
-		runFunc("onNewIntent", intent);
-		super.onNewIntent(intent);
-	}
+    //Androlua本身这个仅在Main出现
+    @Override
+    protected void onNewIntent(Intent intent) {
+        runFunc("onNewIntent", intent);
+        super.onNewIntent(intent);
+    }
 
-	//检查资源更新开关
+    //检查资源更新开关
     public void setCheckUpdate(boolean state) {
         checkUpdate = state;
     }
 
-	//新的lua路径获取方法
-	@Override
-	public String getLuaPath() {
-		if (updating) {
-			luaPath = "/";//阻止软件运行
-		} else if (luaPath == null) {
-			luaPath = getIntent().getStringExtra("luaPath");
-		}
-		applyLuaDir(luaPath);
-		return luaPath;
-	}
+    //新的lua路径获取方法
+    @Override
+    public String getLuaPath() {
+        if (updating) {
+            luaPath = "/";//阻止软件运行
+        } else if (luaPath == null) {
+            luaPath = getIntent().getStringExtra("luaPath");
+        }
+        applyLuaDir(luaPath);
+        return luaPath;
+    }
 
-	//应用一下LuaDir
-	public void applyLuaDir(String luaPath) {
-		String parent = new File(luaPath).getParent();
-		luaDir = parent;
-		while (parent != null) {
-			if (new File(parent, "main.lua").exists() && new File(parent, "init.lua").exists()) {
-				luaDir = parent;
-				break;
-			}
-			parent = new File(parent).getParent();
-		}
-		setLuaDir(luaDir);
-	}
+    //应用一下LuaDir
+    public void applyLuaDir(String luaPath) {
+        String parent = new File(luaPath).getParent();
+        luaDir = parent;
+        while (parent != null) {
+            if (new File(parent, "main.lua").exists() && new File(parent, "init.lua").exists()) {
+                luaDir = parent;
+                break;
+            }
+            parent = new File(parent).getParent();
+        }
+        setLuaDir(luaDir);
+    }
 
 
     @Override
@@ -102,6 +140,15 @@ public class LuaActivity extends com.androlua.LuaActivity {
         // TODO: Implement this method
         super.onSaveInstanceState(outState);
         runFunc("onSaveInstanceState", outState);
+    }    
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && OnBackAnimationCallback != null) {
+            getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(OnBackAnimationCallback);
+        }
     }
 
     @Override
@@ -109,7 +156,7 @@ public class LuaActivity extends com.androlua.LuaActivity {
         if (mOnBackPressed != null) {
             Object ret = mOnBackPressed.call();
             if (ret != null && ret.getClass() == Boolean.class && (Boolean) ret)
-                return ;
+                return;
         }
         super.onBackPressed();
     }
@@ -124,6 +171,7 @@ public class LuaActivity extends com.androlua.LuaActivity {
         }
         runFunc("onRestoreInstanceState", savedInstanceState);
     }
+
     public Intent buildNewActivityIntent(int req, String path, Object[] arg, boolean newDocument, int documentId) {
         Intent intent = new Intent(this, LuaActivity.class);
         intent.putExtra("name", path);
@@ -139,7 +187,7 @@ public class LuaActivity extends com.androlua.LuaActivity {
         //intent.putExtra("documentId", documentId);
         if (arg != null)
             intent.putExtra("arg", arg);
-        if (newDocument) 
+        if (newDocument)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         return intent;
     }
@@ -159,7 +207,7 @@ public class LuaActivity extends com.androlua.LuaActivity {
     }
 
     public void newActivity(int req, String path, Object[] arg, boolean newDocument, int documentId) {
-        Intent intent = buildNewActivityIntent(req,  path, arg,  newDocument,  documentId);
+        Intent intent = buildNewActivityIntent(req, path, arg, newDocument, documentId);
         if (newDocument) {
             startActivity(intent);
         } else

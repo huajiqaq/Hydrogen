@@ -5,7 +5,7 @@ function urlEncode(s)
   return string.gsub(s, " ", " ")
 end
 
- 
+
 
 function urlDecode(s)
   s = string.gsub(s, '%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
@@ -174,7 +174,11 @@ function 检查意图(url,b)
       newActivity("column",{url:getUrlArg("article/")})
      elseif url:find "pin" then
       if b then return true end
-      newActivity("column",{url:getUrlArg("pin/"),"想法"})
+      if string.find(url,"action")
+        newActivity("people_list",{"获取点赞列表",url:getUrlArg("pin/")})
+       else
+        newActivity("column",{url:getUrlArg("pin/"),"想法"})
+      end
      elseif url:find "zvideo" then
       if b then return true end
       newActivity("column",{url:getUrlArg("zvideo/"),"视频"})

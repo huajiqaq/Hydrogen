@@ -15,7 +15,7 @@ function zHttp.setcallback(code,content,raw,headers,url,head,callback,func,data)
         .setPositiveButton("立即跳转",nil)
         .show()
         mytip_dia.getButton(mytip_dia.BUTTON_POSITIVE).onClick=function()
-          activity.newActivity("browser",{decoded_content.error.redirect})
+          newActivity("browser",{decoded_content.error.redirect})
           提示("已跳转 成功后请自行退出")
         end
       end

@@ -24,7 +24,7 @@ if inSekai
   t.add(f2.getId(),LuaFragment(loadlayout("layout/commentl")))
   t.addToBackStack(nil)
   t.commit()
-  table.insert(fn,{"comments",2})
+  table.insert(fn,{"comments",2,comment_idl})
  else
    comment_id,comment_type,保存路径,父回复id=...
   activity.setContentView(loadlayout("layout/commentl"))

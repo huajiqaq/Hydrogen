@@ -1,106 +1,30 @@
 require "import"
 import "mods.muk"
+
 import "com.lua.custrecycleradapter.*"
 import "androidx.recyclerview.widget.*"
 import "android.widget.ImageView$ScaleType"
-import "androidx.recyclerview.widget.GridLayoutManager"
-import "com.google.android.material.navigation.NavigationView"
+
+import "com.google.android.material.bottomnavigation.BottomNavigationView"
 import "androidx.viewpager.widget.ViewPager"
 import "androidx.swiperefreshlayout.widget.*"
 import "com.google.android.material.tabs.TabLayout"
 import "com.bumptech.glide.Glide"
-import "com.google.android.material.bottomnavigation.BottomNavigationView"
-import "android.view.ViewTreeObserver"
+
+import "com.google.android.material.card.MaterialCardView"
 import "com.google.android.material.appbar.AppBarLayout"
-import "com.google.android.material.navigationrail.NavigationRailView"
---activity.setContentView(loadlayout("layout/home"))
-activity.setContentView(loadlayout("layout/fragment"))
-fragmentManager = activity.getSupportFragmentManager()
-local t = fragmentManager.beginTransaction()
-.replace(f1.getId(),LuaFragment(loadlayout("layout/home")))
-.commit()
+import "com.google.android.material.appbar.MaterialToolbar"
+import "com.google.android.material.navigation.NavigationView"
 
-fn={{"home",1}}
+MDC_R=luajava.bindClass"com.google.android.material.R"
 
-function onBackProgressed(be)
-  tttt.text=be.toString()
-  local signn=be.swipeEdge
-  if signn<1
-    signn=-1
-  end
-  if inSekai then
-    if fn[#fn][2]>1
-      setFragment(f2,be,activity.width/2)
-     else
-      setFragment(f1,be,0)
-    end
-   else
-    setFragment(f1,be,0)
-  end
+import "androidx.drawerlayout.widget.DrawerLayout"
 
-end
-function onBackCancelled()
-  local a1=ObjectAnimator.ofFloat(f1, "x", {f1.x,0})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a2=ObjectAnimator.ofFloat(f1, "y", {f1.y,0})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a3=ObjectAnimator.ofFloat(f1, "scaleX", {f1.scaleX,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a4=ObjectAnimator.ofFloat(f1, "scaleY", {f1.scaleY,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a1=ObjectAnimator.ofFloat(f2, "x", {f2.x,activity.width/2})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a2=ObjectAnimator.ofFloat(f2, "y", {f2.y,0})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a3=ObjectAnimator.ofFloat(f2, "scaleX", {f2.scaleX,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a4=ObjectAnimator.ofFloat(f2, "scaleY", {f2.scaleY,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-end
-function onBackInvoked()
-  关闭页面()
-  onBackCancelled()
-end
-local rootView = activity.getDecorView()
-inSekai=activity.width>dp2px(600)
-observer = rootView.getViewTreeObserver()
-orirh={}
-observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
-  onGlobalLayout=function()
-    if orirh[1]==tointeger(rootView.height)&&orirh[2]==tointeger(rootView.width)
-     else
-      orirh[1]=tointeger(rootView.height)
-      orirh[2]=tointeger(rootView.width)
-      inSekai=rootView.width>dp2px(600)
-      if rootView.width>dp2px(600)
 
-        local layoutParams = f1.LayoutParams;
-        layoutParams.width=orirh[2]/2
-        f1.setLayoutParams(layoutParams);
-       else
-        local layoutParams = f1.LayoutParams;
-        layoutParams.width=orirh[2]
-        f1.setLayoutParams(layoutParams);
-      end
-    end
-  end
-}))
+
+activity.setContentView(loadlayout("layout/home"))
+
+设置toolbar(toolbar)
 
 toolbar.setNavigationOnClickListener(View.OnClickListener{
   onClick=function(v)
@@ -135,11 +59,11 @@ nav.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedLis
       end
       followcontent_pagetool:refer(nil,nil,true)
      case "本地"
-      task(300,function()newActivity("local_list")end)
+      task(300,function()activity.newActivity("local_list")end)
      case "设置"
       task(300,function()activity.newActivity("settings")end)
      case "历史"
-      task(300,function()newActivity("history")end)
+      task(300,function()activity.newActivity("history")end)
      case "更多"
 
       if not(getLogin()) then
@@ -155,10 +79,10 @@ nav.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedLis
         .setNegativeButton("确定", {onClick=function()
             if jumpurl=="屏蔽用户管理" then
               jumpurl=nil
-              return newActivity("people_list",{"我的屏蔽用户列表"})
+              return activity.newActivity("people_list",{"我的屏蔽用户列表"})
             end
             --防止没选中 nil
-            newActivity("browser",{jumpurl or "https://www.zhihu.com/notifications"})
+            activity.newActivity("browser",{jumpurl or "https://www.zhihu.com/notifications"})
             jumpurl=nil
         end})
         .show();
@@ -174,7 +98,7 @@ nav.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedLis
 
 import "com.google.android.material.shape.MaterialShapeDrawable"
 
---activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(Color.TRANSPARENT);
+activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(Color.TRANSPARENT);
 
 
 mmenu = {
@@ -236,9 +160,50 @@ for i=0,toolbar.getChildCount() do
 end
 
 
+local Matrix = luajava.bindClass "android.graphics.Matrix"
+local TypedValue = luajava.bindClass "android.util.TypedValue"
+local Bitmap = luajava.bindClass "android.graphics.Bitmap"
+
+local function getbitmap(name,imgpx)
+  local bitmap=loadbitmap(图标(name))
+  local imgdp = 26
+  local imgpx=TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, imgdp, activity.Resources.DisplayMetrics)
+  local colorFilter = PorterDuffColorFilter(转0x(primaryc), PorterDuff.Mode.SRC_ATOP)
+  local scaledBitmap = Bitmap.createScaledBitmap(bitmap, imgpx, imgpx, true)
+  return BitmapDrawable(activity.Resources,scaledBitmap)
+end
+
+function onCreateOptionsMenu(menu)
+
+  mmenu = {
+    { MenuItem,
+      title = "反馈",
+      icon=图标("add")
+    },
+    {
+      MenuItem,
+      title = "关于",
+      icon=图标("search")
+    }
+  }
+
+  loadmenu(menu, mmenu,nil,9)
+
+  mmenu = {
+    { MenuItem,
+      title = "反馈",
+    },
+    {
+      MenuItem,
+      title = "关于",
+    }
+  }
+
+  loadmenu(menu, mmenu)
+end
 
 
-
+toolbar.setNavigationIcon(getbitmap("menu"))
 
 nav.addHeaderView(loadlayout {
   LinearLayout;
@@ -355,9 +320,6 @@ nav.addHeaderView(loadlayout {
 
 
 初始化历史记录数据(true)
-设置toolbar(toolbar)
-
---初始化历史记录数据()
 
 if activity.getSharedData("第一次提示") ==nil then
   双按钮对话框("注意","该软件仅供交流学习，严禁用于商业用途，请于下载后的24小时内卸载","登录","知道了",function(an)
@@ -637,7 +599,6 @@ if recommend_index then
     local tmpview={}
     local bottomSheetDialog = BottomSheetDialog(this)
     bottomSheetDialog.setContentView(loadlayout2(dann,tmpview))
-
     local chipdialog=bottomSheetDialog.show()
     MDC_R=luajava.bindClass"com.google.android.material.R"
 
@@ -704,8 +665,8 @@ if recommend_index then
       an.dismiss()
     end;
   end
-
 end
+
 function getitemRecy(pos)
   local pos=pos+1
   local itemc={
@@ -722,18 +683,6 @@ function getitemRecy(pos)
     return view:getItem()
   end
 end
-edgeToedge(mainLay,bnv,function()
-  local layoutParams = 侧滑头.LayoutParams;
-  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
-  侧滑头.setLayoutParams(layoutParams);
-  local layoutParams = negbar.LayoutParams;
-  layoutParams.height=导航栏高度
-  negbar.setLayoutParams(layoutParams);
-  local layoutParams = bottombar.LayoutParams;
-  layoutParams.height=-2
-  bottombar.setLayoutParams(layoutParams);
-  --初始化主页()
-end)
 
 local NavlastClickTime = 0
 local NavlastClickedItem
@@ -771,7 +720,7 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
     end
 
     bnv.getMenu().getItem(position).setChecked(true)
-    _title.text=(bnv.getMenu().getItem(position).getTitle())
+    toolbar.title=(bnv.getMenu().getItem(position).getTitle())
 
   end;
 
@@ -781,27 +730,11 @@ page_home.addOnPageChangeListener(ViewPager.OnPageChangeListener {
 });
 
 
+
+
 function 切换布局(s)
 
   if s=="收藏" then
-    setmyToolip(_ask,"新建收藏夹")
-    _ask.onClick=function()
-      if not(getLogin()) then
-        return 提示("你可能需要登录")
-      end
-      if collection_pagetool==nil then
-        提示("收藏加载中")
-        return true
-      end
-      新建收藏夹(function(mytext,myid,ispublic)
-
-        collection_pagetool
-        :clearItem(1)
-        :refer(1)
-
-      end)
-    end
-
     if isstart=="true" then
       a=MUKPopu({
         tittle="菜单",
@@ -831,7 +764,7 @@ function 切换布局(s)
               .setTitle("请输入")
               .setView(loadlayout(InputLayout))
               .setPositiveButton("确定", {onClick=function()
-                  newActivity("search_result",{edit.text,"collection"})
+                  activity.newActivity("search_result",{edit.text,"collection"})
               end})
               .setNegativeButton("取消", nil)
               .show();
@@ -847,15 +780,7 @@ function 切换布局(s)
     end
 
    else
-    setmyToolip(_ask,"提问")
-    _ask.onClick=function()
-      if not(getLogin()) then
-        return 提示("你可能需要登录")
-      end
-      task(20,function()
-        newActivity("browser",{"https://www.zhihu.com/messages","提问"})
-      end)
-    end
+
     a=MUKPopu({
       tittle="菜单",
       list={
@@ -903,12 +828,9 @@ function 切换布局(s)
     end
   end
 
-
-  _title.setText(s)
+  toolbar.title=s
 
 end
-
-
 
 --侧滑列表点击事件
 function 侧滑列表点击事件(v)
@@ -923,40 +845,38 @@ function 侧滑列表点击事件(v)
     end
     collection_pagetool:refer(nil,nil,true)
    case "日报"
-    daily_pagetool:getData(nil,true)
+    daily_pagetool:getData()
    case "关注"
     if getLogin()~=true then
       提示("请登录后使用本功能")
       return true
     end
     followcontent_pagetool:refer(nil,nil,true)
-   case "通知"
-    task(300,function()newActivity("browser",{"https://www.zhihu.com/notifications"})end)
    case "本地"
-    task(300,function()newActivity("local_list")end)
+    task(300,function()activity.newActivity("local_list")end)
    case "设置"
-    task(300,function()newActivity("settings")end)
+    task(300,function()activity.newActivity("settings")end)
    case "历史"
-    task(300,function()newActivity("history")end)
+    task(300,function()activity.newActivity("history")end)
    case "更多"
 
     if not(getLogin()) then
       return 提示("请登录后使用本功能")
     end
     task(20,function()
-      local mtab={"https://www.zhihu.com/messages","https://www.zhihu.com/settings/account","屏蔽用户管理","https://www.zhihu.com/appview/roundtable","https://www.zhihu.com/appview/special","https://www.zhihu.com/creator/hot-question/hot/0/hour"}
       AlertDialog.Builder(this)
       .setTitle("请选择")
-      .setSingleChoiceItems({"私信","设置","屏蔽用户管理","圆桌","专题","近期热点"}, 0,{onClick=function(v,p)
+      .setSingleChoiceItems({"通知","私信","设置","屏蔽用户管理","圆桌","专题"}, 0,{onClick=function(v,p)
+          local mtab={"https://www.zhihu.com/notifications","https://www.zhihu.com/messages","https://www.zhihu.com/settings/account","屏蔽用户管理","https://www.zhihu.com/appview/roundtable","https://www.zhihu.com/appview/special"}
           jumpurl=mtab[p+1]
       end})
       .setNegativeButton("确定", {onClick=function()
           if jumpurl=="屏蔽用户管理" then
             jumpurl=nil
-            return newActivity("people_list",{"我的屏蔽用户列表"})
+            return activity.newActivity("people_list",{"我的屏蔽用户列表"})
           end
           --防止没选中 nil
-          newActivity("browser",{jumpurl or mtab[1]})
+          activity.newActivity("browser",{jumpurl or "https://www.zhihu.com/notifications"})
           jumpurl=nil
       end})
       .show();
@@ -987,10 +907,8 @@ followcontent_pagetool=require "model.follow_content"
 
 
 --设置波纹（部分机型不显示，因为不支持setColor）（19 6-6发现及修复因为不支持setColor而导致的报错问题)
-波纹({_menu,home_more,_search,_ask,page1,page2,page3,page5,page4,pagetest},"圆主题")
+波纹({_menu,_more,_search,_ask,page1,page2,page3,page5,page4,pagetest},"圆主题")
 波纹({open_source},"方主题")
---波纹({侧滑头},"方自适应")
---波纹({注销},"圆自适应")
 
 
 function 加载主页tab()
@@ -1054,7 +972,7 @@ function 加载主页tab()
 
         onTabReselected=function(tab)
           --选中之后再次点击即复选时触发
-          home_pagetool:clearItem(pos,true)
+          home_pagetool:clearItem()
           :refer(nil,true)
         end,
       });
@@ -1065,11 +983,12 @@ function 加载主页tab()
         run=function()
           local tab=HometabLayout.getTabAt(0);
           tab.select()
-      end},300);
+      end},100);
 
      else
       HometabLayout.setVisibility(8)
-      home_pagetool:refer(nil,nil,true)
+      home_pagetool:clearItem()
+      :refer()
     end
   end)
 end
@@ -1111,7 +1030,7 @@ function getuserinfo()
       local uid=data.id
       activity.setSharedData("idx",uid)
       侧滑头.onClick=function()
-        newActivity("people",{uid})
+        activity.newActivity("people",{uid})
       end
       loadglide(头像id,头像,false)
       名字id.Text=名字
@@ -1183,84 +1102,82 @@ function onResume()
 end
 
 
-if this.getSharedData("自动检测更新")=="true" then
-  local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
-  Http.get(update_api,head,function(code,content)
-    if code==200 then
-      local content_json=luajson.decode(content)
-      local content=base64dec(content_json.content)
-      updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
-      isstart=content:match("start%=(.+),start")
-      support_version=tonumber(content:match("supportversion%=(.+),supportversion"))
-      this.setSharedData("解析zse开关",isstart)
-      if updateversioncode > versionCode and tonumber(activity.getSharedData("version"))~=updateversioncode then
-        updateversionname=content:match("updateversionname%=(.+),updateversionname")
-        updateinfo=content:match("updateinfo%=(.+),updateinfo")
-        updateurl=tostring(content:match("updateurl%=(.+),updateurl"))
-        if versionCode >= support_version then
-          myupdatedialog=AlertDialog.Builder(this)
-          .setTitle("检测到最新版本")
-          .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
-          .setCancelable(false)
-          .setPositiveButton("立即更新",nil)
-          .setNeutralButton("忽略本次更新",{onClick=function() activity.setSharedData("version",tostring(updateversioncode)) end})
-          .show()
-          myupdatedialog.create()
-          myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+local update_api="https://gitee.com/api/v5/repos/huaji110/huajicloud/contents/zhihu_hydrogen.html?access_token=abd6732c1c009c3912cbfc683e10dc45"
+Http.get(update_api,head,function(code,content)
+  if code==200 then
+    local content_json=luajson.decode(content)
+    local content=base64dec(content_json.content)
+    updateversioncode=tonumber(content:match("updateversioncode%=(.+),updateversioncode"))
+    isstart=content:match("start%=(.+),start")
+    support_version=tonumber(content:match("supportversion%=(.+),supportversion"))
+    this.setSharedData("解析zse开关",isstart)
+    if updateversioncode > versionCode and tonumber(activity.getSharedData("version"))~=updateversioncode then
+      updateversionname=content:match("updateversionname%=(.+),updateversionname")
+      updateinfo=content:match("updateinfo%=(.+),updateinfo")
+      updateurl=tostring(content:match("updateurl%=(.+),updateurl"))
+      if versionCode >= support_version then
+        myupdatedialog=AlertDialog.Builder(this)
+        .setTitle("检测到最新版本")
+        .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
+        .setCancelable(false)
+        .setPositiveButton("立即更新",nil)
+        .setNeutralButton("忽略本次更新",{onClick=function() activity.setSharedData("version",tostring(updateversioncode)) end})
+        .show()
+        myupdatedialog.create()
+        myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+          local result=get_write_permissions()
+          if result~=true then
+            return false
+          end
+          下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
+        end
+       else
+        下载方法=content:match("nosupportWay%=(.+),nosupportWay")
+        下载提示=content:match("nosupportTip%=(.+),nosupportTip")
+        myupdatedialog=AlertDialog.Builder(this)
+        .setTitle("检测到最新版本")
+        .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
+        .setCancelable(false)
+        .setPositiveButton("立即更新",nil)
+        .setNeutralButton("暂不更新",{onClick=function() 提示("本次更新为强制更新 下次打开软件会再次提示哦") end})
+        .show()
+        myupdatedialog.create()
+        myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+          if 下载方法=="native" then
             local result=get_write_permissions()
             if result~=true then
               return false
             end
             下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
-          end
-         else
-          下载方法=content:match("nosupportWay%=(.+),nosupportWay")
-          下载提示=content:match("nosupportTip%=(.+),nosupportTip")
-          myupdatedialog=AlertDialog.Builder(this)
-          .setTitle("检测到最新版本")
-          .setMessage("最新版本："..updateversionname.."("..updateversioncode..")\n"..updateinfo)
-          .setCancelable(false)
-          .setPositiveButton("立即更新",nil)
-          .setNeutralButton("暂不更新",{onClick=function() 提示("本次更新为强制更新 下次打开软件会再次提示哦") end})
-          .show()
-          myupdatedialog.create()
-          myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
-            if 下载方法=="native" then
-              local result=get_write_permissions()
-              if result~=true then
-                return false
-              end
-              下载文件对话框("下载安装包中",updateurl,"Hydrogen.apk",false)
-             else
-              提示(下载提示)
-              浏览器打开(updateurl)
-            end
+           else
+            提示(下载提示)
+            浏览器打开(updateurl)
           end
         end
       end
-     else
-      myupdatedialog=AlertDialog.Builder(this)
-      .setTitle("提示")
-      .setMessage("检测版本失败 如若是网络问题 请找到网络信号良好的地方使用 如果检查网络后不是网络问题 请打开官网更新 或前往项目页查看往下滑查看最新下载链接 如果开源项目页没了 软件就是寄了")
-      .setCancelable(false)
-      .setPositiveButton("官网",nil)
-      .setNeutralButton("忽略",nil)
-      .setNegativeButton("项目页",nil)
-      .show()
-      myupdatedialog.findViewById(android.R.id.message).TextIsSelectable=true
-      myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
-        浏览器打开("https://huajiqaq.github.io/myhydrogen")
-      end
-      myupdatedialog.getButton(myupdatedialog.BUTTON_NEGATIVE).onClick=function()
-        浏览器打开("https://gitee.com/huajicloud/hydrogen")
-      end
-      myupdatedialog.getButton(myupdatedialog.BUTTON_NEUTRAL).onClick=function()
-        myupdatedialog.dismiss()
-      end
-
     end
-  end)
-end
+   else
+    myupdatedialog=AlertDialog.Builder(this)
+    .setTitle("提示")
+    .setMessage("检测版本失败 如若是网络问题 请找到网络信号良好的地方使用 如果检查网络后不是网络问题 请打开官网更新 或前往项目页查看往下滑查看最新下载链接 如果开源项目页没了 软件就是寄了")
+    .setCancelable(false)
+    .setPositiveButton("官网",nil)
+    .setNeutralButton("忽略",nil)
+    .setNegativeButton("项目页",nil)
+    .show()
+    myupdatedialog.findViewById(android.R.id.message).TextIsSelectable=true
+    myupdatedialog.getButton(myupdatedialog.BUTTON_POSITIVE).onClick=function()
+      浏览器打开("https://huajiqaq.github.io/myhydrogen")
+    end
+    myupdatedialog.getButton(myupdatedialog.BUTTON_NEGATIVE).onClick=function()
+      浏览器打开("https://gitee.com/huajicloud/hydrogen")
+    end
+    myupdatedialog.getButton(myupdatedialog.BUTTON_NEUTRAL).onClick=function()
+      myupdatedialog.dismiss()
+    end
+
+  end
+end)
 
 if activity.getSharedData("自动清理缓存")=="true" then
   清理内存()
@@ -1284,7 +1201,7 @@ end)
 lastclick = os.time() - 2
 function onKeyDown(code,event)
   local now = os.time()
-  --[[if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
+  if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
     --监听返回键
     if a and a.pop.isShowing() then
       --如果菜单显示，关闭菜单并阻止返回键
@@ -1302,7 +1219,7 @@ function onKeyDown(code,event)
       lastclick = now
       return true
     end
-  end]]
+  end
 
   if this.getSharedData("音量键选择tab")~="true" then
     return false
@@ -1397,45 +1314,5 @@ if this.getSharedData("切换webview")=="true" then
   if WebViewUpgrade.getUpgradeWebViewPackageName()==webview_packagename then
     local upgradeSource = UpgradePackageSource(this.getApplicationContext(),webview_packagename);
     WebViewUpgrade.upgrade(upgradeSource);
-  end
-end
-
-if this.getSharedData("智能无图模式")=="true" then
-  function onStart()
-    if 无图模式提醒==true then
-      return
-    end
-    connMgr= this.getSystemService(Context.CONNECTIVITY_SERVICE);
-    info=connMgr.getActiveNetworkInfo()
-    netType=info.getType()
-
-    if netType==ConnectivityManager.TYPE_WIFI then
-      isWifiConn=info.isConnected();
-    end
-
-    if netType==ConnectivityManager.TYPE_MOBILE then
-      isMobileConn=info.isConnected();
-    end
-
-    无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
-    if isWifiConn and 无图模式==true then
-      双按钮对话框("提示","当前在WiFi下 是否关闭不加载图片","关闭","暂不关闭",function(an)
-        activity.setSharedData("不加载图片","false")
-        提示("关闭不加载图片成功")
-        关闭对话框(an)
-        end,function(an)
-        无图模式提醒=true
-        关闭对话框(an)
-      end)
-     elseif isMobileConn and 无图模式==false then
-      双按钮对话框("提示","当前在流量下 是否开启不加载图片","开启","暂不开启",function(an)
-        activity.setSharedData("不加载图片","true")
-        提示("开启不加载图片成功")
-        关闭对话框(an)
-        end,function(an)
-        无图模式提醒=true
-        关闭对话框(an)
-      end)
-    end
   end
 end

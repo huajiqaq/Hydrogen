@@ -150,7 +150,7 @@ mripple.onClick=function()
   local mview=数据表[pg.adapter.getItem(pos).id]
   local id=mview.data.author.id
   if id~="0" then
-    activity.newActivity("people",{id})
+    newActivity("people",{id})
    else
     提示("回答作者已设置匿名")
   end
@@ -326,6 +326,7 @@ function 数据添加(t,b)
         t.progress.getParent().removeView(t.progress)
         t.progress=nil
       end
+加载js(view,获取js("eruda"))
       屏蔽元素(view,{".AnswerReward",".AppViewRecommendedReading"})
 
       task(1000,function()
@@ -924,7 +925,7 @@ task(1,function()
           end
 
           local url="https://www.zhihu.com/report?id="..回答id.."&type=answer"
-          activity.newActivity("browser",{url.."&source=android&ab_signature=","举报"})
+          newActivity("browser",{url.."&source=android&ab_signature=","举报"})
         end
       },
 

@@ -51,7 +51,7 @@
           ellipsize="end",
           textColor=stextc;
           layout_marginTop="2dp";
-          Typeface=字体("product-Medium");
+          Typeface=字体("product");
           id="预览内容";
           textSize=内容文字大小;
           lineHeight=内容行高;

@@ -202,7 +202,7 @@ local function 多选菜单(data,v)
     end},
     {"举报",function()
         local url="https://www.zhihu.com/report?id="..id内容.."&type=comment"
-        activity.newActivity("browser",{url.."&source=android&ab_signature=","举报"})
+        newActivity("browser",{url.."&source=android&ab_signature=","举报"})
     end},
     {"屏蔽",function()
         if not(getLogin()) then
@@ -222,7 +222,7 @@ local function 多选菜单(data,v)
         .show();
     end},
     {"查看主页",function()
-        activity.newActivity("people",{data.作者id})
+        newActivity("people",{data.作者id})
     end}
   }
 
@@ -278,7 +278,11 @@ function base.getAdapter(comment_pagetool,pos)
        else
         views.评论.Visibility=8
       end
-
+      if (data.liked)
+        views.赞.ChipIcon=liked_drawable
+       else
+        views.赞.ChipIcon=like_drawable
+      end
       if comment_type=="comments"&&position==0
         local layoutParams = views.line.LayoutParams;
         layoutParams.height=dp2px(6)
@@ -321,9 +325,13 @@ function base.getAdapter(comment_pagetool,pos)
 
       views.card.onClick=function()
         if views.评论.getVisibility()==0 then
-          if (comment_idl or "")==data.id内容 then
-            return 提示("当前已在该对话列表内")
-          end 
+          if fn~=nil then
+            if fn[#fn]~=nil then
+              if (fn[#fn][3] or "")==data.id内容 then
+                return 提示("当前已在该对话列表内")
+              end
+            end
+          end
           newActivity("commentl",{data.id内容,"comments",保存路径,comment_id})
         end
       end
@@ -398,7 +406,7 @@ function base.getAdapter(comment_pagetool,pos)
       end
 
       views.author_lay.onClick=function()
-        activity.newActivity("people",{data.作者id})
+        newActivity("people",{data.作者id})
       end
 
       views.预览内容.onTouch=function(v,event)
@@ -437,7 +445,7 @@ function base:initpage(view,sr)
       if self.type=="comments" then
         self.resolvedata(data.root,adpdata)
         评论类型=data.root.resource_type.."s"
-        评论id=父回复id
+        评论id=父回复id or comment_id
        else
         评论类型=comment_type
         评论id=comment_id
@@ -477,7 +485,7 @@ function 发送评论(id,title)
   local 请求链接
   回复id=id
 
-  
+
 
   bottomSheetDialog = BottomSheetDialog(this)
   bottomSheetDialog.setContentView(loadlayout({
@@ -581,7 +589,7 @@ function 发送评论(id,title)
   })
   bottomSheetDialog.show()
   .setCancelable(true)
-  .behavior.setMaxWidth(dp2px(800))
+  .behavior.setMaxWidth(dp2px(600))
   bottomSheetDialog.getWindow().setDecorFitsSystemWindows(false)
   .addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
   local view=bottomSheetDialog.window.getDecorView()
@@ -667,7 +675,7 @@ send_edit.text=myspan]]
     end
     --评论类型和评论id处理逻辑在comment_base
     local postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
-    local 请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..comment_id.."/comment"
+    local 请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
 
     local url,head=require "model.zse96_encrypt"(请求链接)
     zHttp.post(url,postdata,head,function(code,json)

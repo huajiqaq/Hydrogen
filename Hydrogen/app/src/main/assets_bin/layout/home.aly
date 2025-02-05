@@ -70,6 +70,7 @@
 
         {
           TextView;
+          text="主页";
           textColor=primaryc;
           textSize="20sp";
           id="_title";
@@ -100,7 +101,7 @@
                 return 提示("请登录后使用本功能")
               end
               task(20,function()
-                activity.newActivity("browser",{"https://www.zhihu.com/messages","提问"})
+                newActivity("browser",{"https://www.zhihu.com/messages","提问"})
               end)
             end;
           };
@@ -127,7 +128,7 @@
             layout_width="32dp",
             layout_height="32dp",
             padding="4dp";
-            id="_more";
+            id="home_more";
             tooltip="更多",
             layout_margin="8dp";
             onClick=function()
@@ -173,6 +174,7 @@
       };
     };
 
+
     {
       CoordinatorLayout;
       id="bottombar";
@@ -197,8 +199,9 @@
         };
       };
     };
-  };
 
+  };
+  --[[
 
   {--侧滑
     NestedScrollView;
@@ -337,5 +340,12 @@
         DividerHeight=0;
       };
     };
+  };]]
+  {
+    NavigationView;
+    layout_width="wrap";
+    layout_height="fill";
+    layout_gravity="left";
+    id="nav";
   };
 }

@@ -66,7 +66,7 @@ function base.getAdapter(thinker_pagetool,pos)
       views.评论数.Text=tostring(data.评论数)
       --子项目点击事件
       views.card.onClick=function(v)
-        activity.newActivity("column",{data.id内容,"想法"})
+        newActivity("column",{data.id内容,"想法"})
         return true
       end
 

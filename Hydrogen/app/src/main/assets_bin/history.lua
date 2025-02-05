@@ -1,9 +1,25 @@
 require "import"
 
 import "mods.muk"
-activity.setContentView(loadlayout("layout/history"))
-
+if inSekai then
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  t.add(f1.getId(),LuaFragment(loadlayout("layout/history")))
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"history",1})
+ else
+  activity.setContentView(loadlayout("layout/history"))
+end
 设置toolbar(toolbar)
+edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  topbar.setLayoutParams(layoutParams); end)
+
 
 波纹({fh,_more},"圆主题")
 

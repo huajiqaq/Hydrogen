@@ -4,8 +4,21 @@ import "com.lua.*"
 
 collections_id=...
 
-activity.setContentView(loadlayout("layout/collections"))
-
+if inSekai then
+local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
+  t.add(f1.getId(),LuaFragment(loadlayout("layout/collections")),"collections")
+  t.addToBackStack(nil)
+  t.commit()
+  table.insert(fn,{"collections",1})
+ else
+  activity.setContentView(loadlayout("layout/collections"))
+end
 collections_base=require "model.collections":new(collections_id)
 :getData(function(tab)
 
@@ -85,7 +98,7 @@ pop={
     {
       src=图标("close"),text="举报",onClick=function()
         local url="https://www.zhihu.com/report?id="..collections_id.."&type=favlist"
-        activity.newActivity("browser",{url.."&source=android&ab_signature=","举报"})
+        newActivity("browser",{url.."&source=android&ab_signature=","举报"})
       end
     },
   }

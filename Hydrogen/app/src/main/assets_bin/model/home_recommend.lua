@@ -1,5 +1,7 @@
 local base={}
 
+
+
 function base:new(id)--类的new方法
   local child=table.clone(self)
   child.id=id
@@ -11,7 +13,7 @@ function base.resolvedata(v,data)
   if v.type~="feed" then
     return
   end
-
+  
   local isread='"t"'
   local readdata=v.brief
   local v=v.target or v
@@ -20,7 +22,21 @@ function base.resolvedata(v,data)
   local 评论数=tostring(v.comment_count)
   local 作者=v.author.name
   local 预览内容=作者.." : "..(v.excerpt or v.excerpt_title)
-
+if File(tostring(activity.getExternalCacheDir()).."/rc.json").exists()
+    pcall(function()recommend_history=luajson.decode(io.open(tostring(activity.getExternalCacheDir()).."/rc.json"):read("*a"))end)
+   else
+    recommend_history={}
+  end
+  if table.find(recommend_history,预览内容)
+    提示("找到重复内容")
+    return
+   else
+    if #recommend_history>200
+      table.remove(recommend_history,1)
+    end
+    table.insert(recommend_history,预览内容)
+    io.open(tostring(tostring(activity.getExternalCacheDir()).."/rc.json"),"w"):write(tostring(luajson.encode(recommend_history))):close()
+  end
   local id=v.id
   local 分割字符串
 
@@ -171,7 +187,7 @@ function base.getAdapter(home_pagetool,pos)
                       end
                     end)
                    elseif raw_button.action.intent_url then
-                    activity.newActivity("browser",{raw_button.action.intent_url.."&source=android&ab_signature=","举报"})
+                    newActivity("browser",{raw_button.action.intent_url.."&source=android&ab_signature=","举报"})
                   end
                 end
               })
