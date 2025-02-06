@@ -20,9 +20,9 @@ end
 
 function base:getinfo(id,cb)
   zse96_encrypt=require "model.zse96_encrypt"
-local url,head
+  local url,head
   local include='?include=visit_count%2Ccomment_count'
-local url="https://api.zhihu.com/v4/answers/"..id.."/question"..include
+  local url="https://api.zhihu.com/v4/answers/"..id.."/question"..include
 
   zHttp.get(url,apphead
   ,function(a,b)
@@ -33,11 +33,11 @@ local url="https://api.zhihu.com/v4/answers/"..id.."/question"..include
   end)
 end
 
-
 function base:getAnswer(id,cb)
-  local include='?include=ad_track_url%2Ccontent%2Ccreated_time%2Cupdated_time%2Creshipment_settings%2Cmark_infos%2Ccopyright_applications_count%2Cis_collapsed%2Ccollapse_reason%2Cannotation_detail%2Cis_normal%2Ccollaboration_status%2Creview_info%2Creward_info%2Crelationship.voting%2Crelationship.is_author%3Bsuggest_edit.unnormal_details%3Bcommercial_info%2Crelevant_info%2Csearch_words%2Cpagination_info%2Cfavlists_count%2Ccomment_count'
-  zHttp.get("https://api.zhihu.com/v4/answers/"..id..include,apphead
-  ,function(a,b)
+  local include='?include=author%2Ccontent%2Cvoteup_count%2Ccomment_count%2Cfavlists_count%2Cthanks_count%2Cpagination_info'
+  zse96_encrypt=require "model.zse96_encrypt"
+  url,head=zse96_encrypt("https://www.zhihu.com/api/v4/answers/"..id..include)
+  zHttp.get(url,head,function(a,b)
     if a==200 then
       cb(luajson.decode(b))
      elseif a==404 then
@@ -65,6 +65,7 @@ end
 function base:getOneData(cb,z) --获取一条数据
   local getid=self.getid
   local pageinfo=self.pageinfo
+
   if pageinfo[getid] then
     if z then
       local prev_ids=pageinfo[getid].prev_ids
@@ -75,6 +76,7 @@ function base:getOneData(cb,z) --获取一条数据
     end
   end
   self:getAnswer((getid),function(myz)
+
     if myz==false then
       if z then
         table.remove(pageinfo[self.getid].prev_ids)

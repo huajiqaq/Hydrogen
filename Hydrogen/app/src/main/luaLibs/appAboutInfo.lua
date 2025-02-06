@@ -55,6 +55,18 @@ developers={
     qq=3543515846,
     message="引诱苦手",
     url="mqqwpa://im/chat?chat_type=wpa&uin=3543515846" },
+  {
+    name="orz12",
+    qq=0,
+    avatar="https://avatars.githubusercontent.com/u/17450420?v=4",
+    message="早期布局优化",
+    url="https://gitee.com/orz12" },
+  {
+    name="0xdeadc0de",
+    message="提交PR 修复BUG",
+    qq=0,
+    avatar="https://avatars.githubusercontent.com/u/26507452?v=4",
+    url="https://github.com/1582421598" },
 
 }
 
