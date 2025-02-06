@@ -85,7 +85,7 @@ function base:getData(cb,issave)
          case "文章","想法","视频"
           local title=b.title
           if type1=="想法" then
-            title=获取想法标题(b.content[1].title)
+            title=获取想法标题(b.content[1].title or "")
           end
           if title=="" then
             title="一个"..type1

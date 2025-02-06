@@ -326,7 +326,7 @@ function 数据添加(t,b)
         t.progress.getParent().removeView(t.progress)
         t.progress=nil
       end
-加载js(view,获取js("eruda"))
+--加载js(view,获取js("eruda"))
       屏蔽元素(view,{".AnswerReward",".AppViewRecommendedReading"})
 
       task(1000,function()

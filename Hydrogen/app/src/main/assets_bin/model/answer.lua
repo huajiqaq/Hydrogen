@@ -19,8 +19,12 @@ end
 
 
 function base:getinfo(id,cb)
+  zse96_encrypt=require "model.zse96_encrypt"
+local url,head
   local include='?include=visit_count%2Ccomment_count'
-  zHttp.get("https://api.zhihu.com/v4/answers/"..id.."/question"..include,apphead
+local url="https://api.zhihu.com/v4/answers/"..id.."/question"..include
+
+  zHttp.get(url,apphead
   ,function(a,b)
     if a==200 then
       cb(luajson.decode(b))

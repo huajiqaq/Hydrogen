@@ -197,7 +197,7 @@ content.setWebViewClient{
     加载js(view,获取js("mdcopy"))
     网页字体设置(view)
     加载js(view,获取js("native"))
-加载js(view,获取js("eruda"))
+--加载js(view,获取js("eruda"))
     等待doc(view)
     if 全局主题值=="Night" then
       夜间模式主题(view)

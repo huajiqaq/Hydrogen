@@ -23,7 +23,6 @@ local t = fragmentManager.beginTransaction()
 fn={{"home",1}}
 
 function onBackProgressed(be)
-  tttt.text=be.toString()
   local signn=be.swipeEdge
   if signn<1
     signn=-1
@@ -85,6 +84,7 @@ observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
   onGlobalLayout=function()
     if orirh[1]==tointeger(rootView.height)&&orirh[2]==tointeger(rootView.width)
      else
+      onBackCancelled()
       orirh[1]=tointeger(rootView.height)
       orirh[2]=tointeger(rootView.width)
       inSekai=rootView.width>dp2px(600)
