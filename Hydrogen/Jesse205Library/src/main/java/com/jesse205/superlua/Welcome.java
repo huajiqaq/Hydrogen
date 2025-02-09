@@ -15,7 +15,9 @@ import com.androlua.LuaApplication;
 import com.androlua.LuaUtil;
 import com.jesse205.R;
 import com.jesse205.superlua.Welcome;
+
 import java.io.File;
+
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -59,12 +61,12 @@ public class Welcome extends AppCompatActivity {
 
 
     public void startActivity(Boolean isUpdata) {
-        Intent intent=null;
+        Intent intent = null;
 
 
         if (isUpdata) {//只有在更新资源时候或者程序启动才应该调用welcome
-            Intent mIntent=getIntent();
-            Bundle mBundle=mIntent.getExtras();
+            Intent mIntent = getIntent();
+            Bundle mBundle = mIntent.getExtras();
             if (mBundle != null) {
                 intent = (Intent) mBundle.get("newIntent");//使用以前的intent
             }
@@ -94,6 +96,23 @@ public class Welcome extends AppCompatActivity {
             // TODO: Implement this method
             try {
                 unApk("assets/", localDir);
+
+                // 手动遍历libs目录下的dex 目录并设置只读 不过只实现了文件的遍历 并未处理嵌套文件夹 因为用不到
+                File libsDirectory = new File(localDir, "libs");
+                File[] files = libsDirectory.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isFile()) {
+                            boolean success = file.setReadOnly();
+                            if (!success) {
+                                System.out.println("Failed to set to read-only: " + file.getAbsolutePath());
+                            }
+                        }
+                    }
+                } else {
+                    System.out.println("Failed to list files in directory: " + libsDirectory.getAbsolutePath());
+                }
+
                 unApk("lua/", luaMdDir);
                 if (!versionName.equals(oldVersionName)) {
                     SharedPreferences.Editor edit = info.edit();
@@ -115,8 +134,8 @@ public class Welcome extends AppCompatActivity {
         }
 
         private void unApk(String dir, String extDir) throws ZipException {
-            File file=new File(extDir);
-            String tempDir=getCacheDir().getPath();
+            File file = new File(extDir);
+            String tempDir = getCacheDir().getPath();
             LuaUtil.rmDir(file);
             ZipFile zipFile = new ZipFile(getApplicationInfo().publicSourceDir);
             zipFile.extractFile(dir, tempDir);
@@ -137,11 +156,12 @@ public class Welcome extends AppCompatActivity {
         super.onResume();
         fullScreen();
     }
+
     private void fullScreen() {
-        View decorView=getWindow().getDecorView();
+        View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(decorView.getSystemUiVisibility()
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     }
 }

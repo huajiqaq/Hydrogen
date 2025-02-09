@@ -6,8 +6,7 @@ android {
     defaultConfig {
         applicationId "com.zhihu.hydrogen.x"
         minSdkVersion 21
-        //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 28
+        targetSdkVersion 34
         versionCode 1
         versionName "new"
     }
