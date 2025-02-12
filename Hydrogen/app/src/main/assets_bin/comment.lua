@@ -16,20 +16,7 @@ comment_id,comment_type,保存路径,父回复id=...
 local Chip = luajava.bindClass "com.google.android.material.chip.Chip"
 import "com.google.android.material.floatingactionbutton.FloatingActionButton"
 
-if inSekai
-  local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  t.add(f1.getId(),LuaFragment(loadlayout("layout/comment")))
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"comment",1})
- else
-  activity.setContentView(loadlayout("layout/comment"))
-end
+设置视图("layout/comment")
 --activity.setContentView(loadlayout("layout/comment"))
 edgeToedge(mainLay,send)
 

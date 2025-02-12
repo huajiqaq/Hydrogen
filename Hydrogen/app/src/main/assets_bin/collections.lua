@@ -4,21 +4,8 @@ import "com.lua.*"
 
 collections_id=...
 
-if inSekai then
-local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
-  t.add(f1.getId(),LuaFragment(loadlayout("layout/collections")),"collections")
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"collections",1})
- else
-  activity.setContentView(loadlayout("layout/collections"))
-end
+ 
+设置视图("layout/collections")
 collections_base=require "model.collections":new(collections_id)
 :getData(function(tab)
 
@@ -78,7 +65,7 @@ pop={
   list={
 
     {src=图标("email"),text="反馈",onClick=function()
-        activity.newActivity("feedback")
+        newActivity("feedback")
     end},
 
     {src=图标("close"),text="删除收藏夹",onClick=function()

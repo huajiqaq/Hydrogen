@@ -19,20 +19,7 @@ end
 
 初始化历史记录数据(true)
 
-if inSekai
-  local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  t.add(f2.getId(),LuaFragment(loadlayout("layout/column_parent")))
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"column",2})
- else
-  activity.setContentView(loadlayout("layout/column_parent"))
-end
+设置视图("layout/column_parent")
 if 类型=="本地" then
   task(1,function()
     _title.text="本地内容"

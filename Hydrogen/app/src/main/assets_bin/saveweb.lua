@@ -9,7 +9,7 @@ callback = import "com.androlua.LuaWebView$LuaWebViewClient";
 
 保存url,保存路径,写入内容=...
 
-activity.setContentView(loadlayout("layout/browser"))
+设置视图("layout/browser")
 
 波纹({fh,_more},"圆主题")
 

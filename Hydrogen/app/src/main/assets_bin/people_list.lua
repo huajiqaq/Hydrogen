@@ -1,34 +1,6 @@
 require "import"
 import "mods.muk"
-if inSekai then
-if fn[#fn][2]<2
-  local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
-  t.add(f2.getId(),LuaFragment(loadlayout("layout/simple")),"pplls")
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"pplls",2})
-else
-local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
-  t.add(f1.getId(),LuaFragment(loadlayout("layout/simple")),"pplls")
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"pplls",1})
-end
- else
-  activity.setContentView(loadlayout("layout/simple"))
-end
+设置视图("layout/simple")
 波纹({fh,_more},"圆主题")
 edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);

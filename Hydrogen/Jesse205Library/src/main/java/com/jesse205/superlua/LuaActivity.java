@@ -19,219 +19,213 @@ import com.luajava.LuaState;
 import java.io.File;
 
 public class LuaActivity extends com.androlua.LuaActivity {
-    private long oldLastTime = 0;
-    private long lastTime = 0;
-    public boolean updating = false;
-    private boolean checkUpdate = false;
+  private long oldLastTime = 0;
+  private long lastTime = 0;
+  public boolean updating = false;
+  private boolean checkUpdate = false;
 
-    private String luaPath;
-    public String luaDir;
-    private LuaState L;
-    private LuaObject mOnBackPressed;
-    private OnBackAnimationCallback OnBackAnimationCallback;
+  private String luaPath;
+  public String luaDir;
+  private LuaState L;
+  private LuaObject mOnBackPressed;
+  private OnBackAnimationCallback OnBackAnimationCallback;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        if (!checkUpdate)
-            checkUpdate = getIntent().getBooleanExtra("checkUpdate", false);
-        if (checkUpdate) {
-            try {
-                PackageInfo packageInfo = getPackageManager().getPackageInfo(this.getPackageName(), 0);
-                lastTime = packageInfo.lastUpdateTime;//更新时间
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    if (!checkUpdate) checkUpdate = getIntent().getBooleanExtra("checkUpdate", false);
+    if (checkUpdate) {
+      try {
+        PackageInfo packageInfo = getPackageManager().getPackageInfo(this.getPackageName(), 0);
+        lastTime = packageInfo.lastUpdateTime; // 更新时间
+      } catch (PackageManager.NameNotFoundException e) {
+        e.printStackTrace();
+      }
+      SharedPreferences info = getSharedPreferences("appInfo", 0);
+      oldLastTime = info.getLong("lastUpdateTime", 0);
+      updating = oldLastTime != lastTime;
+      if (updating) setDebug(false);
+    }
+
+    super.onCreate(savedInstanceState);
+
+    if (checkUpdate && (oldLastTime != lastTime)) {
+      Intent intent = new Intent(this, Welcome.class);
+      intent.putExtra("newIntent", getIntent());
+      intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+      startActivity(intent);
+      finish();
+    }
+    L = getLuaState();
+    mOnBackPressed = L.getLuaObject("onBackPressed");
+    if (mOnBackPressed.isNil()) mOnBackPressed = null;
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      OnBackAnimationCallback =
+          new OnBackAnimationCallback() {
+            @Override
+            public void onBackInvoked() {
+              // 调用返回事件处理方法
+              runFunc("onBackInvoked");
             }
-            SharedPreferences info = getSharedPreferences("appInfo", 0);
-            oldLastTime = info.getLong("lastUpdateTime", 0);
-            updating = oldLastTime != lastTime;
-            if (updating)
-                setDebug(false);
-        }
 
-        super.onCreate(savedInstanceState);
+            @Override
+            public void onBackStarted(@NonNull BackEvent backEvent) {
+              runFunc("onBackStarted", backEvent);
+            }
 
-        if (checkUpdate && (oldLastTime != lastTime)) {
-            Intent intent = new Intent(this, Welcome.class);
-            intent.putExtra("newIntent", getIntent());
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-            finish();
-        }
-        L = getLuaState();
-        mOnBackPressed = L.getLuaObject("onBackPressed");
-        if (mOnBackPressed.isNil())
-            mOnBackPressed = null;
+            @Override
+            public void onBackProgressed(@NonNull BackEvent backEvent) {
+              runFunc("onBackProgressed", backEvent);
+            }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            OnBackAnimationCallback = new OnBackAnimationCallback() {
-                @Override
-                public void onBackInvoked() {
-                    // 调用返回事件处理方法
-                    runFunc("onBackInvoked");
-                }
+            @Override
+            public void onBackCancelled() {
+              runFunc("onBackCancelled");
+            }
+          };
 
-                @Override
-                public void onBackStarted(@NonNull BackEvent backEvent) {
-                    runFunc("onBackStarted",backEvent);
-                }
-
-                @Override
-                public void onBackProgressed(@NonNull BackEvent backEvent) {
-                    runFunc("onBackProgressed",backEvent);
-                }
-
-                @Override
-                public void onBackCancelled() {
-                    runFunc("onBackCancelled");
-                }
-            };
-
-
-            // 注册返回回调，优先级为默认值
-            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
-                    OnBackInvokedDispatcher.PRIORITY_OVERLAY,
-                    OnBackAnimationCallback
-            );
-        }
-
+      // 注册返回回调，优先级为默认值
+      if (this.getSharedData("预见性返回手势") == "true") {
+        getOnBackInvokedDispatcher()
+            .registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_OVERLAY, OnBackAnimationCallback);
+      }
     }
+  }
 
-    //Androlua本身这个仅在Main出现
-    @Override
-    protected void onNewIntent(Intent intent) {
-        runFunc("onNewIntent", intent);
-        super.onNewIntent(intent);
+  // Androlua本身这个仅在Main出现
+  @Override
+  protected void onNewIntent(Intent intent) {
+    runFunc("onNewIntent", intent);
+    super.onNewIntent(intent);
+  }
+
+  // 检查资源更新开关
+  public void setCheckUpdate(boolean state) {
+    checkUpdate = state;
+  }
+
+  // 新的lua路径获取方法
+  @Override
+  public String getLuaPath() {
+    if (updating) {
+      luaPath = "/"; // 阻止软件运行
+    } else if (luaPath == null) {
+      luaPath = getIntent().getStringExtra("luaPath");
     }
+    applyLuaDir(luaPath);
+    return luaPath;
+  }
 
-    //检查资源更新开关
-    public void setCheckUpdate(boolean state) {
-        checkUpdate = state;
-    }
-
-    //新的lua路径获取方法
-    @Override
-    public String getLuaPath() {
-        if (updating) {
-            luaPath = "/";//阻止软件运行
-        } else if (luaPath == null) {
-            luaPath = getIntent().getStringExtra("luaPath");
-        }
-        applyLuaDir(luaPath);
-        return luaPath;
-    }
-
-    //应用一下LuaDir
-    public void applyLuaDir(String luaPath) {
-        String parent = new File(luaPath).getParent();
+  // 应用一下LuaDir
+  public void applyLuaDir(String luaPath) {
+    String parent = new File(luaPath).getParent();
+    luaDir = parent;
+    while (parent != null) {
+      if (new File(parent, "main.lua").exists() && new File(parent, "init.lua").exists()) {
         luaDir = parent;
-        while (parent != null) {
-            if (new File(parent, "main.lua").exists() && new File(parent, "init.lua").exists()) {
-                luaDir = parent;
-                break;
-            }
-            parent = new File(parent).getParent();
-        }
-        setLuaDir(luaDir);
+        break;
+      }
+      parent = new File(parent).getParent();
     }
+    setLuaDir(luaDir);
+  }
 
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    // TODO: Implement this method
+    super.onSaveInstanceState(outState);
+    runFunc("onSaveInstanceState", outState);
+  }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        // TODO: Implement this method
-        super.onSaveInstanceState(outState);
-        runFunc("onSaveInstanceState", outState);
-    }    
-    
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && OnBackAnimationCallback != null) {
-            getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(OnBackAnimationCallback);
-        }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        && OnBackAnimationCallback != null) {
+      getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(OnBackAnimationCallback);
     }
+  }
 
-    @Override
-    public void onBackPressed() {
-        if (mOnBackPressed != null) {
-            Object ret = mOnBackPressed.call();
-            if (ret != null && ret.getClass() == Boolean.class && (Boolean) ret)
-                return;
-        }
-        super.onBackPressed();
+  @Override
+  public void onBackPressed() {
+    if (mOnBackPressed != null) {
+      Object ret = mOnBackPressed.call();
+      if (ret != null && ret.getClass() == Boolean.class && (Boolean) ret) return;
     }
+    super.onBackPressed();
+  }
 
-    @Override
-    public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        // TODO: Implement this method
-        try {
-            super.onRestoreInstanceState(savedInstanceState);
-        } catch (Exception e) {
-            sendError("onRestoreInstanceState", e);
-        }
-        runFunc("onRestoreInstanceState", savedInstanceState);
+  @Override
+  public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+    // TODO: Implement this method
+    try {
+      super.onRestoreInstanceState(savedInstanceState);
+    } catch (Exception e) {
+      sendError("onRestoreInstanceState", e);
     }
+    runFunc("onRestoreInstanceState", savedInstanceState);
+  }
 
-    public Intent buildNewActivityIntent(int req, String path, Object[] arg, boolean newDocument, int documentId) {
-        Intent intent = new Intent(this, LuaActivity.class);
-        intent.putExtra("name", path);
-        if (path.charAt(0) != '/')//如果不是/开头，说明是相对路径
-            path = this.getLuaDir() + "/" + path;
-        File file = new File(path);
-        if (file.isDirectory() && new File(path + "/main.lua").exists())
-            path += "/main.lua";
-        else if (!file.isDirectory() && !path.endsWith(".lua"))
-            path += ".lua";
-        intent.putExtra("luaPath", path);
-        intent.setData(Uri.parse("file://" + path + "?documentId=" + String.valueOf(documentId)));
-        //intent.putExtra("documentId", documentId);
-        if (arg != null)
-            intent.putExtra("arg", arg);
-        if (newDocument)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        return intent;
-    }
+  public Intent buildNewActivityIntent(
+      int req, String path, Object[] arg, boolean newDocument, int documentId) {
+    Intent intent = new Intent(this, LuaActivity.class);
+    intent.putExtra("name", path);
+    if (path.charAt(0) != '/') // 如果不是/开头，说明是相对路径
+    path = this.getLuaDir() + "/" + path;
+    File file = new File(path);
+    if (file.isDirectory() && new File(path + "/main.lua").exists()) path += "/main.lua";
+    else if (!file.isDirectory() && !path.endsWith(".lua")) path += ".lua";
+    intent.putExtra("luaPath", path);
+    intent.setData(Uri.parse("file://" + path + "?documentId=" + String.valueOf(documentId)));
+    // intent.putExtra("documentId", documentId);
+    if (arg != null) intent.putExtra("arg", arg);
+    if (newDocument) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+    return intent;
+  }
 
-    //重写newActivity，将目标Activity指向superlua的
-    public void newActivity(String path, boolean newDocument, int documentId) {
-        newActivity(1, path, null, newDocument, documentId);
-    }
+  // 重写newActivity，将目标Activity指向superlua的
+  public void newActivity(String path, boolean newDocument, int documentId) {
+    newActivity(1, path, null, newDocument, documentId);
+  }
 
-    public void newActivity(String path, Object[] arg, boolean newDocument, int documentId) {
-        newActivity(1, path, arg, newDocument, documentId);
-    }
+  public void newActivity(String path, Object[] arg, boolean newDocument, int documentId) {
+    newActivity(1, path, arg, newDocument, documentId);
+  }
 
-    @Override
-    public void newActivity(int req, String path, Object[] arg, boolean newDocument) {
-        newActivity(req, path, arg, newDocument, 0);
-    }
+  @Override
+  public void newActivity(int req, String path, Object[] arg, boolean newDocument) {
+    newActivity(req, path, arg, newDocument, 0);
+  }
 
-    public void newActivity(int req, String path, Object[] arg, boolean newDocument, int documentId) {
-        Intent intent = buildNewActivityIntent(req, path, arg, newDocument, documentId);
-        if (newDocument) {
-            startActivity(intent);
-        } else
-            startActivityForResult(intent, req);
-    }
+  public void newActivity(int req, String path, Object[] arg, boolean newDocument, int documentId) {
+    Intent intent = buildNewActivityIntent(req, path, arg, newDocument, documentId);
+    if (newDocument) {
+      startActivity(intent);
+    } else startActivityForResult(intent, req);
+  }
 
+  @Override
+  public void newActivity(
+      int req, String path, int in, int out, Object[] arg, boolean newDocument) {
+    newActivity(req, path, in, out, arg, newDocument, 0);
+  }
 
-    @Override
-    public void newActivity(int req, String path, int in, int out, Object[] arg, boolean newDocument) {
-        newActivity(req, path, in, out, arg, newDocument, 0);
-    }
+  public void newActivity(
+      int req, String path, int in, int out, Object[] arg, boolean newDocument, int documentId) {
+    newActivity(req, path, arg, newDocument, documentId);
+    overridePendingTransition(in, out);
+  }
 
-    public void newActivity(int req, String path, int in, int out, Object[] arg, boolean newDocument, int documentId) {
-        newActivity(req, path, arg, newDocument, documentId);
-        overridePendingTransition(in, out);
-    }
-
-    @Override
-    public void setTaskDescription(ActivityManager.TaskDescription taskDescription) {
-        TypedArray array = this.getTheme().obtainStyledAttributes(new int[]{android.R.attr.colorPrimary});
-        taskDescription = new ActivityManager.TaskDescription(taskDescription.getLabel(), taskDescription.getIcon(), array.getColor(0, 0xFF0000));
-        array.recycle();
-        super.setTaskDescription(taskDescription);
-    }
-
-
+  @Override
+  public void setTaskDescription(ActivityManager.TaskDescription taskDescription) {
+    TypedArray array =
+        this.getTheme().obtainStyledAttributes(new int[] {android.R.attr.colorPrimary});
+    taskDescription =
+        new ActivityManager.TaskDescription(
+            taskDescription.getLabel(), taskDescription.getIcon(), array.getColor(0, 0xFF0000));
+    array.recycle();
+    super.setTaskDescription(taskDescription);
+  }
 }

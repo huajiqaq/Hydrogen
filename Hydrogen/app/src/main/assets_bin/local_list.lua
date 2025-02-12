@@ -2,7 +2,7 @@ require "import"
 import "mods.muk"
 import "com.lua.*"
 
-activity.setContentView(loadlayout("layout/local_list"))
+设置视图("layout/local_list")
 
 设置toolbar(toolbar)
 

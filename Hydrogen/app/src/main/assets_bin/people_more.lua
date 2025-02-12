@@ -22,7 +22,7 @@ end)
 --判断是否为收藏夹
 if title:find("收藏") then
 
-  activity.setContentView(loadlayout("layout/followed_collections"))
+ 设置视图("layout/followed_collections")
   _title.text=title
   设置toolbar(toolbar)
 
@@ -44,7 +44,7 @@ if title:find("收藏") then
 end
 
 --不是就使用通用的布局
-activity.setContentView(loadlayout("layout/simple"))
+设置视图("layout/simple")
 
 _title.text=title
 

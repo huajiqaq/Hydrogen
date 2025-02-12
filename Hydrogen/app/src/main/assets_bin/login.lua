@@ -6,7 +6,7 @@ import "com.lua.LuaWebChrome"
 url=...
 
 
-activity.setContentView(loadlayout("layout/login"))
+设置视图("layout/login")
 
 波纹({fh,_info},"圆主题")
 

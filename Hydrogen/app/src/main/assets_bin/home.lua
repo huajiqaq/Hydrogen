@@ -13,6 +13,7 @@ import "com.google.android.material.bottomnavigation.BottomNavigationView"
 import "android.view.ViewTreeObserver"
 import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.navigationrail.NavigationRailView"
+
 --activity.setContentView(loadlayout("layout/home"))
 activity.setContentView(loadlayout("layout/fragment"))
 fragmentManager = activity.getSupportFragmentManager()
@@ -20,87 +21,36 @@ local t = fragmentManager.beginTransaction()
 .replace(f1.getId(),LuaFragment(loadlayout("layout/home")))
 .commit()
 
-fn={{"home",1}}
-
-function onBackProgressed(be)
+fn={{"home",1,f1}}
+fn.c={"home",1,f1}
+--[[function onBackProgressed(be)
+  --print(be.toString())
   local signn=be.swipeEdge
   if signn<1
     signn=-1
   end
-  if inSekai then
-    if fn[#fn][2]>1
-      setFragment(f2,be,activity.width/2)
-     else
-      setFragment(f1,be,0)
-    end
-   else
-    setFragment(f1,be,0)
+  if startBackY==nil
+    startBackY=be.touchY
   end
-
+  setFragment(fn[#fn][3],be,0)
+  if fn[#fn-1]~=nil
+    setDFragment(fn[#fn-1][3],be,0)
+  end
 end
 function onBackCancelled()
-  local a1=ObjectAnimator.ofFloat(f1, "x", {f1.x,0})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a2=ObjectAnimator.ofFloat(f1, "y", {f1.y,0})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a3=ObjectAnimator.ofFloat(f1, "scaleX", {f1.scaleX,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a4=ObjectAnimator.ofFloat(f1, "scaleY", {f1.scaleY,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a1=ObjectAnimator.ofFloat(f2, "x", {f2.x,activity.width/2})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a2=ObjectAnimator.ofFloat(f2, "y", {f2.y,0})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a3=ObjectAnimator.ofFloat(f2, "scaleX", {f2.scaleX,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a4=ObjectAnimator.ofFloat(f2, "scaleY", {f2.scaleY,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
+  back2basis(fn[#fn][3])
+  if fn[#fn-1]~=nil
+    back2basis(fn[#fn-1][3])
+  end
 end
 function onBackInvoked()
-  关闭页面()
   onBackCancelled()
+  关闭页面()
 end
-local rootView = activity.getDecorView()
-inSekai=activity.width>dp2px(600)
-observer = rootView.getViewTreeObserver()
-orirh={}
-observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
-  onGlobalLayout=function()
-    if orirh[1]==tointeger(rootView.height)&&orirh[2]==tointeger(rootView.width)
-     else
-      onBackCancelled()
-      orirh[1]=tointeger(rootView.height)
-      orirh[2]=tointeger(rootView.width)
-      inSekai=rootView.width>dp2px(600)
-      if rootView.width>dp2px(600)
-
-        local layoutParams = f1.LayoutParams;
-        layoutParams.width=orirh[2]/2
-        f1.setLayoutParams(layoutParams);
-       else
-        local layoutParams = f1.LayoutParams;
-        layoutParams.width=orirh[2]
-        f1.setLayoutParams(layoutParams);
-      end
-    end
-  end
-}))
+function onBackStarted(be)
+  startBackY=be.touchY
+end
+]]
 
 toolbar.setNavigationOnClickListener(View.OnClickListener{
   onClick=function(v)
@@ -1283,6 +1233,7 @@ end)
 
 lastclick = os.time() - 2
 function onKeyDown(code,event)
+提示(dump(fn))
   local now = os.time()
   --[[if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
     --监听返回键

@@ -8,20 +8,7 @@ import "androidx.core.widget.NestedScrollView"
 
 question_id=...
 
-if inSekai
-  local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  t.add(f1.getId(),LuaFragment(loadlayout("layout/question")))
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"question",1})
- else
-  activity.setContentView(loadlayout("layout/question"))
-end
+设置视图("layout/question")
 设置toolbar(toolbar)
 edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);

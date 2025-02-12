@@ -13,20 +13,7 @@ import "com.google.android.material.chip.Chip"
 MDC_R=luajava.bindClass"com.google.android.material.R"
 
 
-if inSekai then
-  local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  t.add(f2.getId(),LuaFragment(loadlayout("layout/search")))
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"search",2})
- else
-  activity.setContentView(loadlayout("layout/search"))
-end
+设置视图("layout/search")
 function 搜索(text)
   local search_text=text or search_view.getQuery().toString();
   if #(tostring(search_text):gsub(" ",""))<1 then

@@ -14,21 +14,9 @@ import "android.content.res.ColorStateList"
 comment_idl,comment_typel,保存路径l,父回复idl=...
 Chip = luajava.bindClass "com.google.android.material.chip.Chip"
 import "com.google.android.material.floatingactionbutton.FloatingActionButton"
-if inSekai
-  local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  t.add(f2.getId(),LuaFragment(loadlayout("layout/commentl")))
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"comments",2,comment_idl})
- else
+
    comment_id,comment_type,保存路径,父回复id=...
-  activity.setContentView(loadlayout("layout/commentl"))
-end
+  设置视图("layout/commentl")
 
 
 --activity.setContentView(loadlayout("layout/comment"))

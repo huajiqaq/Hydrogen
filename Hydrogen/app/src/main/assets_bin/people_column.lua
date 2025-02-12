@@ -1,6 +1,6 @@
 require "import"
 import "mods.muk"
-activity.setContentView(loadlayout("layout/simple"))
+设置视图("layout/simple")
 
 波纹({fh,_more},"圆主题")
 

@@ -71,6 +71,8 @@ data = {
 
   {__type=1,title="页面设置"},
   {__type=3,subtitle="主题设置",rightIcon={Visibility=0}},
+  {__type=4,subtitle="平行世界",status={Checked=Boolean.valueOf(this.getSharedData("平行世界"))}},
+  {__type=4,subtitle="预见性返回手势",status={Checked=Boolean.valueOf(this.getSharedData("预见性返回手势"))}},
 
   {__type=1,title="其他"},
   {__type=3,subtitle="关于",rightIcon={Visibility=0}},

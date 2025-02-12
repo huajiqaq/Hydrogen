@@ -20,7 +20,7 @@ import "androidx.core.view.ViewCompat"
 --new 0.46 删除滑动监听
 
 local MaterialContainerTransform = luajava.bindClass "com.google.android.material.transition.MaterialContainerTransform"
-if inSekai then
+--[=[if inSekai then
   --[[if fn[#fn][1]=="answer" then
 activity.getSupportFragmentManager().popBackStack()
     table.remove(fn,#fn)
@@ -39,10 +39,10 @@ end]]
  else
   activity.setContentView(loadlayout("layout/answer"))
 end
+]=]
 
 
-
---activity.setContentView(loadlayout("layout/answer"))
+设置视图("layout/answer")
 设置toolbar(toolbar)
 
 edgeToedge(mainLay,底栏,function()
@@ -882,7 +882,7 @@ task(1,function()
           写入内容=写入内容..'author="'..username.Text..'"\n'
           写入内容=写入内容..'headline="'..userheadline.Text..'"\n'
           写入文件(保存路径.."/detail.txt",写入内容)
-          this.newActivity("saveweb",{pgids.content.getUrl(),保存路径,写入内容})
+          newActivity("saveweb",{pgids.content.getUrl(),保存路径,写入内容})
         end,
         onLongClick=function()
           local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id

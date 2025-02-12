@@ -371,6 +371,9 @@ function base.getAdapter(comment_pagetool,pos)
       views.预览内容.text=预览内容
       loadglide(views.图像,图像)
 
+      views.评论.onClick=function()
+        发送评论(id内容,"回复"..data.标题.."发送的评论")
+      end
       views.赞.onClick=function()
         if not(data.liked)
           zHttp.put("https://api.zhihu.com/comment_v5/comment/"..id内容.."/reaction/like",'',postapphead,function(code,content)
@@ -395,20 +398,9 @@ function base.getAdapter(comment_pagetool,pos)
         end
       end
 
-      views.card.onClick=function()
-        if views.评论.getVisibility()==0 then
-          if fn~=nil then
-            if fn[#fn]~=nil then
-              if (fn[#fn][3] or "")==data.id内容 then
-                return 提示("当前已在该对话列表内")
-              end
-            end
-          end
-          newActivity("commentl",{data.id内容,"comments",保存路径,comment_id})
-        end
-      end
 
-      views.card.onLongClick=function()
+
+      views.预览内容.onLongClick=function()
         local commenttype
         local 对话id=data.id内容
         local 对话用户=views.标题.text
@@ -481,14 +473,36 @@ function base.getAdapter(comment_pagetool,pos)
         newActivity("people",{data.作者id})
       end
 
-      views.预览内容.onTouch=function(v,event)
+      views.card.onTouch=function(v,event)
         downx=event.getRawX()
         downy=event.getRawY()
       end
+      views.card.onClick=function()
+        if views.评论.getVisibility()==0 then
+          if fn~=nil then
+            if fn[#fn]~=nil then
+              if (fn[#fn][3] or "")==data.id内容 then
+                return 提示("当前已在该对话列表内")
+              end
+            end
+          end
+          newActivity("commentl",{data.id内容,"comments",保存路径,comment_id})
+        end
+      end
+      views.预览内容.onClick=function()
+        if views.评论.getVisibility()==0 then
+          if fn~=nil then
+            if fn[#fn]~=nil then
+              if (fn[#fn][3] or "")==data.id内容 then
+                return 提示("当前已在该对话列表内")
+              end
+            end
+          end
+          newActivity("commentl",{data.id内容,"comments",保存路径,comment_id})
+        end
+      end
 
-
-
-      views.预览内容.onLongClick=function(view)
+      views.card.onLongClick=function(view)
         多选菜单(data,view)
       end
 
@@ -556,7 +570,7 @@ function 发送评论(id,title)
   local postdata
   local 请求链接
   回复id=id
-
+local endicondrawable=BitmapDrawable(Bitmap.createScaledBitmap(loadbitmap(图标("face")), dp2px(48), dp2px(48), true))
 
 
   bottomSheetDialog = BottomSheetDialog(this)
@@ -598,7 +612,7 @@ function 发送评论(id,title)
         layout_width="match",
         hint=stitle,
         id="send_input",
-        endIconDrawable=BitmapDrawable(Bitmap.createScaledBitmap(loadbitmap(图标("face")), dp2px(48), dp2px(48), true));
+        endIconDrawable=endicondrawable;
         endIconMode=1,
         hintTextColor=ColorStateList.valueOf(转0x(primaryc)),
         boxBackgroundMode=TextInputLayout.BOX_BACKGROUND_OUTLINE,
@@ -662,8 +676,10 @@ function 发送评论(id,title)
   bottomSheetDialog.show()
   .setCancelable(true)
   .behavior.setMaxWidth(dp2px(600))
-  bottomSheetDialog.getWindow().setDecorFitsSystemWindows(false)
-  .addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+  if Build.VERSION.SDK_INT >= 30 then
+    bottomSheetDialog.getWindow().setDecorFitsSystemWindows(false)
+  end
+  bottomSheetDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
   local view=bottomSheetDialog.window.getDecorView()
   view.setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener{
     onApplyWindowInsets=function(v,i)

@@ -17,9 +17,9 @@
       layout_height="56dp";
       layout_width="56dp";
       gravity="center";
-      onClick=function() 
-关闭页面()
- end;
+      onClick=function()
+        关闭页面()
+      end;
       {
         ImageView;
         ColorFilter=primaryc;

@@ -9,35 +9,7 @@ callback = import "com.androlua.LuaWebView$LuaWebViewClient";
 
 url,urltitle=...
 
-if inSekai then
-if fn[#fn][2]<2
-  local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
-  t.add(f2.getId(),LuaFragment(loadlayout("layout/browser")),"browser")
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"browser",2})
-else
-local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
-  t.add(f1.getId(),LuaFragment(loadlayout("layout/browser")),"browser")
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"browser",1})
-end
- else
-  activity.setContentView(loadlayout("layout/browser"))
-end
+设置视图("layout/browser")
 波纹({fh,_more},"圆主题")
 edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);

@@ -34,6 +34,7 @@ if welcomeAgain then
   activity.finish()
   return
  else
+
   activity.newActivity("home",{activity.getIntent()})
   
   activity.finish()

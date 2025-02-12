@@ -818,6 +818,28 @@ local function copytable(f,t,b)
   end
 end
 
+local function processTable(userdataTable)
+  local resultTable = {}
+
+  for key, value in pairs(userdataTable) do
+    if type(value) == "userdata" then
+      local valueType = tostring(value)
+      if valueType == "Lua Table" then
+        local convertedTable = luajava.astable(value)
+        resultTable[key] = processTable(convertedTable)
+       else
+        resultTable[key] = value
+      end
+     elseif type(value) == "table" then
+      resultTable[key] = processTable(value)
+     else
+      resultTable[key] = value
+    end
+  end
+
+  return resultTable
+end
+
 local function setstyle(c,t,root,view,params,ids)
   local mt=getmetatable(t)
   if not mt or not mt.__index then
@@ -838,10 +860,14 @@ local function setstyle(c,t,root,view,params,ids)
 end
 
 local function loadlayout(t,root,group)
-  if type(t)=="string" then
-    t=require(t)
-   elseif type(t)~="table" then
-    error(string.format("loadlayout error: Fist value Must be a table, checked import layout.",0))
+  if type(t) == "string" then
+    t = require(t)
+   elseif type(t) == "userdata" then
+    if tostring(t) == "Lua Table" then
+      t = processTable(luajava.astable(t))
+    end
+   elseif type(t) ~= "table" then
+    error(string.format("loadlayout error: Fist value Must be a table, checked import layout.", 0))
   end
   root=root or _G
   local view,style

@@ -7,35 +7,7 @@ people_id=...
 
 import "com.google.android.material.tabs.TabLayout"
 
-if inSekai then
-if fn[#fn][2]<2
-  local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
-  t.add(f2.getId(),LuaFragment(loadlayout("layout/people")),"people")
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"people",2})
-else
-local t = activity.getSupportFragmentManager().beginTransaction()
-  t.setCustomAnimations(
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right,
-  android.R.anim.slide_in_left,
-  android.R.anim.slide_out_right)
-  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
-  t.add(f1.getId(),LuaFragment(loadlayout("layout/people")),"people")
-  t.addToBackStack(nil)
-  t.commit()
-  table.insert(fn,{"people",1})
-end
- else
-  activity.setContentView(loadlayout("layout/people"))
-end
+设置视图("layout/people")
 设置toolbar(toolbar)
 edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);

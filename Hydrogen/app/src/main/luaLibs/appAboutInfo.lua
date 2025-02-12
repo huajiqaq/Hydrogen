@@ -51,6 +51,11 @@ developers={
     message="很棒的开发者",
     url="mqqwpa://im/chat?chat_type=wpa&uin=1906327347" },
   {
+    name="dingyi",
+    qq=2187778735,
+    message="软件初期奠定",
+    url="mqqwpa://im/chat?chat_type=wpa&uin=2187778735" },
+  {
     name="ZL",
     qq=3543515846,
     message="引诱苦手",

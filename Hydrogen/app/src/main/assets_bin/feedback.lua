@@ -2,7 +2,7 @@ require "import"
 import "mods.muk"
 
 
-activity.setContentView(loadlayout("layout/feedback"))
+设置视图("layout/feedback")
 设置toolbar(toolbar)
 设置toolbar属性(toolbar,"反馈")
 波纹({fh,_more},"圆主题")

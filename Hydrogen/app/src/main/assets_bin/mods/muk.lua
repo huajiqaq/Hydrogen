@@ -24,7 +24,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.6
+versionCode=0.602
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
@@ -42,13 +42,79 @@ import "android.view.animation.*"
     import 'android.graphics.drawable.shapes.RoundRectShape'
     import 'android.graphics.drawable.ShapeDrawable'
     import 'android.graphics.RectF'
-    local roundrect_shape=ShapeDrawable(RoundRectShape({lt,lt,rt,rt,lb,lb,rb,rb},RectF(),{lt,lt,rt,rt,lb,lb,rb,rb}))
-    --roundrect_shape.getPaint().setColor(0x00000000)
-    activity.getWindow().getDecorView().getChildAt(0).getChildAt(0).setBackgroundDrawable(roundrect_shape)
+    roundrect_shape=ShapeDrawable(RoundRectShape({lt,lt,rt,rt,lb,lb,rb,rb},RectF(),{lt,lt,rt,rt,lb,lb,rb,rb}))
+    roundrect_shape.getPaint().setColor(转0x(backgroundc))
+    --activity.getWindow().getDecorView().getChildAt(0).getChildAt(0).setBackgroundDrawable(roundrect_shape)
     --activity.getWindow().getDecorView().getChildAt(0).setVisibility(0)
     return i
   end
 })]]
+
+--function onBackCancelled()
+--[[  local a1=ObjectAnimator.ofFloat(f1, "x", {f1.x,0})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a2=ObjectAnimator.ofFloat(f1, "y", {f1.y,0})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a3=ObjectAnimator.ofFloat(f1, "scaleX", {f1.scaleX,1})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a4=ObjectAnimator.ofFloat(f1, "scaleY", {f1.scaleY,1})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a1=ObjectAnimator.ofFloat(f2, "x", {f2.x,activity.width*0.5})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a2=ObjectAnimator.ofFloat(f2, "y", {f2.y,0})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a3=ObjectAnimator.ofFloat(f2, "scaleX", {f2.scaleX,1})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()
+  local a4=ObjectAnimator.ofFloat(f2, "scaleY", {f2.scaleY,1})
+  .setDuration(100)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()]]
+--end
+
+inSekai=false
+if activity.getSharedData("平行世界")~="false" then
+  local rootView = activity.getDecorView()
+  inSekai=true
+  STDW=activity.width
+  observer = rootView.getViewTreeObserver()
+  orirh={}
+  observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
+    onGlobalLayout=function()
+      if orirh[1]==tointeger(rootView.height)&&orirh[2]==tointeger(rootView.width)
+       else
+        --onBackCancelled()
+        orirh[1]=tointeger(rootView.height)
+        orirh[2]=tointeger(rootView.width)
+        inSekai=rootView.width>dp2px(600,true)
+        if rootView.width>dp2px(600,true)
+          if f1 local layoutParams = f1.LayoutParams;
+            layoutParams.width=orirh[2]*0.5
+            f1.setLayoutParams(layoutParams); end
+          STDW=orirh[2]*0.5
+         else
+          if f1 local layoutParams = f1.LayoutParams;
+            layoutParams.width=orirh[2]
+            f1.setLayoutParams(layoutParams); end
+          STDW=orirh[2]
+        end
+      end
+    end
+  }))
+end
 function setFragment(f,be,sx)
   local signn=be.swipeEdge
   if signn<1
@@ -66,63 +132,100 @@ function setFragment(f,be,sx)
     f.scaleY=0.85-math.pow(be.progress,3)/5
   end
 end
+function setDFragment(f,be,sx)
+  local signn=be.swipeEdge
+  if signn<1
+    signn=-1
+  end
+  f.setForeground(ColorDrawable(0xff000000).setAlpha(24+200*(1-be.progress)))
+
+  f.scaleX=1.1-be.progress/10
+  f.scaleY=1.1-be.progress/10
+
+end
 function back2basis(f)
   f.x=0
   f.y=0
   f.elevation=1
   f.scaleX=1
   f.scaleY=1
+  f.foreground=ColorDrawable(0x00000000)
   -- f.alpha=0
 end
-function onBackProgressed(be)
-  setFragment(activity.getDecorView().getChildAt(0),be,0)
-end
-function onBackStarted(be)
-  startBackY=be.touchY
-end
-function onBackCancelled()
-  local a1=ObjectAnimator.ofFloat(activity.getDecorView().getChildAt(0), "x", {activity.getDecorView().getChildAt(0).x,0})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a2=ObjectAnimator.ofFloat(activity.getDecorView().getChildAt(0), "y", {activity.getDecorView().getChildAt(0).y,0})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a3=ObjectAnimator.ofFloat(activity.getDecorView().getChildAt(0), "scaleX", {activity.getDecorView().getChildAt(0).scaleX,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-  local a4=ObjectAnimator.ofFloat(activity.getDecorView().getChildAt(0), "scaleY", {activity.getDecorView().getChildAt(0).scaleY,1})
-  .setDuration(100)
-  .setInterpolator(OvershootInterpolator(2.0))
-  .start()
-end
-function onBackInvoked()
-  --onBackCancelled()
-  关闭页面()
-end
-function newActivity(f,b)
-  b=b or {}
-  if inSekai or false
-    activity.doFile(srcLuaDir..f..".lua",b)
+
+
+function 设置视图(t)
+  if thisFragment
+    thisFragment.setContainerView(loadlayout(t))
    else
-    activity.newActivity(f,b)
+    activity.setContentView(loadlayout(t))
   end
+end
+function newActivity(f,b,c)
+  b=b or {}
+  MyLuaFileFragment=luajava.bindClass "com.hydrogen.MyLuaFileFragment"
+  if type(fn)=="userdata"
+    if tostring(fn)=="Lua Table"
+      fn=processTable(luajava.astable(fn))
+    end
+   else
+    fn=processTable(fn)
+  end
+
+  --activity.doFile(srcLuaDir..f..".lua",b)
+  --[[local thisF=FrameLayout(activity)
+  .setLayoutParams(ViewGroup.LayoutParams(STDW,-2))
+  .setId(114514)
+  fg.addView(thisF)
+  table.insert(fn,{c or f,2,thisF})
+  fn.c={c or f,2,thisF}]]
+
+  local t = activity.getSupportFragmentManager().beginTransaction()
+  t.setCustomAnimations(
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right,
+  android.R.anim.slide_in_left,
+  android.R.anim.slide_out_right)
+  --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
+  --t.add(thisF.getId(),MyLuaFileFragment(srcLuaDir..f..".lua",b,{fn=fn,fg=fg,inSekai=inSekai,onBackCancelled=onBackCancelled,onBackStarted=onBackStarted,onBackInvoked=onBackInvoked,onBackProgressed=onBackProgressed}))
+
+
+  if (tointeger(fn[#fn][2])<1)||!(inSekai or false)
+    table.insert(fn,{c or f,1})
+    t.add(f1.getId(),MyLuaFileFragment(srcLuaDir..f..".lua",b,{fn=fn,f1=f1,f2=f2,inSekai=inSekai}))
+
+   else
+    table.insert(fn,{c or f,2})
+    t.add(f2.getId(),MyLuaFileFragment(srcLuaDir..f..".lua",b,{fn=fn,f1=f1,f2=f2,inSekai=inSekai}))
+
+  end
+
+  t.addToBackStack(nil)
+  t.commit()
+  --[[local a4=ObjectAnimator.ofFloat(fg, "x", {fg.x,fg.x-activity.width/2})
+  .setDuration(200)
+  .setInterpolator(OvershootInterpolator(2.0))
+  .start()]]
 end
 
 --inSekai=true
 function 关闭页面()
-  if inSekai
-    if #fn<2
+
+  --[[  if type(inSekai)==type(false)
+    if (fn[#fn][1]=="home")
       activity.finish()
-     else
-      activity.getSupportFragmentManager().popBackStack()
-      table.remove(fn,#fn)
-    end
+     else]]
+  activity.getSupportFragmentManager().popBackStack()
+  table.remove(fn,#fn)
+  fn.c=fn[#fn]
+  --[[local a4=ObjectAnimator.ofFloat(fg, "x", {fg.x,fg.x+activity.width})
+      .setDuration(200)
+      .setInterpolator(OvershootInterpolator(2.0))
+      .start()]]
+  --[[end
    else
     activity.finish()
-  end
+  end]]
 end
 
 function edgeToedge(顶栏,底栏,callback)
@@ -211,7 +314,7 @@ function edgeToedge(顶栏,底栏,callback)
     }))
   end
 
-  
+
 end
 
 
@@ -281,14 +384,14 @@ function 设置toolbar属性(toolbar,title)
 
 end
 
-task(1,function()
+--[[task(1,function()
   local old_onConfigurationChanged=onConfigurationChanged
   function onConfigurationChanged(config)
     if old_onConfigurationChanged~=nil then
       old_onConfigurationChanged(config)
     end
   end
-end)
+end)]]
 
 --更新字号相关逻辑已移动到import.lua
 
@@ -441,6 +544,28 @@ function 时间戳(t)
   return os.date("%Y-%m-%d",t)
 end
 
+function processTable(userdataTable)
+  local resultTable = {}
+
+  for key, value in pairs(userdataTable) do
+    if type(value) == "userdata" then
+      local valueType = tostring(value)
+      if valueType == "Lua Table" then
+        local convertedTable = luajava.astable(value)
+        resultTable[key] = processTable(convertedTable)
+       else
+        resultTable[key] = value
+      end
+     elseif type(value) == "table" then
+      resultTable[key] = processTable(value)
+     else
+      resultTable[key] = value
+    end
+  end
+
+  return resultTable
+end
+
 function dp2px(dpValue,isreal)
   local scale = isreal and real_scale or activity.getResources().getDisplayMetrics().scaledDensity
   return dpValue * scale + 0.5
@@ -460,8 +585,9 @@ function sp2px(spValue,isreal)
   local scale = isreal and real_scale or activity.getResources().getDisplayMetrics().scaledDensity
   return spValue * scale + 0.5
 end
-rccolumn=px2dp(activity.getWidth())//300
-if rccolumn ==0
+rccolumn=px2dp(activity.getWidth()/2)//300
+
+if rccolumn==0
   rccolumn=1
 end
 function 写入文件(路径,内容)
@@ -837,9 +963,7 @@ Fragment = luajava.bindClass "androidx.fragment.app.Fragment"
 --activity.setContentView(loadlayout("layout/fragment"))
 
 nF={}
-function 设置视图(t)
-  activity.setContentView(loadlayout(t))
-end
+
 
 function 加载js(id,js)
   if js~=nil then
@@ -1548,7 +1672,8 @@ end
 
 
 function MUKPopu(t)
-
+  import "com.androlua.LuaAdapter"
+  import "android.widget.ListView"
   local tab={}
   local pop=PopupWindow(activity)
   --PopupWindow加载布局
