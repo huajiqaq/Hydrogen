@@ -16,13 +16,16 @@ import "com.google.android.material.navigationrail.NavigationRailView"
 
 --activity.setContentView(loadlayout("layout/home"))
 activity.setContentView(loadlayout("layout/fragment"))
+ 
 fragmentManager = activity.getSupportFragmentManager()
 local t = fragmentManager.beginTransaction()
-.replace(f1.getId(),LuaFragment(loadlayout("layout/home")))
+.add(f1.id,LuaFragment(loadlayout("layout/home")))
 .commit()
 
-fn={{"home",1,f1}}
-fn.c={"home",1,f1}
+fn={{"home",1}}
+
+io.open(tostring(tostring(activity.getExternalCacheDir()).."/fn.json"),"w"):write(tostring(luajson.encode(processTable(fn)))):close()
+
 --[[function onBackProgressed(be)
   --print(be.toString())
   local signn=be.swipeEdge
@@ -57,7 +60,6 @@ toolbar.setNavigationOnClickListener(View.OnClickListener{
     _drawer.open();
   end
 })
-
 nav.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedListener{
   onNavigationItemSelected=function(menuItem)
     if menuItem.isCheckable() then
@@ -1233,9 +1235,8 @@ end)
 
 lastclick = os.time() - 2
 function onKeyDown(code,event)
-提示(dump(fn))
   local now = os.time()
-  --[[if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
+  if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
     --监听返回键
     if a and a.pop.isShowing() then
       --如果菜单显示，关闭菜单并阻止返回键
@@ -1253,7 +1254,7 @@ function onKeyDown(code,event)
       lastclick = now
       return true
     end
-  end]]
+  end
 
   if this.getSharedData("音量键选择tab")~="true" then
     return false
@@ -1310,6 +1311,7 @@ if not(this.getSharedData("hometip0.02")) then
     .show()
   end)
 end
+addAutoHideListener({home_recy,hot_recy,think_recy,},{bottombar})
 
 if not(this.getSharedData("updatetip0.01"))and Build.VERSION.SDK_INT <=28 then
   AlertDialog.Builder(this)

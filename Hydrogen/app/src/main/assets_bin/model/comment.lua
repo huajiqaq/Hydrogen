@@ -359,6 +359,7 @@ function base.getAdapter(comment_pagetool,pos)
         local layoutParams = views.line.LayoutParams;
         layoutParams.height=dp2px(6)
         views.line.setLayoutParams(layoutParams);
+        views.评论.visibility=8
         --[[已有加粗分割线，没必要 elseif comment_type=="comments"
         local layoutParams = views.card.LayoutParams;
         layoutParams.setMargins(dp2px(20), layoutParams.rightMargin, layoutParams.rightMargin,layoutParams.bottomMargin);
@@ -570,7 +571,7 @@ function 发送评论(id,title)
   local postdata
   local 请求链接
   回复id=id
-local endicondrawable=BitmapDrawable(Bitmap.createScaledBitmap(loadbitmap(图标("face")), dp2px(48), dp2px(48), true))
+  local endicondrawable=BitmapDrawable(Bitmap.createScaledBitmap(loadbitmap(图标("face")), dp2px(48), dp2px(48), true))
 
 
   bottomSheetDialog = BottomSheetDialog(this)
@@ -677,7 +678,7 @@ local endicondrawable=BitmapDrawable(Bitmap.createScaledBitmap(loadbitmap(图标
   .setCancelable(true)
   .behavior.setMaxWidth(dp2px(600))
   if Build.VERSION.SDK_INT >= 30 then
-    bottomSheetDialog.getWindow().setDecorFitsSystemWindows(false)
+    pcall(function() bottomSheetDialog.getWindow().setDecorFitsSystemWindows(false)end)
   end
   bottomSheetDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
   local view=bottomSheetDialog.window.getDecorView()

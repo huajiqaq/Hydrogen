@@ -13,7 +13,7 @@ function base.resolvedata(v,data)
   if v.type~="feed" then
     return
   end
-  
+
   local isread='"t"'
   local readdata=v.brief
   local v=v.target or v
@@ -22,7 +22,7 @@ function base.resolvedata(v,data)
   local 评论数=tostring(v.comment_count)
   local 作者=v.author.name
   local 预览内容=作者.." : "..(v.excerpt or v.excerpt_title)
-if File(tostring(activity.getExternalCacheDir()).."/rc.json").exists()
+  if File(tostring(activity.getExternalCacheDir()).."/rc.json").exists()
     pcall(function()recommend_history=luajson.decode(io.open(tostring(activity.getExternalCacheDir()).."/rc.json"):read("*a"))end)
    else
     recommend_history={}

@@ -287,6 +287,8 @@ local function 加载主页关注折叠adp(data,views)
   local MyLinearLayoutManager=luajava.bindClass("com.hydrogen.MyLinearLayoutManager")(this,RecyclerView.VERTICAL,false)
   views.底部recy.setLayoutManager(MyLinearLayoutManager)
   views.底部recy.setAdapter(adapter2)
+addAutoHideListener({views.底部recy},{bottombar})
+
 end
 
 function base.getAdapter(follow_pagetool,pos)
