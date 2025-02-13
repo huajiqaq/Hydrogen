@@ -19,7 +19,7 @@ import "com.google.android.material.floatingactionbutton.FloatingActionButton"
 设置视图("layout/comment")
 --activity.setContentView(loadlayout("layout/comment"))
 edgeToedge(mainLay,send)
-
+addAutoHideListener({comment_recy},{send})
 波纹({fh,_more},"圆主题")
 
 

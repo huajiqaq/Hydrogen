@@ -83,15 +83,15 @@ if activity.getSharedData("平行世界")~="false" then
 end
 function MyLuaFileFragment(a,b,c)
   return luajava.override(luajava.bindClass("com.hydrogen.MyLuaFileFragment"),{
-    onDestroy=function(super)
-      fn=processTable(luajson.decode(io.open(tostring(activity.getExternalCacheDir()).."/fn.json"):read("*a")))
-      table.remove(fn,#fn)
-      fn.c=fn[#fn-1]
-      io.open(tostring(tostring(activity.getExternalCacheDir()).."/fn.json"),"w"):write(tostring(luajson.encode(processTable(fn)))):close()
-
-
-      super()
-
+    onDestroy=function(super)super()
+      local ff = f2
+      if tonumber(f1.getTag(R.id.tag_last_time))>tonumber(f2.getTag(R.id.tag_last_time))
+        ff=f2
+       else
+        ff=f1
+      end
+      ff.tag="empty"
+      ff.setTag(R.id.tag_last_time,114514)
     end
   },a,b,c)
 end
@@ -105,21 +105,12 @@ function 设置视图(t)
 end
 function newActivity(f,b,c)
   b=b or {}
+  MyLuaFileFragment=luajava.bindClass("com.hydrogen.MyLuaFileFragment")
   MaterialSharedAxis=luajava.bindClass("com.google.android.material.transition.MaterialSharedAxis")
   backward = MaterialSharedAxis(MaterialSharedAxis.X, false);
   forward = MaterialSharedAxis(MaterialSharedAxis.X, true);
-  fn=luajson.decode(io.open(tostring(activity.getExternalCacheDir()).."/fn.json"):read("*a"))
-
-
-
-  --activity.doFile(srcLuaDir..f..".lua",b)
-  --[[local thisF=FrameLayout(activity)
-  .setLayoutParams(ViewGroup.LayoutParams(STDW,-2))
-  .setId(114514)
-  fg.addView(thisF)
-  table.insert(fn,{c or f,2,thisF})
-  fn.c={c or f,2,thisF}]]
-
+  local ff=f1
+  local nt=tonumber(os.time())
   local t = activity.getSupportFragmentManager().beginTransaction()
   --[[t.setCustomAnimations(
   android.R.anim.slide_in_left,
@@ -129,18 +120,18 @@ function newActivity(f,b,c)
   --t.remove(activity.getSupportFragmentManager().findFragmentByTag("answer"))
   --t.add(thisF.getId(),MyLuaFileFragment(srcLuaDir..f..".lua",b,{fn=fn,fg=fg,inSekai=inSekai,onBackCancelled=onBackCancelled,onBackStarted=onBackStarted,onBackInvoked=onBackInvoked,onBackProgressed=onBackProgressed}))
   --t.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-
-
-  if (tointeger(fn[#fn][2])<1)||!(inSekai)
-    table.insert(fn,{c or f,1})
-    t.add(f1.getId(),MyLuaFileFragment(srcLuaDir..f..".lua",b,{fn=fn,f1=f1,f2=f2,inSekai=inSekai}).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward))
-
+  if tonumber(f1.getTag(R.id.tag_last_time))>tonumber(f2.getTag(R.id.tag_last_time))
+    ff=f2
    else
-    table.insert(fn,{c or f,2})
-    t.add(f2.getId(),MyLuaFileFragment(srcLuaDir..f..".lua",b,{fn=fn,f1=f1,f2=f2,inSekai=inSekai}).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward))
+    ff=f1
   end
-  io.open(tostring(tostring(activity.getExternalCacheDir()).."/fn.json"),"w"):write(tostring(luajson.encode(processTable(fn)))):close()
-
+  if (f1.getTag()=="home")&&((tostring(f2.tag)==f))
+    ff=f2 
+  end
+  if !inSekai then ff = f1 end
+  ff.tag=f
+  ff.setTag(R.id.tag_last_time,nt)
+  t.add(ff.id,MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai}).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward))
   t.addToBackStack(nil)
   t.commit()
 

@@ -15,9 +15,9 @@ comment_idl,comment_typel,保存路径l,父回复idl=...
 Chip = luajava.bindClass "com.google.android.material.chip.Chip"
 import "com.google.android.material.floatingactionbutton.FloatingActionButton"
 
-   comment_id,comment_type,保存路径,父回复id=...
-  设置视图("layout/commentl")
-
+comment_id,comment_type,保存路径,父回复id=...
+设置视图("layout/commentl")
+addAutoHideListener({comment_recyl},{send})
 
 --activity.setContentView(loadlayout("layout/comment"))
 edgeToedge(mainLay,send)
@@ -161,7 +161,7 @@ if comment_typel=="local_chat" then
   local_comment_listl.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
       if v.Tag.提示内容.getVisibility()==0 then
-       newActivity("commentl",{保存路径.."/fold/"..v.Tag.id内容.text,"local_chat"})
+        newActivity("commentl",{保存路径.."/fold/"..v.Tag.id内容.text,"local_chat"})
       end
   end})
 end

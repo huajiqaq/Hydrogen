@@ -22,9 +22,12 @@ local t = fragmentManager.beginTransaction()
 .add(f1.id,LuaFragment(loadlayout("layout/home")))
 .commit()
 
-fn={{"home",1}}
-
-io.open(tostring(tostring(activity.getExternalCacheDir()).."/fn.json"),"w"):write(tostring(luajson.encode(processTable(fn)))):close()
+--fn={{"home",1}}
+f1.setTag("home")
+f1.setTag(R.id.tag_last_time,tonumber(os.time()))
+f2.setTag("empty")
+f2.setTag(R.id.tag_last_time,tonumber(os.time())-114514)
+--io.open(tostring(tostring(activity.getExternalCacheDir()).."/fn"),"w"):write(tostring(1)):close()
 
 --[[function onBackProgressed(be)
   --print(be.toString())
