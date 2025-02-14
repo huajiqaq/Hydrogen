@@ -14,9 +14,16 @@ import "android.view.ViewTreeObserver"
 import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.navigationrail.NavigationRailView"
 
---activity.setContentView(loadlayout("layout/home"))
+local window = activity.getWindow()
+window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+if Build.VERSION.SDK_INT >= 30 then--Android R+
+  window.setDecorFitsSystemWindows(false);
+  window.setNavigationBarContrastEnforced(false);
+  window.setStatusBarContrastEnforced(false);
+end
 activity.setContentView(loadlayout("layout/fragment"))
- 
+f1.setId(View.generateViewId())
+f2.setId(View.generateViewId())
 fragmentManager = activity.getSupportFragmentManager()
 local t = fragmentManager.beginTransaction()
 .add(f1.id,LuaFragment(loadlayout("layout/home")))
@@ -27,36 +34,7 @@ f1.setTag("home")
 f1.setTag(R.id.tag_last_time,tonumber(os.time()))
 f2.setTag("empty")
 f2.setTag(R.id.tag_last_time,tonumber(os.time())-114514)
---io.open(tostring(tostring(activity.getExternalCacheDir()).."/fn"),"w"):write(tostring(1)):close()
 
---[[function onBackProgressed(be)
-  --print(be.toString())
-  local signn=be.swipeEdge
-  if signn<1
-    signn=-1
-  end
-  if startBackY==nil
-    startBackY=be.touchY
-  end
-  setFragment(fn[#fn][3],be,0)
-  if fn[#fn-1]~=nil
-    setDFragment(fn[#fn-1][3],be,0)
-  end
-end
-function onBackCancelled()
-  back2basis(fn[#fn][3])
-  if fn[#fn-1]~=nil
-    back2basis(fn[#fn-1][3])
-  end
-end
-function onBackInvoked()
-  onBackCancelled()
-  关闭页面()
-end
-function onBackStarted(be)
-  startBackY=be.touchY
-end
-]]
 
 toolbar.setNavigationOnClickListener(View.OnClickListener{
   onClick=function(v)
@@ -92,9 +70,15 @@ nav.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedLis
      case "本地"
       task(300,function()newActivity("local_list")end)
      case "设置"
-      task(300,function()activity.newActivity("settings")end)
+      task(300,function()newActivity("settings")end)
      case "历史"
       task(300,function()newActivity("history")end)
+     case "通知"
+     if getLogin()~=true then
+        提示("请登录后使用本功能")
+        return true
+      end
+      task(300,function()newActivity("browser",{"https://www.zhihu.com/notifications"})end)
      case "更多"
 
       if not(getLogin()) then
@@ -156,6 +140,10 @@ mmenu = {
     icon = 图标("list_alt");
   },
   { MenuItem,
+    title = "通知",
+    icon = 图标("notification");
+  },
+  { MenuItem,
     title = "更多",
     id = "menu_nav",
     icon = 图标("menu");
@@ -208,7 +196,7 @@ nav.addHeaderView(loadlayout {
     layout_width="-1";
     radius=cardradius;
     StrokeColor=cardedge;
-    StrokeWidth=dp2px(1),
+    StrokeWidth=0,
     clickable=true,
     id="侧滑头";
     {
@@ -795,7 +783,7 @@ function 切换布局(s)
               跳转页面("feedback")
           end},
           {src=图标("info"),text="关于",onClick=function()
-              跳转页面("about")
+              跳转页面("sub/About/main")
           end},
         }
       })
@@ -807,6 +795,7 @@ function 切换布局(s)
       if not(getLogin()) then
         return 提示("你可能需要登录")
       end
+nTView=_ask
       task(20,function()
         newActivity("browser",{"https://www.zhihu.com/messages","提问"})
       end)
@@ -818,7 +807,7 @@ function 切换布局(s)
             跳转页面("feedback")
         end},
         {src=图标("info"),text="关于",onClick=function()
-            跳转页面("about")
+            跳转页面("sub/About/main")
         end},
       }
     })
@@ -1029,6 +1018,10 @@ function 加载主页tab()
   end)
 end
 
+local pos=page_home.getCurrentItem()+1
+local home_item=home_items[pos]
+home_pageinfo[home_item].refer(true)
+
 function 成功登录回调()
   setHead()
   collection_pagetool:setUrls({
@@ -1133,9 +1126,9 @@ function check()
   end
 end
 
-function onResume()
+--[[function onResume()
   activity.getDecorView().post{run=function()check()end}
-end
+end]]
 
 
 if this.getSharedData("自动检测更新")=="true" then
@@ -1229,7 +1222,7 @@ task(1,function()
           跳转页面("feedback")
       end},
       {src=图标("info"),text="关于",onClick=function()
-          跳转页面("about")
+          跳转页面("sub/About/main")
       end},
     }
   })
@@ -1239,7 +1232,7 @@ end)
 lastclick = os.time() - 2
 function onKeyDown(code,event)
   local now = os.time()
-  if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
+  --[[if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
     --监听返回键
     if a and a.pop.isShowing() then
       --如果菜单显示，关闭菜单并阻止返回键
@@ -1257,7 +1250,7 @@ function onKeyDown(code,event)
       lastclick = now
       return true
     end
-  end
+  end]]
 
   if this.getSharedData("音量键选择tab")~="true" then
     return false

@@ -8,7 +8,12 @@ url=...
 
 设置视图("layout/login")
 
-波纹({fh,_info},"圆主题")
+edgeToedge(nil,nil,function() local layoutParams = appbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  appbar.setLayoutParams(layoutParams); end)
+
+
+波纹({_back,_info},"圆主题")
 
 login_web.removeView(login_web.getChildAt(0))
 

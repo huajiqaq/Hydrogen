@@ -7,7 +7,9 @@ import "mods.muk"
 设置toolbar属性(toolbar,"反馈")
 波纹({fh,_more},"圆主题")
 波纹({send},"圆自适应")
-
+edgeToedge(nil,nil,function() local layoutParams = toolbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  toolbar.setLayoutParams(layoutParams); end)
 
 
 help_item={

@@ -8,6 +8,7 @@
   id="mainLay";
   {
     LinearLayout;
+id="topbar";
     layout_width="-1";
     layout_height="56dp";
     gravity="center|left";

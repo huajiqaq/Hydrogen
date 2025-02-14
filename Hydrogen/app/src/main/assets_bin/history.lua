@@ -3,9 +3,9 @@ require "import"
 import "mods.muk"
 设置视图("layout/history")
 设置toolbar(toolbar)
-edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
+edgeToedge(nil,nil,function() local layoutParams = mainLay.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
-  topbar.setLayoutParams(layoutParams); end)
+  mainLay.setLayoutParams(layoutParams); end)
 
 
 波纹({fh,_more},"圆主题")

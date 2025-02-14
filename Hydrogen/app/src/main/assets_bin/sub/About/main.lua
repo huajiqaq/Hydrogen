@@ -6,7 +6,7 @@ local normalkeys=jesse205.normalkeys
 normalkeys.appInfo=true
 normalkeys.openSourceLicenses=true
 normalkeys.developers=true
-normalkeys.moreItem=true
+--normalkeys.moreItem=true
 normalkeys.copyright=true
 normalkeys.onUpdate=true
 
@@ -26,31 +26,32 @@ import "com.google.android.material.appbar.MaterialToolbar"
 import "androidx.appcompat.widget.LinearLayoutCompat"
 import "androidx.core.widget.NestedScrollView"
 
-local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
-package.path = package.path..";"..luapath.."/?.lua"
+local luadir=this.getLuaDir()
+package.path = package.path..";"..luadir.."/?.lua"
 require("mods.muk")
 
 --activity.setTitle(R.string.jesse205_about)
-activity.setContentView(loadlayout("layout"))
-activity.setSupportActionBar(toolbar)
+--activity.setContentView(loadlayout("layout"))
+--activity.setSupportActionBar(toolbar)
 --actionBar.setDisplayHomeAsUpEnabled(true)
+设置视图("sub/About/layout")
 设置toolbar(toolbar)
 设置toolbar属性(toolbar,R.string.jesse205_about)
-
-loadlayout2("iconLayout")
-loadlayout2("portraitCardParentView")
+edgeToedge(mainLay)
+loadlayout2("sub/About/iconLayout")
+loadlayout2("sub/About/portraitCardParentView")
 portraitCardParent.addView(iconLayout)
 
 adapterEvents=SettingsLayUtil.adapterEvents
 packageInfo=activity.getPackageManager().getPackageInfo(getPackageName(),0)
-landscapeState=false--是否是横屏。此Activity按竖屏做的，因此默认为false
+--landscapeState=false--是否是横屏。此Activity按竖屏做的，因此默认为false
 
-function onOptionsItemSelected(item)
+--[[function onOptionsItemSelected(item)
   local id=item.getItemId()
   if id==android.R.id.home then
     activity.finish()
   end
-end
+end]]
 
 --获取QQ头像链接
 function getUserAvatarUrl(qq,size)
@@ -79,7 +80,7 @@ function callItem(parent,view,data)
   if data.url then
     openUrl(data.url)
    elseif data.browserUrl then
-    openInBrowser(data.browserUrl)
+    newActivity("browser",{data.browserUrl})
    elseif data.qqGroup then--QQ群
     joinQQGroup(data.qqGroup)
    elseif data.qq then
@@ -100,9 +101,9 @@ function onItemClick(view,views,key,data)
       onUpdate()
     end
    elseif key=="html" then
-    newSubActivity("HtmlFileViewer",{{title=data.title,path=data.path}})
+    newActivity("sub/HtmlFileViewer/main",{{title=data.title,path=data.path}})
    elseif key=="openSourceLicenses" then
-    newSubActivity("OpenSourceLicenses")
+    newActivity("sub/OpenSourceLicenses/main")
    elseif key=="thanks" then
     local items={}
     for index,content in pairs(data.thanks) do
@@ -176,7 +177,7 @@ data={
 
 --插入协议
 if agreements then
-  local fileBasePath=activity.getLuaPath("../../agreements/%s.html")
+  local fileBasePath=activity.getLuaPath("agreements/%s.html")
   for index,content in ipairs(agreements) do
     content[1]=SettingsLayUtil.ITEM_NOSUMMARY
     content.path=fileBasePath:format(content.name)

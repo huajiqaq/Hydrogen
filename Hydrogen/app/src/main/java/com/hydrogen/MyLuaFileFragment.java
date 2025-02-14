@@ -181,7 +181,8 @@ public class MyLuaFileFragment extends Fragment implements LuaGcable {
 
   private void initLua() {
     String luaExtDir = app.getLuaExtDir();
-    String luaDir = app.getLocalDir();
+    //String luaDir = app.getLocalDir();
+    String luaDir = new File(mLuaFilePath).getParent();
     String luaLpath = app.getLuaLpath();
     String luaCpath = app.getLuaCpath();
 

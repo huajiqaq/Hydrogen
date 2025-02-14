@@ -83,6 +83,7 @@ function base.getAdapter(collection_pagetool,pos)
         views.评论数.Text=data.评论数
         views.关注数.Text=data.关注数
         views.card.onClick=function()
+          nTView=views.card
           newActivity("collections",{data.id内容})
         end
 
@@ -130,6 +131,7 @@ function base.getAdapter(collection_pagetool,pos)
         views.关注数.Text=data.关注数
         loadglide(views.图像,data.图像)
         views.card.onClick=function()
+          nTView=views.card
           if data.id内容=="local" then
             newActivity("collection_recommend")
             return

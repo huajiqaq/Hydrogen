@@ -8,7 +8,7 @@ function base_question:new(id)
 end
 
 function base_question:getTag(callback)
-  zHttp.get( "https://api.zhihu.com/questions/"..self.id.."/topics?limit=20&platform=android",head,function(code,body)
+  zHttp.get("https://api.zhihu.com/questions/"..self.id.."/topics?limit=20&platform=android",head,function(code,body)
 
     if code==200 then
       for k,v in pairs(luajson.decode(body).data) do
@@ -22,16 +22,13 @@ end
 
 
 function base_question:getData(callback)
-  zse96_encrypt=require "model.zse96_encrypt"
-  local url,head
-  url="https://www.zhihu.com/api/v4/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,detail,excerpt,author,relationship.is_following"
-  url,head=zse96_encrypt(url)
+  local url="https://www.zhihu.com/api/v4/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,detail,excerpt,author,relationship.is_following"
   zHttp.get(url,head
   ,function(code,content)
     if code==200 then
       local data=luajson.decode(content)
       callback(data)
-      else
+     else
       callback(false)
     end
   end)
@@ -39,8 +36,9 @@ function base_question:getData(callback)
 end
 
 function base_question:getUrl(sortby)
-  return "https://api.zhihu.com/questions/"..self.id.."/feeds?include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count,media_detail&limit=20".."&order="..(sortby or "default")
+  return "https://www.zhihu.com/api/v4/questions/"..self.id.."/feeds?include=badge%5B*%5D.topics,comment_count,excerpt,voteup_count,created_time,updated_time,upvoted_followees,voteup_count,media_detail&limit=20".."&order="..(sortby or "default")
 end
+
 
 
 function base_question.getAdapter(question_pagetool,pos)
@@ -72,6 +70,7 @@ function base_question.getAdapter(question_pagetool,pos)
       loadglide(views.图像,data.图像)
 
       views.card.onClick=function()
+nTView=views.card
         newActivity("answer",{question_id,tostring(data.id内容)})
       end
     end,
@@ -111,6 +110,7 @@ function base_question:initpage(view,sr)
     sr=sr,
     head="head",
     adapters_func=self.getAdapter,
+    urlfunc=require "model.zse96_encrypt",
     func=self.resolvedata
   })
   :initPage()

@@ -80,7 +80,7 @@ function base:getUrl(type)
    case "voter"
     return "https://api.zhihu.com/pins/"..self.id.."/actions"
    case "followees"
-    return "https://api.zhihu.com/people/"..self.id.."/followers?offset=0"
+    return "https://api.zhihu.com/people/"..self.id.."/followees?offset=0"
    case "followers"
     return "https://api.zhihu.com/people/"..self.id.."/followers?offset=0"
    case "block_all"
@@ -118,6 +118,7 @@ function base.getAdapter(people_list_pagetool,pos)
       loadglide(views.图像,data.图像)
       _peoplelist.onbind(views,data)
       views.card.onClick=function()
+nTView=views.card
         newActivity("people",{data.id内容})
       end
     end,

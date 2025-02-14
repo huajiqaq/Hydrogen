@@ -20,6 +20,16 @@ end
 初始化历史记录数据(true)
 
 设置视图("layout/column_parent")
+
+
+MyWebViewUtils=require "views/WebViewUtils"(content)
+
+MyWebViewUtils
+:initSettings()
+:initNoImageMode()
+:initDownloadListener()
+:setZhiHuUA()
+
 if 类型=="本地" then
   task(1,function()
     _title.text="本地内容"
@@ -59,68 +69,8 @@ edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
   topbar.setLayoutParams(layoutParams); end)
 
-content.getSettings()
-.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
-.setJavaScriptEnabled(true)--设置支持Js
-.setJavaScriptCanOpenWindowsAutomatically(true)
-.setUseWideViewPort(true)
-.setDefaultTextEncodingName("utf-8")
-.setLoadsImagesAutomatically(true)
-.setAllowFileAccess(true)
-.setDatabasePath(APP_CACHEDIR)
---设置 应用 缓存目录
-.setAppCachePath(APP_CACHEDIR)
---开启 DOM 存储功能
-.setDomStorageEnabled(true)
---开启 数据库 存储功能
-.setDatabaseEnabled(true)
-
-content.removeView(content.getChildAt(0))
-
-if activity.getSharedData("禁用缓存")=="true"
-  content
-  .getSettings()
-  .setAppCacheEnabled(false)
-  .setCacheMode(WebSettings.LOAD_NO_CACHE)
-  --关闭 DOM 存储功能
-  .setDomStorageEnabled(true)
-  --关闭 数据库 存储功能
-  .setDatabaseEnabled(false)
- else
-  content
-  .getSettings()
-  .setAppCacheEnabled(true)
-  .setCacheMode(WebSettings.LOAD_DEFAULT)
-  --开启 DOM 存储功能
-  .setDomStorageEnabled(true)
-  --开启 数据库 存储功能
-  .setDatabaseEnabled(true)
-end
-
-if 无图模式 then
-  content.getSettings().setBlockNetworkImage(true)
-end
-
-
-function setProgress(p)
-  ValueAnimator.ofFloat({pbar.getWidth(),activity.getWidth()/100*p})
-  .setDuration(500)
-  .addUpdateListener{
-    onAnimationUpdate=function(a)
-      local x=a.getAnimatedValue()
-      local linearParams = pbar.getLayoutParams()
-      linearParams.width =x
-      pbar.setLayoutParams(linearParams)
-    end
-  }.start()
-
-end
-
 _title.Text="加载中"
 
-local ua=getua(content)
-content.getSettings().setUserAgentString(ua)
-content.BackgroundColor=转0x("#00000000",true);
 
 function 刷新()
 
@@ -161,12 +111,8 @@ function 刷新()
 
 end
 
-content.setWebViewClient{
-  onReceivedError=function(view,a,b)
-
-  end,
+MyWebViewUtils:initWebViewClient{
   shouldOverrideUrlLoading=function(view,url)
-    view.stopLoading()
     if url:sub(1,4)~="http" then
       if 检查意图(url,true) then
         检查意图(url)
@@ -177,15 +123,12 @@ content.setWebViewClient{
       end
       检查链接(url)
     end
+    return true
   end,
   onPageStarted=function(view,url,favicon)
-    view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
     加载js(view,获取js("imgplus"))
     加载js(view,获取js("mdcopy"))
-    网页字体设置(view)
-    加载js(view,获取js("native"))
---加载js(view,获取js("eruda"))
-    等待doc(view)
+    --加载js(view,获取js("eruda"))
     if 全局主题值=="Night" then
       夜间模式主题(view)
     end
@@ -201,9 +144,7 @@ content.setWebViewClient{
   onPageFinished=function(view,l)
     content.setVisibility(0)
   end,
-  onLoadResource=function(view,url)
-  end,
-  shouldInterceptRequest=拦截加载}
+}
 
 刷新()
 
@@ -228,46 +169,10 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
       _title.text=title
     end
   end,
-  onProgressChanged=function(view,p)
-    setProgress(p)
-    if p==100 then
-      setProgress(100)
-      Handler().postDelayed(Runnable({
-        run=function()
-          pbar.Visibility=4
-          linearParams=pbar.getLayoutParams()
-          linearParams.width =0
-          pbar.setLayoutParams(linearParams)
-        end,
-      }),500)
-     else
-      pbar.Visibility=0
-    end
-
-  end,
-  onShowCustomView=function(view,url)
-    web_video_view=view
-    savedScrollY=content.getScrollY()
-    content.setVisibility(8)
-    activity.getDecorView().addView(web_video_view)
-    --this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-    全屏()
-  end,
-  onHideCustomView=function(view,url)
-    content.setVisibility(0)
-    activity.getDecorView().removeView(web_video_view)
-    --this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    取消全屏()
-    Handler().postDelayed(Runnable({
-      run=function()
-        content.scrollTo(0, savedScrollY);
-      end,
-    }),200)
-  end,
 
   onConsoleMessage=function(consoleMessage)
     --打印控制台信息
-    
+
     if consoleMessage.message()=="显示评论" then
       newActivity("comment",{id,urltype.."s",保存路径})
      elseif consoleMessage.message()=="查看用户" then
@@ -326,20 +231,31 @@ end})
 
 
 --退出时去除webview的内存
-
 function onDestroy()
+  content.clearCache(true)
+  content.clearFormData()
+  content.clearHistory()
   content.destroy()
 end
 
-if this.getSharedData("禁用缓存")=="true" then
-  function onStop()
-    content.clearCache(true)
-    content.clearFormData()
-    content.clearHistory()
-  end
-end
+import "androidx.activity.result.ActivityResultCallback"
+import "androidx.activity.result.contract.ActivityResultContracts"
 
-webview查找文字监听(content)
+
+import "androidx.activity.result.ActivityResultCallback"
+import "androidx.activity.result.contract.ActivityResultContracts"
+createDocumentLauncher = thisFragment.registerForActivityResult(ActivityResultContracts.CreateDocument("text/markdown"),
+ActivityResultCallback{
+  onActivityResult=function(uri)
+    if uri then
+      local outputStream = this.getContentResolver().openOutputStream(uri);
+      local content = String(saf_writeText);
+      outputStream.write(content.getBytes());
+      outputStream.close();
+      提示("保存md文件成功")
+    end
+end});
+
 
 --pop
 
@@ -390,13 +306,8 @@ if 类型=="本地" then
             function()
               content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
                   提示("请选择一个保存位置")
-                  import "android.content.Intent"
-                  intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
-                  intent.addCategory(Intent.CATEGORY_OPENABLE);
-                  intent.setType("application/octet-stream");
-                  intent.putExtra(Intent.EXTRA_TITLE, page_title.."_"..author_name..".md");
-                  this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
                   saf_writeText=b
+                  createDocumentLauncher.launch(page_title.."_"..author_name..".md");
               end})
           end}
           dialog=AlertDialog.Builder(this)
@@ -494,14 +405,8 @@ if 类型=="本地" then
         onLongClick=function()
           content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
               提示("请选择一个保存位置")
-              CREATE_FILE_REQUEST_CODE=9999
-              import "android.content.Intent"
-              intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
-              intent.addCategory(Intent.CATEGORY_OPENABLE);
-              intent.setType("application/octet-stream");
-              intent.putExtra(Intent.EXTRA_TITLE, page_title.."_"..author_name..".md");
-              this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
               saf_writeText=b
+              createDocumentLauncher.launch(page_title.."_"..author_name..".md");
           end})
         end
       },

@@ -11,6 +11,7 @@ import "com.google.android.flexbox.*"
 import "androidx.recyclerview.widget.*"
 
 设置视图("layout/homesort")
+edgeToedge(topbar)
 
 波纹({fh},"圆主题")
 波纹({moren},"方自适应")

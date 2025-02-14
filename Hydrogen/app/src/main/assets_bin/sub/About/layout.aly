@@ -3,7 +3,7 @@
   id="mainLay";
   layout_height="fill";
   layout_width="fill";
-  backgroundColor=roundrect_shape;
+  backgroundColor=backgroundc;
   {
     LinearLayout,
     layout_width="fill",

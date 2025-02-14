@@ -4,15 +4,18 @@ import "com.lua.*"
 
 collections_id=...
 
- 
+
 设置视图("layout/collections")
+edgeToedge(nil,nil,function() local layoutParams = toolbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  toolbar.setLayoutParams(layoutParams); end)
 collections_base=require "model.collections":new(collections_id)
 :getData(function(tab)
 
   collection_pagetool=collections_base:initpage(collection_recy,collectionsr)
 
   _title.Text=tab.title
-  
+
   local isfollow=tab.creator.id~=this.getSharedData("idx")
 
   if isfollow then
