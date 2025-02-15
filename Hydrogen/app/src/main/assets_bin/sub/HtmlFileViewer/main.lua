@@ -14,16 +14,14 @@ import "com.google.android.material.appbar.MaterialToolbar"
 import "androidx.appcompat.widget.LinearLayoutCompat"
 import "androidx.core.widget.NestedScrollView"
 
-local luadir=this.getLuaDir()
-package.path = package.path..";"..luadir.."/?.lua"
+local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
+package.path = package.path..";"..luapath.."/?.lua"
 require("mods.muk")
 
-设置视图("sub/HtmlFileViewer/layout")
+activity.setContentView(loadlayout("layout"))
 activity.setSupportActionBar(toolbar)
 --actionBar.setDisplayHomeAsUpEnabled(true)
-edgeToedge(nil,nil,function() local layoutParams = toolbar.LayoutParams;
-  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
-  toolbar.setLayoutParams(layoutParams); end)
+
 设置toolbar属性(toolbar,R.string.jesse205_htmlFileViewer)
 
 ---传入的数据
@@ -36,11 +34,14 @@ function onOptionsItemSelected(item)
   end
 end
 
+function onConfigurationChanged(config)
+  --刷新ActionBar阴影
+  MyAnimationUtil.ScrollView.onScrollChange(scrollView,scrollView.getScrollX(),scrollView.getScrollY(),0,0)
+end
 
 textView.setLinksClickable(true)
 textView.setMovementMethod(RTEditorMovementMethod.getInstance())
---不知道为什么会有阴影
---textView.requestFocusFromTouch()
+textView.requestFocusFromTouch()
 
 FastScrollerBuilder(scrollView).useMd2Style().build()
 
@@ -51,7 +52,7 @@ end
 local path=data.path
 local url=data.url
 if path then
-  local content=读取文件(path)
+  local content=io.open(path,"r"):read("*a")
   if tostring(data.text)=="true" then
     textView.setText(content)
    else

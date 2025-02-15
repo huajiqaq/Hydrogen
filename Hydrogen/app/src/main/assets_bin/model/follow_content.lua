@@ -193,7 +193,6 @@ function base.getAdapter(followcontent_pagetool,pos)
       views.标题.Text=data.标题
 
       views.card.onClick=function()
-        nTView=views.card
         onclick(data)
       end
       if data.底部内容 then

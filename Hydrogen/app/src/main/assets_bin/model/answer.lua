@@ -10,7 +10,6 @@ local base={--表初始化
   pageinfo={}
 }
 
-
 function base:new(id)--类的new方法
   local child=table.clone(self)
   --这里必须tonumber 因为不能保证传入的是string
@@ -20,8 +19,11 @@ end
 
 
 function base:getinfo(id,cb)
+  zse96_encrypt=require "model.zse96_encrypt"
+  local url,head
   local include='?include=visit_count%2Ccomment_count'
   local url="https://api.zhihu.com/v4/answers/"..id.."/question"..include
+
   zHttp.get(url,apphead
   ,function(a,b)
     if a==200 then
@@ -33,7 +35,8 @@ end
 
 function base:getAnswer(id,cb)
   local include='?include=author%2Ccontent%2Cvoteup_count%2Ccomment_count%2Cfavlists_count%2Cthanks_count%2Cpagination_info'
-  local url="https://www.zhihu.com/api/v4/answers/"..id..include
+  zse96_encrypt=require "model.zse96_encrypt"
+  url,head=zse96_encrypt("https://www.zhihu.com/api/v4/answers/"..id..include)
   zHttp.get(url,head,function(a,b)
     if a==200 then
       cb(luajson.decode(b))

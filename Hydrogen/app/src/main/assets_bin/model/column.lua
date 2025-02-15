@@ -71,6 +71,10 @@ function base:getData(cb,issave)
     end
     return
   end
+  zse96_encrypt=require "model.zse96_encrypt"
+  local head
+  url,head=zse96_encrypt(url)
+
   zHttp.get(url,head,function(a,b)
     if a==200 then
       local b=luajson.decode(b)

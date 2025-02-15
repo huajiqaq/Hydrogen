@@ -8,7 +8,7 @@ import "com.google.android.material.materialswitch.MaterialSwitch"
 设置视图("layout/settings")
 设置toolbar(toolbar)
 设置toolbar属性(toolbar,"设置")
-edgeToedge(mainLay )
+
 function onOptionsItemSelected()
   activity.finish()
 end
@@ -21,7 +21,7 @@ function clear()
   清理内存()
 end
 
-data = processTable{
+data = {
 
   {__type=1,title="浏览设置"},
 
@@ -98,7 +98,7 @@ end
 
 mtip=false
 
-tab=processTable{
+tab={
   夜间模式=function()
     提示("返回主页面生效")
     activity.setResult(1200,nil)
@@ -575,7 +575,7 @@ tab=processTable{
   end,
 
   关于=function()
-    newActivity("sub/About/main")
+    activity.newActivity("about")
   end,
 
   手动填写token=function()
@@ -707,7 +707,7 @@ tab=processTable{
   end,
 
   主题设置=function()
-    newActivity("sub/ThemePicker/main")
+    newSubActivity("ThemePicker")
   end,
 
 
@@ -746,7 +746,7 @@ tab=processTable{
 
 波纹({fh},"圆主题")
 
-about_item=processTable{
+about_item={
   {--大标题 type1
     LinearLayout;
 
@@ -914,7 +914,7 @@ end
 adp=LuaMultiAdapter(this,data,about_item)
 settings_list.setAdapter(adp)
 
-settab=processTable{
+settab={
   ["夜间模式"]="Setting_Night_Mode",
   ["夜间模式追随系统"]="Setting_Auto_Night_Mode",
   ["禁用大部分缓存"]="禁用缓存",

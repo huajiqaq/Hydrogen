@@ -87,7 +87,6 @@ end
 
 
 comment.onClick=function()
-nTView=comment
   local pos=pg.getCurrentItem()
   local mview=数据表[pg.adapter.getItem(pos).id]
   local 回答id=mview.data.id
@@ -151,7 +150,6 @@ mripple.onClick=function()
   local mview=数据表[pg.adapter.getItem(pos).id]
   local id=mview.data.author.id
   if id~="0" then
-nTView=mripple
     newActivity("people",{id})
    else
     提示("回答作者已设置匿名")
@@ -184,7 +182,6 @@ all_root.onClick=function(v)
         if 问题id==nil or 问题id=="null" then
           return 提示("加载中")
         end
-nTView=all_root
         newActivity("question",{问题id})
       end
     end)

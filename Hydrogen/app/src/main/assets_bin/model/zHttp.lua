@@ -66,13 +66,8 @@ function zHttp.request(url,method,data,head,callback)
   end
 end
 
-local zse96_encrypt=require "model.zse96_encrypt"
-
 function zHttp.get(url,head,callback)
   if canload==false then return false end
-  if url:find("https://www.zhihu.com") then
-    url,head=zse96_encrypt(url)
-  end
   Http.get(url,head,function(code,content,raw,headers)
     zHttp.setcallback(code,content,raw,headers,url,head,callback,"get")
   end)

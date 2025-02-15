@@ -37,7 +37,7 @@ end)
 --new 0.53 引入mhtml2html解析mhtml 去除大量mhtml替换逻辑
 
 import "androidx.viewpager2.widget.ViewPager2"
-设置视图("layout/local")
+ 设置视图("layout/local")
 设置toolbar(toolbar)
 
 edgeToedge(mainLay,底栏,function()
@@ -113,6 +113,22 @@ userinfo.onClick=function()
   提示("请点击右上角「使用网络打开」打开原回答页后查看")
 end
 
+task(1,function()
+  顶栏高度=toolbar.height
+end)
+
+
+local function 设置滑动跟随(t)
+  t.onGenericMotion=function(view,x,y,lx,ly)
+    if t.getScrollY()<=0 then
+      appbar.setExpanded(true);
+     else
+      appbar.setExpanded(false);
+    end
+  end
+end
+
+设置滑动跟随(t.content)
 
 username.text=xxx:match[[author="(.-)"]]
 userheadline.text=xxx:match[[headline="(.-)"]]
@@ -143,67 +159,94 @@ voteup.onClick=网络打开提示
 
 波纹({fh,_more,mark,comment,thank,voteup},"圆主题")
 
-t.content.getSettings()
+t.content
+.getSettings()
+.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
+.setJavaScriptEnabled(true)--设置支持Js
+.setJavaScriptCanOpenWindowsAutomatically(true)
+.setUseWideViewPort(true)
+.setDefaultTextEncodingName("utf-8")
+.setLoadsImagesAutomatically(true)
 .setAllowFileAccess(true)
+.setDatabasePath(APP_CACHEDIR)
+--//设置 应用 缓存目录
+.setAppCachePath(APP_CACHEDIR)
+--//开启 DOM 存储功能
+.setDomStorageEnabled(false)
+--//开启 数据库 存储功能
+.setDatabaseEnabled(false)
+--//开启 应用缓存 功能
+.setSupportZoom(true)
+.setBuiltInZoomControls(true)
+
+t.content.removeView(t.content.getChildAt(0))
+
+
+if activity.getSharedData("禁用缓存")=="true"
+  t.content
+  .getSettings()
+  .setAppCacheEnabled(false)
+  .setCacheMode(WebSettings.LOAD_NO_CACHE);
+ else
+  t.content
+  .getSettings()
+  .setAppCacheEnabled(true)
+  .setCacheMode(WebSettings.LOAD_DEFAULT)
+end
+
+t.content.BackgroundColor=转0x("#00000000",true);
+
 
 t.content.setDownloadListener({
   onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
     提示("本地暂不支持下载")
 end})
 
-WebViewUtils=require "views/WebViewUtils"
-local MyWebViewUtils=WebViewUtils(t.content)
-local function 设置滑动跟随(t)
-  t.onGenericMotion=function(view,x,y,lx,ly)
-    if t.getScrollY()<=0 then
-      appbar.setExpanded(true);
-     else
-      appbar.setExpanded(false);
+
+--设置网页图片点击事件，
+local z=JsInterface{
+  execute=function(b)
+    if b~=nil and #b>1 then
+      --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
+      this.setSharedData("imagedata",b)
+      activity.newActivity("image")
     end
-  end
-end
-
-设置滑动跟随(t.content)
-MyWebViewUtils:initSettings()
-:initSettings()
-:initNoImageMode()
-
-MyWebViewUtils:initWebViewClient{
-  shouldOverrideUrlLoading=function(view,url)
-    检查链接(url)
-    t.content.setVisibility(8)
-    return true
   end,
-  onPageStarted=function(view,url,favicon)
-    view.setVisibility(8)
-    加载js(view,获取js("mdcopy"))
-  end,
-  onPageFinished=function(view,l)
-    view.setVisibility(0)
-  end
 }
 
-MyWebViewUtils:initChromeClient({
+
+t.content.addJSInterface(z,"androlua")
+
+t.content.setWebViewClient{
+  shouldOverrideUrlLoading=function(view,url)
+    检查链接(url)
+    view.stopLoading()
+    view.goBack()
+    t.content.setVisibility(8)
+  end,
+  onPageStarted=function(view,url,favicon)
+    t.content.setVisibility(8)
+    t.content.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
+    加载js(t.content,获取js("mdcopy"))
+  end,
+  onPageFinished=function(view,l)
+    网页字体设置(view)
+    t.content.setVisibility(0)
+  end,
+  onLoadResource=function(view,url)
+  end,
+  shouldInterceptRequest=拦截加载}
+
+t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
   onProgressChanged=function(view,url,favicon)
     if 全局主题值=="Night" then
       夜间模式回答页(view)
     end
-end})
+end}))
 
 
-import "androidx.activity.result.ActivityResultCallback"
-import "androidx.activity.result.contract.ActivityResultContracts"
-createDocumentLauncher = thisFragment.registerForActivityResult(ActivityResultContracts.CreateDocument("text/markdown"),
-ActivityResultCallback{
-  onActivityResult=function(uri)
-    if uri then
-      local outputStream = this.getContentResolver().openOutputStream(uri);
-      local content = String(saf_writeText);
-      outputStream.write(content.getBytes());
-      outputStream.close();
-      提示("保存md文件成功")
-    end
-end});
+local content=t.content
+webview查找文字监听(content)
 
 task(1,function()
   a=MUKPopu({
@@ -238,8 +281,14 @@ task(1,function()
             function()
               content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
                   提示("请选择一个保存位置")
+                  CREATE_FILE_REQUEST_CODE=9999
+                  import "android.content.Intent"
+                  intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
+                  intent.addCategory(Intent.CATEGORY_OPENABLE);
+                  intent.setType("application/octet-stream");
+                  intent.putExtra(Intent.EXTRA_TITLE, title.."_"..author..".md");
+                  this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
                   saf_writeText=b
-                  createDocumentLauncher.launch(title.."_"..author..".md");
               end})
           end}
           dialog=AlertDialog.Builder(this)

@@ -76,10 +76,9 @@ function base.getAdapter(people_pagetool,pos)
       loadglide(views.图像,data.图像)
 
       views.card.onClick=function()
-        nTView=views.card
         if tostring(data.id内容):find("更多") then
           local id内容=data.id内容:gsub("更多","")
-          newActivity("people_more",{用户id,id内容})
+          activity.newActivity("people_more",{用户id,id内容})
          else
           点击事件判断(data.id内容,data.标题)
         end
@@ -311,117 +310,27 @@ local function getdata(v,tabname,tabinfo)
   table.insert(tabinfo,info)
 end
 
-
-
--- 根据用户ID构造各类标签对应的URL配置
-function base:getUrls()
-  local people_id = self.id
-  return {
-    activities = "https://api.zhihu.com/people/" .. people_id .. "/activities?limit=20",
-    zvideo = "https://api.zhihu.com/members/" .. people_id .. "/zvideos?offset=0&limit=20",
-    answer = "https://api.zhihu.com/members/" .. people_id .. "/answers?order_by=created&offset=0&limit=20",
-    vote = "https://api.zhihu.com/moments/" .. people_id .. "/vote?limit=20",
-    more = "https://api.zhihu.com/people/" .. people_id .. "/profile/tab/more?tab_type=1",
-    article = "https://api.zhihu.com/people/" .. people_id .. "/articles?offset=0&limit=20",
-    column = "https://api.zhihu.com/people/" .. people_id .. "/columns?offset=0&limit=20",
-    pin = "https://api.zhihu.com/v2/pins/" .. people_id .. "/moments",
-    question = "https://api.zhihu.com/people/" .. people_id .. "/questions?offset=0&limit=20",
-  }
-end
-
--- 处理标签数据方法
--- 输入：标签名称列表和标签信息列表
--- 处理过程：遍历标签信息，匹配预置URL（如无则取接口返回的URL），同时将"动态"（activities）标签置顶
--- 返回：最终的标签名称、对应的URL列表，以及答案标签(answer)的位置索引（如果存在的话）
-function base:processTabs(tabNames, tabInfos)
-  local urls = self:getUrls()
-  local finalNames = {}
-  local finalUrls = {}
-  local answerIndex
-  local activitiesIndex
-
-  -- 遍历所有标签数据
-  for i, info in ipairs(tabInfos) do
-    local key = info.key
-    local url = urls[key] or info.url
-    if url then
-      table.insert(finalNames, tabNames[i])
-      table.insert(finalUrls, url)
-      if key == "activities" then
-        activitiesIndex = #finalUrls
-       elseif key == "answer" then
-        answerIndex = #finalUrls
-      end
-    end
-  end
-
-  -- 如果存在 "动态" 标签且不在第一个，则移动到第一位
-  if activitiesIndex and activitiesIndex > 1 then
-    local actName = table.remove(finalNames, activitiesIndex)
-    local actUrl = table.remove(finalUrls, activitiesIndex)
-    table.insert(finalNames, 1, actName)
-    table.insert(finalUrls, 1, actUrl)
-    -- 如果答案标签存在，简单处理下索引关系（这里只做简单调整，实际需要根据具体需求调整）
-    if answerIndex then
-      if activitiesIndex < answerIndex then
-        answerIndex = answerIndex - 1
-       elseif activitiesIndex > answerIndex then
-        answerIndex = answerIndex + 1
-      end
-    end
-  end
-
-  -- 若列表为空，默认返回"动态"标签
-  if #finalNames == 0 then
-    finalNames = {"动态"}
-    finalUrls = {urls["activities"]}
-    answerIndex = nil
-  end
-
-  return finalNames, finalUrls, answerIndex
-end
-
--- 辅助方法：根据单个标签数据过滤并处理标签名称（例如排除“全部”标签）
-local function collectTabData(v, names, infos)
-  if v.name == "全部" or v.key == "all" then
-    return
-  end
-  local tabName = v.name
-  if v.number and v.number > 0 then
-    tabName = tabName .. " " .. tostring(v.number)
-  end
-  table.insert(names, tabName)
-  table.insert(infos, { key = v.key, url = v.url })
-end
-
--- 获取标签数据主方法，调用HTTP接口后解析返回的JSON数据
--- 回调函数 callback(self, finalNames, finalUrls, answerIndex)
-function base:getTabs(callback)
-  -- 如果未登录，则直接返回默认的“动态”标签
-  if not getLogin() then
-    local defaultUrl = self:getUrls().activities
-    callback(self, {"动态"}, {defaultUrl}, nil)
+function base:getTab(func)
+  if getLogin()~=true then
+    func(self,{"动态"},self:putTabUrl({{type="activities"}}))
     return self
   end
-
-  local names = {}
-  local infos = {}
-  local url = "https://api.zhihu.com/people/" .. self.id .. "/profile/tab"
-  zHttp.get(url, apphead, function(code, content)
-    if code == 200 then
-      local data = luajson.decode(content)
-      local tabs = data.tabs_v3 or {}
-      for _, tab in ipairs(tabs) do
-        if tab.sub_tab then
-          for _, sub in ipairs(tab.sub_tab) do
-            collectTabData(sub, names, infos)
+  local tabname={}
+  local tabinfo={}
+  zHttp.get("https://api.zhihu.com/people/"..people_id.."/profile/tab",apphead,function(code,content)
+    if code==200 then
+      for _,v in ipairs(luajson.decode(content).tabs_v3) do
+        if v.sub_tab then
+          for _,v2 in ipairs(v.sub_tab) do
+            getdata(v2,tabname,tabinfo)
           end
          else
-          collectTabData(tab, names, infos)
+          getdata(v,tabname,tabinfo)
         end
       end
-      local finalNames, finalUrls, answerIndex = self:processTabs(names, infos)
-      callback(self, finalNames, finalUrls, answerIndex)
+
+      local tabname,taburl,answerIndex=self:putTabData(tabname,tabinfo)
+      func(self,tabname,taburl,answerIndex)
     end
   end)
   return self
@@ -432,7 +341,7 @@ function base:initpage(view,tabview)
     view=view,
     tabview=tabview,
     addcanclick=true,
-    needlogin=false,
+    needlogin=true,
     head="apphead",
     adapters_func=self.getAdapter,
     func=self.resolvedata,

@@ -279,7 +279,6 @@ local function 加载主页关注折叠adp(data,views)
         views.评论数布局.Visibility=8
       end
       views.card.onClick=function()
-nTView=views.card
         点击事件判断(data.id内容,data.标题)
       end
     end,
@@ -370,7 +369,6 @@ function base.getAdapter(follow_pagetool,pos)
 
       --子项目点击事件
       views.card.onClick=function(v)
-nTView=views.card
         点击事件判断(data.id内容,data.标题)
       end
 

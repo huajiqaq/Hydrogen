@@ -90,7 +90,8 @@ moreItem={
     title="提交bug";
     icon=R.drawable.ic_information_outline;
     func=function(view) -- 执行的函数
-      newActivity("feedback")
+      local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString().."/feedback.lua"
+      activity.newActivity(luapath)
     end,
   },
   {

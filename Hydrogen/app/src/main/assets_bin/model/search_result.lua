@@ -48,7 +48,6 @@ function base.getAdapter(search_result_pagetool,pos)
       views.评论数.text=data.评论数
       views.预览内容.text=data.预览内容
       views.card.onClick=function()
-nTView=views.card
         点击事件判断(data.id内容,data.标题)
       end
     end,
@@ -123,6 +122,7 @@ function base:initpage(view,sr)
     sr=sr,
     head="head",
     adapters_func=self.getAdapter,
+    urlfunc=zse96_encrypt,
     func=self.resolvedata
   })
   :initPage()
