@@ -10,7 +10,7 @@
     layout_width="-1";
     layout_height="56dp";
     gravity="center|left";
-id="topbar";
+    id="topbar";
     {
       LinearLayout;
       orientation="horizontal";
@@ -299,7 +299,7 @@ id="topbar";
                       if not(getLogin()) then
                         return 提示("你需要登录使用本功能")
                       end
-                     newActivity("browser",{"https://www.zhihu.com/messages/"..people_id})
+                      newActivity("browser",{"https://www.zhihu.com/messages/"..people_id})
                     end;
                   };
                 };
@@ -322,6 +322,7 @@ id="topbar";
               layout_gravity="end";
               gravity="end";
               layout_width="match_parent";
+
               {
                 LinearLayout;
                 layout_gravity="center";

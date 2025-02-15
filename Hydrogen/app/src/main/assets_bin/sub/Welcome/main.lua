@@ -77,47 +77,12 @@ activity.getSupportActionBar().hide()
 activity.setTitle(R.string.jesse205_welcome)
 activity.setContentView(loadlayout2("layout"))
 
-local window = activity.getWindow()
-window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-if Build.VERSION.SDK_INT >= 30 then--Android R+
-  window.setDecorFitsSystemWindows(false);
-  window.setNavigationBarContrastEnforced(false);
-  window.setStatusBarContrastEnforced(false);
-end
-
-local ViewCompat = luajava.bindClass "androidx.core.view.ViewCompat"
-local WindowInsetsCompat = luajava.bindClass "androidx.core.view.WindowInsetsCompat"
-local view=window.getDecorView()
-
-local function init()
-  local windowInsets = ViewCompat.getRootWindowInsets(view);
-  local top = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-  local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).bottom;
-  local height = Math.abs(bottom - top);
-  状态栏高度=height
-
-  mainLay.setPadding(
-  mainLay.getPaddingLeft(),
-  状态栏高度,
-  mainLay.getPaddingRight(),
-  mainLay.getPaddingBottom()
-  );
-end
-
-
-local attachedToWindow = view.isAttachedToWindow();
-if attachedToWindow then
-  init()
- else
-  view.addOnAttachStateChangeListener(View.OnAttachStateChangeListener({
-    onViewAttachedToWindow=function(v)
-      init()
-    end,
-    onViewDetachedFromWindow=function()
-    end
-  }))
-end
-
+local luapath=File(luajava.luadir).getParentFile().getParentFile().toString()
+package.path = package.path..";"..luapath.."/?.lua"
+require("mods.muk")
+edgeToedge(mainLay)
+  
+  
 pages={}
 
 

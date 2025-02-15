@@ -13,8 +13,8 @@ import "androidx.core.widget.NestedScrollView"
 import "android.widget.GridView"
 import "com.jesse205.layout.innocentlayout.GridViewLayout"
 
-local luadir=this.getLuaDir()
-package.path = package.path..";"..luadir.."/?.lua"
+local luapath=File(luajava.luadir).getParentFile().getParentFile().toString()
+package.path = package.path..";"..luapath.."/?.lua"
 require("mods.muk")
 
 设置视图("layout")

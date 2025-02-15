@@ -19,10 +19,10 @@ local function webview下载文件(链接, UA, 相关信息, 类型, 大小)
     {
       TextView;
       id="namehint",
-      layoutUtilsarginTop="10dp";
+      layout_marginTop="10dp";
       text="下载文件名",
-      layoutUtilsarginLeft="10dp",
-      layoutUtilsarginRight="10dp",
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
       layout_width="match_parent";
       textColor=WidgetColors,
       layout_gravity="center";
@@ -31,8 +31,8 @@ local function webview下载文件(链接, UA, 相关信息, 类型, 大小)
       EditText;
       id="nameedit",
       Text=文件名;
-      layoutUtilsarginLeft="10dp",
-      layoutUtilsarginRight="10dp",
+      layout_marginLeft="10dp",
+      layout_marginRight="10dp",
       layout_width="match_parent";
       layout_gravity="center";
     };
@@ -216,11 +216,20 @@ function Utils:initWebViewClient(callback)
   return self
 end
 
+local LuaWebChrome=luajava.bindClass "com.lua.LuaWebChrome"
+
 function Utils:initChromeClient(callback)
 
   callback=callback or {}
 
   local names = {"onShowCustomView", "onHideCustmView", "onJsAlert", "onJsConfirm", "onJsPrompt","onJsBeforeUnload"}
+
+  local rootview
+  if thisFragment then
+    rootview=thisFragment.getView()
+   else
+    rootview=activity.getDecorView()
+  end
 
   local mycallback={
     onShowCustomView=function(view,url)
@@ -228,14 +237,12 @@ function Utils:initChromeClient(callback)
       web_video_view=view
       savedScrollY= self.webview.getScrollY()
       self.webview.setVisibility(8)
-      activity.getDecorView().addView(web_video_view)
-      全屏()
+      rootview.addView(web_video_view)
     end,
     onHideCustomView=function(view,url)
       全屏模式=false
       self.webview.setVisibility(0)
-      activity.getDecorView().removeView(web_video_view)
-      取消全屏()
+      rootview.removeView(web_video_view)
       Handler().postDelayed(Runnable({
         run=function()
           self.webview.scrollTo(0, savedScrollY);
@@ -294,7 +301,7 @@ function Utils:initChromeClient(callback)
   }
 
   local function setProgress(p)
-    ValueAnimator.ofFloat({pbar.getWidth(),activity.getWidth()/100*p})
+    ValueAnimator.ofFloat({web_progressbar.getWidth(),activity.getWidth()/100*p})
     .setDuration(500)
     .addUpdateListener{
       onAnimationUpdate=function(a)
@@ -315,27 +322,20 @@ function Utils:initChromeClient(callback)
         Handler().postDelayed(Runnable({
           run=function()
             web_progressbar.Visibility=4
-            local linearParams=pbar.getLayoutParams()
+            local linearParams=web_progressbar.getLayoutParams()
             linearParams.width =0
             web_progressbar.setLayoutParams(linearParams)
           end,
         }),500)
        else
-        pbar.Visibility=0
+        web_progressbar.Visibility=0
       end
     end
     table.insert(names,"onProgressChanged")
   end
 
   mergeTables(callback, mycallback, names)
-
   self.webview.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine(mycallback)))
-
-  return self
-end
-
-function Utils:initZhiHuWeb()
-
 
   return self
 end

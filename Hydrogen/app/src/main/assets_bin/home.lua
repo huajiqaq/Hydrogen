@@ -14,13 +14,6 @@ import "android.view.ViewTreeObserver"
 import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.navigationrail.NavigationRailView"
 
-local window = activity.getWindow()
-window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-if Build.VERSION.SDK_INT >= 30 then--Android R+
-  window.setDecorFitsSystemWindows(false);
-  window.setNavigationBarContrastEnforced(false);
-  window.setStatusBarContrastEnforced(false);
-end
 activity.setContentView(loadlayout("layout/fragment"))
 
 inSekai=false
@@ -689,9 +682,11 @@ function getitemRecy(pos)
   end
 end
 edgeToedge(mainLay,bnv,function()
+  --[[
   local layoutParams = 侧滑头.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
   侧滑头.setLayoutParams(layoutParams);
+  ]]
   local layoutParams = negbar.LayoutParams;
   layoutParams.height=导航栏高度
   negbar.setLayoutParams(layoutParams);

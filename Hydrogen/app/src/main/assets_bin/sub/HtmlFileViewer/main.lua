@@ -14,13 +14,13 @@ import "com.google.android.material.appbar.MaterialToolbar"
 import "androidx.appcompat.widget.LinearLayoutCompat"
 import "androidx.core.widget.NestedScrollView"
 
-local luadir=this.getLuaDir()
-package.path = package.path..";"..luadir.."/?.lua"
+local luapath=File(luajava.luadir).getParentFile().getParentFile().toString()
+package.path = package.path..";"..luapath.."/?.lua"
 require("mods.muk")
 
 设置视图("layout")
 activity.setSupportActionBar(toolbar)
---actionBar.setDisplayHomeAsUpEnabled(true)
+
 edgeToedge(nil,nil,function() local layoutParams = toolbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
   toolbar.setLayoutParams(layoutParams); end)

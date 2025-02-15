@@ -19,6 +19,7 @@ end
 
 初始化历史记录数据(true)
 
+
 设置视图("layout/column_parent")
 
 
@@ -64,7 +65,7 @@ urltype=base_column.urltype
 fxurl=base_column.fxurl
 
 波纹({fh,_more},"圆主题")
-静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),pbar,"横")
+静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),web_progressbar,"横")
 edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
   topbar.setLayoutParams(layoutParams); end)
@@ -142,28 +143,11 @@ MyWebViewUtils:initWebViewClient{
 
   end,
   onPageFinished=function(view,l)
-    content.setVisibility(0)
+    view.setVisibility(0)
   end,
 }
 
-刷新()
-
---设置网页图片点击事件，
-local z=JsInterface{
-  execute=function(b)
-    if b~=nil and #b>1 then
-      --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
-      this.setSharedData("imagedata",b)
-      activity.newActivity("image")
-    end
-  end
-}
-
-content.addJSInterface(z,"androlua")
-
-import "com.lua.LuaWebChrome"
-import "android.content.pm.ActivityInfo"
-content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
+MyWebViewUtils:initChromeClient({
   onReceivedTitle=function(view, title)
     if not page_title then
       _title.text=title
@@ -222,12 +206,9 @@ content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
       local text=tostring(consoleMessage.message()):match("toast分割(.+)")
       提示(text)
     end
-end}))
-
-content.setDownloadListener({
-  onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
-    webview下载文件(链接, UA, 相关信息, 类型, 大小)
 end})
+
+刷新()
 
 
 --退出时去除webview的内存
@@ -237,9 +218,6 @@ function onDestroy()
   content.clearHistory()
   content.destroy()
 end
-
-import "androidx.activity.result.ActivityResultCallback"
-import "androidx.activity.result.contract.ActivityResultContracts"
 
 
 import "androidx.activity.result.ActivityResultCallback"

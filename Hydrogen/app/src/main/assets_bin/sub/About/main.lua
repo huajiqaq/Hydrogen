@@ -26,14 +26,10 @@ import "com.google.android.material.appbar.MaterialToolbar"
 import "androidx.appcompat.widget.LinearLayoutCompat"
 import "androidx.core.widget.NestedScrollView"
 
-local luadir=this.getLuaDir()
-package.path = package.path..";"..luadir.."/?.lua"
+local luapath=File(luajava.luadir).getParentFile().getParentFile().toString()
+package.path = package.path..";"..luapath.."/?.lua"
 require("mods.muk")
 
---activity.setTitle(R.string.jesse205_about)
---activity.setContentView(loadlayout("layout"))
---activity.setSupportActionBar(toolbar)
---actionBar.setDisplayHomeAsUpEnabled(true)
 设置视图("layout")
 设置toolbar(toolbar)
 设置toolbar属性(toolbar,R.string.jesse205_about)
@@ -44,14 +40,6 @@ portraitCardParent.addView(iconLayout)
 
 adapterEvents=SettingsLayUtil.adapterEvents
 packageInfo=activity.getPackageManager().getPackageInfo(getPackageName(),0)
---landscapeState=false--是否是横屏。此Activity按竖屏做的，因此默认为false
-
---[[function onOptionsItemSelected(item)
-  local id=item.getItemId()
-  if id==android.R.id.home then
-    activity.finish()
-  end
-end]]
 
 --获取QQ头像链接
 function getUserAvatarUrl(qq,size)
@@ -307,15 +295,6 @@ recyclerView.onCreateContextMenu=function(menu,view,menuInfo)
   end
 end
 
-recyclerView.addOnScrollListener(RecyclerView.OnScrollListener{
-  onScrolled=function(view,dx,dy)
-    if landscapeState then
-      MyAnimationUtil.RecyclerView.onScroll(view,dx,dy,appBarElevationCard,"LastCard2Elevation")
-     else
-      MyAnimationUtil.RecyclerView.onScroll(view,dx,dy)
-    end
-  end
-})
 
 screenConfigDecoder=ScreenFixUtil.ScreenConfigDecoder({
   fillParentViews={topCard},

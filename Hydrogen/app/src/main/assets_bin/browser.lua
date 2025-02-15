@@ -2,11 +2,6 @@ require "import"
 import "mods.muk"
 import "com.ua.*"
 
-chrome = import "com.lua.LuaWebChrome";
-client = import "com.lua.LuaWebViewclient";
-callback = import "com.androlua.LuaWebView$LuaWebViewClient";
-
-
 url,urltitle=...
 
 设置视图("layout/browser")
@@ -40,7 +35,7 @@ content.loadUrl(url)
 
 _title.text="加载中"
 content.setVisibility(8)
-静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),pbar,"横")
+静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),web_progressbar,"横")
 
 
 MyWebViewUtils:initWebViewClient{

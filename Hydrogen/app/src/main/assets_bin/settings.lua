@@ -48,7 +48,6 @@ data = processTable{
   {__type=4,subtitle="关闭热门搜索",status={Checked=Boolean.valueOf(this.getSharedData("关闭热门搜索"))}},
 
 
-  {__type=4,subtitle="全屏模式",status={Checked=Boolean.valueOf(this.getSharedData("全屏模式"))}},
   {__type=4,subtitle="代码块自动换行",status={Checked=Boolean.valueOf(this.getSharedData("代码块自动换行"))}},
   {__type=4,subtitle="切换webview",status={Checked=Boolean.valueOf(this.getSharedData("切换webview"))}},
   {__type=4,subtitle="使用系统字体",status={Checked=Boolean.valueOf(this.getSharedData("使用系统字体"))}},
@@ -125,9 +124,6 @@ tab=processTable{
       end)
       mtip=true
     end
-  end,
-  全屏模式=function()
-    提示("为了更好的浏览体验 推荐重启App")
   end,
   设置屏蔽词=function()
     local 屏蔽词=this.getSharedData("屏蔽词")

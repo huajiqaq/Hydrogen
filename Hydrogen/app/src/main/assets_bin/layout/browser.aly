@@ -10,7 +10,7 @@
     orientation="vertical";
     {
       LinearLayout;
-id="topbar";
+      id="topbar";
       layout_width="-1";
       layout_height="-2";
       elevation="0";
@@ -83,7 +83,7 @@ id="topbar";
       layoutTransition=LayoutTransition(),
       {
         View,
-        id="pbar",
+        id="web_progressbar",
         layout_width="0";
         layout_height="2dp";
       },
