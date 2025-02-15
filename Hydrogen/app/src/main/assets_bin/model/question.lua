@@ -40,6 +40,7 @@ function base_question:getUrl(sortby)
 end
 
 
+
 function base_question.getAdapter(question_pagetool,pos)
   local data=question_pagetool:getItemData(pos)
   return LuaCustRecyclerAdapter(AdapterCreator({
@@ -69,6 +70,7 @@ function base_question.getAdapter(question_pagetool,pos)
       loadglide(views.图像,data.图像)
 
       views.card.onClick=function()
+nTView=views.card
         newActivity("answer",{question_id,tostring(data.id内容)})
       end
     end,
@@ -85,7 +87,12 @@ function base_question.resolvedata(v,data)
       end
     end
   end
-  local 图片=v.author.avatar_url
+  local 图片
+  if 无图模式 then
+    图片=logopng
+   else
+    图片=v.author.avatar_url
+  end
   local add={}
 
   add.标题=v.author.name
@@ -103,6 +110,7 @@ function base_question:initpage(view,sr)
     sr=sr,
     head="head",
     adapters_func=self.getAdapter,
+    urlfunc=require "model.zse96_encrypt",
     func=self.resolvedata
   })
   :initPage()

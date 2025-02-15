@@ -23,7 +23,11 @@ function base.getfuncs()
     function(v,data)
       local add={}
       local 图片
-      图片=v.creator.avatar_url
+      if 无图模式 then
+        图片=logopng
+       else
+        图片=v.creator.avatar_url
+      end
       local add={}
       add.图像=图片
       add.预览内容="由 "..v.creator.name.." 创建"
@@ -76,6 +80,9 @@ function base.getfuncs()
           文本="取关";
          else
           文本="关注";
+        end
+        if 无图模式 then
+          头像=logopng
         end
         local add={}
         add.标题=名字
@@ -186,6 +193,7 @@ function base.getAdapter(followcontent_pagetool,pos)
       views.标题.Text=data.标题
 
       views.card.onClick=function()
+        nTView=views.card
         onclick(data)
       end
       if data.底部内容 then

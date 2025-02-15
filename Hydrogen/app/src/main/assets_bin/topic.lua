@@ -3,9 +3,9 @@ import "mods.muk"
 import "com.google.android.material.tabs.TabLayout"
 
 设置视图("layout/topic")
-edgeToedge(nil,nil,function() local layoutParams = mainLay.LayoutParams;
+edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
-  mainLay.setLayoutParams(layoutParams); end)
+  topbar.setLayoutParams(layoutParams); end)
 设置toolbar(toolbar)
 topic_id=...
 波纹({fh,_more},"圆主题")

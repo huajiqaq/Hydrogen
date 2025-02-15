@@ -3,16 +3,7 @@ import "mods.muk"
 import "com.ua.*"
 import "com.lua.LuaWebChrome"
 
-url=... or "https://www.zhihu.com/signin"
-
-
-local window = activity.getWindow()
-window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-if Build.VERSION.SDK_INT >= 30 then--Android R+
-  window.setDecorFitsSystemWindows(false);
-  window.setNavigationBarContrastEnforced(false);
-  window.setStatusBarContrastEnforced(false);
-end
+url=...
 
 
 设置视图("layout/login")
@@ -24,12 +15,45 @@ edgeToedge(nil,nil,function() local layoutParams = appbar.LayoutParams;
 
 波纹({_back,_info},"圆主题")
 
-MyWebViewUtils=require "views/WebViewUtils"(login_web)
+login_web.removeView(login_web.getChildAt(0))
 
-MyWebViewUtils
-:initSettings()
+login_web
+.getSettings()
+.setAppCacheEnabled(true)
+--开启 DOM 存储功能
+.setDomStorageEnabled(true)
+--开启 数据库 存储功能
+.setDatabaseEnabled(true)
+.setCacheMode(WebSettings.LOAD_DEFAULT)
 
-MyWebViewUtils:initWebViewClient{
+
+login_web.BackgroundColor=转0x("#00000000",true)
+
+if url then
+  login_web.loadUrl(url)
+ else
+  login_web.loadUrl("https://www.zhihu.com/signin")
+end
+
+
+login_web.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
+  onConsoleMessage=function(consoleMessage)
+    if consoleMessage.message():find("sign_data=")
+      activity.setSharedData("signdata",consoleMessage.message():match("sign_data=(.+)"))
+    end
+  end,
+  onProgressChanged=function(view,Progress)
+end}))
+
+login_web.setDownloadListener({
+  onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
+    提示("本页不支持下载文件")
+end})
+
+login_web.setWebViewClient{
+  onLoadResource=function(view,url)
+
+  end,
   shouldOverrideUrlLoading=function(view,url)
 
     if url:sub(1,4)~="http" then
@@ -57,6 +81,7 @@ MyWebViewUtils:initWebViewClient{
     if 全局主题值=="Night" then
       夜间模式主题(view)
     end
+    网页字体设置(view)
   end,
   onPageFinished=function(view,url)
     if url:find("https://www.zhihu.com/%?utm_id") or url=="https://www.zhihu.com" or url=="https://www.zhihu.com/" then
@@ -76,15 +101,10 @@ MyWebViewUtils:initWebViewClient{
           local data=luajson.decode(content)
           local uid=data.id
           activity.setSharedData("idx",uid)
-          --activity.setResult(100)
-          --activity.finish()
+          activity.setResult(100)
+          activity.finish()
           加载js(view,"document.cookie = document.cookie")
-          双按钮对话框("提示","登录后建议重启软件来保持数据一致性 不重启可能导致一些问题","立即重启","暂不重启",function(an)
-            关闭对话框(an)
-            this.recreate()
-            end,function(an)
-            关闭对话框(an)
-          end)
+          提示("登录成功")
          else
           view.loadUrl("https://www.zhihu.com/signin")
           加载js(view,"document.cookie = ''")
@@ -97,25 +117,17 @@ MyWebViewUtils:initWebViewClient{
       login_web.setVisibility(0)
     end
   end,
-}
-
-MyWebViewUtils:initChromeClient({
-  onConsoleMessage=function(consoleMessage)
-    if consoleMessage.message():find("sign_data=")
-      activity.setSharedData("signdata",consoleMessage.message():match("sign_data=(.+)"))
-    end
-  end
-})
-
-login_web.setDownloadListener({
-  onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
-    提示("本页不支持下载文件")
-end})
-
-
-login_web.loadUrl(url)
+  shouldInterceptRequest=拦截加载}
 
 
 function onDestroy()
   login_web.destroy()
+end
+
+if this.getSharedData("禁用缓存")=="true" then
+  function onStop()
+    login_web.clearCache(true)
+    login_web.clearFormData()
+    login_web.clearHistory()
+  end
 end

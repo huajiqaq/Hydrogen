@@ -1,3 +1,4 @@
+
 require "import"
 import "android.widget.*"
 import "android.view.*"
@@ -11,23 +12,20 @@ import "android.view.inputmethod.InputMethodManager"
 import "com.google.android.material.textfield.TextInputLayout"
 import "com.google.android.material.textfield.TextInputEditText"
 import "android.content.res.ColorStateList"
-comment_idl,comment_typel,保存路径l,父回复idl=...
-Chip = luajava.bindClass "com.google.android.material.chip.Chip"
+comment_id,comment_type,保存路径,父回复id=...
+local Chip = luajava.bindClass "com.google.android.material.chip.Chip"
 import "com.google.android.material.floatingactionbutton.FloatingActionButton"
 
-comment_id,comment_type,保存路径,父回复id=...
 设置视图("layout/comment")
-addAutoHideListener({comment_recyl},{send})
-
 --activity.setContentView(loadlayout("layout/comment"))
 edgeToedge(mainLay,send)
-
+addAutoHideListener({comment_recy},{send})
 波纹({fh,_more},"圆主题")
 
 
 
 
-if comment_typel=="local_chat" then
+if comment_type=="local_chat" then
   internetnet.setVisibility(8)
   localcomment.setVisibility(0)
 
@@ -63,7 +61,7 @@ if comment_typel=="local_chat" then
   end
 
 
-  getCommentData(comment_id,function(用户名,内容)
+  getCommentData(comment_idl,function(用户名,内容)
     local myspan
     if 内容:find("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]") then
       myspan=setstyle(Html.fromHtml(内容))
@@ -103,81 +101,21 @@ if comment_typel=="local_chat" then
   end})
 
   _title.text="对话列表"
- elseif comment_typel=="local" then
-  internetnet.setVisibility(8)
-  local_comment_listl.setVisibility(0)
-
-  comment_itemc=获取适配器项目布局("comment/comments_reply")
-
-  sadapter=LuaAdapter(activity,comment_itemc)
-  local_comment_listl.setAdapter(sadapter)
-
-  function isAuthorMentionedMoreThanOnce(s)
-    local count = 0
-    local pos = 1
-
-    while true do
-      local findPos = string.find(s, "author", pos)
-      if findPos then
-        count = count + 1
-        pos = findPos + 1
-        if count > 1 then -- 当计数超过1时，直接返回true
-          return "true"
-        end
-       else
-        break
-      end
-    end
-
-    return "false" -- 如果循环结束还没有返回，说明计数不超过1，返回false
-  end
-
-  for v,s in pairs(luajava.astable(File(保存路径.."/".."fold/").listFiles())) do
-    local xxx=读取文件(tostring(s))
-    local name=xxx:match('author="([^"]*)"')
-    local content=xxx:match('content="(.-)"')
-    local iscomments=isAuthorMentionedMoreThanOnce(xxx)
-    id=s.Name
-    sadapter.add{标题=name,
-      预览内容={
-        text=content,
-        onLongClick=function(v)
-          复制文本=v.Text
-          import "android.content.*"
-          activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(复制文本)
-          提示("复制文本成功")
-        end
-      },
-      提示内容={
-        Visibility=(iscomments=="false" and 8 or 0)
-      },
-      id内容=id
-    }
-
-  end
-
-  _title.text="保存的评论".." "..#local_comment_list.adapter.getData().."条"
-
-  local_comment_listl.setOnItemClickListener(AdapterView.OnItemClickListener{
-    onItemClick=function(id,v,zero,one)
-      if v.Tag.提示内容.getVisibility()==0 then
-        newActivity("commentl",{保存路径.."/fold/"..v.Tag.id内容.text,"local_chat"})
-      end
-  end})
 end
 
-if not(comment_typel:find("local")) then
+if not(comment_type:find("local")) then
   send.onClick=function()
-    发送评论(comment_idl,"回复该子评论")
+    发送评论("")
   end
   踩tab={}
   comment_item=获取适配器项目布局("comment/comment")
-  --楼中楼
-  _title.text="对话列表"
-
+  if comment_type=="comments" then
+    --楼中楼
+    _title.text="对话列表"
+  end
   --评论
   comment_base=require "model.comment"
-  :new(comment_idl,comment_typel)
+  :new(comment_id,comment_type)
   comment_pagetool=comment_base
   :initpage(comment_recy,commentsr)
 end
@@ -203,7 +141,7 @@ task(1,function()
   })
 end)
 
-if comment_typel:find("local") then
+if comment_type:find("local") then
   task(1,function()
     a=MUKPopu({
       tittle=_title.text,
@@ -216,9 +154,9 @@ end
 
 function onActivityResult(a,b,c)
   if b==100 then
-    if comment_typel~="local" then
+    if comment_type~="local" then
       comment_base:clear()
-      comment_listl.Adapter.clear()
+      comment_list.Adapter.clear()
     end
   end
 end

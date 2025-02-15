@@ -14,6 +14,9 @@ function base.resolvedata(v,data)
     end,function()
     图像=v.video.thumbnail
   end)
+  if 无图模式 then
+    图像=logopng
+  end
 
   local add={}
 
@@ -63,6 +66,7 @@ function base.getAdapter(thinker_pagetool,pos)
       views.评论数.Text=tostring(data.评论数)
       --子项目点击事件
       views.card.onClick=function(v)
+nTView=views.card
         newActivity("column",{data.id内容,"想法"})
         return true
       end

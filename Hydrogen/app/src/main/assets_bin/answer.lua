@@ -87,6 +87,7 @@ end
 
 
 comment.onClick=function()
+nTView=comment
   local pos=pg.getCurrentItem()
   local mview=数据表[pg.adapter.getItem(pos).id]
   local 回答id=mview.data.id
@@ -100,6 +101,9 @@ end;
 
 
 回答容器=answer:new(回答id)
+
+local 点赞状态={}
+local 感谢状态={}
 
 import "androidx.core.content.ContextCompat"
 local 滑动配置保存路径=tostring(ContextCompat.getDataDir(activity)).."/回答页滑动配置.conf"
@@ -147,6 +151,7 @@ mripple.onClick=function()
   local mview=数据表[pg.adapter.getItem(pos).id]
   local id=mview.data.author.id
   if id~="0" then
+nTView=mripple
     newActivity("people",{id})
    else
     提示("回答作者已设置匿名")
@@ -179,6 +184,7 @@ all_root.onClick=function(v)
         if 问题id==nil or 问题id=="null" then
           return 提示("加载中")
         end
+nTView=all_root
         newActivity("question",{问题id})
       end
     end)
@@ -215,11 +221,78 @@ all_root.onTouch=function(v,e)
   return detector.onTouchEvent(e)
 end
 
-WebViewUtils=require "views/WebViewUtils"
-
 function 数据添加(t,b)
 
-  local 回答id=b.id
+  设置滑动跟随(t.content)
+  local ua=getua(t.content)
+  t.content.getSettings().setUserAgentString(ua)
+
+  t.content
+  .getSettings()
+  .setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN)
+  .setJavaScriptEnabled(true)--设置支持Js
+  .setJavaScriptCanOpenWindowsAutomatically(true)
+  .setUseWideViewPort(true)
+  .setDefaultTextEncodingName("utf-8")
+  .setLoadsImagesAutomatically(true)
+  .setAllowFileAccess(false)
+  .setDatabasePath(APP_CACHEDIR)
+  --设置 应用 缓存目录
+  --开启 应用缓存 功能
+  .setSupportZoom(true)
+  .setLoadWithOverviewMode(true)
+  .setBuiltInZoomControls(true)
+
+  if activity.getSharedData("禁用缓存")=="true" then
+    t.content
+    .getSettings()
+    .setAppCacheEnabled(false)
+    .setCacheMode(WebSettings.LOAD_NO_CACHE)
+    --关闭 DOM 存储功能
+    .setDomStorageEnabled(false)
+    --关闭 数据库 存储功能
+    .setDatabaseEnabled(false)
+   else
+    t.content
+    .getSettings()
+    .setAppCacheEnabled(true)
+    .setCacheMode(WebSettings.LOAD_DEFAULT)
+    --开启 DOM 存储功能
+    .setDomStorageEnabled(true)
+    --开启 数据库 存储功能
+    .setDatabaseEnabled(true)
+  end
+
+  if 无图模式 then
+    t.content.getSettings().setBlockNetworkImage(true)
+  end
+
+  t.content.BackgroundColor=转0x("#00000000",true);
+  t.content.setDownloadListener({
+    onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
+      webview下载文件(链接, UA, 相关信息, 类型, 大小)
+  end})
+
+
+  local 回答id=(b.id)
+  点赞状态[回答id]=(b.relationship.voting==1 and {true} or {false})[1]
+  感谢状态[回答id]=b.relationship.is_thanked
+
+  if 点赞状态[回答id] then
+    vote_icon.setImageBitmap(loadbitmap(图标("vote_up")))
+    vote_count.setTextColor(转0x(primaryc))
+   else
+    vote_icon.setImageBitmap(loadbitmap(图标("vote_up_outline")))
+    vote_count.setTextColor(转0x(stextc))
+  end
+
+  if 感谢状态[回答id] then
+    thanks_icon.setImageBitmap(loadbitmap(图标("favorite")))
+    thanks_count.setTextColor(转0x(primaryc))
+   else
+    thanks_icon.setImageBitmap(loadbitmap(图标("favorite_outline")))
+    thanks_count.setTextColor(转0x(stextc))
+  end
 
   if not(已记录) then
     初始化历史记录数据(true)
@@ -227,28 +300,26 @@ function 数据添加(t,b)
     已记录=true
   end
 
-  设置滑动跟随(t.content)
 
-  local MyWebViewUtils=WebViewUtils(t.content)
-  MyWebViewUtils:initSettings()
-  :initSettings()
-  :initNoImageMode()
-  :initDownloadListener()
-  :setZhiHuUA()
-
-  MyWebViewUtils:initWebViewClient{
+  t.content.removeView(t.content.getChildAt(0))
+  t.content.setWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
       if url~=("https://www.zhihu.com/appview/answer/"..(b.id).."") then
         检查链接(url)
-        return true
+        view.stopLoading()
+        view.goBack()
       end
     end,
     onPageStarted=function(view,url,favicon)
+      加载js(view,获取js("native"))
+      网页字体设置(view)
       t.content.setVisibility(8)
       if t.progress~=nil then
         t.progress.setVisibility(0)
       end
+      等待doc(view)
       加载js(view,获取js("answer_pages"))
+      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
       加载js(view,获取js("imgplus"))
       加载js(view,获取js("mdcopy"))
     end,
@@ -258,7 +329,7 @@ function 数据添加(t,b)
         t.progress.getParent().removeView(t.progress)
         t.progress=nil
       end
-      --加载js(view,获取js("eruda"))
+--加载js(view,获取js("eruda"))
       屏蔽元素(view,{".AnswerReward",".AppViewRecommendedReading"})
 
       task(1000,function()
@@ -279,14 +350,14 @@ function 数据添加(t,b)
       end
 
       if b.content:find("video%-box") then
-        加载js(view,"document.cookie='"..获取Cookie("https://www.zhihu.com/").."'")
-        加载js(view,获取js("videoload"))
         if not(getLogin()) then
           提示("该回答含有视频 不登录可能无法显示视频 建议登录")
         end
 
+        加载js(view,"document.cookie='"..获取Cookie("https://www.zhihu.com/").."'")
+        加载js(view,获取js("videoload"))
+
        elseif b.attachment then
-        local 视频链接
         xpcall(function()
           视频链接=b.attachment.video.video_info.playlist.sd.url
           end,function()
@@ -306,11 +377,29 @@ function 数据添加(t,b)
           .show()
         end
       end
-
     end,
+    onLoadResource=function(view,url)
+    end,
+    shouldInterceptRequest=拦截加载}
+
+  local v,s;
+
+  local z=JsInterface{
+    execute=function(b)
+      if b~=nil then
+        --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
+        this.setSharedData("imagedata",b)
+        activity.newActivity("image")
+      end
+    end
   }
 
-  MyWebViewUtils:initChromeClient({
+  t.content.addJSInterface(z,"androlua")
+
+  webview查找文字监听(t.content)
+
+  local webview=t.content
+  t.content.setWebChromeClient(LuaWebChrome(LuaWebChrome.IWebChrine{
     onProgressChanged=function(view,url,favicon)
       if 全局主题值=="Night" then
         夜间模式回答页(view)
@@ -319,10 +408,10 @@ function 数据添加(t,b)
     onConsoleMessage=function(consoleMessage)
       --打印控制台信息
       if consoleMessage.message():find("开始滑动") then
-        t.content.requestDisallowInterceptTouchEvent(true)
+        webview.requestDisallowInterceptTouchEvent(true)
         pg.setUserInputEnabled(false);
        elseif consoleMessage.message():find("结束滑动") then
-        t.content.requestDisallowInterceptTouchEvent(false)
+        webview.requestDisallowInterceptTouchEvent(false)
         pg.setUserInputEnabled(true);
        elseif consoleMessage.message():find("打印") then
         print(consoleMessage.message())
@@ -331,35 +420,63 @@ function 数据添加(t,b)
         提示(text)
       end
     end,
-  })
+
+    onShowCustomView=function(view,url)
+      全屏模式=true
+      web_video_view=view
+      savedScrollY= t.content.getScrollY()
+      t.content.setVisibility(8)
+      activity.getDecorView().addView(web_video_view)
+      --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+      全屏()
+    end,
+    onHideCustomView=function(view,url)
+      全屏模式=false
+      t.content.setVisibility(0)
+      activity.getDecorView().removeView(web_video_view)
+      --      this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+      取消全屏()
+      Handler().postDelayed(Runnable({
+        run=function()
+          t.content.scrollTo(0, savedScrollY);
+        end,
+      }),200)
+    end,
+  }))
 
 
   t.content.loadUrl("https://www.zhihu.com/appview/answer/"..(b.id).."")
   t.content.setVisibility(0)
 
-end
 
-local function 设置底栏内容(status,iconview,textview,icon)
-  if status then
-    iconview.setImageBitmap(loadbitmap(图标(icon)))
-    textview.setTextColor(转0x(primaryc))
-   else
-    iconview.setImageBitmap(loadbitmap(图标(icon.."_outline")))
-    textview.setTextColor(转0x(stextc))
+  function onTouch(v,event)
+    Log.e(TAG,"pull_to_refresh_view====>onTouch")
+    t.content.onTouchEvent(event)
+    return false
+  end
+
+  if tonumber(activity.getSharedData("test") or "0") <3 and pg.getCurrentItem()==0 and not(isshow) then
+    ValueAnimator.ofFloat({0,activity.getWidth()*0.07,0})
+    .setDuration(400)
+    .setRepeatCount(1)
+    .addUpdateListener{
+      onAnimationUpdate=function(a)
+        local x=a.getAnimatedValue()
+        pg.scrollTo(x,0)
+      end
+    }.start()
+    isshow=true
+    activity.setSharedData("test",tonumber(activity.getSharedData("test") or 0)+1)
   end
 end
 
 function 初始化页(mviews)
-
-  this.getLuaState().pushObjectValue(thisFragment);
-  this.getLuaState().setGlobal("currentFragment");
-
   if mviews.load==true then
     vote_count.Text=(mviews.data.voteup_count)..""
     thanks_count.Text=(mviews.data.thanks_count)..""
     favlists_count.Text=(mviews.data.favlists_count)..""
     comment.onLongClick=function()
-      提示(mviews.data.comment_count.."条评论")
+      提示((mviews.data.comment_count).."条评论")
       return true
     end
     loadglide(usericon,mviews.data.author.avatar_url)
@@ -371,24 +488,50 @@ function 初始化页(mviews)
     username.Text=mviews.data.author.name
     local 回答id=mviews.data.id
 
-    设置底栏内容(mviews.data.点赞状态,vote_icon,vote_count,"vote_up")
-    设置底栏内容(mviews.data.感谢状态,thanks_icon,thanks_count,"favorite")
+    if 点赞状态[回答id] then
+      vote_icon.setImageBitmap(loadbitmap(图标("vote_up")))
+      vote_count.setTextColor(转0x(primaryc))
+     else
+      vote_icon.setImageBitmap(loadbitmap(图标("vote_up_outline")))
+      vote_count.setTextColor(转0x(stextc))
+    end
+
+    if 感谢状态[回答id] then
+      thanks_icon.setImageBitmap(loadbitmap(图标("favorite")))
+      thanks_count.setTextColor(转0x(primaryc))
+     else
+      thanks_icon.setImageBitmap(loadbitmap(图标("favorite_outline")))
+      thanks_count.setTextColor(转0x(stextc))
+    end
 
   end
 end
 
-function 加载页(data,isleftadd)
+function 加载页(mviews,isleftadd)
+  if mviews==nil then
+    return Error("错误 找不到views")
+  end
 
-  if not(data.load) then --判断是否加载过没有
+  if not(mviews.load) then --判断是否加载过没有
     回答容器:getOneData(function(cb,r)--获取1条数据
       if cb==false then
-        data.load=nil
+        mviews.load=nil
         提示("已经没有更多数据了")
         pg.adapter.remove(pos)
         pg.setCurrentItem(pos-1,false)
+        重表状态=true
        else
+        pcall(function()
+          if table.find(查重表,cb.id) then
+            mviews.load=nil
+            重表状态=true
+           else
+            重表状态=false
+          end
+          查重表[cb.id]=cb.id
+        end)
 
-        data.data={
+        mviews.data={
           voteup_count=cb.voteup_count,
           thanks_count=cb.thanks_count,
           favlists_count=cb.favlists_count,
@@ -399,14 +542,14 @@ function 加载页(data,isleftadd)
             headline=cb.author.headline,
             name=cb.author.name,
             id=cb.author.id
-          },
-          点赞状态=cb.relationship.voting==1,
-          感谢状态=cb.relationship.is_thanked
+          }
         }
 
-        数据添加(data.ids,cb) --添加数据
-        data.load=true
-        初始化页(data)
+        数据添加(mviews.ids,cb) --添加数据
+
+        mviews.load=true
+
+        初始化页(mviews)
 
       end
     end,isleftadd)
@@ -423,89 +566,110 @@ function 首次设置()
     end
     _title.Text=tab.title
   end)
+
+
   for i=1,3 do
     pg.setCurrentItem(1,false)--设置正确的列
   end
 end
 
-数据表={}
+isshow=false
 
 pg.adapter=BaseViewPage2Adapter(this)
 
-function addAnswer(index)
-  local ids={}
-  local 加入view=loadlayout("layout/answer_list",ids)
+id表={}
+数据表={}
+查重表={}
+上次page=0
+
+
+--首先先加入多个view
+
+--加入两个view 防止无法直接左滑
+
+for i=1,2 do
+  id表[pg.adapter.getItemCount()+1]={}
+  local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
+  pg.adapter.add(加入view)
   数据表[加入view.id]={
     data={},
-    ids=ids
+    ids=id表[pg.adapter.getItemCount()],
   }
-  if index then
-    pg.adapter.insert(加入view,index)
-   else
-    pg.adapter.add(加入view)
-  end
 end
-
---首先先加入两个view 防止无法直接左滑
-for i=1,2 do
-  addAnswer()
-end
-
-pg.setCurrentItem(1,false)--设置正确的列
 
 pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
   onPageScrolled=function(pos,positionOffset,positionOffsetPixels)
     if positionOffsetPixels==0 then
       appbar.setExpanded(true);
-      --获取当前mviews
-      local index=pg.getCurrentItem()
-      local mviews=数据表[pg.adapter.getItem(index).id]
       --判断页面是否在开头or结尾 是否需要添加
       if pg.adapter.getItemCount()==pos+1 then
         if 回答容器.isright then
           pg.setCurrentItem(pos-1,false)
           return 提示("前面没有内容啦")
         end
-        --在最右添加 防止无法右滑
-        addAnswer()
+        id表[pg.adapter.getItemCount()+1]={}
+        local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
+        pg.adapter.add(加入view)
+        数据表[加入view.id]={
+          data={},
+          ids=id表[pg.adapter.getItemCount()],
+        }
+        local mviews=数据表[pg.adapter.getItem(pos).id]
         加载页(mviews)
        elseif pos==0 and pg.adapter.getItemCount()>=0
         if 回答容器.isleft then
           pg.setCurrentItem(1,false)
           return 提示("已经到最左了")
         end
-        --在最前面添加fragment 防止无法左滑
-        addAnswer(0)
+        id表[pg.adapter.getItemCount()+1]={}
+        local 加入view=loadlayout("layout/answer_list",id表[pg.adapter.getItemCount()+1])
+        pg.adapter.insert(加入view,0)
+        数据表[加入view.id]={
+          data={},
+          ids=id表[pg.adapter.getItemCount()],
+        }
+        local pos=pg.getCurrentItem()+1
+        local mviews=数据表[pg.adapter.getItem(pos).id]
         加载页(mviews,true)
         --判断是否加载过
        elseif pg.adapter.getItemCount()>=0 then
+        local pos=pg.getCurrentItem()
+        local mviews=数据表[pg.adapter.getItem(pos).id]
         if mviews.load==true then
           回答容器.getid=mviews.data.id
           初始化页(mviews)
         end
       end
     end
+  end,
+  onPageScrollStateChanged=function (state)
   end
 })
 
-defer local question_base=answer
-:getinfo(回答id,function(tab)
-  all_answer.Text="点击查看全部"..(tab.answer_count).."个回答 >"
-  问题id=tab.id
-  if tab.answer_count==1 then
-    回答容器.isleft=true
-  end
-  _title.Text=tab.title
-end)
+
+首次设置()
 
 ll.background=answerDrawable
 
 function onDestroy()
-  for i=1,#Fragments do
-    Fragments[i].ids.content.destroy()
+  for i=1,#数据表 do
+    数据表[i].ids.content.destroy()
     System.gc()
   end
 end
+
+if this.getSharedData("禁用缓存")=="true" then
+  function onStop()
+    for i=1,#数据表 do
+      数据表[i].ids.content.clearCache(true)
+      数据表[i].ids.content.clearFormData()
+      数据表[i].ids.content.clearHistory()
+      System.gc()
+    end
+  end
+end
+
+local voteup_data={}
 
 voteup.onClick=function()
   local pos=pg.getCurrentItem()
@@ -514,13 +678,28 @@ voteup.onClick=function()
   if 回答id==nil then
     return 提示("加载中")
   end
-  if not mview.data.点赞状态 then
+  if not voteup_data[回答id] then
+    local addvoteup,removevoteup
+    if 点赞状态[回答id] then
+      addvoteup=tostring(tointeger(vote_count.text))
+      removevoteup=tostring(tointeger(vote_count.text-1))
+     else
+      addvoteup=tostring(tointeger(vote_count.text+1))
+      removevoteup=tostring(tointeger(vote_count.text))
+    end
+    voteup_data[回答id]={
+      [1]=addvoteup,
+      [2]=removevoteup
+    }
+  end
+  if not 点赞状态[回答id] then
     zHttp.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"up"}',posthead,function(code,content)
       if code==200 then
         提示("点赞成功")
-        mview.data.点赞状态=true
+        点赞状态[回答id]=true
         local data=luajson.decode(content)
-        vote_count.text=tostring(mview.data.voteup_count+1)
+        vote_count.text=voteup_data[回答id][1]
+        mview.data.voteup_count=vote_count.text
         vote_icon.setImageBitmap(loadbitmap(图标("vote_up")))
         vote_count.setTextColor(转0x(primaryc))
        elseif code==401 then
@@ -531,9 +710,10 @@ voteup.onClick=function()
     zHttp.post("https://api.zhihu.com/answers/"..回答id.."/voters",'{"type":"neutral"}',posthead,function(code,content)
       if code==200 then
         提示("取消点赞成功")
-        mview.data.点赞状态=false
+        点赞状态[回答id]=false
         local data=luajson.decode(content)
-        vote_count.text=tostring(mview.data.voteup_count)
+        vote_count.text=voteup_data[回答id][2]
+        mview.data.voteup_count=vote_count.text
         vote_icon.setImageBitmap(loadbitmap(图标("vote_up_outline")))
         vote_count.setTextColor(转0x(stextc))
        elseif code==401 then
@@ -543,6 +723,8 @@ voteup.onClick=function()
   end
 end
 
+local thank_data={}
+
 thank.onClick=function()
   local pos=pg.getCurrentItem()
   local mview=数据表[pg.adapter.getItem(pos).id]
@@ -550,13 +732,28 @@ thank.onClick=function()
   if 回答id==nil then
     return 提示("加载中")
   end
-  if not mview.data.感谢状态 then
+  if not thank_data[回答id] then
+    local addthank,removethank
+    if 感谢状态[回答id] then
+      addthank=tostring(tointeger(thanks_count.text))
+      removethank=tostring(tointeger(thanks_count.text-1))
+     else
+      addthank=tostring(tointeger(thanks_count.text+1))
+      removethank=tostring(tointeger(thanks_count.text))
+    end
+    thank_data[回答id]={
+      [1]=addthank,
+      [2]=removethank
+    }
+  end
+  if not 感谢状态[回答id] then
     zHttp.post("https://www.zhihu.com/api/v4/zreaction",'{"content_type":"answers","content_id":"'..回答id..'","action_type":"emojis","action_value":"red_heart"}',posthead,function(code,content)
       if code==200 then
         提示("表达感谢成功")
-        mview.data.感谢状态=true
+        感谢状态[回答id]=true
         local data=luajson.decode(content)
-        thanks_count.text=tostring(mview.data.thanks_count+1)
+        thanks_count.text=thank_data[回答id][1]
+        mview.data.thanks_count=thanks_count.text
         thanks_icon.setImageBitmap(loadbitmap(图标("favorite")))
         thanks_count.setTextColor(转0x(primaryc))
        elseif code==401 then
@@ -567,9 +764,10 @@ thank.onClick=function()
     zHttp.delete("https://www.zhihu.com/api/v4/zreaction?content_type=answers&content_id="..回答id.."&action_type=emojis&action_value=",posthead,function(code,content)
       if code==200 then
         提示("取消感谢成功")
-        mview.data.感谢状态=false
+        感谢状态[回答id]=false
         local data=luajson.decode(content)
-        thanks_count.text=tostring(mview.data.thanks_count)
+        thanks_count.text=thank_data[回答id][2]
+        mview.data.thanks_count=thanks_count.text
         thanks_icon.setImageBitmap(loadbitmap(图标("favorite_outline")))
         thanks_count.setTextColor(转0x(stextc))
        elseif code==401 then
@@ -579,6 +777,7 @@ thank.onClick=function()
   end
 end
 
+local click=0
 
 mark.onClick=function()
   local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
@@ -616,20 +815,6 @@ function onKeyUp(code,event)
     return true;
   end
 end
-
-import "androidx.activity.result.ActivityResultCallback"
-import "androidx.activity.result.contract.ActivityResultContracts"
-createDocumentLauncher = thisFragment.registerForActivityResult(ActivityResultContracts.CreateDocument("text/markdown"),
-ActivityResultCallback{
-  onActivityResult=function(uri)
-    if uri then
-      local outputStream = this.getContentResolver().openOutputStream(uri);
-      local content = String(saf_writeText);
-      outputStream.write(content.getBytes());
-      outputStream.close();
-      提示("保存md文件成功")
-    end
-end});
 
 task(1,function()
   a=MUKPopu({
@@ -709,10 +894,15 @@ task(1,function()
 
           content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
               提示("请选择一个保存位置")
+              CREATE_FILE_REQUEST_CODE=9999
+              import "android.content.Intent"
+              intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
+              intent.addCategory(Intent.CATEGORY_OPENABLE);
+              intent.setType("application/octet-stream");
+              intent.putExtra(Intent.EXTRA_TITLE, _title.Text.."_"..username.Text..".md");
+              this.startActivityForResult(intent, CREATE_FILE_REQUEST_CODE);
               saf_writeText=b
-              createDocumentLauncher.launch(_title.Text.."_"..username.Text..".md");
           end})
-
         end
       },
 

@@ -11,16 +11,6 @@ import "com.google.android.flexbox.*"
 import "androidx.recyclerview.widget.*"
 
 设置视图("layout/homesort")
-
-local window = activity.getWindow()
-window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-if Build.VERSION.SDK_INT >= 30 then--Android R+
-  window.setDecorFitsSystemWindows(false);
-  window.setNavigationBarContrastEnforced(false);
-  window.setStatusBarContrastEnforced(false);
-end
-
-
 edgeToedge(topbar)
 
 波纹({fh},"圆主题")

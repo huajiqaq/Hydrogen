@@ -37,6 +37,7 @@ function base.getAdapter(collection_recommend_pagetool,pos)
       views.活动.text=data.活动
       loadglide(views.图像,data.图像)
       views.card.onClick=function()
+nTView=views.card
         newActivity("collections",{data.id内容}) end
     end,
   }))
@@ -62,6 +63,10 @@ function base.resolvedata(v,data)
   local id=v.id
   if 预览内容==false or 预览内容=="" then
     预览内容="无介绍"
+  end
+
+  if 无图模式 then
+    头像=logopng
   end
 
   local add={}

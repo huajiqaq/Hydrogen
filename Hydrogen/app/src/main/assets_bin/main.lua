@@ -9,13 +9,12 @@ import "android.net.Uri"
 import "model.zHttp"
 import "model.zhihu_url"
 
-if (activity.getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)~=0 then
-  local intent=tostring(activity.getIntent().getData())
-  检查意图(intent)
-  activity.finish()
-  return
-end
-
+--[[if (activity.getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)~=0 then
+    local intent=tostring(activity.getIntent().getData())
+    检查意图(intent)
+    activity.finish()
+    return
+  end]]
 local welcomeAgain = not(getSharedData("welcome"))
 if not(welcomeAgain) then
   for index=1, #agreements do
@@ -37,7 +36,7 @@ if welcomeAgain then
  else
 
   activity.newActivity("home",{activity.getIntent()})
-
+  
   activity.finish()
 end
 

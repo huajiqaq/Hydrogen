@@ -17,7 +17,7 @@ local luadir=this.getLuaDir()
 package.path = package.path..";"..luadir.."/?.lua"
 require("mods.muk")
 
-设置视图("layout")
+设置视图("sub/ThemePicker/layout")
 设置toolbar属性(toolbar,R.string.jesse205_themePicker)
 
 edgeToedge(mainLay)
@@ -38,7 +38,7 @@ end
 local nowTheme=ThemeUtil.getAppTheme()
 
 data={}
-import "item"
+import "sub.ThemePicker.item"
 adapter=LuaAdapter(activity,data,item)
 gridView.setAdapter(adapter)
 

@@ -43,7 +43,6 @@ function base.getAdapter(people_pagetool,pos)
        case 1
         views.点赞数布局.getParent().removeView(views.点赞数布局)
         views.点赞数布局=nil
-        views.评论图标.layoutParams.leftMargin=0
        case 2
         views.评论数布局.getParent().removeView(views.点赞数布局)
         views.评论数布局=nil
@@ -77,6 +76,7 @@ function base.getAdapter(people_pagetool,pos)
       loadglide(views.图像,data.图像)
 
       views.card.onClick=function()
+        nTView=views.card
         if tostring(data.id内容):find("更多") then
           local id内容=data.id内容:gsub("更多","")
           newActivity("people_more",{用户id,id内容})
@@ -97,6 +97,9 @@ function base.resolvedata(v,data)
       local 标题=v.title
       local id内容="更多"..v.title
       local 添加字符串
+      if 无图模式 then
+        头像=logopng
+      end
       if v.sub_title then
         添加字符串="共有"..v.sub_title.."个内容 "
         if v.sub_title=="" then
@@ -140,6 +143,9 @@ function base.resolvedata(v,data)
   local 点赞数=v.voteup_count
   local 评论数=v.comment_count
   local id内容,标题
+  if 无图模式 then
+    头像=logopng
+  end
 
   local add={}
   if v.type=="answer" then
@@ -231,7 +237,6 @@ function base.resolvedata(v,data)
 end
 
 
-
 function base:putTabData(tabname,tabinfo)
   local people_id=self.id
   local taburl = {}
@@ -305,6 +310,7 @@ local function getdata(v,tabname,tabinfo)
   info.url=url
   table.insert(tabinfo,info)
 end
+
 
 
 -- 根据用户ID构造各类标签对应的URL配置

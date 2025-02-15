@@ -135,7 +135,12 @@ data = {
           local 单选列表={"使用Gitee Issues反馈","使用Github Issues反馈","使用QQ反馈"}
           local dofun={
             function()
-              浏览器打开("https://gitee.com/huajicloud/Hydrogen/issues")
+              双按钮对话框("提示","不推荐使用Gitee Issues反馈 使用该方式必须要实名才可提交","继续","取消",function(an)
+                浏览器打开("https://gitee.com/huajicloud/Hydrogen/issues")
+                关闭对话框(an)
+                end,function(an)
+                关闭对话框(an)
+              end)
             end,
             function()
               浏览器打开("https://github.com/huajiqaq/Hydrogen/issues")
