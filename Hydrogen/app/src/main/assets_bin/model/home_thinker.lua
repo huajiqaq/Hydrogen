@@ -14,9 +14,6 @@ function base.resolvedata(v,data)
     end,function()
     图像=v.video.thumbnail
   end)
-  if 无图模式 then
-    图像=logopng
-  end
 
   local add={}
 

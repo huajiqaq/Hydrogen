@@ -4,15 +4,18 @@ import "com.lua.*"
 
 collections_id=...
 
- 
+
 设置视图("layout/collections")
+edgeToedge(nil,nil,function() local layoutParams = toolbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  toolbar.setLayoutParams(layoutParams); end)
 collections_base=require "model.collections":new(collections_id)
 :getData(function(tab)
 
   collection_pagetool=collections_base:initpage(collection_recy,collectionsr)
 
   _title.Text=tab.title
-  
+
   local isfollow=tab.creator.id~=this.getSharedData("idx")
 
   if isfollow then
@@ -25,7 +28,7 @@ collections_base=require "model.collections":new(collections_id)
             mview.text="取关"
             提示("已关注")
             a=MUKPopu(pop)
-            activity.setResult(1600,nil)
+            this.setResult(1600,nil)
           end
         end)
        else
@@ -35,7 +38,7 @@ collections_base=require "model.collections":new(collections_id)
             mview.src=图标("add")
             mview.text="关注"
             a=MUKPopu(pop)
-            activity.setResult(1600,nil)
+            this.setResult(1600,nil)
           end
         end)
       end
@@ -77,7 +80,7 @@ pop={
           zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
             if code==200 then
               提示("已删除")
-              activity.setResult(1600,nil)
+              this.setResult(1600,nil)
             end
           end)
         end,function(an)an.dismiss()end)

@@ -25,19 +25,12 @@ function base:getData(isclear,isinit)
       local data=luajson.decode(content).data
 
       for i,v in ipairs(data)
-        local 热度=v.detail_text
         local 排行=i
-        local 热榜图片=v.children[1].thumbnail
         local v=v.target
-        local 标题=v.title
-        local id内容
-        if v.type=="question" then
-          id内容=v.id..""
-         elseif v.type=="article" then
-          id内容="文章分割"..v.id
-         elseif v.type=="pin" then
-          id内容="想法分割"..v.id
-        end
+        local 热榜图片=v.image_area.url
+        local 标题=v.title_area.text
+        local 热度=v.metrics_area.text
+        local id内容=v.link.url
 
         local add={}
         add.标题=标题
@@ -101,13 +94,7 @@ function base:getAdapter(home_pagetool,pos)
       view.排行.text=tostring(data.排行)
 
       view.card.onClick=function()
-        if tostring(data.id内容):find("文章分割") then
-          newActivity("column",{tostring(data.id内容):match("文章分割(.+)"),tostring(data.id内容):match("分割(.+)")})
-         elseif tostring(data.id内容):find("想法分割") then
-          newActivity("column",{tostring(data.id内容):match("想法分割(.+)"),"想法"})
-         elseif not(data.id内容):find("分割") then
-          newActivity("question",{data.id内容})
-        end
+        检查链接(data.id内容)
       end
 
       if view.热图片 then

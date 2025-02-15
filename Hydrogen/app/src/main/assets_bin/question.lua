@@ -100,12 +100,19 @@ function 问题详情(code)
   bottomSheetDialog.setCancelable(true);
   bottomSheetDialog.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
   bottomSheetDialog.behavior.setDraggable(false)
-  --bottomSheetDialog.behavior.setHideable(false)
+  bottomSheetDialog.behavior.setMaxWidth(dp2px(600))
   tmpview.close_button.onClick=function()
     an.cancel()
   end
 
   local show=tmpview.show
+
+  local MyWebViewUtils=require "views/WebViewUtils"(show)
+
+  MyWebViewUtils
+  :initSettings()
+  :initNoImageMode()
+  :initDownloadListener()
 
   function imgReset()
     加载js(show,"(function(){" ..
@@ -118,76 +125,24 @@ function 问题详情(code)
     "})()")
   end
 
-  settings = show.getSettings();
-  settings.setJavaScriptEnabled(true)
 
-  if activity.getSharedData("禁用缓存")=="true" then
-    show
-    .getSettings()
-    .setAppCacheEnabled(false)
-    --关闭 DOM 存储功能
-    .setDomStorageEnabled(false)
-    --关闭 数据库 存储功能
-    .setDatabaseEnabled(false)
-    .setCacheMode(WebSettings.LOAD_NO_CACHE);
-   else
-    show
-    .getSettings()
-    .setAppCacheEnabled(true)
-    --开启 DOM 存储功能
-    .setDomStorageEnabled(true)
-    --开启 数据库 存储功能
-    .setDatabaseEnabled(true)
-    .setCacheMode(WebSettings.LOAD_DEFAULT)
-  end
-
-  show.setDownloadListener({
-    onDownloadStart=function(链接, UA, 相关信息, 类型, 大小)
-      webview下载文件(链接, UA, 相关信息, 类型, 大小)
-  end})
-
-  local z=JsInterface{
-    execute=function(b)
-      if b~=nil then
-        --newActivity传入字符串过大会造成闪退 暂时通过setSharedData解决
-        this.setSharedData("imagedata",b)
-        activity.newActivity("image")
-      end
-    end
-  }
-
-  show.addJSInterface(z,"androlua")
-
-  show.setWebViewClient{
+  MyWebViewUtils:initWebViewClient{
     shouldOverrideUrlLoading=function(view,url)
       view.stopLoading()
       检查链接(url)
-    end,
-    onPageStarted=function(view,url,favicon)
-      view.evaluateJavascript(获取js("imgload"),{onReceiveValue=function(b)end})
-      网页字体设置(view)
     end,
     onPageFinished=function(view,url)
       if 全局主题值=="Night" then
         夜间模式回答页(view)
       end
       imgReset()
-
     end,
-
-    onProgressChanged=function(view,Progress)
-    end,
-    onLoadResource=function(view,url)
-    end,
-    shouldInterceptRequest=拦截加载}
+  }
 
   show.Visibility=8
-  show.BackgroundColor=转0x("#00000000",true);
   show.loadDataWithBaseURL(nil,code,"text/html","utf-8",nil);
   show.Visibility=0
-
 end
-
 
 
 question_base=require "model.question":new(question_id)
@@ -195,6 +150,7 @@ question_base=require "model.question":new(question_id)
   tags.ids.load.parent.visibility=0
   tags:addTab(name,function()检查链接(url)end,2)
 end)
+
 
 
 question_base:getData(function(tab)
@@ -265,8 +221,10 @@ question_base:getData(function(tab)
 
   loadglide(people_image,tab.author.avatar_url)
   askername.text=tab.author.name
-  askerheadline.text=tab.author.headline or "暂无签名"
-
+  askerheadline.text=tab.author.headline
+  if askerheadline.text==""
+    askerheadline.text="暂无签名"
+  end
 
 
   用户id=tab.author.id

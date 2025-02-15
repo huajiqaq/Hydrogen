@@ -7,7 +7,9 @@ import "mods.muk"
 设置toolbar属性(toolbar,"反馈")
 波纹({fh,_more},"圆主题")
 波纹({send},"圆自适应")
-
+edgeToedge(nil,nil,function() local layoutParams = toolbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  toolbar.setLayoutParams(layoutParams); end)
 
 
 help_item={
@@ -133,12 +135,7 @@ data = {
           local 单选列表={"使用Gitee Issues反馈","使用Github Issues反馈","使用QQ反馈"}
           local dofun={
             function()
-              双按钮对话框("提示","不推荐使用Gitee Issues反馈 使用该方式必须要实名才可提交","继续","取消",function(an)
-                浏览器打开("https://gitee.com/huajicloud/Hydrogen/issues")
-                关闭对话框(an)
-                end,function(an)
-                关闭对话框(an)
-              end)
+              浏览器打开("https://gitee.com/huajicloud/Hydrogen/issues")
             end,
             function()
               浏览器打开("https://github.com/huajiqaq/Hydrogen/issues")

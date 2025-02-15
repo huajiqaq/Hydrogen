@@ -69,7 +69,7 @@ function base.getAdapter(topic_pagetool,pos)
         views.底部内容.Text=data.底部内容
       end
       views.标题.Text=data.标题
-      if data.标题数 then
+      if data.评论数 then
         views.评论数.Text=data.评论数
       end
       if data.点赞数 then

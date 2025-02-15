@@ -14,9 +14,48 @@ import "android.view.ViewTreeObserver"
 import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.navigationrail.NavigationRailView"
 
---activity.setContentView(loadlayout("layout/home"))
+local window = activity.getWindow()
+window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+if Build.VERSION.SDK_INT >= 30 then--Android R+
+  window.setDecorFitsSystemWindows(false);
+  window.setNavigationBarContrastEnforced(false);
+  window.setStatusBarContrastEnforced(false);
+end
 activity.setContentView(loadlayout("layout/fragment"))
- 
+
+inSekai=false
+if activity.getSharedData("平行世界")~="false" then
+  local rootView = activity.getDecorView()
+  inSekai=true
+  STDW=activity.width
+  observer = rootView.getViewTreeObserver()
+  orirh={}
+  observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
+    onGlobalLayout=function()
+      if orirh[1]==tointeger(rootView.height)&&orirh[2]==tointeger(rootView.width)
+       else
+        --onBackCancelled()
+        orirh[1]=tointeger(rootView.height)
+        orirh[2]=tointeger(rootView.width)
+        inSekai=rootView.width>dp2px(600,true)
+        if rootView.width>dp2px(600,true)
+          if f1 local layoutParams = f1.LayoutParams;
+            layoutParams.width=orirh[2]*0.5
+            f1.setLayoutParams(layoutParams); end
+          STDW=orirh[2]*0.5
+         else
+          if f1 local layoutParams = f1.LayoutParams;
+            layoutParams.width=orirh[2]
+            f1.setLayoutParams(layoutParams); end
+          STDW=orirh[2]
+        end
+      end
+    end
+  }))
+end
+
+f1.setId(View.generateViewId())
+f2.setId(View.generateViewId())
 fragmentManager = activity.getSupportFragmentManager()
 local t = fragmentManager.beginTransaction()
 .add(f1.id,LuaFragment(loadlayout("layout/home")))
@@ -27,36 +66,7 @@ f1.setTag("home")
 f1.setTag(R.id.tag_last_time,tonumber(os.time()))
 f2.setTag("empty")
 f2.setTag(R.id.tag_last_time,tonumber(os.time())-114514)
---io.open(tostring(tostring(activity.getExternalCacheDir()).."/fn"),"w"):write(tostring(1)):close()
 
---[[function onBackProgressed(be)
-  --print(be.toString())
-  local signn=be.swipeEdge
-  if signn<1
-    signn=-1
-  end
-  if startBackY==nil
-    startBackY=be.touchY
-  end
-  setFragment(fn[#fn][3],be,0)
-  if fn[#fn-1]~=nil
-    setDFragment(fn[#fn-1][3],be,0)
-  end
-end
-function onBackCancelled()
-  back2basis(fn[#fn][3])
-  if fn[#fn-1]~=nil
-    back2basis(fn[#fn-1][3])
-  end
-end
-function onBackInvoked()
-  onBackCancelled()
-  关闭页面()
-end
-function onBackStarted(be)
-  startBackY=be.touchY
-end
-]]
 
 toolbar.setNavigationOnClickListener(View.OnClickListener{
   onClick=function(v)
@@ -92,9 +102,15 @@ nav.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedLis
      case "本地"
       task(300,function()newActivity("local_list")end)
      case "设置"
-      task(300,function()activity.newActivity("settings")end)
+      task(300,function()newActivity("settings")end)
      case "历史"
       task(300,function()newActivity("history")end)
+     case "通知"
+      if getLogin()~=true then
+        提示("请登录后使用本功能")
+        return true
+      end
+      task(300,function()newActivity("browser",{"https://www.zhihu.com/notifications"})end)
      case "更多"
 
       if not(getLogin()) then
@@ -156,6 +172,10 @@ mmenu = {
     icon = 图标("list_alt");
   },
   { MenuItem,
+    title = "通知",
+    icon = 图标("notification");
+  },
+  { MenuItem,
     title = "更多",
     id = "menu_nav",
     icon = 图标("menu");
@@ -208,7 +228,7 @@ nav.addHeaderView(loadlayout {
     layout_width="-1";
     radius=cardradius;
     StrokeColor=cardedge;
-    StrokeWidth=dp2px(1),
+    StrokeWidth=0,
     clickable=true,
     id="侧滑头";
     {
@@ -795,7 +815,7 @@ function 切换布局(s)
               跳转页面("feedback")
           end},
           {src=图标("info"),text="关于",onClick=function()
-              跳转页面("about")
+              跳转页面("sub/About/main")
           end},
         }
       })
@@ -807,6 +827,7 @@ function 切换布局(s)
       if not(getLogin()) then
         return 提示("你可能需要登录")
       end
+      nTView=_ask
       task(20,function()
         newActivity("browser",{"https://www.zhihu.com/messages","提问"})
       end)
@@ -818,7 +839,7 @@ function 切换布局(s)
             跳转页面("feedback")
         end},
         {src=图标("info"),text="关于",onClick=function()
-            跳转页面("about")
+            跳转页面("sub/About/main")
         end},
       }
     })
@@ -1029,6 +1050,10 @@ function 加载主页tab()
   end)
 end
 
+local pos=page_home.getCurrentItem()+1
+local home_item=home_items[pos]
+home_pageinfo[home_item].refer(true)
+
 function 成功登录回调()
   setHead()
   collection_pagetool:setUrls({
@@ -1056,7 +1081,8 @@ function getuserinfo()
 
   local myurl= 'https://www.zhihu.com/api/v4/me'
 
-  zHttp.get(myurl,head,function(code,content)
+  --不使用zHttp防止报错
+  Http.get(myurl,head,function(code,content)
 
     if code==200 then--判断网站状态
       local data=luajson.decode(content)
@@ -1098,8 +1124,6 @@ getuserinfo()
 function onActivityResult(a,b,c)
   if b==100 then
     getuserinfo()
-   elseif b==1200 then --夜间模式开启
-    设置主题()
    elseif b==1300 then
     加载主页tab()
    elseif b==1600 then
@@ -1133,9 +1157,9 @@ function check()
   end
 end
 
-function onResume()
+--[[function onResume()
   activity.getDecorView().post{run=function()check()end}
-end
+end]]
 
 
 if this.getSharedData("自动检测更新")=="true" then
@@ -1229,65 +1253,33 @@ task(1,function()
           跳转页面("feedback")
       end},
       {src=图标("info"),text="关于",onClick=function()
-          跳转页面("about")
+          跳转页面("sub/About/main")
       end},
     }
   })
 end)
 
 
-lastclick = os.time() - 2
-function onKeyDown(code,event)
-  local now = os.time()
-  if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
-    --监听返回键
-    if a and a.pop.isShowing() then
-      --如果菜单显示，关闭菜单并阻止返回键
-      a.pop.dismiss()
-      return true
-    end
-    if _drawer.isDrawerOpen(Gravity.LEFT) then
-      --如果左侧侧滑显示，关闭左侧侧滑并阻止返回键
-      _drawer.closeDrawer(Gravity.LEFT)
-      return true
-    end
-    if now - lastclick > 2 then
-      --双击退出
-      提示("再按一次退出")
-      lastclick = now
-      return true
-    end
-  end
+local MyLuaFileFragment=luajava.bindClass("com.hydrogen.MyLuaFileFragment")
 
+function onKeyDown(code,event)
   if this.getSharedData("音量键选择tab")~="true" then
     return false
   end
-  local allcount=HometabLayout.getTabCount()
-  if page_home.getCurrentItem()~=0 or allcount<1 then
+  if luajava.instanceof(currentFragment,MyLuaFileFragment) then
+    local result=currentFragment.runFunc("onKeyUp",{code,event})
+    return result
+  end
+end
+
+function onKeyUp(code,event)
+  if this.getSharedData("音量键选择tab")~="true" then
     return false
   end
-  --音量键up
-  if code==KeyEvent.KEYCODE_VOLUME_UP then
-    mcount=HometabLayout.getSelectedTabPosition()+1
-    if mcount== allcount then
-      提示("后面没内容了")
-      return true
-    end
-    local tab=HometabLayout.getTabAt(mcount);
-    tab.select()
-    return true;
-    --音量键down
-   elseif code== KeyEvent.KEYCODE_VOLUME_DOWN then
-    mcount=HometabLayout.getSelectedTabPosition()-1
-    if mcount<0 then
-      提示("前面没内容了")
-      return true
-    end
-    local tab=HometabLayout.getTabAt(mcount);
-    tab.select()
-    return true;
+  if luajava.instanceof(currentFragment,MyLuaFileFragment) then
+    local result=currentFragment.runFunc("onKeyUp",{code,event})
+    return result
   end
-
 end
 
 data=...
@@ -1314,7 +1306,13 @@ if not(this.getSharedData("hometip0.02")) then
     .show()
   end)
 end
-addAutoHideListener({home_recy,hot_recy,think_recy,},{bottombar})
+
+local allrecy={home_recy,hot_recy,think_recy}
+for i=1,follow_pagetool.allcount do
+  table.insert(allrecy,follow_pagetool.ids["list".."_"..i])
+end
+
+addAutoHideListener(allrecy,{bottombar})
 
 if not(this.getSharedData("updatetip0.01"))and Build.VERSION.SDK_INT <=28 then
   AlertDialog.Builder(this)

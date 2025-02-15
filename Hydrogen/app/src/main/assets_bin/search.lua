@@ -146,6 +146,7 @@ local function createchip(text)
     end
   })
 end
+
 search_history=loadSharedPreferences("search_history")
   chipgroup.removeAllViews()
   for i=1,#search_history do
@@ -153,11 +154,13 @@ search_history=loadSharedPreferences("search_history")
     chipgroup.addView(createchip(text,itemnum))
   end
 
-search_view.requestFocus()
+search_view.setFocusable(true);  
+search_view.requestFocus(); 
 search_view.postDelayed(Runnable{
   run=function()
     local imm= this.getSystemService(Context.INPUT_METHOD_SERVICE);
-    imm.showSoftInput(search_view, InputMethodManager.SHOW_IMPLICIT);
+    imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
+    --imm.showSoftInput(search_view, InputMethodManager.SHOW_IMPLICIT);
   end
 }, 100);
 

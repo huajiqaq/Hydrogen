@@ -13,28 +13,20 @@ import "androidx.core.widget.NestedScrollView"
 import "android.widget.GridView"
 import "com.jesse205.layout.innocentlayout.GridViewLayout"
 
-activity.getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
---activity.setTitle(R.string.jesse205_themePicker)
-
-local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
-package.path = package.path..";"..luapath.."/?.lua"
+local luadir=this.getLuaDir()
+package.path = package.path..";"..luadir.."/?.lua"
 require("mods.muk")
 
-activity.setContentView(loadlayout("layout"))
---content.setBackgroundColor(MaterialColors.getColor(this, R.attr.colorSurface,0))
-activity.setSupportActionBar(toolbar)
+设置视图("layout")
 设置toolbar属性(toolbar,R.string.jesse205_themePicker)
 
-
+edgeToedge(mainLay)
 
 MaterialSharedAxis=luajava.bindClass("com.google.android.material.transition.platform.MaterialSharedAxis")
 enter= MaterialSharedAxis(MaterialSharedAxis.X, true)
 enter.addTarget(mainLay)
---mainLay.setBackgroundColor(MaterialColors.getColor(this, R.attr.colorSurface,0))
 activity.getWindow().setEnterTransition(enter)
 activity.getWindow().setAllowEnterTransitionOverlap(true)
-
---activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true)
 
 function onOptionsItemSelected()
   activity.finish()
@@ -98,12 +90,7 @@ gridView.onItemClick=function(id,v,zero,one)
     local aRanim=android.R.anim
     local pos=gridView.getFirstVisiblePosition()
     local scroll=gridView.getChildAt(0).getTop()
-    activity.newActivity("main",aRanim.fade_in,aRanim.fade_out,{{pos,scroll}})
-    activity.finish()
+    this.recreate()
     gridView.setEnabled(false)
   end
 end
-
---[[mainLay.ViewTreeObserver
-.addOnGlobalLayoutListener(ScreenFixUtil.LayoutListenersBuilder.gridViews(mainLay,{gridView}))
-]]

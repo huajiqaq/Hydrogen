@@ -122,7 +122,6 @@ function base:initpage(view,sr)
     sr=sr,
     head="head",
     adapters_func=self.getAdapter,
-    urlfunc=zse96_encrypt,
     func=self.resolvedata
   })
   :initPage()

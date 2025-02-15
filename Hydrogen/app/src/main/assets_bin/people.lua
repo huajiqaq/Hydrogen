@@ -185,7 +185,7 @@ local base_people=require "model.people":new(people_id)
 
   a=MUKPopu(pop)
 
-  self:getTab(function(self,tabname,urlinfo,answerindex)
+  self:getTabs(function(self,tabname,urlinfo,answerindex)
     _G["urlinfo"]=urlinfo
     people_pagetool=self:initpage(people_vpg,PeotabLayout)
     people_pagetool:setUrls(urlinfo)

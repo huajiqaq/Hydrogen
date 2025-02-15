@@ -7,37 +7,20 @@ import "android.text.util.Linkify"
 
 import "licences"
 import "item"
-
---activity.setTitle(R.string.jesse205_openSourceLicense)
-
 import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.appbar.MaterialToolbar"
 import "androidx.appcompat.widget.LinearLayoutCompat"
 import "androidx.core.widget.NestedScrollView"
 
-local luapath=File(this.getLuaDir()).getParentFile().getParentFile().toString()
-package.path = package.path..";"..luapath.."/?.lua"
+local luadir=this.getLuaDir()
+package.path = package.path..";"..luadir.."/?.lua"
 require("mods.muk")
 
-activity.setContentView(loadlayout("layout",_ENV))
---actionBar.setDisplayHomeAsUpEnabled(true)
-activity.setSupportActionBar(toolbar)
-
+设置视图("layout")
 设置toolbar属性(toolbar,R.string.jesse205_openSourceLicense)
+edgeToedge(mainLay)
 
-
-fileBasePath=activity.getLuaPath("../../licences/%s.txt")
-
-function onOptionsItemSelected(item)
-  local id=item.getItemId()
-  if id==android.R.id.home then
-    activity.finish()
-  end
-end
-
-function onConfigurationChanged(config)
-  screenConfigDecoder:decodeConfiguration(config)
-end
+fileBasePath=luajava.luadir.."/licences/%s.txt"
 
 adapter=LuaCustRecyclerAdapter(AdapterCreator({
   getItemCount=function()
@@ -65,7 +48,7 @@ adapter=LuaCustRecyclerAdapter(AdapterCreator({
       local data=ids._data
       local path=data.path
       if path then
-        newSubActivity("HtmlFileViewer",{{title=data.license or data.licenseName,path=path,text=true}})
+        newActivity("sub/HtmlFileViewer/main",{{title=data.license or data.licenseName,path=path,text=true}})
       end
     end
     return holder
@@ -108,22 +91,8 @@ layoutManager=StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.VERTICAL)
 recyclerView.setPadding(math.dp2int(8),0,math.dp2int(8),0)
 recyclerView.setAdapter(adapter)
 recyclerView.setLayoutManager(layoutManager)
-recyclerView.addOnScrollListener(RecyclerView.OnScrollListener{
-  onScrolled=function(view,dx,dy)
-    MyAnimationUtil.RecyclerView.onScroll(view,dx,dy,sideAppBarLayout,"LastSideActionBarElevation")
-  end
-})
-recyclerView.getViewTreeObserver().addOnGlobalLayoutListener({
-  onGlobalLayout=function()
-    if activity.isFinishing() then
-      return
-    end
-    MyAnimationUtil.RecyclerView.onScroll(recyclerView,0,0,sideAppBarLayout,"LastSideActionBarElevation")
-  end
-})
+
 
 screenConfigDecoder=ScreenFixUtil.ScreenConfigDecoder({
   layoutManagers={layoutManager},
 })
-
-onConfigurationChanged(activity.getResources().getConfiguration())

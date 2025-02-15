@@ -64,10 +64,6 @@ function base.resolvedata(v,data)
     预览内容="无介绍"
   end
 
-  if 无图模式 then
-    头像=logopng
-  end
-
   local add={}
   add.活动=活动
   add.预览内容=预览内容

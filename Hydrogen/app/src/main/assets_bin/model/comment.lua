@@ -160,10 +160,6 @@ function base.resolvedata(v,data)
     Spannable_Image(myspan, "\\["..i.."\\]",d)
   end
 
-
-  if 无图模式 then
-    头像=logopng
-  end
   local 评论=""..tostring(v.child_comment_count or 0)
   local id内容=tostring(v.id)
   local 作者id=v.author.id
@@ -407,7 +403,7 @@ function base.getAdapter(comment_pagetool,pos)
         local 对话用户=views.标题.text
         local 对话内容=views.预览内容.text
         if isme=="true" then
-          local 请求链接="https://api.zhihu.com/comment_v5/comment/"..对话id
+          local 请求链接="https://www.zhihu.com/api/v4/comment_v5/comment/"..对话id
 
           双按钮对话框("删除","删除该回复？该操作不可撤消！","是的","点错了",function(an)
             local url,head=require "model.zse96_encrypt"(请求链接)
@@ -487,7 +483,7 @@ function base.getAdapter(comment_pagetool,pos)
               end
             end
           end
-          newActivity("commentl",{data.id内容,"comments",保存路径,comment_id})
+          newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
         end
       end
       views.预览内容.onClick=function()
@@ -499,7 +495,7 @@ function base.getAdapter(comment_pagetool,pos)
               end
             end
           end
-          newActivity("commentl",{data.id内容,"comments",保存路径,comment_id})
+          newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
         end
       end
 
@@ -613,7 +609,7 @@ function 发送评论(id,title)
         layout_width="match",
         hint=stitle,
         id="send_input",
-        endIconDrawable=endicondrawable;
+        endIconDrawable=endicondrawable,
         endIconMode=1,
         hintTextColor=ColorStateList.valueOf(转0x(primaryc)),
         boxBackgroundMode=TextInputLayout.BOX_BACKGROUND_OUTLINE,
@@ -658,6 +654,9 @@ function 发送评论(id,title)
   send_input.setEndIconOnClickListener(View.OnClickListener{
     onClick=function(v)
       local view=bottomSheetDialog.window.getDecorView()
+      if heightmax<100
+        heightmax=dp2px(260)
+      end
       if isShowing then
         local WindowInsets = luajava.bindClass "android.view.WindowInsets"
         view.windowInsetsController.hide(WindowInsets.Type.ime())
@@ -764,7 +763,7 @@ send_edit.text=myspan]]
     end
     --评论类型和评论id处理逻辑在comment_base
     local postdata='{"comment_id":"","content":"'..mytext..'","extra_params":"","has_img":false,"reply_comment_id":"'..回复id..'","score":0,"selected_settings":[],"sticker_type":null,"unfriendly_check":"strict"}'
-    local 请求链接="https://api.zhihu.com/comment_v5/"..评论类型.."/"..评论id.."/comment"
+    local 请求链接="https://www.zhihu.com/api/v4/comment_v5/"..评论类型.."/"..评论id.."/comment"
 
     local url,head=require "model.zse96_encrypt"(请求链接)
     zHttp.post(url,postdata,head,function(code,json)

@@ -30,12 +30,7 @@ function base.getfuncs()
       table.insert(data,add)
     end,
     function(v,data)
-      local 图片
-      if 无图模式 then
-        图片=logopng
-       else
-        图片=v.creator.avatar_url
-      end
+      local 图片=v.creator.avatar_url
       local add={}
       add.图像=图片
       add.预览内容="由"..v.creator.name.."创建 "..v.item_count.."个内容"

@@ -8,6 +8,9 @@ import "com.lua.*"
 
 波纹({fh,_more},"圆主题")
 _title.Text="已保存的内容"
+edgeToedge(nil,nil,function() local layoutParams = toolbar.LayoutParams;
+  layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
+  toolbar.setLayoutParams(layoutParams); end)
 
 local_item=获取适配器项目布局("local_item/local_item")
 
@@ -283,7 +286,7 @@ function 本地列表(path)
 
   listview.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
-      activity.newActivity("local",{path,v.Tag.mytext.Text})
+      newActivity("local",{path,v.Tag.mytext.Text})
       an.dismiss()
   end})
 
@@ -360,7 +363,7 @@ task(1,function()
 
       end},
       {src=图标("email"),text="反馈",onClick=function()
-          activity.newActivity("feedback")
+          newActivity("feedback")
       end},
       {src=图标("info"),text="导出/导入",onClick=function()
 

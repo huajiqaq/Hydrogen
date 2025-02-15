@@ -71,9 +71,6 @@ local function resolve_moments_feed(v,data)
    else
     预览内容=nil
   end
-  if 无图模式 then
-    头像=logopng
-  end
   if 点赞数 then
     点赞数=tostring(点赞数)
    else
@@ -163,9 +160,6 @@ local function resolve_feed_item_index_group(v,data)
     end
    else
     预览内容=nil
-  end
-  if 无图模式 then
-    头像=logopng
   end
   if 点赞数 then
     点赞数=tostring(点赞数)
@@ -287,7 +281,7 @@ local function 加载主页关注折叠adp(data,views)
   local MyLinearLayoutManager=luajava.bindClass("com.hydrogen.MyLinearLayoutManager")(this,RecyclerView.VERTICAL,false)
   views.底部recy.setLayoutManager(MyLinearLayoutManager)
   views.底部recy.setAdapter(adapter2)
-addAutoHideListener({views.底部recy},{bottombar})
+  addAutoHideListener({views.底部recy},{bottombar})
 
 end
 

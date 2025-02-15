@@ -136,10 +136,6 @@ function base.resolvedata(v,data)
     if 签名=="" then
       签名="无签名"
     end
-
-    if 无图模式 then
-      头像=logopng
-    end
   end
   if v.type=="pin_action" then
     头像=v.member.avatar_url
@@ -148,9 +144,6 @@ function base.resolvedata(v,data)
     用户id=v.member.id
     if 签名=="" then
       签名="无签名"
-    end
-    if 无图模式 then
-      头像=logopng
     end
   end
   local add={}
