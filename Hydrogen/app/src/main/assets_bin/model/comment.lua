@@ -126,7 +126,7 @@ end
 
 function base.resolvedata(v,data)
   local 头像=v.author.avatar_url
-  local 内容=utf8.gsub(utf8.gsub(utf8.gsub(utf8.gsub(v.content,"\\r+$",""),"\\u000D+$",""),"\\n+$",""),"\\u000A+$","")
+  local 内容=utf8.gsub(utf8.gsub(v.content,"%s+$",""),"\u000D+$","")
   local 点赞数=v.vote_count
   local 时间=时间戳(v.created_time)
   local 名字=v.author.name
@@ -160,10 +160,6 @@ function base.resolvedata(v,data)
     Spannable_Image(myspan, "\\["..i.."\\]",d)
   end
 
-
-  if 无图模式 then
-    头像=logopng
-  end
   local 评论=""..tostring(v.child_comment_count or 0)
   local id内容=tostring(v.id)
   local 作者id=v.author.id
@@ -471,7 +467,6 @@ function base.getAdapter(comment_pagetool,pos)
       end
 
       views.author_lay.onClick=function()
-        nTView=views.card
         newActivity("people",{data.作者id})
       end
 
@@ -480,7 +475,6 @@ function base.getAdapter(comment_pagetool,pos)
         downy=event.getRawY()
       end
       views.card.onClick=function()
-        nTView=views.card
         if views.评论.getVisibility()==0 then
           if fn~=nil then
             if fn[#fn]~=nil then
@@ -489,11 +483,10 @@ function base.getAdapter(comment_pagetool,pos)
               end
             end
           end
-          newActivity("commentl",{data.id内容,"comments",保存路径,comment_id})
+          newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
         end
       end
       views.预览内容.onClick=function()
-        nTView=views.card
         if views.评论.getVisibility()==0 then
           if fn~=nil then
             if fn[#fn]~=nil then
@@ -502,7 +495,7 @@ function base.getAdapter(comment_pagetool,pos)
               end
             end
           end
-          newActivity("commentl",{data.id内容,"comments",保存路径,comment_id})
+          newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
         end
       end
 
@@ -662,9 +655,6 @@ function 发送评论(id,title)
     onClick=function(v)
       local view=bottomSheetDialog.window.getDecorView()
       if isShowing then
-        if heightmax<100
-          heightmax=dp2px(260)
-        end
         local WindowInsets = luajava.bindClass "android.view.WindowInsets"
         view.windowInsetsController.hide(WindowInsets.Type.ime())
         isZemo=true
@@ -683,41 +673,13 @@ function 发送评论(id,title)
   bottomSheetDialog.show()
   .setCancelable(true)
   .behavior.setMaxWidth(dp2px(600))
-  if Build.VERSION.SDK_INT > 30 then
+  if Build.VERSION.SDK_INT >= 30 then
     pcall(function() bottomSheetDialog.getWindow().setDecorFitsSystemWindows(false)end)
   end
   bottomSheetDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
   local view=bottomSheetDialog.window.getDecorView()
-  view.addOnAttachStateChangeListener(View.OnAttachStateChangeListener({
-    onViewAttachedToWindow=function(v)
-      pcall(function()local ViewCompat = luajava.bindClass "androidx.core.view.ViewCompat"
-        local WindowInsetsCompat = luajava.bindClass "androidx.core.view.WindowInsetsCompat"
-        local i = ViewCompat.getRootWindowInsets(v);
-        local WindowInsets = luajava.bindClass "android.view.WindowInsets"
-        local status = i.getInsets(WindowInsets.Type.statusBars())
-        local nav = i.getInsets(WindowInsets.Type.navigationBars())
-        local ime = i.getInsets(WindowInsets.Type.ime())
-        local layoutParams = sendlay.LayoutParams;
-        layoutParams.setMargins(layoutParams.leftMargin, layoutParams.rightMargin, layoutParams.rightMargin,nav.bottom);
-        sendlay.setLayoutParams(layoutParams);
-        if ime.bottom>heightmax
-          heightmax=ime.bottom
-        end
-        if Build.VERSION.SDK_INT<31
-          local layoutParams = zemorc.LayoutParams;
-          layoutParams.height=(function() if !isZemo then return ime.bottom else return heightmax end end)()
-          zemorc.setLayoutParams(layoutParams);
-          local layoutParams = root.LayoutParams;
-          layoutParams.height=-2
-          root.setLayoutParams(layoutParams);
-        end
-        isShowing=i.isVisible(WindowInsets.Type.ime())
-      end)
-    end,
-  }))
-  --[[view.setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener{
+  view.setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener{
     onApplyWindowInsets=function(v,i)
-      v.onApplyWindowInsets(i)
       local WindowInsets = luajava.bindClass "android.view.WindowInsets"
       local status = i.getInsets(WindowInsets.Type.statusBars())
       local nav = i.getInsets(WindowInsets.Type.navigationBars())
@@ -739,7 +701,7 @@ function 发送评论(id,title)
       isShowing=i.isVisible(WindowInsets.Type.ime())
       return i
     end
-  })]]
+  })
   if Build.VERSION.SDK_INT >30
     view.setWindowInsetsAnimationCallback(luajava.override(WindowInsetsAnimation.Callback,{
       onProgress=function(_,i,animations)

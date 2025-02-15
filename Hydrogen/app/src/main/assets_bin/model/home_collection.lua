@@ -30,12 +30,7 @@ function base.getfuncs()
       table.insert(data,add)
     end,
     function(v,data)
-      local 图片
-      if 无图模式 then
-        图片=logopng
-       else
-        图片=v.creator.avatar_url
-      end
+      local 图片=v.creator.avatar_url
       local add={}
       add.图像=图片
       add.预览内容="由"..v.creator.name.."创建 "..v.item_count.."个内容"
@@ -83,7 +78,6 @@ function base.getAdapter(collection_pagetool,pos)
         views.评论数.Text=data.评论数
         views.关注数.Text=data.关注数
         views.card.onClick=function()
-          nTView=views.card
           newActivity("collections",{data.id内容})
         end
 
@@ -131,7 +125,6 @@ function base.getAdapter(collection_pagetool,pos)
         views.关注数.Text=data.关注数
         loadglide(views.图像,data.图像)
         views.card.onClick=function()
-          nTView=views.card
           if data.id内容=="local" then
             newActivity("collection_recommend")
             return

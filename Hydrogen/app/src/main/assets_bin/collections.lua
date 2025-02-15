@@ -28,7 +28,7 @@ collections_base=require "model.collections":new(collections_id)
             mview.text="取关"
             提示("已关注")
             a=MUKPopu(pop)
-            activity.setResult(1600,nil)
+            this.setResult(1600,nil)
           end
         end)
        else
@@ -38,7 +38,7 @@ collections_base=require "model.collections":new(collections_id)
             mview.src=图标("add")
             mview.text="关注"
             a=MUKPopu(pop)
-            activity.setResult(1600,nil)
+            this.setResult(1600,nil)
           end
         end)
       end
@@ -80,7 +80,7 @@ pop={
           zHttp.delete("https://api.zhihu.com/collections/"..collections_id,head,function(code,json)
             if code==200 then
               提示("已删除")
-              activity.setResult(1600,nil)
+              this.setResult(1600,nil)
             end
           end)
         end,function(an)an.dismiss()end)

@@ -51,36 +51,7 @@ function addAutoHideListener(recs,views)
     end
   end
 end
-inSekai=false
-if activity.getSharedData("平行世界")~="false" then
-  local rootView = activity.getDecorView()
-  inSekai=true
-  STDW=activity.width
-  observer = rootView.getViewTreeObserver()
-  orirh={}
-  observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
-    onGlobalLayout=function()
-      if orirh[1]==tointeger(rootView.height)&&orirh[2]==tointeger(rootView.width)
-       else
-        --onBackCancelled()
-        orirh[1]=tointeger(rootView.height)
-        orirh[2]=tointeger(rootView.width)
-        inSekai=rootView.width>dp2px(600,true)
-        if rootView.width>dp2px(600,true)
-          if f1 local layoutParams = f1.LayoutParams;
-            layoutParams.width=orirh[2]*0.5
-            f1.setLayoutParams(layoutParams); end
-          STDW=orirh[2]*0.5
-         else
-          if f1 local layoutParams = f1.LayoutParams;
-            layoutParams.width=orirh[2]
-            f1.setLayoutParams(layoutParams); end
-          STDW=orirh[2]
-        end
-      end
-    end
-  }))
-end
+
 function MyLuaFileFragment(a,b,c)
   return luajava.override(luajava.bindClass("com.hydrogen.MyLuaFileFragment"),{
     onDestroy=function(super)super()

@@ -94,7 +94,6 @@ function base:getAdapter(home_pagetool,pos)
       view.排行.text=tostring(data.排行)
 
       view.card.onClick=function()
-        nTView=view.card
         检查链接(data.id内容)
       end
 

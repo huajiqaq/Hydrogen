@@ -22,6 +22,38 @@ if Build.VERSION.SDK_INT >= 30 then--Android R+
   window.setStatusBarContrastEnforced(false);
 end
 activity.setContentView(loadlayout("layout/fragment"))
+
+inSekai=false
+if activity.getSharedData("平行世界")~="false" then
+  local rootView = activity.getDecorView()
+  inSekai=true
+  STDW=activity.width
+  observer = rootView.getViewTreeObserver()
+  orirh={}
+  observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
+    onGlobalLayout=function()
+      if orirh[1]==tointeger(rootView.height)&&orirh[2]==tointeger(rootView.width)
+       else
+        --onBackCancelled()
+        orirh[1]=tointeger(rootView.height)
+        orirh[2]=tointeger(rootView.width)
+        inSekai=rootView.width>dp2px(600,true)
+        if rootView.width>dp2px(600,true)
+          if f1 local layoutParams = f1.LayoutParams;
+            layoutParams.width=orirh[2]*0.5
+            f1.setLayoutParams(layoutParams); end
+          STDW=orirh[2]*0.5
+         else
+          if f1 local layoutParams = f1.LayoutParams;
+            layoutParams.width=orirh[2]
+            f1.setLayoutParams(layoutParams); end
+          STDW=orirh[2]
+        end
+      end
+    end
+  }))
+end
+
 f1.setId(View.generateViewId())
 f2.setId(View.generateViewId())
 fragmentManager = activity.getSupportFragmentManager()
@@ -1092,8 +1124,6 @@ getuserinfo()
 function onActivityResult(a,b,c)
   if b==100 then
     getuserinfo()
-   elseif b==1200 then --夜间模式开启
-    设置主题()
    elseif b==1300 then
     加载主页tab()
    elseif b==1600 then
@@ -1276,7 +1306,13 @@ if not(this.getSharedData("hometip0.02")) then
     .show()
   end)
 end
-addAutoHideListener({home_recy,hot_recy,think_recy,},{bottombar})
+
+local allrecy={home_recy,hot_recy,think_recy}
+for i=1,follow_pagetool.allcount do
+  table.insert(allrecy,follow_pagetool.ids["list".."_"..i])
+end
+
+addAutoHideListener(allrecy,{bottombar})
 
 if not(this.getSharedData("updatetip0.01"))and Build.VERSION.SDK_INT <=28 then
   AlertDialog.Builder(this)

@@ -101,7 +101,7 @@ mtip=false
 tab=processTable{
   夜间模式=function()
     提示("返回主页面生效")
-    activity.setResult(1200,nil)
+    设置主题()
   end,
   夜间模式追随系统=function(self)
     self.夜间模式()

@@ -39,7 +39,6 @@ function base.getAdapter(people_column_pagetool,pos)
       views.活动.text=data.活动
       loadglide(views.图像,data.图像)
       views.card.onClick=function()
-nTView=views.card
         点击事件判断(data.id内容,data.标题)
       end
     end,
@@ -54,9 +53,6 @@ function base.resolvedata(v,data)
   local 评论数=v.comment_count
   local 预览内容=v.excerpt
   local 活动,id内容,标题
-  if 无图模式 then
-    头像=logopng
-  end
   if v.type=="answer" then
     活动="添加了问题"
     id内容=v.question.id or "null"
