@@ -6,7 +6,7 @@ import "android.text.method.LinkMovementMethod"
 import "android.text.util.Linkify"
 
 import "licences"
-import "sub.OpenSourceLicenses.item"
+import "item"
 import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.appbar.MaterialToolbar"
 import "androidx.appcompat.widget.LinearLayoutCompat"
@@ -16,7 +16,7 @@ local luadir=this.getLuaDir()
 package.path = package.path..";"..luadir.."/?.lua"
 require("mods.muk")
 
-设置视图("sub/OpenSourceLicenses/layout")
+设置视图("layout")
 设置toolbar属性(toolbar,R.string.jesse205_openSourceLicense)
 edgeToedge(mainLay)
 

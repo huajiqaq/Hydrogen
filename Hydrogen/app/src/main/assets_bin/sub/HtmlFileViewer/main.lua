@@ -18,7 +18,7 @@ local luadir=this.getLuaDir()
 package.path = package.path..";"..luadir.."/?.lua"
 require("mods.muk")
 
-设置视图("sub/HtmlFileViewer/layout")
+设置视图("layout")
 activity.setSupportActionBar(toolbar)
 --actionBar.setDisplayHomeAsUpEnabled(true)
 edgeToedge(nil,nil,function() local layoutParams = toolbar.LayoutParams;
@@ -52,6 +52,7 @@ local path=data.path
 local url=data.url
 if path then
   local content=读取文件(path)
+
   if tostring(data.text)=="true" then
     textView.setText(content)
    else

@@ -54,6 +54,7 @@ end
 inSekai=false
 if activity.getSharedData("平行世界")~="false" then
   local rootView = activity.getDecorView()
+  inSekai=true
   STDW=activity.width
   observer = rootView.getViewTreeObserver()
   orirh={}
@@ -83,6 +84,10 @@ end
 function MyLuaFileFragment(a,b,c)
   return luajava.override(luajava.bindClass("com.hydrogen.MyLuaFileFragment"),{
     onDestroy=function(super)super()
+      
+      this.getLuaState().pushNil()
+      this.getLuaState().setGlobal("currentFragment")
+      
       local ff = f2
       if tonumber(f1.getTag(R.id.tag_last_time))>tonumber(f2.getTag(R.id.tag_last_time))
         ff=f2
@@ -104,9 +109,9 @@ function 设置视图(t)
 end
 function newActivity(f,b,c)
   b=b or {}
-  MaterialContainerTransform=luajava.bindClass("com.google.android.material.transition.MaterialContainerTransform")
-  MyLuaFileFragment=luajava.bindClass("com.hydrogen.MyLuaFileFragment")
   MaterialSharedAxis=luajava.bindClass("com.google.android.material.transition.MaterialSharedAxis")
+  backward = MaterialSharedAxis(MaterialSharedAxis.X, false);
+  forward = MaterialSharedAxis(MaterialSharedAxis.X, true);
   local ff=f1
   local nt=tonumber(os.time())
   local t = activity.getSupportFragmentManager().beginTransaction()
@@ -120,36 +125,19 @@ function newActivity(f,b,c)
   --t.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
   if tonumber(f1.getTag(R.id.tag_last_time))>tonumber(f2.getTag(R.id.tag_last_time))
     ff=f2
-    if f1.tag==f
-      ff=f1
-    end
    else
     ff=f1
-    if f2.tag==f
-      ff=f2
-    end
+  end
+  if (f1.getTag()=="home")&&((tostring(f2.tag)==f))
+    ff=f2
   end
   if !inSekai then ff = f1 end
   ff.tag=f
   ff.setTag(R.id.tag_last_time,nt)
-
-  if nTView then
-    forward=MaterialContainerTransform()
-    .setStartView(nTView)
-    .setEndView(ff)
-    .setScrimColor(0x00000000)
-    --.setFadeMode(0)
-    backward = MaterialSharedAxis(MaterialSharedAxis.Z, false);
-
-   else
-    backward = MaterialSharedAxis(MaterialSharedAxis.X, false);
-    forward = MaterialSharedAxis(MaterialSharedAxis.X, true);
-
-  end
   t.add(ff.id,MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai}).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward))
   t.addToBackStack(nil)
   t.commit()
-  nTView=nil
+
 end
 
 --inSekai=true
@@ -172,21 +160,11 @@ function 关闭页面()
 end
 
 function edgeToedge(顶栏,底栏,callback)
-  local window = activity.getWindow()
-  window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
-
-  if Build.VERSION.SDK_INT >= 30 then--Android R+
-    window.setDecorFitsSystemWindows(false);
-    window.setNavigationBarContrastEnforced(false);
-    window.setStatusBarContrastEnforced(false);
-  end
-
   local ViewCompat = luajava.bindClass "androidx.core.view.ViewCompat"
   local WindowInsetsCompat = luajava.bindClass "androidx.core.view.WindowInsetsCompat"
   local view=window.getDecorView()
-  local attachedToWindow = view.isAttachedToWindow();
-  if attachedToWindow then
+
+  local function init()
     local windowInsets = ViewCompat.getRootWindowInsets(view);
     local top = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
     local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).bottom;
@@ -216,41 +194,16 @@ function edgeToedge(顶栏,底栏,callback)
     if callback then
       callback()
     end
+  end
 
+  local attachedToWindow = view.isAttachedToWindow();
+  if attachedToWindow then
+    init()
    else
 
     view.addOnAttachStateChangeListener(View.OnAttachStateChangeListener({
       onViewAttachedToWindow=function(v)
-        local windowInsets = ViewCompat.getRootWindowInsets(v);
-        local top = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-        local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).bottom;
-        local height = Math.abs(bottom - top);
-        状态栏高度=height
-        local top = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).top;
-        local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-        local height = Math.abs(bottom - top);
-        导航栏高度=height
-
-        if 顶栏 then
-          顶栏.setPadding(
-          顶栏.getPaddingLeft(),
-          状态栏高度,
-          顶栏.getPaddingRight(),
-          顶栏.getPaddingBottom()
-          );
-        end
-        if 底栏 then
-          底栏.setPadding(
-          底栏.getPaddingLeft(),
-          底栏.getPaddingTop(),
-          底栏.getPaddingRight(),
-          导航栏高度
-          );
-        end
-        if callback then
-          callback()
-        end
-
+        init()
       end,
       onViewDetachedFromWindow=function()
       end
@@ -310,11 +263,9 @@ function 设置toolbar属性(toolbar,title)
   .setColorFilter(colorFilter)
   toolbar.setNavigationIcon(bitmap)
   toolbar.setNavigationContentDescription("转到上一层级")
-  toolbar.setNavigationOnClickListener(View.OnClickListener{
-    onClick=function(v)
+  toolbar.setNavigationOnClickListener({onClick=function()
       关闭页面()
-    end,
-  })
+  end})
   toolbar.title=title
 
   import "androidx.appcompat.widget.Toolbar"
@@ -330,15 +281,6 @@ function 设置toolbar属性(toolbar,title)
   end
 
 end
-
---[[task(1,function()
-  local old_onConfigurationChanged=onConfigurationChanged
-  function onConfigurationChanged(config)
-    if old_onConfigurationChanged~=nil then
-      old_onConfigurationChanged(config)
-    end
-  end
-end)]]
 
 --更新字号相关逻辑已移动到import.lua
 
@@ -2068,7 +2010,7 @@ function 加入收藏夹(回答id,收藏类型,func)
 
       local orii=0
       local i=0
-      for k, v in pairs(processTable(adp.getData())) do
+      for k, v in pairs(adp.getData()) do
         local oristatus=v.oristatus
         local status=v.status.Checked
 
@@ -2644,27 +2586,6 @@ function getFont_b64(filePath)
   end
 end
 
-function getFont_b64(filePath,callback)
-  local function main(filePath)
-    local FileInputStream=luajava.bindClass"java.io.FileInputStream"
-    local Base64=luajava.bindClass "android.util.Base64";
-
-    local fis = FileInputStream(filePath)
-    local fileContent = byte[fis.available()];
-    fis.read(fileContent);
-    if fileContent then
-      return Base64.encodeToString(fileContent, Base64.NO_WRAP);
-    end
-  end
-
-  local file=activity.getExternalFilesDir(nil).toString() .. "/font_b64"
-
-  activity.newTask(main,function(content)
-    写入文件(file,content)
-    callback(content)
-  end).execute({filePath})
-end
-
 --需将webview的shouldInterceptRequest设置为拦截加载
 function 网页字体设置(view)
   if this.getSharedData("网页自定义字体")==nil then
@@ -2674,36 +2595,6 @@ function 网页字体设置(view)
   加载js(view,js)
 end
 
-function 拦截加载(view,url)
-  local 提示=function(text)
-    this.runOnUiThread(Runnable{
-      run=function()
-        提示(text)
-      end
-    });
-  end
-  if this.getSharedData("网页自定义字体")==nil then
-    return
-  end
-  local 自定义字体路径=this.getSharedData("网页自定义字体")
-  if 自定义字体路径=="" then
-    自定义字体路径=srcLuaDir.."/res/product.ttf";
-  end
-  if url:find("myappfont") then
-    local FileInputStream=luajava.bindClass"java.io.FileInputStream"
-    local fis
-    _=pcall(function() fis= FileInputStream(自定义字体路径) end)
-    if _==false then
-      this.setSharedData("网页自定义字体",nil)
-      提示("当前自定义字体文件不可读 已自动清空")
-    end
-    local WebResourceResponse=luajava.bindClass "android.webkit.WebResourceResponse"
-    return WebResourceResponse(
-    "application/x-font-ttf",
-    "utf-8",
-    fis)
-  end
-end
 
 function matchtext(str,regex)
   local t={}
@@ -2712,59 +2603,6 @@ function matchtext(str,regex)
   end
   return t
 end --返回table
-
-function webview下载文件(链接, UA, 相关信息, 类型, 大小)
-  local result=get_write_permissions(true)
-  if result~=true then
-    return false
-  end
-  大小=string.format("%0.2f",大小/1024/1024).."MB"
-  if 相关信息:match('filename="(.-)"') then
-    文件名=urlDecode(相关信息:match('filename="(.-)"'))
-   else
-    import "android.webkit.URLUtil"
-    文件名=URLUtil.guessFileName(链接,nil,nil)
-  end
-  local Download_layout={
-    LinearLayout;
-    orientation="vertical";
-    id="Download_father_layout",
-    {
-      TextView;
-      id="namehint",
-      layout_marginTop="10dp";
-      text="下载文件名",
-      layout_marginLeft="10dp",
-      layout_marginRight="10dp",
-      layout_width="match_parent";
-      textColor=WidgetColors,
-      layout_gravity="center";
-    };
-    {
-      EditText;
-      id="nameedit",
-      Text=文件名;
-      layout_marginLeft="10dp",
-      layout_marginRight="10dp",
-      layout_width="match_parent";
-      layout_gravity="center";
-    };
-  };
-
-  AlertDialog.Builder(this)
-  .setTitle("下载文件")
-  .setMessage("文件类型："..类型.."\n".."文件大小："..大小)
-  .setView(loadlayout(Download_layout))
-  .setNeutralButton("复制",{onClick=function(v)
-      复制文本(链接)
-      提示("复制下载链接成功")
-  end})
-  .setPositiveButton("下载",{onClick=function(v)
-      下载文件(链接,nameedit.Text)
-  end})
-  .setNegativeButton("取消",nil)
-  .show()
-end
 
 function getDirSize(path)
   local len=0
@@ -2885,11 +2723,6 @@ if not this.getSharedData("udid") then
 
 end
 
-
-function getua(view)
-  local user_agent="ZhihuHybrid com.zhihu.android/Futureve/9.13.0 "..view.getSettings().getUserAgentString()
-  return user_agent
-end
 
 function setHead()
 
@@ -3270,40 +3103,6 @@ function ChoicePath(StartPath,callback)
 end
 
 
-if Build.VERSION.SDK_INT >= 21 then
-  activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(转0x(backgroundc,true));
-end
-
-
-local cachemode=this.getSharedData("禁止生成缓存")
-if cachemode=="true" then
-  mytip_dia=AlertDialog.Builder(this)
-  .setTitle("提示")
-  .setMessage("已开启 禁止生成缓存 该选项可能会导致一些问题 请点击下方关闭 关闭后 你的登录状态将会变为未登录")
-  .setCancelable(false)
-  .setPositiveButton("我知道了",{onClick=function()
-      local datadir=tostring(ContextCompat.getDataDir(activity))
-      local mcache=datadir.."/cache"
-      local mmcache=datadir.."/app_webview"
-      删除文件(mcache)
-      删除文件(mmcache)
-      this.setSharedData("禁止生成缓存",nil)
-      清除所有cookie()
-      activity.setSharedData("signdata",nil)
-      activity.setSharedData("idx",nil)
-      activity.setSharedData("udid",nil)
-      提示("已清除,即将重启")
-      task(200,function()
-        import "android.os.Process"
-        local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        activity.startActivity(intent);
-        Process.killProcess(Process.myPid());
-      end)
-  end})
-  .show()
-end
-
 function 设置toolbar(toolbar)
   toolbar.setTitle("")
   activity.setSupportActionBar(toolbar)
@@ -3413,835 +3212,7 @@ end
 
 webview_packagename="com.android.chrome"
 
---有生之年优化的代码 软件内直接加载内容 bug太多遂放弃
-function trim_last_newline(str)
-  if str:sub(-1) == "\n" or str:sub(-1) == "\r" then
-    return str:sub(1, -2) -- 移除最后一个字符
-   else
-    return str -- 返回原字符串
-  end
-end
-
-function setClickableSpan(spannableString,startindex,endindex,url)
-  import "android.text.SpannableString"
-  import "android.text.style.ClickableSpan"
-  import "android.text.Spanned"
-  import "android.text.method.LinkMovementMethod"
-  local clickableSpan = ClickableSpan{
-    onClick=function(widget)
-      检查链接(url);
-    end,
-    updateDrawState=function(v)
-      v.setColor(v.linkColor);
-      v.setUnderlineText(false)
-    end
-  }
-  spannableString.setSpan(clickableSpan, startindex, endindex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-end
-
-local method = View.getDeclaredMethod("initializeScrollbars", Class{TypedArray});
-method.setAccessible(true);
-
-function recylerview显示滚动条(recy)
-  method.invoke(recy, Object[1]);
-end
-
-
-内容页加载={}
-
-function 加载内容页(data,recy)
-
-  import "android.content.res.TypedArray";
-
-  recylerview显示滚动条(recy)
-  recy.setVerticalScrollBarEnabled(true);
-  recy.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
-
-
-  import "android.widget.ImageView$ScaleType"
-
-  local structured_content=data.structured_content
-  local segments={}
-  if structured_content then
-    segments=structured_content.segments
-  end
-
-  if data.relationship_tips then
-    table.insert(segments,1,{
-      type="myapptip",
-      myapptip={
-        text=data.relationship_tips.text
-      }
-    })
-  end
-
-  if data.type~="answer" and data.header then
-    table.insert(segments,1,{
-      type="heading",
-      heading={
-        text=data.header.text
-      }
-    })
-  end
-
-  if data.image_list then
-    table.insert(segments,1,{
-      type="imglist",
-      imglist={
-        images=data.image_list.images,
-        count=data.image_list.count
-      }
-    })
-  end
-
-  if data.author then
-    table.insert(segments,1,{
-      type="author",
-      author={
-        avatar_url=data.author.avatar.avatar_image.day,
-        headline=data.author.description,
-        name=data.author.fullname,
-        id=data.author.id
-      }
-    })
-  end
-
-  table.insert(segments,{
-    type="myapptip",
-    myapptip={
-      text=(function()
-        local content_end_info=data.content_end_info
-        local str=""
-        if content_end_info.update_time_text and content_end_info.update_time_text~="" then
-          str=content_end_info.update_time_text
-         elseif content_end_info.create_time_text and content_end_info.create_time_text~="" then
-          str=content_end_info.create_time_text
-        end
-        if content_end_info.ip_info and content_end_info.ip_info~="" then
-          str=str.." · "..content_end_info.ip_info
-        end
-        if str=="" then
-          str="未知"
-        end
-        return str
-      end)()
-    }
-  })
-
-  local recywidth=recy.width
-  import "androidx.viewpager2.widget.ViewPager2"
-  import "com.google.android.material.card.MaterialCardView"
-  import "android.widget.CircleImageView"
-  import "android.text.method.LinkMovementMethod"
-
-  local imgindex=0
-  local imgdata={}
-
-  for k,v in pairs(segments) do
-    local type1=v.type
-    local data=v[type1]
-    switch type1
-     case "image"
-      local url=data.urls[1]
-      imgdata[url]=tostring(imgindex)
-      imgindex=imgindex+1
-     case "imglist"
-      for i=1,#data.images do
-        local url=data.images[i].url
-        imgdata[url]=tostring(imgindex)
-        imgindex=imgindex+1
-      end
-    end
-  end
-
-  local function 跳转图片(url)
-    local pos=imgdata[url]
-    local imgdata1={}
-    for k,v in pairs(imgdata) do
-      imgdata1[v]=k
-    end
-    imgdata1[tostring(table.size(imgdata1))]=tonumber(pos)
-    this.setSharedData("imagedata",luajson.encode(imgdata1))
-    activity.newActivity("image")
-  end
-
-  内容页加载[recy.id]=segments
-
-
-  local adp=LuaCustRecyclerAdapter(AdapterCreator({
-
-    getItemCount=function()
-      return #segments
-    end,
-
-    getItemViewType=function(position)
-      local data=segments[position+1]
-      local datatype
-      local type1=data.type
-      switch type1
-       case "paragraph"
-        datatype=0
-       case "image"
-        datatype=1
-       case "hr"
-        datatype=2
-       case "heading"
-        datatype=3
-       case "code_block"
-        datatype=4
-       case "list_node"
-        datatype=5
-       case "video"
-        datatype=6
-       case "card"
-        if data[type1].card_type:find("ad") then
-          datatype=7
-         else
-          datatype=8
-        end
-       case "blockquote"
-        datatype=9
-       case "author"
-        datatype=98
-       case "imglist"
-        datatype=99
-       case "myapptip"
-        datatype=100
-      end
-      data.datatype=datatype
-      return datatype or 500
-    end,
-
-    onCreateViewHolder=function(parent,viewType)
-      local views={}
-      local itemc
-      switch viewType
-       case 0
-        itemc= {
-          LinearLayout,
-          layout_width="fill";
-          orientation="vertical";
-          id="root";
-          {
-            TextView;
-            Typeface=字体("product");
-            layout_width="match";
-            TextIsSelectable=true,
-            id="text",
-            textSize=内容文本大小;
-            lineHeight=内容文本行高;
-          };
-        };
-       case 1
-        itemc=
-        {
-          LinearLayout,
-          layout_width="fill";
-          orientation="vertical";
-          {
-            ImageView;
-            id="img",
-            layout_width="match";
-            adjustViewBounds="true",
-          };
-          {
-            TextView;
-            text="\n";
-            id="介绍";
-            layout_gravity="center";
-            gravity="center";
-            layout_width="match";
-          }
-        }
-       case 2
-        itemc= {
-          LinearLayout;
-          layout_width="-1";
-          layout_height="wrap";
-          gravity="center";
-          orientation="vertical";
-          {
-            TextView;
-            layout_width="-1";
-            layout_height="10px";
-            background=cardback,
-            layout_marginTop="16dp";
-            layout_marginBottom="16dp";
-            layout_marginLeft="100dp";
-            layout_marginRight="100dp";
-          };
-          {
-            TextView;
-            text="\n";
-            layout_width="match";
-          }
-        };
-       case 3
-        itemc={
-          TextView;
-          Typeface=字体("product-Bold");
-          TextIsSelectable=true;
-          id="text",
-          textSize=内容文本大小;
-          lineHeight=内容文本行高;
-        }
-       case 4
-        itemc={
-          TextView;
-          Typeface=字体("product");
-          TextIsSelectable=true;
-          id="text",
-          textSize=内容文本大小;
-          lineHeight=内容文本行高;
-        }
-       case 5
-        itemc={
-          TextView;
-          Typeface=字体("product");
-          TextIsSelectable=true;
-          id="text",
-          textSize=内容文本大小;
-          lineHeight=内容文本行高;
-        }
-       case 6
-        itemc= {
-          LinearLayout;
-          layout_height="wrap";
-          layout_width="fill";
-          orientation="vertical";
-          {
-            MaterialCardView;
-            layout_height="wrap";
-            layout_width="match";
-            id="card";
-            {
-              LinearLayout;
-              layout_gravity="center";
-              layout_width="match";
-              padding="16dp";
-              {
-                TextView;
-                id="text",
-                layout_gravity="center";
-                layout_width="match";
-                gravity="center";
-              };
-            };
-          };
-          {
-            TextView;
-            text="\n";
-            layout_width="match";
-          }
-        };
-       case 7
-        itemc= {
-          LinearLayout;
-          layout_height="wrap";
-          layout_width="fill";
-          orientation="vertical";
-          {
-            MaterialCardView;
-            layout_gravity='center';
-            Elevation='0';
-            layout_width='fill';
-            layout_height='-2';
-            radius=cardradius;
-            id="card",
-            CardBackgroundColor=cardedge;
-            StrokeColor=cardedge;
-            StrokeWidth=dp2px(1),
-            {
-              LinearLayout;
-              layout_width="fill";
-              orientation="horizontal",
-              {
-                MaterialCardView;
-                Elevation='0';
-                layout_marginLeft="5dp";
-                layout_gravity="center_vertical",
-                CardBackgroundColor=cardbackroundc,
-                {
-                  ImageView;
-                  layout_width='56dp';
-                  layout_gravity="center|right",
-                  layout_height="56dp",
-                  id="img",
-                  ScaleType=ScaleType.CENTER_CROP,
-                };
-              };
-              {
-                LinearLayout;
-                padding="16dp";
-                layout_weight=1;
-                layout_gravity="center",
-                gravity="center",
-                {
-                  TextView;
-                  textColor=textc;
-                  Typeface=字体("product-Bold");
-                  layout_weight="1";
-                  id="标题",
-                  textSize=标题文字大小;
-                  lineHeight=标题行高;
-                };
-                {
-                  AppCompatImageView;
-                  id="rightIcon";
-                  layout_width="24dp";
-                  layout_height="24dp";
-                  colorFilter=theme.color.textColorSecondary;
-                  ImageResource=R.drawable.ic_chevron_right;
-                }
-              };
-            };
-          };
-          {
-            TextView;
-            text="\n";
-            layout_width="match";
-          }
-        };
-       case 8
-        itemc= {
-          LinearLayout;
-          layout_height="wrap";
-          layout_width="fill";
-          orientation="vertical";
-          {
-            MaterialCardView;
-            layout_gravity='center';
-            Elevation='0';
-            layout_width='fill';
-            layout_height='-2';
-            radius=cardradius;
-            id="card",
-            CardBackgroundColor=cardedge;
-            StrokeColor=cardedge;
-            StrokeWidth=dp2px(1),
-            {
-              LinearLayout;
-              padding="16dp";
-              orientation="vertical";
-              {
-                TextView;
-                textColor=textc;
-                Typeface=字体("product-Bold");
-                id="标题",
-                textSize=标题文字大小;
-                lineHeight=标题行高;
-              };
-              {
-                TextView;
-                textColor=textc;
-                Typeface=字体("product");
-                id="底部内容",
-                textSize=内容文字大小;
-                lineHeight=内容行高;
-              };
-            };
-          };
-
-          {
-            TextView;
-            text="\n";
-            layout_width="match";
-          }
-        };
-       case 9
-        itemc={
-          LinearLayout;
-          layout_width="-1";
-          layout_height="wrap";
-          gravity="center";
-          orientation="horizontal";
-          {
-            TextView;
-            layout_width="wrap";
-            layout_height="10px";
-            background=cardback,
-            layout_marginTop="16dp";
-            layout_marginBottom="16dp";
-            layout_marginLeft="10dp";
-            layout_marginRight="10dp";
-          };
-          {
-            TextView;
-            Typeface=字体("product");
-            TextIsSelectable=true,
-            id="text",
-            textSize=内容文本大小;
-            lineHeight=内容文本行高;
-          },
-          {
-            TextView;
-            text="\n";
-            layout_width="match";
-          };
-        }
-
-       case 98
-        itemc={
-          LinearLayout;
-          layout_height="wrap";
-          layout_width="fill";
-          orientation="vertical";
-          {
-            MaterialCardView;
-            layout_gravity="center";
-            layout_height="-2";
-            CardBackgroundColor=cardedge,
-            Elevation="0";
-            layout_width="-1";
-            layout_margin="16dp";
-            layout_marginTop="0dp";
-            layout_marginBottom="0dp";
-            layout_marginLeft="0dp";
-            layout_marginRight="0dp";
-            radius=cardradius;
-            StrokeColor=cardedge;
-            StrokeWidth=dp2px(1),
-            id="card",
-            {
-              CircleImageView,
-              layout_marginLeft="8dp";
-              layout_width="45dp",
-              layout_height="45dp",
-              layout_gravity="left|center",
-              id="usericon",
-            },
-            {
-              TextView,
-              Typeface=字体("product-Bold");
-              layout_marginTop="15dp",
-              layout_marginLeft="60dp",
-              gravity="left|center",
-              textColor=textc,
-              id="username",
-              textSize=标题文本大小,
-              lineHeight=标题行高;
-            },
-            {
-              TextView,
-              Typeface=字体("product");
-              layout_marginLeft="60dp",
-              layout_marginRight="5dp",
-              layout_marginTop="40dp",
-              layout_marginBottom="10dp",
-              gravity="left|bottom",
-              textColor="#FF767676",
-              id="userheadline",
-              textSize=内容文本大小,
-              lineHeight=内容行高;
-            },
-          };
-          {
-            TextView;
-            layout_gravity="center";
-            gravity="center";
-            layout_width="match";
-          }
-        };
-       case 99
-        itemc= {
-          LinearLayout;
-          orientation="vertical";
-          layout_width="-1";
-          layout_height="wrap";
-          {
-            RelativeLayout;
-            layout_width="fill";
-            layout_height="50%h";
-            {
-              LinearLayout;
-              layout_width="-1";
-              layout_height="-1";
-              {
-                ViewPager2;
-                id="picpage";
-                layout_width="-1";
-                layout_height="-1";
-              };
-            };
-            {
-              LinearLayout;
-              layout_alignParentRight="true";
-              orientation="horizontal";
-              {
-                MaterialCardView;
-                layout_gravity="center";
-                {
-                  LinearLayout;
-                  orientation="horizontal";
-                  layout_marginRight="8dp";
-                  layout_marginLeft="8dp";
-                  {
-                    TextView;
-                    id="now_count",
-                    text="1",
-                  };
-                  {
-                    TextView;
-                    text="/",
-                  };
-                  {
-                    TextView;
-                    id="all_count",
-                    text="1",
-                  };
-                };
-              };
-            };
-          };
-          {
-            TextView;
-            layout_width="match";
-            text="\n";
-          };
-        };
-
-       case 100
-        itemc={
-          TextView;
-          Typeface=字体("product");
-          TextIsSelectable=true,
-          id="text",
-          textSize=标题文字大小;
-          lineHeight=标题行高;
-        }
-       case 500
-        itemc={TextView;text="未知类型"}
-      end
-
-      holder=LuaCustRecyclerHolder(loadlayout(itemc,views))
-
-      if views.text and views.text.isTextSelectable()==true then
-        views.text.TextIsSelectable=false
-        views.text.onLongClick=function(v)
-          local mtab={
-
-            {"分享",function()
-                local text=trim_last_newline(v.Text)
-                if text=="" then
-                  text=trim_last_newline(v.hint)
-                end
-                分享文本(text)
-            end},
-            {"复制",function()
-                local text=trim_last_newline(v.Text)
-                if text=="" then
-                  text=trim_last_newline(v.hint)
-                end
-                import "android.content.*"
-                activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(text)
-                提示("复制文本成功")
-            end},
-          }
-
-          local pop=showPopMenu(mtab)
-          pop.showAtLocation(v, Gravity.NO_GRAVITY, recy_x, recy_y);
-
-        end
-      end
-
-      holder.view.setTag(views)
-      return holder
-    end,
-
-    onBindViewHolder=function(holder,position)
-      local view=holder.view.getTag()
-      local data=segments[position+1]
-      local type=data.type
-
-      switch data.datatype
-       case 0
-        view.text.text=data[type].text.."\n"
-        if data[type].marks then
-          local text = SpannableString(view.text.text)
-          for _,v in ipairs(data[type].marks) do
-            local start_index=v.start_index
-            local end_index=v.end_index
-            if v.type=="bold" then
-              text.setSpan(StyleSpan(Typeface.BOLD), start_index,end_index, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-             elseif v.type=="link" then
-              setClickableSpan(text,start_index,end_index,v.link.href);
-            end
-          end
-          --似乎必须要在这里设置
-          view.text.setMovementMethod(LinkMovementMethod.getInstance());
-          view.text.text=text
-        end
-       case 1
-
-        local url=data[type].urls[1]
-        local width=data[type].width
-        local height=data[type].height
-        local sy = recywidth / width
-        width=recywidth
-        height = height * sy;
-
-        view.img.onClick=function()
-          跳转图片(url)
-        end
-        view.介绍.text=""
-        view.介绍.hint=data[type].description.."\n"
-
-        --计算高度 否则会异常滚动
-        loadglide(view.img,url,nil,{
-          width=width,
-          height=height
-        })
-
-        --禁用缓存 防止重复加载
-        holder.setIsRecyclable(false)
-       case 2
-       case 3
-        view.text.text=data[type].text.."\n"
-       case 4
-        view.text.text=data[type].content.."\n"
-       case 5
-        local items=data[type].items
-        local i=1
-        local content={}
-        for _,v in ipairs(items) do
-          table.insert(content,tostring(i)..".  "..v.text)
-          i=i+1
-        end
-        view.text.text=table.concat(content,"\n").."\n"
-       case 6
-        view.text.text="点击播放 "..data[type].title
-       case 7
-        if data[type].cover then
-          loadglide(view.img,data[type].cover)
-         else
-          loadglide(logopng,data[type].cover)
-        end
-        local extra_data=luajson.decode(data[type].extra_info)
-        view.标题.text= extra_data.description
-       case 8
-        local extra_data=luajson.decode(data[type].extra_info)
-        view.标题.text=extra_data.title
-        view.底部内容.hint=Html.fromHtml(extra_data.desc)
-       case 9
-        view.text.hint=data[type].text.."\n"
-       case 98
-        local author=data[type]
-        loadglide(view.usericon,author.avatar_url)
-        if author.headline=="" then
-          view.userheadline.text="Ta还没有签名哦~"
-         else
-          view.userheadline.text=author.headline
-        end
-        view.username.text=author.name
-
-       case 99
-        local imglist=data[type]
-        view.all_count.text=tostring(imglist.count)
-        import "com.dingyi.adapter.BaseViewPage2Adapter"
-
-        local t=BaseViewPage2Adapter(this)
-
-        local base=
-        {
-          FrameLayout,
-          layout_height="-1",
-          layout_width="-1",
-          layoutTransition=LayoutTransition()
-          .enableTransitionType(LayoutTransition.CHANGING),
-          {
-            ImageView,
-            id="img",
-            visibility=8,
-            layout_height="-1",
-            layout_width="-1",
-          },
-        }
-
-        local views={}
-        for i=1,#imglist.images do
-          views[i]={}
-          views[i].ids={}
-          t.add(loadlayout(base,views[i].ids))
-        end
-
-        view.picpage.adapter=t
-
-        import "androidx.viewpager2.widget.ViewPager2$OnPageChangeCallback"
-        import "com.bumptech.glide.Glide"
-        import "com.bumptech.glide.load.engine.DiskCacheStrategy"
-
-        view.picpage.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他和PageView差不多
-          onPageSelected=function(i)--选中的页数
-            i=i+1
-            view.now_count.text=tostring(i)
-            local parent=views[i].ids
-            if parent.img.getDrawable()==nil then
-              local url=imglist.images[i].url
-              loadglide(parent.img,url,nil,nil)
-              parent.img.Visibility=0
-              parent.img.onClick=function()
-                跳转图片(url)
-              end
-            end
-          end,
-
-        })
-
-       case 100
-        view.text.hint=data[type].text.."\n"
-      end
-
-
-      switch viewType
-       case 6
-        views.card.onClick=function()
-          zHttp.get("https://lens.zhihu.com/api/v4/videos/"..data.id内容,head,function(code,content)
-            if code==200 then
-              local v=luajson.decode(content)
-              xpcall(function()
-                视频链接=v.playlist.SD.play_url
-                end,function()
-                视频链接=v.playlist.LD.play_url
-                end,function()
-                视频链接=v.playlist.HD.play_url
-              end)
-              this.newActivity("browser",{视频链接})
-             elseif code==401 then
-              Toast.makeText(activity, "请登录后查看视频",Toast.LENGTH_SHORT).show()
-            end
-          end)
-        end
-       case 7,8
-        views.card.onClick=function()
-          检查链接(data.id内容)
-        end
-       case 98
-        views.card.onClick=function()
-          this.newActivity("people",{data.id内容})
-        end
-      end
-
-    end,
-  }))
-
-  recy.setAdapter(adp)
-  recy.setLayoutManager(LinearLayoutManager(this,RecyclerView.VERTICAL,false))
-  recy.setLayoutFrozen(false)
-  recy.addOnItemTouchListener(RecyclerView.OnItemTouchListener {
-    onInterceptTouchEvent=function(rv, e)
-      recy_x=e.getX()
-      recy_y=e.getY()
-      --mDetector.onTouchEvent(e);
-      return false;
-    end,
-    onTouchEvent=function(rv,e)
-      --print(e)
-    end,
-    onRequestDisallowInterceptTouchEvent=function(disallowIntercept)
-    end
-  });
-
-end
+--有生之年优化的代码 软件内直接加载内容 bug太多遂放弃 0.604移除
 
 function replace_or_add_order_by(url, new_value)
   -- 分离URL中的查询部分
@@ -4259,26 +3230,6 @@ function replace_or_add_order_by(url, new_value)
   return base_url .. "?" .. modified_query
 end
 
---新建文件复写onActivityResult
-task(1,function()
-  CREATE_FILE_REQUEST_CODE=9999
-  local old_onActivityResult=onActivityResult
-  function onActivityResult(requestCode, resultCode, data)
-    if requestCode == CREATE_FILE_REQUEST_CODE then
-      if data then
-        local uri = data.getData();
-        local outputStream = this.getContentResolver().openOutputStream(uri);
-
-        local content = String(saf_writeText);
-        outputStream.write(content.getBytes());
-        outputStream.close();
-      end
-      --防止old_onActivityResult不存在
-     elseif old_onActivityResult then
-      old_onActivityResult(requestCode, resultCode, data)
-    end
-  end
-end)
 
 function vectortopng(name)
   import "android.graphics.Canvas"
@@ -4292,6 +3243,3 @@ function vectortopng(name)
   bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
   outputStream.close()
 end
-
-
-

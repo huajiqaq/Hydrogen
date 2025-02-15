@@ -747,7 +747,7 @@ local function setattribute(root,view,params,k,v,ids)
     if type(v)=="function" then
       listener=OnClickListener{onClick=v}
      elseif type(v)=="userdata" then
-      listener=v
+      listener=OnClickListener{onClick=v}
      elseif type(v)=="string" then
       if ltrs[v] then
         listener=ltrs[v]
@@ -769,7 +769,7 @@ local function setattribute(root,view,params,k,v,ids)
     if type(v)=="function" then
       listener=OnLongClickListener{onLongClick=v}
      elseif type(v)=="userdata" then
-      listener=v
+      listener=OnLongClickListener{onLongClick=v}
      elseif type(v)=="string" then
       if ltrs[v] then
         listener=ltrs[v]
@@ -788,6 +788,8 @@ local function setattribute(root,view,params,k,v,ids)
     view.setOnLongClickListener(listener)
    elseif k == "getView" then
     if type(v)=="function" then
+      v(view)
+     elseif type(v)=="userdata"
       v(view)
      else
       error(string.format(

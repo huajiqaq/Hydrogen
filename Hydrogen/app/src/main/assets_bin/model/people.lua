@@ -43,6 +43,7 @@ function base.getAdapter(people_pagetool,pos)
        case 1
         views.点赞数布局.getParent().removeView(views.点赞数布局)
         views.点赞数布局=nil
+        views.评论图标.layoutParams.leftMargin=0
        case 2
         views.评论数布局.getParent().removeView(views.点赞数布局)
         views.评论数布局=nil

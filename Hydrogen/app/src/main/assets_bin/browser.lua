@@ -144,7 +144,7 @@ MyWebViewUtils:initWebViewClient{
 
 import "androidx.activity.result.ActivityResultCallback"
 import "androidx.activity.result.contract.ActivityResultContracts"
-mGetContent = thisFragment.registerForActivityResult(ActivityResultContracts.GetContent(),
+mGetContent = thisFragment or this.registerForActivityResult(ActivityResultContracts.GetContent(),
 ActivityResultCallback{
   onActivityResult=function(uri)
     if uri then

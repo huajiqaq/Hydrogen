@@ -74,7 +74,7 @@ nav.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedLis
      case "历史"
       task(300,function()newActivity("history")end)
      case "通知"
-     if getLogin()~=true then
+      if getLogin()~=true then
         提示("请登录后使用本功能")
         return true
       end
@@ -795,7 +795,7 @@ function 切换布局(s)
       if not(getLogin()) then
         return 提示("你可能需要登录")
       end
-nTView=_ask
+      nTView=_ask
       task(20,function()
         newActivity("browser",{"https://www.zhihu.com/messages","提问"})
       end)
@@ -1049,7 +1049,8 @@ function getuserinfo()
 
   local myurl= 'https://www.zhihu.com/api/v4/me'
 
-  zHttp.get(myurl,head,function(code,content)
+  --不使用zHttp防止报错
+  Http.get(myurl,head,function(code,content)
 
     if code==200 then--判断网站状态
       local data=luajson.decode(content)
@@ -1229,58 +1230,26 @@ task(1,function()
 end)
 
 
-lastclick = os.time() - 2
-function onKeyDown(code,event)
-  local now = os.time()
-  --[[if string.find(tostring(event),"KEYCODE_BACK") ~= nil then
-    --监听返回键
-    if a and a.pop.isShowing() then
-      --如果菜单显示，关闭菜单并阻止返回键
-      a.pop.dismiss()
-      return true
-    end
-    if _drawer.isDrawerOpen(Gravity.LEFT) then
-      --如果左侧侧滑显示，关闭左侧侧滑并阻止返回键
-      _drawer.closeDrawer(Gravity.LEFT)
-      return true
-    end
-    if now - lastclick > 2 then
-      --双击退出
-      提示("再按一次退出")
-      lastclick = now
-      return true
-    end
-  end]]
+local MyLuaFileFragment=luajava.bindClass("com.hydrogen.MyLuaFileFragment")
 
+function onKeyDown(code,event)
   if this.getSharedData("音量键选择tab")~="true" then
     return false
   end
-  local allcount=HometabLayout.getTabCount()
-  if page_home.getCurrentItem()~=0 or allcount<1 then
+  if luajava.instanceof(currentFragment,MyLuaFileFragment) then
+    local result=currentFragment.runFunc("onKeyUp",{code,event})
+    return result
+  end
+end
+
+function onKeyUp(code,event)
+  if this.getSharedData("音量键选择tab")~="true" then
     return false
   end
-  --音量键up
-  if code==KeyEvent.KEYCODE_VOLUME_UP then
-    mcount=HometabLayout.getSelectedTabPosition()+1
-    if mcount== allcount then
-      提示("后面没内容了")
-      return true
-    end
-    local tab=HometabLayout.getTabAt(mcount);
-    tab.select()
-    return true;
-    --音量键down
-   elseif code== KeyEvent.KEYCODE_VOLUME_DOWN then
-    mcount=HometabLayout.getSelectedTabPosition()-1
-    if mcount<0 then
-      提示("前面没内容了")
-      return true
-    end
-    local tab=HometabLayout.getTabAt(mcount);
-    tab.select()
-    return true;
+  if luajava.instanceof(currentFragment,MyLuaFileFragment) then
+    local result=currentFragment.runFunc("onKeyUp",{code,event})
+    return result
   end
-
 end
 
 data=...

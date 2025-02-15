@@ -2,6 +2,7 @@
   LinearLayout;
   layout_height="-1";
   layout_width="-1";
+  backgroundColor=backgroundc;
   {
     LinearLayout;
     layout_height="-1";
@@ -13,6 +14,7 @@
       layout_width="fill",
       layout_height="56dp",
       gravity="center|left";
+      id="appbar",
       {
         ImageView;
         src=图标("arrow_back");
