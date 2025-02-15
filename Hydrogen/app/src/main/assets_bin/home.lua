@@ -68,11 +68,6 @@ f2.setTag("empty")
 f2.setTag(R.id.tag_last_time,tonumber(os.time())-114514)
 
 
-toolbar.setNavigationOnClickListener(View.OnClickListener{
-  onClick=function(v)
-    _drawer.open();
-  end
-})
 nav.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedListener{
   onNavigationItemSelected=function(menuItem)
     if menuItem.isCheckable() then
@@ -209,10 +204,6 @@ for i=0,toolbar.getChildCount() do
     textView.setTextSize(20)
   end
 end
-
-
-
-
 
 
 nav.addHeaderView(loadlayout {
@@ -1282,12 +1273,19 @@ function onKeyUp(code,event)
   end
 end
 
-data=...
-function onCreate()
-  if data then
-    local intent=tostring(data.getData())
-    检查意图(intent)
-  end
+import "model.zHttp"
+import "model.zhihu_url"
+
+function onNewIntent(intent)
+  local data=tostring(intent.getData())
+  检查意图(data)
+end
+
+if this.getIntent() then
+  --如果本身有intent 就传递给onNewIntent做初始化
+  task(1,function()
+    onNewIntent(this.getIntent())
+  end)
 end
 
 if not(this.getSharedData("hometip0.02")) then
