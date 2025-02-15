@@ -81,7 +81,11 @@ MyWebViewUtils:initWebViewClient{
           加载js(view,"document.cookie = document.cookie")
           双按钮对话框("提示","登录后建议重启软件来保持数据一致性 不重启可能导致一些问题","立即重启","暂不重启",function(an)
             关闭对话框(an)
-            this.recreate()
+            import "android.os.Process"
+            local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            activity.startActivity(intent);
+            Process.killProcess(Process.myPid());
             end,function(an)
             关闭对话框(an)
           end)
