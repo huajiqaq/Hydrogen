@@ -1981,7 +1981,7 @@ function 加入收藏夹(回答id,收藏类型,func)
 
       local orii=0
       local i=0
-      for k, v in pairs(adp.getData()) do
+      for k, v in pairs(luajava.astable(adp.getData())) do
         local oristatus=v.oristatus
         local status=v.status.Checked
 
