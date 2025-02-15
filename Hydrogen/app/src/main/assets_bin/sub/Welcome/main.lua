@@ -14,6 +14,7 @@ import "welcome"
 import "agreements"
 import "android.provider.Settings"
 
+
 function buildTitlebar(icon,text)
   return {--设置项(图片,标题)
     CardView;
@@ -72,41 +73,53 @@ end
 import "pages.agreementPage"
 import "pages.permissionPage"
 
+activity.getSupportActionBar().hide()
 activity.setTitle(R.string.jesse205_welcome)
 activity.setContentView(loadlayout2("layout"))
 
-actionBar=activity.getSupportActionBar()
-actionBar.setDisplayHomeAsUpEnabled(true)
+local window = activity.getWindow()
+window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+if Build.VERSION.SDK_INT >= 30 then--Android R+
+  window.setDecorFitsSystemWindows(false);
+  window.setNavigationBarContrastEnforced(false);
+  window.setStatusBarContrastEnforced(false);
+end
 
-ScreenFixContent={
-  layoutManagers={},
-  orientation={
-  },
-}
+local ViewCompat = luajava.bindClass "androidx.core.view.ViewCompat"
+local WindowInsetsCompat = luajava.bindClass "androidx.core.view.WindowInsetsCompat"
+local view=window.getDecorView()
+
+local function init()
+  local windowInsets = ViewCompat.getRootWindowInsets(view);
+  local top = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+  local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()).bottom;
+  local height = Math.abs(bottom - top);
+  状态栏高度=height
+
+  mainLay.setPadding(
+  mainLay.getPaddingLeft(),
+  状态栏高度,
+  mainLay.getPaddingRight(),
+  mainLay.getPaddingBottom()
+  );
+end
+
+
+local attachedToWindow = view.isAttachedToWindow();
+if attachedToWindow then
+  init()
+ else
+  view.addOnAttachStateChangeListener(View.OnAttachStateChangeListener({
+    onViewAttachedToWindow=function(v)
+      init()
+    end,
+    onViewDetachedFromWindow=function()
+    end
+  }))
+end
 
 pages={}
 
-function onCreateContextMenu(menu)
-  --print(menu)
-end
-
-
-function onOptionsItemSelected(item)
-  local id=item.getItemId()
-  if id==android.R.id.home then
-    onKeyDown(KeyEvent.KEYCODE_BACK)
-    onKeyUp(KeyEvent.KEYCODE_BACK)
-  end
-end
-
-function onConfigurationChanged(config)
-  screenConfigDecoder:decodeConfiguration(config)
-  for index,content in ipairs(pages) do
-    if content.onConfigurationChanged then
-      content:onConfigurationChanged(config)
-    end
-  end
-end
 
 function onKeyDown(KeyCode, event)
   TouchingKey = true
@@ -135,12 +148,9 @@ end
 table.insert(pages,permissionPage)
 table.insert(pages,updateInfoPage)
 NowPage=pages[1]
-actionBar.setTitle(NowPage.title)
 
 
 maxPage=table.size(pages)
---progressBar.setMax((maxPage)*1000)
-
 adp=ArrayPageAdapter()
 
 for index,content in ipairs(pages) do
@@ -153,9 +163,6 @@ end
 pageView.setAdapter(adp)
 
 pageView.setOnPageChangeListener(PageView.OnPageChangeListener{
-  onPageScrolled=function(arg0,arg1,arg2)
-    --progressBar.setProgress((arg0+arg1+1)*1000)
-  end,
   onPageChange=function(view,page)
     local nowPage=pages[page+1]
     local elevationKey=nowPage.elevationKey
@@ -173,15 +180,7 @@ pageView.setOnPageChangeListener(PageView.OnPageChangeListener{
       previousButton.setVisibility(View.VISIBLE)
     end
     nextButton.setEnabled(not(nowPage.allowNext==false))
-    if elevationKey and _G[elevationKey]~=0 then
-      MyAnimationUtil.ActionBar.openElevation()
-     else
-      MyAnimationUtil.ActionBar.closeElevation()
-
-    end
-    actionBar.setTitle(nowPage.title)
     title.Text=nowPage.title
-    actionBar.setSubtitle(nowPage.subtitle)
     if nowPage.subtitle then
       subtitle.Text=nowPage.subtitle
       subtitle.Visibility=0
@@ -189,7 +188,6 @@ pageView.setOnPageChangeListener(PageView.OnPageChangeListener{
       subtitle.Text=""
       subtitle.Visibility=8
     end
-    actionBar.setHomeAsUpIndicator(nowPage.icon)
     titleicon.setImageResource(nowPage.icon)
     titleicon.setColorFilter(theme.color.colorAccent)
     title.setTextColor(theme.color.textColorPrimary)
@@ -203,6 +201,7 @@ previousButton.onClick=function()
     pageView.showPage(nowPage-1)
   end
 end
+
 nextButton.onClick=function()
   local nowPage=pageView.getCurrentItem()+1
   if nowPage<maxPage then
@@ -210,15 +209,8 @@ nextButton.onClick=function()
    elseif nowPage>=maxPage then
     enteringProgressBar.setVisibility(View.VISIBLE)
     nextButton.setVisibility(View.INVISIBLE)
-    --nextButton.setClickable(false)
     setSharedData("welcome",true)
     newActivity(File(activity.getLuaDir()).getParentFile().getParent(),true)
     activity.finish()
   end
 end
-
-screenConfigDecoder=ScreenFixUtil.ScreenConfigDecoder(ScreenFixContent)
-
-onConfigurationChanged(activity.getResources().getConfiguration())
-
-actionBar.hide()
