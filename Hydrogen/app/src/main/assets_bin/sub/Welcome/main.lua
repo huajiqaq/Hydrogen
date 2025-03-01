@@ -175,7 +175,7 @@ nextButton.onClick=function()
     enteringProgressBar.setVisibility(View.VISIBLE)
     nextButton.setVisibility(View.INVISIBLE)
     setSharedData("welcome",true)
-    newActivity(File(activity.getLuaDir()).getParentFile().getParent(),true)
+    activity.newActivity(File(activity.getLuaDir()).getParentFile().getParent(),true)
     activity.finish()
   end
 end

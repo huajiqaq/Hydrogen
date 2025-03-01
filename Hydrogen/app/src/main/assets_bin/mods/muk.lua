@@ -80,6 +80,8 @@ function 设置视图(t)
 end
 function newActivity(f,b,c)
   b=b or {}
+  MaterialContainerTransform=luajava.bindClass("com.google.android.material.transition.MaterialContainerTransform")
+  MyLuaFileFragment=luajava.bindClass("com.hydrogen.MyLuaFileFragment")
   MaterialSharedAxis=luajava.bindClass("com.google.android.material.transition.MaterialSharedAxis")
   backward = MaterialSharedAxis(MaterialSharedAxis.X, false);
   forward = MaterialSharedAxis(MaterialSharedAxis.X, true);
@@ -99,16 +101,30 @@ function newActivity(f,b,c)
    else
     ff=f1
   end
-  if (f1.getTag()=="home")&&((tostring(f2.tag)==f))
+  if f2.tag==f
     ff=f2
   end
   if !inSekai then ff = f1 end
   ff.tag=f
   ff.setTag(R.id.tag_last_time,nt)
+  if nTView then
+    forward=MaterialContainerTransform()
+    .setStartView(nTView)
+    .setEndView(ff)
+    .setScrimColor(0x00000000)
+    --.setFadeMode(0)
+    backward = MaterialSharedAxis(MaterialSharedAxis.Z, false);
+
+   else
+    backward = MaterialSharedAxis(MaterialSharedAxis.X, false);
+    forward = MaterialSharedAxis(MaterialSharedAxis.X, true);
+
+  end
+
   t.add(ff.id,MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai}).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward))
   t.addToBackStack(nil)
   t.commit()
-
+  nTView=nil
 end
 
 --inSekai=true

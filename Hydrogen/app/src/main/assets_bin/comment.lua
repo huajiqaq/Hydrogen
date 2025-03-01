@@ -92,10 +92,10 @@ if comment_typel=="local_chat" then
 
 
   --对话列表 显示第一个的提示内容
-  local_comment_listl.adapter.getData()[1].提示内容.Visibility=0
-  local_comment_listl.adapter.notifyDataSetChanged()
+  local_comment_list.adapter.getData()[1].提示内容.Visibility=0
+  local_comment_list.adapter.notifyDataSetChanged()
 
-  local_comment_listl.setOnItemClickListener(AdapterView.OnItemClickListener{
+  local_comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
       if v.Tag.提示内容.getVisibility()==0 then
         提示("当前已在该对话列表内")
@@ -105,12 +105,12 @@ if comment_typel=="local_chat" then
   _title.text="对话列表"
  elseif comment_typel=="local" then
   internetnet.setVisibility(8)
-  local_comment_listl.setVisibility(0)
+  local_comment_list.setVisibility(0)
 
   comment_itemc=获取适配器项目布局("comment/comments_reply")
 
   sadapter=LuaAdapter(activity,comment_itemc)
-  local_comment_listl.setAdapter(sadapter)
+  local_comment_list.setAdapter(sadapter)
 
   function isAuthorMentionedMoreThanOnce(s)
     local count = 0
@@ -158,17 +158,21 @@ if comment_typel=="local_chat" then
 
   _title.text="保存的评论".." "..#local_comment_list.adapter.getData().."条"
 
-  local_comment_listl.setOnItemClickListener(AdapterView.OnItemClickListener{
+  local_comment_list.setOnItemClickListener(AdapterView.OnItemClickListener{
     onItemClick=function(id,v,zero,one)
       if v.Tag.提示内容.getVisibility()==0 then
-        newActivity("commentl",{保存路径.."/fold/"..v.Tag.id内容.text,"local_chat"})
+        newActivity("comment",{保存路径.."/fold/"..v.Tag.id内容.text,"local_chat"})
       end
   end})
 end
 
 if not(comment_typel:find("local")) then
   send.onClick=function()
+if comment_type=="comments"
     发送评论(comment_idl,"回复该子评论")
+else
+发送评论("")
+end
   end
   踩tab={}
   comment_item=获取适配器项目布局("comment/comment")

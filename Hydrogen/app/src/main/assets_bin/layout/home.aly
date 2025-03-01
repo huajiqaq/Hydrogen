@@ -191,12 +191,12 @@
           backgroundColor=res.color.attr.colorSurfaceContainer;
           layout_width="fill";
           layout_height="wrap";
-        };
+        };--[[
         {View,
           id="negbar";
           backgroundColor=res.color.attr.colorSurfaceContainer;
           layout_width="fill";
-        };
+        };]]
       };
     };
 

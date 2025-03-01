@@ -536,7 +536,7 @@ function base:initpage(view,sr)
       if data.counts then
         _title.text=orititle.." "..tostring(data.counts.total_counts).."条"
        else
-        local tip="当前页无评论"
+        local tip="知识被荒原了"
         if data.comment_status and data.comment_status.text then
           tip=data.comment_status.text
         end
@@ -545,7 +545,7 @@ function base:initpage(view,sr)
         .setCancelable(false)
         .setMessage(tip)
         .setPositiveButton("我知道了",{onClick=function()
-            this.finish()
+            关闭页面()
         end})
         .show()
       end

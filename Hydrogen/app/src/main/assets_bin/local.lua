@@ -16,15 +16,18 @@ title,author=...
 波纹({all_root},"方自适应")
 
 local 保存路径=内置存储文件("Download/"..title.."/"..author)
-filedir=保存路径.."/html.html"
+filedir=保存路径.."/mht.mht"
 xxx=读取文件(保存路径.."/detail.txt")
 
+if 文件是否存在(filedir)==false then
+  filedir=保存路径.."/html.html"
+end
 if 文件是否存在(filedir)==false then
   提示("当前保存内容需要重新保存 请手动点击右上角保存重新保存")
 end
 
 if xxx:match("article") or xxx:match("pin") then
-  this.finish()
+  关闭页面()
   this.newActivity("column",{filedir,"本地"})
   return
 end
@@ -190,7 +193,7 @@ MyWebViewUtils:initChromeClient({
     end
 end})
 
-
+ 
 import "androidx.activity.result.ActivityResultCallback"
 import "androidx.activity.result.contract.ActivityResultContracts"
 createDocumentLauncher = thisFragment.registerForActivityResult(ActivityResultContracts.CreateDocument("text/markdown"),
@@ -219,7 +222,7 @@ task(1,function()
         src=图标("cloud"),text="使用网络打开",onClick=function()
           local questionid=xxx:match[[question_id="(.-)"]]
           local answerid=xxx:match[[answer_id="(.-)"]]
-          activity.newActivity("answer",{questionid,answerid})
+          newActivity("answer",{questionid,answerid})
         end
       },
 
@@ -236,7 +239,7 @@ task(1,function()
 
             end,
             function()
-              content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
+              t.content.evaluateJavascript('getmd()',{onReceiveValue=function(b)
                   提示("请选择一个保存位置")
                   saf_writeText=b
                   createDocumentLauncher.launch(title.."_"..author..".md");

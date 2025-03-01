@@ -682,17 +682,17 @@ function getitemRecy(pos)
   end
 end
 edgeToedge(mainLay,bnv,function()
-  --[[
-  local layoutParams = 侧滑头.LayoutParams;
+  
+  --[[local layoutParams = 侧滑头.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
   侧滑头.setLayoutParams(layoutParams);
   ]]
-  local layoutParams = negbar.LayoutParams;
+  --[[local layoutParams = negbar.LayoutParams;
   layoutParams.height=导航栏高度
-  negbar.setLayoutParams(layoutParams);
-  local layoutParams = bottombar.LayoutParams;
+  negbar.setLayoutParams(layoutParams);]]
+  --[[local layoutParams = bottombar.LayoutParams;
   layoutParams.height=-2
-  bottombar.setLayoutParams(layoutParams);
+  bottombar.setLayoutParams(layoutParams);]]
   --初始化主页()
 end)
 

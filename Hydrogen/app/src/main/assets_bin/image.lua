@@ -20,6 +20,7 @@ activity.setContentView(loadlayout("layout/image"))
 全屏()
 
 local ls= this.getSharedData("imagedata")
+ 
 this.setSharedData("imagedata",nil)
 local views={}
 

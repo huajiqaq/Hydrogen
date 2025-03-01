@@ -36,7 +36,7 @@ if Build.VERSION.SDK_INT >=30 then
     .setMessage("检测到系统版本大于安卓10 由于安卓的限制 导致无法保存文件在带有特殊字符串的文件夹 但应用私有目录无限制 你必须迁移文件才能使用本功能 请点击下方立即迁移 迁移后 卸载软件或清除软件数据也会删除对应保存的数据 为了应对 你可以在软件设置中手动管理文件")
     .setCancelable(false)
     .setPositiveButton("立即迁移",nil)
-    .setNegativeButton("暂不迁移",{onClick=function() this.finish() end})
+    .setNegativeButton("暂不迁移",{onClick=function() tishi.dismiss() end})
     .show()
     tishi.getButton(tishi.BUTTON_POSITIVE).onClick=function()
       local result=get_write_permissions(true)

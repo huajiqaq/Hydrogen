@@ -10,7 +10,7 @@ import "com.google.android.material.materialswitch.MaterialSwitch"
 设置toolbar属性(toolbar,"设置")
 edgeToedge(mainLay )
 function onOptionsItemSelected()
-  activity.finish()
+  关闭页面()
 end
 
 import "com.google.android.material.slider.Slider"

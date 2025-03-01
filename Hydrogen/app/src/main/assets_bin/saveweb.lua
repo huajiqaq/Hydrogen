@@ -29,7 +29,7 @@ MyWebViewUtils
 _title.text="加载中"
 content.loadUrl(保存url)
 content.setVisibility(8)
-静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),pbar,"横")
+静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),web_progressbar,"横")
 提示("请在页面加载完毕后手动点击右上角保存页面")
 
 local webview_loadurl=content.getUrl()
@@ -96,21 +96,21 @@ pop={
         if not(文件夹是否存在(父文件夹路径)) then
           创建文件夹(父文件夹路径)
         end
-        savedialog=AlertDialog.Builder(this)
+        --[[savedialog=AlertDialog.Builder(this)
         .setTitle("提示")
         .setMessage("保存中 请耐心等待")
-        .setCancelable(false)
-        .show()
+        --.setCancelable(false)
+        .show()]]
         创建文件夹(保存路径)
         local 详情文件夹=保存路径.."/detail.txt"
         创建文件(详情文件夹)
         写入文件(详情文件夹,写入内容)
         content.saveWebArchive(保存路径.."/mht.mht")
-        提示("保存成功 一秒后转换")
-        task(1000,function()
+        提示("保存成功 请稍等写入完成［一般2S内完成］")
+        --[[task(1000,function()
           content.loadUrl(mhtml2html)
           提示("转换中")
-        end)
+        end)]]
     end},
 
     {src=图标("share"),text="分享",onClick=function()

@@ -32,7 +32,7 @@ local data=...
 function onOptionsItemSelected(item)
   local id=item.getItemId()
   if id==android.R.id.home then
-    activity.finish()
+    关闭页面()
   end
 end
 

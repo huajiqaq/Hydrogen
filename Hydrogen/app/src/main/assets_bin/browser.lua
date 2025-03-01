@@ -64,7 +64,7 @@ MyWebViewUtils:initWebViewClient{
       view.stopLoading()
       if 检查意图(url,true) then
         检查意图(url)
-        activity.finish()
+        关闭页面()
        else
         双按钮对话框("提示","是否用第三方软件打开本链接？","是","否",
         function(an)
