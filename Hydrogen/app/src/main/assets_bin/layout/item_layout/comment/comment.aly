@@ -63,7 +63,7 @@
         };
         {
           LinearLayout;
-          layout_marginTop="4dp",
+          layout_marginTop="8dp",
           layout_width="-1",
           orientation="vertical";
           {
@@ -84,7 +84,7 @@
             -- orientation="vertical";
             {Chip,
               id="赞";
-              layout_marginTop="2dp";
+              layout_marginTop="4dp";
               text="赞",
               textColor=res.color.attr.colorPrimary,
               ChipIcon=like_drawable;
@@ -99,7 +99,7 @@
             },
             {Chip,
               id="评论";
-              layout_marginTop="2dp";
+              layout_marginTop="4dp";
               layout_marginLeft="4dp";
               text="评论",
               textColor=res.color.attr.colorPrimary,

@@ -95,6 +95,7 @@ comment.onClick=function()
   end
   local 保存路径=内置存储文件("Download/".._title.Text.."/"..username.Text)
   ViewCompat.setTransitionName(comment,"t")
+  nTView=comment
   newActivity("comment",{回答id,"answers",保存路径})
 end;
 
@@ -147,6 +148,7 @@ mripple.onClick=function()
   local mview=数据表[pg.adapter.getItem(pos).id]
   local id=mview.data.author.id
   if id~="0" then
+    nTView=mripple
     newActivity("people",{id})
    else
     提示("回答作者已设置匿名")

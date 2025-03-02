@@ -1021,7 +1021,31 @@ function 加载主页tab()
         end,
       });
 
+--[[      -- 当滑动结束发送请求 尝试解决重复数据问题
+      local data = home_pagetool:getItemData()
+      local 主页加载数据长度 = 6
+      home_pagetool.urlfunc = function(url, head)
+        if #data < 主页加载数据长度 or not getLogin() then
+          return url, head
+        end
 
+        local postdatas = {}
+        for i = 1, 主页加载数据长度 do
+          local item = data[i]
+          local encoded_data = luajson.encode(item.readdata)
+          table.insert(postdatas, string.format("[%s,%s]", tostring(item.isread), encoded_data))
+        end
+        local postdata = "targets=" .. urlEncode("[" .. table.concat(postdatas, ",") .. "]")
+
+        -- 修改URL尝试解决重复数据
+        url = url .. "&start_type=warm&refresh_scene=0"
+        zHttp.post("https://api.zhihu.com/lastread/touch/v2", postdata, apphead, function(code, content)
+          if code == 200 then
+          end
+        end)
+
+        return url, head
+      end]]
       --延迟防止滑动
       HometabLayout.postDelayed(Runnable{
         run=function()

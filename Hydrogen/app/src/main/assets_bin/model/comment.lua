@@ -202,18 +202,85 @@ function base.resolvedata(v,data)
   table.insert(data,add)
 end
 
-local function 多选菜单(data,v)
+local function 多选菜单(data,views)
   local id内容=data.id内容
-
 
   local menu={
 
     {"分享",function()
-        分享文本(v.Text)
+        分享文本(data.预览内容)
+    end},
+    {"收藏至本地",function()
+        local commenttype
+        local 对话id=data.id内容
+        local 对话用户=data.标题
+        local 对话内容=data.预览内容.toString()
+        if isme=="true" then
+          local 请求链接="https://www.zhihu.com/api/v4/comment_v5/comment/"..对话id
+
+          双按钮对话框("删除","删除该回复？该操作不可撤消！","是的","点错了",function(an)
+            local url,head=require "model.zse96_encrypt"(请求链接)
+            zHttp.delete(url,head,function(code)
+              if code==200 then
+                提示("删除成功！")
+                an.dismiss()
+              end
+            end)
+          end,function(an)an.dismiss()end)
+          return true
+        end
+
+        local result=get_write_permissions()
+        if result~=true then
+          return true
+        end
+
+        if not 保存路径 then
+          return 提示("该内容下评论不支持保存")
+        end
+
+        if not(文件夹是否存在(保存路径))then
+          return 提示("先保存 才可以收藏评论")
+        end
+
+        if comment_type~="comments" then
+
+          local 写入文件路径=保存路径.."/".."fold/"..对话id
+          local 写入内容='author="'..对话用户..'"'
+          local 写入内容=写入内容.."\n"
+          local 写入内容=写入内容..'content="'..对话内容..'"'
+
+          双按钮对话框("收藏","收藏这条评论？","是的","点错了",function(an)
+            写入文件(写入文件路径,写入内容)
+            提示("收藏成功")
+            an.dismiss()
+          end,
+          function(an)an.dismiss()end)
+         else
+          --如果是在对话列表里
+          local 写入文件路径=保存路径.."/".."fold/"..comment_id
+          local 写入内容=''
+
+          双按钮对话框("收藏","收藏整条列表？","是的","点错了",function(an)
+            local alldata=comment_pagetool:getItemData(1)
+            for i=1,#alldata do
+              local 对话用户= alldata[i].标题
+              local 对话内容= tostring(alldata[i].预览内容)
+              写入内容=写入内容..'author="'..对话用户..'"'
+              写入内容=写入内容.."\n"
+              写入内容=写入内容..'content="'..对话内容..'"'
+              写入内容=写入内容..'\n'
+            end
+            写入文件(写入文件路径,写入内容)
+            提示("收藏成功")
+            an.dismiss()
+          end,
+          function(an)an.dismiss()end)
+        end
     end},
     {"复制",function()
         import "android.content.*"
-        activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(v.Text)
+        activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(data.预览内容)
         提示("复制文本成功")
     end},
     {(function()
@@ -297,7 +364,7 @@ local function 多选菜单(data,v)
   if isstart then
     local authortext=data.标题
     local addmenu={"回复评论",function()
-        发送评论(id内容,"回复"..authortext.."发送的评论")
+        发送评论(id内容,"回复"..data.标题.."发送的评论")
     end}
     table.insert(menu,addmenu)
   end
@@ -398,75 +465,11 @@ function base.getAdapter(comment_pagetool,pos)
 
 
       views.预览内容.onLongClick=function()
-        local commenttype
-        local 对话id=data.id内容
-        local 对话用户=views.标题.text
-        local 对话内容=views.预览内容.text
-        if isme=="true" then
-          local 请求链接="https://www.zhihu.com/api/v4/comment_v5/comment/"..对话id
-
-          双按钮对话框("删除","删除该回复？该操作不可撤消！","是的","点错了",function(an)
-            local url,head=require "model.zse96_encrypt"(请求链接)
-            zHttp.delete(url,head,function(code)
-              if code==200 then
-                提示("删除成功！")
-                an.dismiss()
-              end
-            end)
-          end,function(an)an.dismiss()end)
-          return true
-        end
-
-        local result=get_write_permissions()
-        if result~=true then
-          return true
-        end
-
-        if not 保存路径 then
-          return 提示("该内容下评论不支持保存")
-        end
-
-        if not(文件夹是否存在(保存路径))then
-          return 提示("先保存 才可以收藏评论")
-        end
-
-        if comment_type~="comments" then
-
-          local 写入文件路径=保存路径.."/".."fold/"..对话id
-          local 写入内容='author="'..对话用户..'"'
-          local 写入内容=写入内容.."\n"
-          local 写入内容=写入内容..'content="'..对话内容..'"'
-
-          双按钮对话框("收藏","收藏这条评论？","是的","点错了",function(an)
-            写入文件(写入文件路径,写入内容)
-            提示("收藏成功")
-            an.dismiss()
-          end,
-          function(an)an.dismiss()end)
-         else
-          --如果是在对话列表里
-          local 写入文件路径=保存路径.."/".."fold/"..comment_id
-          local 写入内容=''
-
-          双按钮对话框("收藏","收藏整条列表？","是的","点错了",function(an)
-            local alldata=comment_pagetool:getItemData(1)
-            for i=1,#alldata do
-              local 对话用户= alldata[i].标题
-              local 对话内容= tostring(alldata[i].预览内容)
-              写入内容=写入内容..'author="'..对话用户..'"'
-              写入内容=写入内容.."\n"
-              写入内容=写入内容..'content="'..对话内容..'"'
-              写入内容=写入内容..'\n'
-            end
-            写入文件(写入文件路径,写入内容)
-            提示("收藏成功")
-            an.dismiss()
-          end,
-          function(an)an.dismiss()end)
-        end
+        
       end
 
       views.author_lay.onClick=function()
+nTView=views.图像
         newActivity("people",{data.作者id})
       end
 
@@ -483,6 +486,7 @@ function base.getAdapter(comment_pagetool,pos)
               end
             end
           end
+        nTView=views.card
           newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
         end
       end
@@ -495,6 +499,7 @@ function base.getAdapter(comment_pagetool,pos)
               end
             end
           end
+nTView=views.card
           newActivity("comment",{data.id内容,"comments",保存路径,comment_id})
         end
       end
