@@ -156,7 +156,7 @@ question_base=require "model.question":new(question_id):getData(function(tab)
 
   for k,v in pairs(tab.topics) do
     tags.ids.load.parent.visibility=0
-    tags:addTab(v.name,function()检查链接(v.url)end,2)
+    tags:addTab(v.name,function()newActivity("topic",{v.id})end,2)
   end
 
   title.text=tab.title
