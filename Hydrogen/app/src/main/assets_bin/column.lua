@@ -66,7 +66,7 @@ fxurl=base_column.fxurl
 
 波纹({fh,_more},"圆主题")
 静态渐变(转0x(primaryc)-0x9f000000,转0x(primaryc),web_progressbar,"横")
-edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
+edgeToedge(nil,container,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
   topbar.setLayoutParams(layoutParams); end)
 

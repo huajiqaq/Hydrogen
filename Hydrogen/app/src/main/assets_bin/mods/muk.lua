@@ -11,7 +11,7 @@ import "jesse205"
 标题文字大小="16sp"
 内容文字大小="14sp"
 标题行高="20sp"
-内容行高="19sp"
+内容行高="18sp"
 
 
 oldTheme=ThemeUtil.getAppTheme()
@@ -23,7 +23,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.605
+versionCode=0.607
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
@@ -40,10 +40,16 @@ function addAutoHideListener(recs,views)
       rec.addOnScrollListener(RecyclerView.OnScrollListener{
         onScrolled=function(v,s,j)
           if j>0 then
-
             ee.layoutParams.getBehavior().slideDown(ee)
           end
           if j<0 then
+            ee.layoutParams.getBehavior().slideUp(ee)
+          end
+        end,
+        onScrollStateChanged=function(v,s)
+          if !(v.canScrollVertically(1))
+            ee.layoutParams.getBehavior().slideDown(ee)
+           elseif s==1
             ee.layoutParams.getBehavior().slideUp(ee)
           end
         end
@@ -79,6 +85,9 @@ function 设置视图(t)
   end
 end
 function newActivity(f,b,c)
+  if f1 == nil
+    return activity.newActivity(f,b)
+  end
   b=b or {}
   MaterialContainerTransform=luajava.bindClass("com.google.android.material.transition.MaterialContainerTransform")
   MyLuaFileFragment=luajava.bindClass("com.hydrogen.MyLuaFileFragment")
@@ -108,20 +117,37 @@ function newActivity(f,b,c)
   ff.tag=f
   ff.setTag(R.id.tag_last_time,nt)
   if nTView then
-    forward=MaterialContainerTransform()
+    import "androidx.core.view.ViewCompat"
+    local fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai})
+    local forward=MaterialContainerTransform(activity,true)
     .setStartView(nTView)
     .setEndView(ff)
     .setScrimColor(0x00000000)
-    --.setFadeMode(0)
-    backward = MaterialSharedAxis(MaterialSharedAxis.Z, false);
+    .addTarget(ff)
+    .setAllContainerColors(转0x(backgroundc))
+    --.setFadeMode(3)
+    --backward = MaterialSharedAxis(MaterialSharedAxis.Z, false);
+    local backward=MaterialContainerTransform(activity,false)
+    .setStartView(fragment.container)
+    .setEndView(nTView)
+    .setScrimColor(0x00000000)
+    .addTarget(ff)
+    .setAllContainerColors(转0x(backgroundc))
+    --.setFadeMode(3)
 
+    ViewCompat.setTransitionName(nTView,"t")
+    t.addSharedElement(nTView,"t")
+    fragment.setSharedElementEnterTransition(forward).setSharedElementReturnTransition(backward).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward)
+
+    t.add(ff.id,fragment)
    else
     backward = MaterialSharedAxis(MaterialSharedAxis.X, false);
     forward = MaterialSharedAxis(MaterialSharedAxis.X, true);
+    t.add(ff.id,MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai}).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward))
 
   end
 
-  t.add(ff.id,MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai}).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward))
+
   t.addToBackStack(nil)
   t.commit()
   nTView=nil
@@ -164,16 +190,22 @@ function edgeToedge(顶栏,底栏,callback)
     local top = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).top;
     local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
     local height = Math.abs(bottom - top);
+    
     导航栏高度=height
 
     if 顶栏 then
+      local bottompadding=顶栏.getPaddingBottom()
+      if not 底栏 then
+        bottompadding=bottompadding+导航栏高度
+      end
       顶栏.setPadding(
       顶栏.getPaddingLeft(),
       状态栏高度,
       顶栏.getPaddingRight(),
-      顶栏.getPaddingBottom()
+      bottompadding
       );
     end
+
     if 底栏 then
       底栏.setPadding(
       底栏.getPaddingLeft(),
@@ -206,7 +238,24 @@ end
 
 
 
-
+function webviewToBitmap(webView, func) --由于存在延迟，后续操作使用function(bitmap)传入
+  webView.measure(View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
+  View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+  --webView.layout(0, 0, webView.getMeasuredWidth(), webView.getMeasuredHeight())
+  webView.setDrawingCacheEnabled(true)
+  webView.buildDrawingCache(false)
+  webView.enableSlowWholeDocumentDraw()
+  local bitmap = Bitmap.createBitmap(webView.getMeasuredWidth(), webView.getMeasuredHeight(), Bitmap.Config.ARGB_8888)
+  task(200, function() --必须延迟，否则会出现空白，大小根据页面可以调整
+    local canvas = Canvas(bitmap)
+    local paint = Paint()
+    local iHeight = bitmap.getHeight()
+    canvas.drawBitmap(bitmap, 0, iHeight, paint)
+    webView.draw(canvas)
+    webView.setDrawingCacheEnabled(false)
+    func(bitmap)
+  end)
+end
 
 function findDirectoryUpward(startPath)
   local path = startPath

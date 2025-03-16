@@ -17,7 +17,7 @@ import "com.google.android.material.floatingactionbutton.FloatingActionButton"
 
 comment_id,comment_type,保存路径,父回复id=...
 设置视图("layout/comment")
-addAutoHideListener({comment_recyl},{send})
+addAutoHideListener({comment_recy},{send})
 
 --activity.setContentView(loadlayout("layout/comment"))
 edgeToedge(mainLay,send)

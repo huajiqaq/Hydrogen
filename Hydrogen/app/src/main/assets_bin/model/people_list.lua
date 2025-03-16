@@ -161,7 +161,14 @@ function base:initpage(view,sr)
     sr=sr,
     head="head",
     adapters_func=self.getAdapter,
-    func=self.resolvedata
+    func=self.resolvedata,
+    urlfunc=function(geturl,head)
+      --尝试解决bug
+      if geturl:find("api.zhihu.com") then
+        geturl=geturl:gsub("api/v4","")
+      end
+      return geturl,head
+    end
   })
   :initPage()
   :createfunc()

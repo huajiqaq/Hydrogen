@@ -16,6 +16,10 @@ import androidx.annotation.NonNull;
 import com.luajava.LuaObject;
 import com.luajava.LuaState;
 
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+
 import java.io.File;
 
 public class LuaActivity extends com.androlua.LuaActivity {
@@ -29,6 +33,31 @@ public class LuaActivity extends com.androlua.LuaActivity {
   private LuaState L;
   private LuaObject mOnBackPressed;
   private OnBackAnimationCallback OnBackAnimationCallback;
+  
+  @Override
+  protected void attachBaseContext(Context base) {
+    // 获取字体大小设置
+    Object fontSizeObj = this.getSharedData("font_size");
+  
+    String fontSizeStr;
+    if (fontSizeObj instanceof String) {
+        fontSizeStr = (String) fontSizeObj;
+    } else {
+        fontSizeStr = "20.0";  // 默认值
+    }
+
+    try {
+        Configuration config = new Configuration(base.getResources().getConfiguration());
+        float fontScale = Float.parseFloat(fontSizeStr) / 20;
+        config.fontScale = fontScale;
+
+        // 使用base创建新的Context
+        Context updatedContext = base.createConfigurationContext(config);
+        super.attachBaseContext(updatedContext);
+    } catch (NumberFormatException e) {
+         super.attachBaseContext(base);  // 使用原始的base context以防出错
+    }
+  }
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +88,7 @@ public class LuaActivity extends com.androlua.LuaActivity {
     mOnBackPressed = L.getLuaObject("onBackPressed");
     if (mOnBackPressed.isNil()) mOnBackPressed = null;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+    if (Build.VERSION.SDK_INT >= 34) {
       OnBackAnimationCallback =
           new OnBackAnimationCallback() {
             @Override

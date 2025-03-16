@@ -31,7 +31,7 @@ data = processTable{
   {__type=4,subtitle="夜间模式",status={Checked=Boolean.valueOf(this.getSharedData("Setting_Night_Mode"))}},
 
   {__type=4,subtitle="不加载图片",status={Checked=Boolean.valueOf(this.getSharedData("不加载图片"))}},
-  {__type=4,subtitle="智能无图模式",status={Checked=Boolean.valueOf(this.getSharedData("智能无图模式"))}}, 
+  {__type=4,subtitle="智能无图模式",status={Checked=Boolean.valueOf(this.getSharedData("智能无图模式"))}},
   {__type=5,subtitle="字体大小",status={
       valueFrom=10,
       value=tonumber(activity.getSharedData("font_size")),
@@ -42,6 +42,13 @@ data = processTable{
           return formattedNumber.." sp"
         end,
       },
+
+  }},
+  {__type=5,subtitle="推荐缓存",status={
+      valueFrom=0,
+      value=tointeger(activity.getSharedData("feed_cache")),
+      valueTo=180,
+      
 
   }},
   {__type=4,subtitle="回答单页模式",status={Checked=Boolean.valueOf(this.getSharedData("回答单页模式"))}},
@@ -124,6 +131,10 @@ tab=processTable{
       end)
       mtip=true
     end
+  end,
+  推荐缓存=function(slider,value,fromUser)
+    activity.setSharedData("feed_cache",value.."")
+    提示("设置为0即关闭缓存推荐以实现去重，知乎仅对重度使用用户推荐流添加重复数据\nEMMC设备推荐关闭该选项以使加载更流畅")
   end,
   设置屏蔽词=function()
     local 屏蔽词=this.getSharedData("屏蔽词")

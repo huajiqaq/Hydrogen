@@ -15,7 +15,7 @@ import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.navigationrail.NavigationRailView"
 
 activity.setContentView(loadlayout("layout/fragment"))
-
+activity.window.setNavigationBarContrastEnforced(false)
 inSekai=false
 if activity.getSharedData("平行世界")~="false" then
   local rootView = activity.getDecorView()

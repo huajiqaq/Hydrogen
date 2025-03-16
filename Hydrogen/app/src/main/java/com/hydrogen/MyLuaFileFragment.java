@@ -30,7 +30,6 @@ public class MyLuaFileFragment extends Fragment implements LuaGcable {
   private LuaApplication app;
   private final Object[] mArgs;
   private HashMap<String,Object> mGlobal;
-  private String mlayout;
 
   public MyLuaFileFragment(String luaFilePath) {
     this(luaFilePath, new Object[0], new HashMap<String,Object>());

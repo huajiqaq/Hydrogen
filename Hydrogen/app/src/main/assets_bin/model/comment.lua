@@ -126,7 +126,7 @@ end
 
 function base.resolvedata(v,data)
   local 头像=v.author.avatar_url
-  local 内容=utf8.gsub(utf8.gsub(v.content,"%s+$",""),"\u000D+$","")
+  local 内容=string.gsub(string.gsub(v.content,"</p>+$",""),"^<p>","")
   local 点赞数=v.vote_count
   local 时间=时间戳(v.created_time)
   local 名字=v.author.name

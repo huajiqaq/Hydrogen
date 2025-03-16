@@ -668,6 +668,76 @@ task(1,function()
       },
 
       {
+        src=图标("share"),text="以图片形式保存",onClick=function()
+          local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
+          local webView=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content
+          if url==nil then
+            提示("加载中")
+            return
+          end
+          local format="【回答】【%s】%s: %s"
+          --分享文本(string.format(format,_title.Text,username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
+          import "android.graphics.Bitmap"
+          import "android.graphics.Canvas"
+          import "android.graphics.Paint"
+
+          webviewToBitmap(webView, function(bitmap)
+            AlertDialog.Builder(this)
+            .setTitle("预览")
+            .setView(loadlayout({
+              ScrollView;
+              layout_width="fill";
+              layout_height="fill";
+              {
+                ImageView;
+                id="iv";
+                layout_width="fill";
+                layout_height="wrap";
+                adjustViewBounds="true"
+              }
+            }))
+            .setPositiveButton("确认并分享", function()
+              import "android.graphics.Bitmap"
+              import "android.os.Environment"
+              import "java.io.File"
+              import "java.io.FileOutputStream"
+              import "java.lang.System"
+import "android.content.FileProvider"
+              local dir=this.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString()..""
+              local file=File(dir,"知乎回答-".._title.Text.."-来自-"..username.Text..".jpg")
+              fos = FileOutputStream(file);
+              bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+              fos.flush();
+              fos.close();
+              local sendIntent = Intent()
+              .setAction(Intent.ACTION_SEND)
+              .putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, this.getPackageName()..".FileProvider", file))
+              .setData(FileProvider.getUriForFile(this, this.getPackageName()..".FileProvider", file))
+              .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+--.putExtra(Intent.EXTRA_STREAM, file.toURI())
+              .putExtra(Intent.EXTRA_TEXT, string.format(format,_title.Text,username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
+              .setType("image/*");
+
+              shareIntent = Intent.createChooser(sendIntent, nil);
+              this.startActivity(shareIntent);
+            end)
+            .setNegativeButton("取消", nil)
+            .setOnDismissListener({
+              onDismiss = function()
+                webView.scrollBy(0, 1) --弹出窗口后返回可能导致webview无法滑动，这样可以重置一下
+            end})
+            .show()
+
+            iv.setImageBitmap(bitmap)
+
+          end)
+
+
+
+        end,
+      },
+
+      {
         src=图标("chat_bubble"),text="查看评论",onClick=function()
 
           local pos=pg.getCurrentItem()
