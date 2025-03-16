@@ -7,22 +7,9 @@ function base_question:new(id)
   return child
 end
 
-function base_question:getTag(callback)
-  zHttp.get("https://api.zhihu.com/questions/"..self.id.."/topics?limit=20&platform=android",head,function(code,body)
-
-    if code==200 then
-      for k,v in pairs(luajson.decode(body).data) do
-        callback(v.name,v.url)
-      end
-    end
-
-  end)
-  return self
-end
-
 
 function base_question:getData(callback)
-  local url="https://www.zhihu.com/api/v4/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,detail,excerpt,author,relationship.is_following"
+  local url="https://www.zhihu.com/api/v4/questions/"..self.id.."?include=read_count,answer_count,comment_count,follower_count,detail,excerpt,author,relationship.is_following,topics"
   zHttp.get(url,head
   ,function(code,content)
     if code==200 then

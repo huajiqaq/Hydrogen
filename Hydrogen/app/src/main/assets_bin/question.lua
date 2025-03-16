@@ -145,21 +145,18 @@ function 问题详情(code)
 end
 
 
-question_base=require "model.question":new(question_id)
-:getTag(function(name,url)
-  tags.ids.load.parent.visibility=0
-  tags:addTab(name,function()检查链接(url)end,2)
-end)
-
-
-
-question_base:getData(function(tab)
+question_base=require "model.question":new(question_id):getData(function(tab)
 
   question_pagetool=question_base:initpage(question_recy,questionsr)
 
 
   if tab==false then
     return
+  end
+
+  for k,v in pairs(tab.topics) do
+    tags.ids.load.parent.visibility=0
+    tags:addTab(v.name,function()检查链接(v.url)end,2)
   end
 
   title.text=tab.title
