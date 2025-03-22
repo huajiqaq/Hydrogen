@@ -98,6 +98,7 @@ public class MyLuaFileFragment extends Fragment implements LuaGcable {
     mContainer.setLayoutParams(
         new ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mContainer.setId(View.generateViewId());
 
     return mContainer;
   }

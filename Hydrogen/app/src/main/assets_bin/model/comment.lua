@@ -59,7 +59,7 @@ zemoji={
   抱抱 = [[https://pic2.zhimg.com/v2-b2e3fa9e0b6f431bd18d4a9d5d3c6596.png]];
   doge = [[https://pic4.zhimg.com/v2-501ff2e1fb7cf3f9326ec5348dc8d84f.png]];
 }
-pcall(function()LuaUtil.unZip(srcLuaDir.."/res/zemoji.zip",activity.getExternalCacheDir().getPath())end)
+--pcall(function()LuaUtil.unZip(srcLuaDir.."/res/zemoji.zip",activity.getExternalCacheDir().getPath())end)
 for i,url in pairs(zemoji) do
   local drawable = getImageDrawable(表情(i))
   -- 设置Drawable  的图片的高度和宽度。 后面注释是获取设置图片原来的高度和宽度
@@ -370,7 +370,7 @@ local function 多选菜单(data,views)
   end
 
   local pop=showPopMenu(menu)
-  pop.showAtLocation(v, Gravity.NO_GRAVITY, downx, downy);
+  pop.showAsDropDown(views);
 
   return true
 end
@@ -474,8 +474,8 @@ nTView=views.图像
       end
 
       views.card.onTouch=function(v,event)
-        downx=event.getRawX()
-        downy=event.getRawY()
+        downx=event.getX()
+        downy=event.getY()
       end
       views.card.onClick=function()
         if views.评论.getVisibility()==0 then

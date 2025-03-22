@@ -39,12 +39,13 @@ android {
 
 
 dependencies {
-    api fileTree(dir: "libs", include: ["*.jar"])
+    api fileTree(dir: "libs", include: ["*.jar","*.aar"])
     api project(':androlua')
     api project(':Jesse205Library')
+    api project(':mdc')
     api 'androidx.appcompat:appcompat:1.7.0'
     api 'androidx.appcompat:appcompat-resources:1.7.0'
-    api 'com.google.android.material:material:1.13.0-alpha10'
+//    api 'com.google.android.material:material:1.13.0-alpha10'
     implementation "androidx.transition:transition:1.5.1"
     implementation "androidx.fragment:fragment:1.8.6"
     api 'androidx.viewpager2:viewpager2:1.1.0'

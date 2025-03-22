@@ -128,10 +128,10 @@ function newActivity(f,b,c)
     --.setFadeMode(3)
     --backward = MaterialSharedAxis(MaterialSharedAxis.Z, false);
     local backward=MaterialContainerTransform(activity,false)
-    .setStartView(fragment.container)
+    .setStartView(ff)
     .setEndView(nTView)
     .setScrimColor(0x00000000)
-    .addTarget(ff)
+    .addTarget(nTView)
     .setAllContainerColors(转0x(backgroundc))
     --.setFadeMode(3)
 
@@ -190,7 +190,7 @@ function edgeToedge(顶栏,底栏,callback)
     local top = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).top;
     local bottom = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
     local height = Math.abs(bottom - top);
-    
+
     导航栏高度=height
 
     if 顶栏 then
@@ -475,7 +475,7 @@ end
 
 function processTable(userdataTable)
   if type(userdataTable)=="userdata"
-    userdataTable=luajaba.astable(userdataTable)
+    userdataTable=luajava.astable(userdataTable)
   end
   local resultTable = {}
 
