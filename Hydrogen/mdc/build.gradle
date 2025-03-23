@@ -1,2 +1,24 @@
-configurations.maybeCreate("default")
-artifacts.add("default",file("Material.aar"))
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion 34
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 33
+    }
+    
+    namespace 'com.google.android.material'
+}
+
+// material-components-android 1.13.0-alpha11 https://github.com/ZL114514/material-components-android
+dependencies {
+    api 'androidx.recyclerview:recyclerview:1.3.1'
+    api 'androidx.drawerlayout:drawerlayout:1.2.0'
+    api 'androidx.cardview:cardview:1.0.0'
+    api 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
+    api 'androidx.constraintlayout:constraintlayout:2.0.1'
+    api files('Material.aar')
+}

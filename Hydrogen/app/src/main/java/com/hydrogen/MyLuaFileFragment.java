@@ -24,25 +24,31 @@ public class MyLuaFileFragment extends Fragment implements LuaGcable {
   public LuaState L;
   public FrameLayout mContainer;
   public LuaTable mlayoutTable;
+  private int mContainerId;
   private LuaActivity mLuaActivity;
   private String mLuaFilePath;
   private boolean mGc;
   private LuaApplication app;
   private final Object[] mArgs;
-  private HashMap<String,Object> mGlobal;
+  private HashMap<String, Object> mGlobal;
 
   public MyLuaFileFragment(String luaFilePath) {
-    this(luaFilePath, new Object[0], new HashMap<String,Object>());
+    this(luaFilePath, new Object[0], new HashMap<String, Object>());
   }
 
   public MyLuaFileFragment(String luaFilePath, Object[] args, HashMap global) {
     mLuaFilePath = luaFilePath;
     mGlobal = global;
     mArgs = (args != null) ? args : new Object[0];
+    mContainerId = R.id.fragment_container_view_tag;
   }
 
   public FrameLayout getContainer() {
     return mContainer;
+  }
+
+  public int getContainerId() {
+    return mContainerId;
   }
 
   public void setContainerView(View v) {
@@ -71,6 +77,11 @@ public class MyLuaFileFragment extends Fragment implements LuaGcable {
     app = (LuaApplication) mLuaActivity.getApplication();
     if (mLuaFilePath.charAt(0) != '/') mLuaFilePath = mLuaActivity.getLuaDir() + "/" + mLuaFilePath;
     runFunc("onAttach", context);
+        mContainer = new FrameLayout(mLuaActivity);
+    mContainer.setLayoutParams(
+        new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    mContainer.setId(mContainerId);
   }
 
   @Override
@@ -94,11 +105,6 @@ public class MyLuaFileFragment extends Fragment implements LuaGcable {
       @Nullable Bundle savedInstanceState) {
     super.onCreateView(inflater, container, savedInstanceState);
     Object result = runFunc("onCreateView", inflater, container, savedInstanceState);
-    mContainer = new FrameLayout(getContext());
-    mContainer.setLayoutParams(
-        new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        mContainer.setId(View.generateViewId());
 
     return mContainer;
   }
@@ -182,7 +188,7 @@ public class MyLuaFileFragment extends Fragment implements LuaGcable {
 
   private void initLua() {
     String luaExtDir = app.getLuaExtDir();
-    //String luaDir = app.getLocalDir();
+    // String luaDir = app.getLocalDir();
     String luaDir = new File(mLuaFilePath).getParent();
     String luaLpath = app.getLuaLpath();
     String luaCpath = app.getLuaCpath();
@@ -220,8 +226,8 @@ public class MyLuaFileFragment extends Fragment implements LuaGcable {
     for (Map.Entry<String, Object> entry : mGlobal.entrySet()) {
       String key = entry.getKey(); // 获取键
       Object value = entry.getValue(); // 获取值
-            L.pushObjectValue(value);
-            L.setGlobal(key);
+      L.pushObjectValue(value);
+      L.setGlobal(key);
     }
     JavaFunction set =
         new JavaFunction(L) {

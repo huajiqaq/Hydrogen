@@ -25,7 +25,9 @@ edgeToedge(mainLay,send)
 波纹({fh,_more},"圆主题")
 
 
-
+function onDestroyView()
+  print(thisFragment.getContainer().id)
+end
 
 if comment_typel=="local_chat" then
   internetnet.setVisibility(8)

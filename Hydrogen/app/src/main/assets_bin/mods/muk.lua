@@ -49,7 +49,7 @@ function addAutoHideListener(recs,views)
         onScrollStateChanged=function(v,s)
           if !(v.canScrollVertically(1))
             ee.layoutParams.getBehavior().slideDown(ee)
-           elseif s==1
+           elseif !(v.canScrollVertically(-1))
             ee.layoutParams.getBehavior().slideUp(ee)
           end
         end
@@ -118,7 +118,8 @@ function newActivity(f,b,c)
   ff.setTag(R.id.tag_last_time,nt)
   if nTView then
     import "androidx.core.view.ViewCompat"
-    local fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai})
+    fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai})
+
     local forward=MaterialContainerTransform(activity,true)
     .setStartView(nTView)
     .setEndView(ff)
@@ -128,13 +129,12 @@ function newActivity(f,b,c)
     --.setFadeMode(3)
     --backward = MaterialSharedAxis(MaterialSharedAxis.Z, false);
     local backward=MaterialContainerTransform(activity,false)
-    .setStartView(ff)
+    .setStartView(fragment.getContainer())
     .setEndView(nTView)
     .setScrimColor(0x00000000)
     .addTarget(nTView)
     .setAllContainerColors(转0x(backgroundc))
     --.setFadeMode(3)
-
     ViewCompat.setTransitionName(nTView,"t")
     t.addSharedElement(nTView,"t")
     fragment.setSharedElementEnterTransition(forward).setSharedElementReturnTransition(backward).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward)

@@ -6,7 +6,7 @@ import "agreements"
 import "android.content.Intent"
 import "android.content.ComponentName"
 import "android.net.Uri"
-
+--print(1)
 
 local welcomeAgain = not(getSharedData("welcome"))
 if not(welcomeAgain) then
