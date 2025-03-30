@@ -1,34 +1,35 @@
-apply plugin: 'com.android.library'
+plugins {
+    alias(libs.plugins.android.library)
+}
 
 android {
-    compileSdk  34
+    namespace 'com.androlua'
+    compileSdk 34
 
     defaultConfig {
-        //applicationId "com.androlua"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdk 21
+        targetSdk 33
     }
+
     buildTypes {
         release {
             minifyEnabled false
             shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            //noinspection ChromeOsAbiSupport
-            ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            ndk.abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'
         }
         debug {
             minifyEnabled false
             shrinkResources false
-            //noinspection ChromeOsAbiSupport
-            ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
+            ndk.abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'
         }
     }
-    sourceSets {
-        main {
-            //jniLibs.srcDirs = ['libs']
-        }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    namespace 'com.androlua'
+
     lint {
         abortOnError false
         checkReleaseBuilds false
@@ -36,7 +37,7 @@ android {
 }
 
 dependencies {
-    api fileTree(dir: 'libs', include: ['*.jar'])
-    api 'androidx.appcompat:appcompat:1.7.0'
-    api 'androidx.appcompat:appcompat-resources:1.7.0'
+    api fileTree("libs")
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.appcompat.resources
 }

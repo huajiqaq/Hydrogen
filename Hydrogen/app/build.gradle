@@ -1,67 +1,428 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
+    namespace 'com.zhihu.hydrogen.x'
     compileSdk 34
 
     defaultConfig {
         applicationId "com.zhihu.hydrogen.x"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdk 21
+        targetSdk 33
         versionCode 1
         versionName "new"
     }
+    
+    signingConfigs {
+        release {
+            storeFile file("${project.rootDir.parent}${File.separator}hydrogen.jks")
+            storePassword "zhihu"
+            keyAlias "hydrogen"
+            keyPassword "android"
+            enableV1Signing true
+            enableV2Signing true
+            enableV3Signing true
+            enableV4Signing true
+        }
+        debug {
+            storeFile file("${project.rootDir.parent}${File.separator}hydrogen.jks")
+            storePassword "zhihu"
+            keyAlias "hydrogen"
+            keyPassword "android"
+            enableV1Signing true
+            enableV2Signing true
+            enableV3Signing true
+            enableV4Signing true
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            //noinspection ChromeOsAbiSupport
-            ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
+            ndk.abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'
         }
         debug {
+            signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
-            //noinspection ChromeOsAbiSupport
-            ndk {abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'}
+            ndk.abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'
         }
     }
-    sourceSets {
-        main {
-            //jniLibs.srcDirs = ['libs']
-        }
+    
+    
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    namespace 'com.zhihu.hydrogen.x'
+
     lint {
         abortOnError false
         checkReleaseBuilds false
     }
+
+    buildFeatures {
+        buildConfig true
+    }
 }
 
-
 dependencies {
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.appcompat.resources
+    implementation libs.androidx.transition
+    implementation libs.androidx.fragment
+    implementation libs.androidx.viewpager2
+    implementation libs.androidx.swiperefresh
+    implementation libs.flexbox
+    implementation libs.glide
+    annotationProcessor libs.glide.compiler
+    implementation libs.webviewup.core
+    implementation libs.androidx.activity  
+    // kotlin 标准库 解决kotlin-stdlib-1.8.22 kotlin-stdlib-jdk8:1.6.21 class冲突
+    implementation libs.kotlin.stdlib.jdk7
+    implementation libs.kotlin.stdlib.jdk8
+    
     implementation fileTree("libs")
     implementation project(':androlua')
     implementation project(':Jesse205Library')
     implementation project(':mdc')
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.appcompat:appcompat-resources:1.7.0'
-//    implementation 'com.google.android.material:material:1.13.0-alpha11'
-    implementation "androidx.transition:transition:1.5.1"
-    implementation "androidx.fragment:fragment:1.8.6"
-    implementation 'androidx.viewpager2:viewpager2:1.1.0'
-	implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-//	implementation 'com.daimajia.androidanimations:library:2.4@aar'
-//	implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.3'
-    implementation 'com.google.android.flexbox:flexbox:3.0.0'
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
-    implementation 'io.github.jonanorman.android.webviewup:core:0.1.0'
-    implementation "androidx.activity:activity:1.9.3"
-//  不需要网络下载 不需要导入 https://github.com/JonaNorman/WebViewUpgrade
-//  implementation 'io.github.jonanorman.android.webviewup:download-source:0.1.0'
+}
 
-    // 解决kotlin-stdlib-1.8.22 kotlin-stdlib-jdk8:1.6.21 冲突
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
 
+// 合并所有模块的 assets_bin 到临时目录
+tasks.register("mergeAssetsBin", Copy) {
+    group = "Custom Build"
+    description = "合并所有模块的 assets_bin 到临时目录"
+
+    def mergedAssetsDir = file("${buildDir}${File.separator}merged-assets")
+    
+    doFirst {
+        mergedAssetsDir.deleteDir()
+        mergedAssetsDir.mkdirs()
+    }
+
+    rootProject.subprojects.each { sub ->
+        def assetsBin = sub.file("src${File.separator}main${File.separator}assets_bin")
+        if (assetsBin.exists()) {
+            from(assetsBin)
+            logger.lifecycle("Merge assets_bin: ${sub.name} -> ${assetsBin}")
+        }
+    }
+    
+    into mergedAssetsDir
+    includeEmptyDirs = false
+    duplicatesStrategy = DuplicatesStrategy.WARN
+}
+
+// 合并所有模块的 luaLibs 到临时目录
+tasks.register("mergeLuaLibs", Copy) {
+    group = "Custom Build"
+    description = "合并所有模块的 luaLibs 到临时目录"
+
+    def mergedLuaDir = file("${buildDir}${File.separator}merged-lua")
+    
+    doFirst {
+        mergedLuaDir.deleteDir()
+        mergedLuaDir.mkdirs()
+    }
+
+    rootProject.subprojects.each { sub ->
+        def luaLibs = sub.file("src${File.separator}main${File.separator}luaLibs")
+        if (luaLibs.exists()) {
+            from(luaLibs)
+            logger.lifecycle("Merge luaLibs: ${sub.name} -> ${luaLibs}")
+        }
+    }
+    
+    into mergedLuaDir
+    includeEmptyDirs = false
+    duplicatesStrategy = DuplicatesStrategy.WARN
+}
+
+tasks.register("configureRebuildApk") {
+    group = "Custom Build"
+    description = "配置 APK 重建任务的输入源"
+
+    dependsOn("assembleRelease")
+
+    doLast {
+        // 获取 Release 变体
+        def releaseVariant = android.applicationVariants.find { it.name == "release" }
+        if (!releaseVariant) {
+            throw new GradleException("Release variant not found")
+        }
+
+        // 原始 APK 路径
+        def originalApk = releaseVariant.outputs.first().outputFile
+        if (!originalApk?.exists()) {
+            throw new GradleException("Original APK not found: ${originalApk}")
+        }
+
+        // 设置任务属性
+        tasks.named("rebuildApk").configure {
+            from(zipTree(originalApk)) {
+                exclude "META-INF/**"
+            }
+        }
+    }
+}
+
+tasks.register("rebuildApk", Zip) {
+    group = "Custom Build"
+    description = "后处理注入资源到 APK 根目录"
+    
+
+    // 确保每次都执行
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
+
+    dependsOn("configureRebuildApk", "mergeAssetsBin", "mergeLuaLibs")
+
+    // 配置输入输出路径
+    def buildDir = project.buildDir
+    def mergedAssetsDir = "$buildDir${File.separator}merged-assets"
+    def mergedLuaDir = "$buildDir${File.separator}merged-lua"
+    def outputDir = project.layout.buildDirectory.dir("outputs${File.separator}custom-apk").get().asFile
+
+    // 声明输入目录
+    inputs.dir(mergedAssetsDir)
+    inputs.dir(mergedLuaDir)
+
+    // 设置输出位置
+    archiveFileName = "temp_unsigned.apk"
+    destinationDirectory = outputDir
+
+    // 添加输入源
+    from(mergedAssetsDir) { 
+        into "assets"
+        includeEmptyDirs = false
+    }
+    from(mergedLuaDir) { 
+        into "lua"
+        includeEmptyDirs = false
+    }
+    
+    
+    doLast {
+        def tempApk = setApkTimestamp(archiveFile.get().asFile)
+        def (alignedApk, alignSuccess) = zipalignApk(tempApk)
+        def (signedApk, signSuccess) = signApk(alignedApk)
+        def finalApk = renameApk(signedApk, signSuccess)
+        logger.lifecycle("Build completed: ${finalApk}")
+        delete(mergedAssetsDir, mergedLuaDir)
+    }
+}
+
+// 签名 APK（返回签名后的文件和是否成功）
+def signApk(File inputApk) {
+    if (!inputApk?.exists()) {
+        logger.error("Input APK file does not exist")
+        return new Tuple2(inputApk, false)
+    }
+    
+    def outputApk = null
+    try {
+        // 获取签名配置
+        def signingConfig = android.signingConfigs.findByName('release')
+        if (!signingConfig?.storeFile?.exists()) {
+            logger.lifecycle("Release signing config not found or keystore file missing")
+            return new Tuple2(inputApk, false)
+        }
+
+        // 构建 apksigner 路径
+        def buildTools = android.buildToolsVersion
+        def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
+        def apksignerPath = android.sdkDirectory.toPath()
+            .resolve("build-tools")
+            .resolve(buildTools)
+            .resolve("apksigner${isWindows ? '.bat' : ''}")
+            .normalize()
+
+        // 创建随机文件名
+        def randomName = String.format("sign_%d_%s", System.currentTimeMillis(), inputApk.name)
+        outputApk = new File(inputApk.parentFile, randomName)
+
+        // 执行签名命令
+        def process = new ProcessBuilder(
+            apksignerPath.toString(),
+            "sign",
+            "--ks", signingConfig.storeFile.absolutePath,
+            "--ks-pass", "pass:${signingConfig.storePassword}",
+            "--ks-key-alias", signingConfig.keyAlias,
+            "--key-pass", "pass:${signingConfig.keyPassword}",
+            "--out", outputApk.absolutePath,
+            inputApk.absolutePath
+        )
+        .redirectErrorStream(true)
+        .start()
+
+        // 捕获输出
+        process.inputStream.eachLine { line ->
+            logger.debug("[apksigner] $line")
+        }
+
+        // 等待完成
+        if (process.waitFor() != 0) {
+            logger.error("APK signing failed")
+            outputApk.delete()
+            return new Tuple2(inputApk, false)
+        }
+
+        // 删除原文件并重命名新文件
+        inputApk.delete()
+        outputApk.renameTo(inputApk)
+
+        logger.lifecycle("APK signed successfully: ${inputApk.size()}B")
+        return new Tuple2(inputApk, true)
+        
+    } catch (Exception e) {
+        logger.error("Signing error: ${e.message}")
+        if (outputApk?.exists()) {
+            outputApk.delete()
+        }
+        return new Tuple2(inputApk, false)
+    }
+}
+
+// 对齐 APK（使用 zipalign）
+def zipalignApk(File inputApk) {
+    if (!inputApk?.exists()) {
+        logger.error("Input APK file does not exist")
+        return new Tuple2(inputApk, false)
+    }
+
+    def outputApk = null
+    try {
+        // 构建 zipalign 路径
+        def buildTools = android.buildToolsVersion
+        def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
+        def zipAlignPath = android.sdkDirectory.toPath()
+            .resolve("build-tools")
+            .resolve(buildTools)
+            .resolve("zipalign${isWindows ? '.exe' : ''}")
+            .normalize()
+
+        // 创建随机文件名
+        def randomName = String.format("align_%d_%s", System.currentTimeMillis(), inputApk.name)
+        outputApk = new File(inputApk.parentFile, randomName)
+        
+        // 执行 zipalign
+        def process = new ProcessBuilder(
+            zipAlignPath.toString(),
+            "-f",    // 强制覆盖
+            "-p",    // 保持修改时间
+            "4",     // 4字节对齐
+            inputApk.absolutePath,
+            outputApk.absolutePath
+        )
+        .redirectErrorStream(true)
+        .start()
+
+        process.inputStream.eachLine { line ->
+            logger.debug("[zipalign] $line")
+        }
+
+        if (process.waitFor() != 0) {
+            logger.error("zipalign failed")
+            outputApk.delete()
+            return new Tuple2(inputApk, false)
+        }
+
+        // 删除原文件并重命名新文件
+        inputApk.delete()
+        outputApk.renameTo(inputApk)
+
+        logger.lifecycle("APK aligned successfully")
+        return new Tuple2(inputApk, true)
+
+    } catch (Exception e) {
+        logger.error("APK processing error: ${e.message}")
+        if (outputApk?.exists()) {
+            outputApk.delete()
+        }
+        return new Tuple2(inputApk, false)
+    }
+}
+
+// 重命名 APK 文件
+File renameApk(File apkFile, boolean isSigned) {
+    // 读取版本信息    
+    def assetsDir = android.sourceSets.main.assets.srcDirs.first().parentFile
+    def mukFile = new File(assetsDir, "assets_bin${File.separator}mods${File.separator}muk.lua").canonicalFile
+    android.sourceSets.main.assets.srcDirs.first().parentFile
+    if (!mukFile.exists()) {
+        throw new GradleException("muk.lua not found at ${mukFile}")
+    }
+    
+    def text = mukFile.getText("UTF-8")
+    def versionMatcher = text =~ /versionCode\s*=\s*([\d.]+)/
+    if (!versionMatcher.find()) {
+        throw new GradleException("muk.lua version format error")
+    }
+    def mukVersion = versionMatcher.group(1)
+    
+    // 构建新文件名
+    def newName = "Hydrogen_${android.defaultConfig.versionName}_${mukVersion}" +
+                  (isSigned ? "" : "_unsigned") + 
+                  ".apk"
+    
+    // 执行重命名
+    def destFile = new File(apkFile.parentFile, newName)
+    if (destFile.exists()) destFile.delete()
+    
+    if (!apkFile.renameTo(destFile)) {
+        throw new GradleException("Failed to rename APK to ${destFile.name}")
+    }
+    
+    logger.lifecycle("Final APK: ${destFile.name}")
+    return destFile
+}
+
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
+import org.apache.commons.compress.archivers.zip.ZipFile
+import java.util.TimeZone
+import java.text.SimpleDateFormat
+
+// 设置APK文件的时间戳为 1981-01-01 01:01:02 UTC
+def setApkTimestamp(File inputFile) {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+    
+    // 解析输入的UTC时间
+    def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    sdf.setTimeZone(TimeZone.getTimeZone("UTC"))
+    def targetDate = sdf.parse("1981-01-01 01:01:02")
+    def targetTimestamp = targetDate.time
+    
+    def tempFile = new File(inputFile.parent, inputFile.name + ".tmp")
+    
+    def zipFile = new ZipFile(inputFile)
+    def out = new ZipArchiveOutputStream(tempFile)
+    
+    try {
+        zipFile.entries.each { entry ->
+            def newEntry = new ZipArchiveEntry(entry.name)
+            newEntry.time = targetTimestamp
+            out.putArchiveEntry(newEntry)
+            if (!entry.directory) {
+                out.write(zipFile.getInputStream(entry).bytes)
+            }
+            out.closeArchiveEntry()
+        }
+    } finally {
+        out.close()
+        zipFile.close()
+    }
+    
+    // 替换原文件
+    inputFile.delete()
+    tempFile.renameTo(inputFile)
+    
+    logger.lifecycle("Successfully set apk timestamp: 1981-01-01 01:01:02 UTC")
+    
+    return inputFile
 }
