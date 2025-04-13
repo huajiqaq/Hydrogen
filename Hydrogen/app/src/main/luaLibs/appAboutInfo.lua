@@ -99,6 +99,12 @@ moreItem={
     icon=R.drawable.ic_github;
     browserUrl="https://gitee.com/huajicloud/Hydrogen/"
   },
+  {
+    SettingsLayUtil.ITEM_NOSUMMARY;
+    title="TG群聊";
+    icon=R.drawable.ic_github;
+    browserUrl="https://t.me/Hydrogen_fzhihu"
+  },
 }
 
 --[[格式：

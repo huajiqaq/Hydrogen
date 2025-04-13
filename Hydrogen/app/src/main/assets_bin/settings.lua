@@ -25,6 +25,7 @@ data = processTable{
 
   {__type=1,title="浏览设置"},
 
+  {__type=3,subtitle="搜索设置"},
   {__type=4,subtitle="自动打开剪贴板上的知乎链接",status={Checked=Boolean.valueOf(this.getSharedData("自动打开剪贴板上的知乎链接"))}},
 
   {__type=4,subtitle="夜间模式追随系统",status={Checked=Boolean.valueOf(this.getSharedData("Setting_Auto_Night_Mode"))}},
@@ -105,6 +106,62 @@ end
 mtip=false
 
 tab=processTable{
+  搜索设置=function()
+    
+    
+    local editDialog=AlertDialog.Builder(this)
+    .setTitle("设置搜索引擎")
+    .setView(loadlayout({
+      LinearLayout;
+      layout_height="fill";
+      layout_width="fill";
+      orientation="vertical";
+      {--标题,switch type4
+        LinearLayout;
+        layout_width="fill";
+        layout_height="wrap";
+        orientation="vertical"; 
+        {
+          TextView;
+          TextIsSelectable=true;
+          layout_marginTop="10dp";
+          layout_marginLeft="10dp",
+          layout_marginRight="10dp",
+          Text='请使用?q=类似物为结尾，如下\n知乎搜索页面 "https://www.zhihu.com/search?type=content&q="\n bing "https://www4.bing.com/search?q=site%3Azhihu.com%20"';
+          Typeface=字体("product-Medium");
+        },
+        {
+          EditText;
+          layout_width="match";
+          layout_height="match";
+          layout_marginTop="5dp";
+          layout_marginLeft="10dp",
+          layout_marginRight="10dp",
+          id="edit";
+          Text=自定义路径;
+          Typeface=字体("product");
+        }
+      };
+    }))
+    .setPositiveButton("确定", {onClick=function()
+         
+          if edit.Text:gsub(" ","")=="" then
+            edit.Text=""
+          end
+          if edit.Text~="" then
+            this.setSharedData("搜索引擎",edit.Text)
+
+           else
+            提示("无法读取")
+            this.setSharedData("搜索引擎","https://www4.bing.com/search?q=site%3Azhihu.com%20")
+            return
+          end
+          
+        提示("设置成功")
+    end})
+    .setNegativeButton("取消", nil)
+    .show()
+  end,
   夜间模式=function()
     提示("返回主页面生效")
     设置主题()

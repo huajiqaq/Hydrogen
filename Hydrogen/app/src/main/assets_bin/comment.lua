@@ -25,9 +25,7 @@ edgeToedge(mainLay,send)
 波纹({fh,_more},"圆主题")
 
 
-function onDestroyView()
-  print(thisFragment.getContainer().id)
-end
+
 
 if comment_typel=="local_chat" then
   internetnet.setVisibility(8)
@@ -170,11 +168,11 @@ end
 
 if not(comment_typel:find("local")) then
   send.onClick=function()
-if comment_type=="comments"
-    发送评论(comment_idl,"回复该子评论")
-else
-发送评论("")
-end
+    if comment_type=="comments"
+      发送评论(comment_idl,"回复该子评论")
+     else
+      发送评论("")
+    end
   end
   踩tab={}
   comment_item=获取适配器项目布局("comment/comment")

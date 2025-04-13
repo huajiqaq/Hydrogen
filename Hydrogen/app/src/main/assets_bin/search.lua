@@ -14,6 +14,17 @@ MDC_R=luajava.bindClass"com.google.android.material.R"
 
 
 设置视图("layout/search")
+if activity.getSharedData("searchv1") ==nil then
+  双按钮对话框("新搜索提示","由于知乎自带搜索限制过多，现可以在应用内透过搜索引擎搜索知乎站点内容\n您可以在设置中更改搜索引擎（默认必应）或回归知乎自带搜索","去设置","知道了",function(an)
+    activity.setSharedData("searchv1","x")
+    newActivity("settings")
+    关闭对话框(an)
+    end,function()
+    activity.setSharedData("searchv1","x")
+    关闭对话框(an)
+  end)
+end
+
 function 搜索(text)
   local search_text=text or search_view.getQuery().toString();
   if #(tostring(search_text):gsub(" ",""))<1 then
@@ -27,10 +38,14 @@ function 搜索(text)
         break
       end
     end
+    if this.getSharedData("搜索引擎")==nil
+      this.setSharedData("搜索引擎","https://www4.bing.com/search?q=site%3Azhihu.com%20")
 
+    end
+    search_eg=this.getSharedData("搜索引擎")
     table.insert(search_history, search_text)
     清空并保存历史记录("search_history", search_history)
-    newActivity("browser",{"https://www.zhihu.com/search?type=content&q="..urlEncode(search_text)})
+    newActivity("browser",{search_eg..urlEncode(search_text)})
   end
 end
 
@@ -148,14 +163,14 @@ local function createchip(text)
 end
 
 search_history=loadSharedPreferences("search_history")
-  chipgroup.removeAllViews()
-  for i=1,#search_history do
-    local text=search_history[i]
-    chipgroup.addView(createchip(text,itemnum))
-  end
+chipgroup.removeAllViews()
+for i=1,#search_history do
+  local text=search_history[i]
+  chipgroup.addView(createchip(text,itemnum))
+end
 
-search_view.setFocusable(true);  
-search_view.requestFocus(); 
+search_view.setFocusable(true);
+search_view.requestFocus();
 search_view.postDelayed(Runnable{
   run=function()
     local imm= this.getSystemService(Context.INPUT_METHOD_SERVICE);

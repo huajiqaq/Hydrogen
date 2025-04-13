@@ -79,26 +79,18 @@ MyWebViewUtils:initWebViewClient{
           --activity.setResult(100)
           --activity.finish()
           加载js(view,"document.cookie = document.cookie")
-          双按钮对话框("提示","登录后建议重启软件来保持数据一致性 不重启可能导致一些问题","立即重启","暂不重启",function(an)
-            关闭对话框(an)
-            import "android.os.Process"
-            local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            activity.startActivity(intent);
-            Process.killProcess(Process.myPid());
-            end,function(an)
-            关闭对话框(an)
-          end)
-          AlertDialog.Builder(this)
+          关闭页面()
+          --[=[AlertDialog.Builder(this)
           .setTitle("提示")
           .setMessage("登录后建议手动重启软件来保持数据一致性 不重启可能导致一些问题")
-          .setPositiveButton("我知道了",{onClick=function() activity.finish() import "android.os.Process"
+          .setPositiveButton("我知道了",{onClick=function() 
+activity.recreate() --[[import "android.os.Process"
               local intent =activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
               intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
               activity.startActivity(intent);
-              Process.killProcess(Process.myPid());end})
+              Process.killProcess(Process.myPid());]]end})
           .setCancelable(false)
-          .show()
+          .show()]=]
 
          else
           view.loadUrl("https://www.zhihu.com/signin")

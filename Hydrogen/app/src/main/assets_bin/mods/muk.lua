@@ -23,7 +23,7 @@ SwipeRefreshLayout = luajava.bindClass "com.hydrogen.view.CustomSwipeRefresh"
 --重写BottomSheetDialog到自定义view 解决横屏显示不全问题
 BottomSheetDialog = luajava.bindClass "com.hydrogen.view.BaseBottomSheetDialog"
 
-versionCode=0.607
+versionCode=0.608
 layout_dir="layout/item_layout/"
 无图模式=Boolean.valueOf(activity.getSharedData("不加载图片"))
 
@@ -80,6 +80,20 @@ end
 function 设置视图(t)
   if thisFragment
     thisFragment.setContainerView(loadlayout(t))
+    import "android.view.accessibility.AccessibilityEvent"
+    thisFragment.container.requestFocus()
+    thisFragment.container.getChildAt(0).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED)
+    if nOView~=nil
+      --print(thisFragment.container)
+      MaterialContainerTransform=luajava.bindClass("com.google.android.material.transition.MaterialContainerTransform")
+      local backward=MaterialContainerTransform(activity,false)
+      .setStartView(thisFragment.container)
+      .setEndView(nOView)
+      --.setScrimColor(0x00000000)
+      .addTarget(nOView)
+      thisFragment.setSharedElementReturnTransition(backward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward)
+
+    end
    else
     activity.setContentView(loadlayout(t))
   end
@@ -118,38 +132,33 @@ function newActivity(f,b,c)
   ff.setTag(R.id.tag_last_time,nt)
   if nTView then
     import "androidx.core.view.ViewCompat"
-    fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai})
+    fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai,ff=ff,nOView=nTView})
 
     local forward=MaterialContainerTransform(activity,true)
     .setStartView(nTView)
     .setEndView(ff)
-    .setScrimColor(0x00000000)
+    --.setScrimColor(0x00000000)
     .addTarget(ff)
-    .setAllContainerColors(转0x(backgroundc))
+    --.setAllContainerColors(转0x(backgroundc))
     --.setFadeMode(3)
     --backward = MaterialSharedAxis(MaterialSharedAxis.Z, false);
-    local backward=MaterialContainerTransform(activity,false)
-    .setStartView(fragment.getContainer())
-    .setEndView(nTView)
-    .setScrimColor(0x00000000)
-    .addTarget(nTView)
-    .setAllContainerColors(转0x(backgroundc))
+
+    --.setAllContainerColors(转0x(backgroundc))
     --.setFadeMode(3)
     ViewCompat.setTransitionName(nTView,"t")
     t.addSharedElement(nTView,"t")
     fragment.setSharedElementEnterTransition(forward).setSharedElementReturnTransition(backward).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward)
-
     t.add(ff.id,fragment)
    else
     backward = MaterialSharedAxis(MaterialSharedAxis.X, false);
     forward = MaterialSharedAxis(MaterialSharedAxis.X, true);
-    t.add(ff.id,MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai}).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward))
+    t.add(ff.id,MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai,ff=ff,}).setEnterTransition(forward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward))
 
   end
 
-
   t.addToBackStack(nil)
   t.commit()
+  --print(activity.findViewById(fragment.getContainerId()))
   nTView=nil
 end
 
@@ -253,6 +262,7 @@ function webviewToBitmap(webView, func) --由于存在延迟，后续操作使�
     canvas.drawBitmap(bitmap, 0, iHeight, paint)
     webView.draw(canvas)
     webView.setDrawingCacheEnabled(false)
+    webView.setDrawingCacheEnabled(true)
     func(bitmap)
   end)
 end

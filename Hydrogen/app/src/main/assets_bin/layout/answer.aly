@@ -6,6 +6,7 @@
   background=backgroundc;
   orientation="vertical";
   id="mainLay";
+
   {
     LinearLayout;
     layout_width="-1";
@@ -33,7 +34,7 @@
 
     {
       MaterialCardView;
-      radius=cardradius;
+      radius=0;
       CardBackgroundColor=backgroundc;
       elevation="0dp";
       layout_width="-1",
@@ -89,7 +90,6 @@
       layout_gravity="top";
     };
   };
-
 
   {
     CoordinatorLayout;
@@ -356,6 +356,7 @@
           CardBackgroundColor=barbackgroundc;
           elevation="0";
           alpha=1,
+          id="comment_card";
           {
             ImageView;
             src=图标("message");

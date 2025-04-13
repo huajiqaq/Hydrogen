@@ -15,7 +15,7 @@ import "com.google.android.material.appbar.AppBarLayout"
 import "com.google.android.material.navigationrail.NavigationRailView"
 
 activity.setContentView(loadlayout("layout/fragment"))
-activity.window.setNavigationBarContrastEnforced(false)
+--activity.window.setNavigationBarContrastEnforced(false)
 inSekai=false
 if activity.getSharedData("平行世界")~="false" then
   local rootView = activity.getDecorView()
@@ -323,7 +323,7 @@ if activity.getSharedData("第一次提示") ==nil then
     activity.setSharedData("第一次提示","x")
     跳转页面("login")
     关闭对话框(an)
-    activity.finish()
+    
     end,function(an)
     activity.setSharedData("第一次提示","x")
     关闭对话框(an)
