@@ -19,8 +19,7 @@ activity.setContentView(loadlayout("layout/fragment"))
 inSekai=false
 if activity.getSharedData("平行世界")~="false" then
   local rootView = activity.getDecorView()
-  inSekai=true
-  STDW=activity.width
+  inSekai=rootView.width>dp2px(600,true)
   observer = rootView.getViewTreeObserver()
   orirh={}
   observer.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener({
@@ -35,12 +34,12 @@ if activity.getSharedData("平行世界")~="false" then
           if f1 local layoutParams = f1.LayoutParams;
             layoutParams.width=orirh[2]*0.5
             f1.setLayoutParams(layoutParams); end
-          STDW=orirh[2]*0.5
+
          else
           if f1 local layoutParams = f1.LayoutParams;
             layoutParams.width=orirh[2]
             f1.setLayoutParams(layoutParams); end
-          STDW=orirh[2]
+
         end
       end
     end
@@ -323,7 +322,7 @@ if activity.getSharedData("第一次提示") ==nil then
     activity.setSharedData("第一次提示","x")
     跳转页面("login")
     关闭对话框(an)
-    
+
     end,function(an)
     activity.setSharedData("第一次提示","x")
     关闭对话框(an)
@@ -682,7 +681,7 @@ function getitemRecy(pos)
   end
 end
 edgeToedge(mainLay,bnv,function()
-  
+
   --[[local layoutParams = 侧滑头.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
   侧滑头.setLayoutParams(layoutParams);
@@ -1021,7 +1020,7 @@ function 加载主页tab()
         end,
       });
 
---[[      -- 当滑动结束发送请求 尝试解决重复数据问题
+      --[[      -- 当滑动结束发送请求 尝试解决重复数据问题
       local data = home_pagetool:getItemData()
       local 主页加载数据长度 = 6
       home_pagetool.urlfunc = function(url, head)

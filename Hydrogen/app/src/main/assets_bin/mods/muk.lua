@@ -84,13 +84,17 @@ function 设置视图(t)
     thisFragment.container.requestFocus()
     thisFragment.container.getChildAt(0).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED)
     if nOView~=nil
-      --print(thisFragment.container)
-      MaterialContainerTransform=luajava.bindClass("com.google.android.material.transition.MaterialContainerTransform")
+      local r=0
+      pcall(function()
+        r=window.getDecorView().getRootWindowInsets().getRoundedCorner(1).getRadius()
+      end)
       local backward=MaterialContainerTransform(activity,false)
       .setStartView(thisFragment.container)
       .setEndView(nOView)
+      .setPathMotion(MaterialArcMotion())
       --.setScrimColor(0x00000000)
       .addTarget(nOView)
+      .setStartShapeAppearanceModel(WindowShape.build())
       thisFragment.setSharedElementReturnTransition(backward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward)
 
     end
@@ -103,9 +107,6 @@ function newActivity(f,b,c)
     return activity.newActivity(f,b)
   end
   b=b or {}
-  MaterialContainerTransform=luajava.bindClass("com.google.android.material.transition.MaterialContainerTransform")
-  MyLuaFileFragment=luajava.bindClass("com.hydrogen.MyLuaFileFragment")
-  MaterialSharedAxis=luajava.bindClass("com.google.android.material.transition.MaterialSharedAxis")
   backward = MaterialSharedAxis(MaterialSharedAxis.X, false);
   forward = MaterialSharedAxis(MaterialSharedAxis.X, true);
   local ff=f1
@@ -131,13 +132,27 @@ function newActivity(f,b,c)
   ff.tag=f
   ff.setTag(R.id.tag_last_time,nt)
   if nTView then
-    import "androidx.core.view.ViewCompat"
-    fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai,ff=ff,nOView=nTView})
-
+    print(nTView)
+    --https://developer.android.google.cn/reference/android/view/RoundedCorner#POSITION_BOTTOM_LEFT
+    if WindowShape==nil then
+      WindowShape=ShapeAppearanceModel.builder()
+      .setBottomLeftCornerSize(0)
+      .setBottomRightCornerSize(0)
+      .setTopLeftCornerSize(0)
+      .setTopRightCornerSize(0)
+      pcall(function()
+        WindowShape.setBottomLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(3).getRadius())
+        WindowShape.setBottomRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(2).getRadius())
+        WindowShape.setTopLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(0).getRadius())
+        WindowShape.setTopRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(1).getRadius())
+      end)
+    end
+    fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai,ff=ff,nOView=nTView,WindowShape=WindowShape})
     local forward=MaterialContainerTransform(activity,true)
     .setStartView(nTView)
     .setEndView(ff)
-    --.setScrimColor(0x00000000)
+    .setPathMotion(MaterialArcMotion())
+    .setEndShapeAppearanceModel(WindowShape.build())
     .addTarget(ff)
     --.setAllContainerColors(转0x(backgroundc))
     --.setFadeMode(3)
@@ -252,7 +267,7 @@ function webviewToBitmap(webView, func) --由于存在延迟，后续操作使�
   View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
   --webView.layout(0, 0, webView.getMeasuredWidth(), webView.getMeasuredHeight())
   webView.setDrawingCacheEnabled(true)
-  webView.buildDrawingCache(false)
+  webView.buildDrawingCache(true)
   webView.enableSlowWholeDocumentDraw()
   local bitmap = Bitmap.createBitmap(webView.getMeasuredWidth(), webView.getMeasuredHeight(), Bitmap.Config.ARGB_8888)
   task(200, function() --必须延迟，否则会出现空白，大小根据页面可以调整

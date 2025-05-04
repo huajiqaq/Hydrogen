@@ -49,7 +49,7 @@ data = processTable{
       valueFrom=0,
       value=tointeger(activity.getSharedData("feed_cache")),
       valueTo=180,
-      
+
 
   }},
   {__type=4,subtitle="回答单页模式",status={Checked=Boolean.valueOf(this.getSharedData("回答单页模式"))}},
@@ -107,8 +107,8 @@ mtip=false
 
 tab=processTable{
   搜索设置=function()
-    
-    
+
+
     local editDialog=AlertDialog.Builder(this)
     .setTitle("设置搜索引擎")
     .setView(loadlayout({
@@ -120,7 +120,7 @@ tab=processTable{
         LinearLayout;
         layout_width="fill";
         layout_height="wrap";
-        orientation="vertical"; 
+        orientation="vertical";
         {
           TextView;
           TextIsSelectable=true;
@@ -144,20 +144,20 @@ tab=processTable{
       };
     }))
     .setPositiveButton("确定", {onClick=function()
-         
-          if edit.Text:gsub(" ","")=="" then
-            edit.Text=""
-          end
-          if edit.Text~="" then
-            this.setSharedData("搜索引擎",edit.Text)
 
-           else
-            提示("无法读取")
-            this.setSharedData("搜索引擎","https://www4.bing.com/search?q=site%3Azhihu.com%20")
-            return
-          end
-          
-        提示("设置成功")
+        if edit.Text:gsub(" ","")=="" then
+          edit.Text=""
+        end
+        if edit.Text~="" then
+          this.setSharedData("搜索引擎",edit.Text)
+提示("设置成功")
+         else
+          提示("无法读取")
+          this.setSharedData("搜索引擎","https://www4.bing.com/search?q=site%3Azhihu.com%20")
+          return
+        end
+
+        
     end})
     .setNegativeButton("取消", nil)
     .show()

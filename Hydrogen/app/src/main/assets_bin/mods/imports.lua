@@ -14,6 +14,8 @@ import "android.webkit.CookieSyncManager"
 import "android.webkit.CookieManager"
 import "android.content.Context"
 
+
+
 import "com.androlua.LuaWebView$JsInterface"
 
 import "android.net.*"
@@ -88,3 +90,14 @@ import "com.google.android.material.appbar.*"
 import "androidx.core.widget.NestedScrollView"
 
 import "me.everything.android.ui.overscroll.*"
+import "androidx.core.view.ViewCompat"
+import "com.google.android.material.shape.RoundedCornerTreatment"
+import "com.google.android.material.shape.TriangleEdgeTreatment"
+import "com.google.android.material.shape.ShapeAppearanceModel"
+import "com.google.android.material.shape.RelativeCornerSize"
+
+MaterialContainerTransform=luajava.bindClass("com.google.android.material.transition.MaterialContainerTransform")
+MyLuaFileFragment=luajava.bindClass("com.hydrogen.MyLuaFileFragment")
+MaterialSharedAxis=luajava.bindClass("com.google.android.material.transition.MaterialSharedAxis")
+MaterialArcMotion=luajava.bindClass("com.google.android.material.transition.MaterialArcMotion")
+WindowInsetsCompat = luajava.bindClass "androidx.core.view.WindowInsetsCompat"

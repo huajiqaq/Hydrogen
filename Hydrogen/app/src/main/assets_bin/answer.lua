@@ -45,12 +45,19 @@ end
 设置视图("layout/answer")
 设置toolbar(toolbar)
 
-edgeToedge(mainLay,底栏,function()
-  pg.setPadding(
+edgeToedge(nil,nil,function()
+  --[[task(10,function()pg.setPadding(
   pg.getPaddingLeft(),
   pg.getPaddingTop(),
   pg.getPaddingRight(),
-  dp2px(56)+导航栏高度);
+  dtl.height);
+print(dtl.height)]]
+  mainLay.setPadding(
+  mainLay.getPaddingLeft(),
+  状态栏高度,
+  mainLay.getPaddingRight(),
+  mainLay.getPaddingBottom()
+  );
 end)
 
 local recyclerViewField = ViewPager2.getDeclaredField("mRecyclerView");
@@ -70,9 +77,7 @@ appbar.LayoutParams.behavior=AppBarLayoutBehavior(this,nil)
 
 import "model.answer"
 
-task(1,function()
-  顶栏高度=toolbar.height
-end)
+
 
 
 local function 设置滑动跟随(t)
@@ -187,30 +192,28 @@ all_root.onClick=function(v)
   end
 end
 
-all_root.onLongClick=function()
-  local pos=pg.getCurrentItem()
-  local mview=数据表[pg.adapter.getItem(pos).id]
-  if mview.load~=true
-    return 提示("请等待加载完毕进行该操作")
-  end
+all_root.onLongClick=function(view)
 
-  三按钮对话框("保存","是否保存当前滑动位置?","确认","取消","删除",
-  --点击第一个按钮的事件
-  function(an)
-    设置回答滑动位置配置()
-    提示("已保存")
-    an.dismiss()
-  end,
-  --点击第二个按钮事件
-  function(an)
-    an.dismiss()
-  end,
-  --点击第三个按钮事件
-  function(an)
-    设置回答滑动位置配置(true)
-    提示("已删除")
-    an.dismiss()
-  end)
+  local url=数据表[pg.adapter.getItem(pg.getCurrentItem()).id].ids.content.getUrl()
+  if url==nil then
+    提示("加载中")
+    return
+  end
+  local format="【回答】【%s】%s: %s"
+  local text=(string.format(format,_title.Text,username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
+  --local uri=activity.getUriForPath(activity.getLuaDir().."/ic_launcher-playstore.png")
+  --选择一个幸运的视图作为阴影
+  local shadowBuilder=View.DragShadowBuilder(view)
+  local clipData=ClipData.newPlainText("知乎回答",text)
+  --local clipData=ClipData.newUri(activity.getContentResolver(), "URI", Uri.parse("https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
+  --启动拖放
+  --startDragAndDrop是api24加入的，所以要进行版本号的判断。虽然startDrag也能做到相同的效果，但是startDrag已经废弃
+  if Build.VERSION.SDK_INT >= 24 then
+    view.startDragAndDrop(clipData,shadowBuilder,nil,View.DRAG_FLAG_OPAQUE|View.DRAG_FLAG_GLOBAL|View.DRAG_FLAG_GLOBAL_URI_READ|View.DRAG_FLAG_GLOBAL_URI_WRITE)
+   else
+    view.startDrag(clipData,shadowBuilder,nil,View.DRAG_FLAG_OPAQUE|View.DRAG_FLAG_GLOBAL|View.DRAG_FLAG_GLOBAL_URI_READ|View.DRAG_FLAG_GLOBAL_URI_WRITE)
+  end
+  return true
 end
 
 all_root.onTouch=function(v,e)
@@ -230,7 +233,13 @@ function 数据添加(t,b)
   end
 
   设置滑动跟随(t.content)
-
+  --[[print(t.content.parent)
+  t.content.parent.setPadding(
+  t.content.parent.getPaddingLeft(),
+  t.content.parent.getPaddingTop(),
+  t.content.parent.getPaddingRight(),
+  dtl.height+t.content.parent.getPaddingBottom()
+  );]]
   local MyWebViewUtils=WebViewUtils(t.content)
   MyWebViewUtils:initSettings()
   :initSettings()
@@ -500,7 +509,7 @@ defer local question_base=answer
   _title.Text=tab.title
 end)
 
-ll.background=answerDrawable
+
 
 function onDestroy()
   for i=1,#Fragments do
@@ -702,7 +711,7 @@ task(1,function()
               import "java.io.File"
               import "java.io.FileOutputStream"
               import "java.lang.System"
-import "android.content.FileProvider"
+              import "android.content.FileProvider"
               local dir=this.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString()..""
               local file=File(dir,"知乎回答-".._title.Text.."-来自-"..username.Text..".jpg")
               fos = FileOutputStream(file);
@@ -714,7 +723,7 @@ import "android.content.FileProvider"
               .putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, this.getPackageName()..".FileProvider", file))
               .setData(FileProvider.getUriForFile(this, this.getPackageName()..".FileProvider", file))
               .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
---.putExtra(Intent.EXTRA_STREAM, file.toURI())
+              --.putExtra(Intent.EXTRA_STREAM, file.toURI())
               .putExtra(Intent.EXTRA_TEXT, string.format(format,_title.Text,username.Text,"https://www.zhihu.com/question/"..问题id.."/answer/"..url:match("answer/(.+)")))
               .setType("image/*");
 
@@ -752,6 +761,31 @@ import "android.content.FileProvider"
 
         end
       },
+      {src=图标("get_app"),text="保存滑动位置",onClick=function()
+          local pos=pg.getCurrentItem()
+          local mview=数据表[pg.adapter.getItem(pos).id]
+          if mview.load~=true
+            return 提示("请等待加载完毕进行该操作")
+          end
+
+          三按钮对话框("保存","是否保存当前滑动位置?","确认","取消","删除",
+          --点击第一个按钮的事件
+          function(an)
+            设置回答滑动位置配置()
+            提示("已保存")
+            an.dismiss()
+          end,
+          --点击第二个按钮事件
+          function(an)
+            an.dismiss()
+          end,
+          --点击第三个按钮事件
+          function(an)
+            设置回答滑动位置配置(true)
+            提示("已删除")
+            an.dismiss()
+          end)
+      end},
       {
         src=图标("get_app"),text="保存到本地",onClick=function()
 

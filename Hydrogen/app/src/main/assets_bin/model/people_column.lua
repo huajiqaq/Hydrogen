@@ -7,7 +7,8 @@ function base:new(id)
 end
 
 function base:getUrl()
-  return "https://api.zhihu.com/columns/"..self.id.."/items"
+  --2025 316 幽默知乎网页api 不填写url参数无法访问
+  return "https://www.zhihu.com/api/v4/columns/"..self.id.."/items?ws_qiangzhisafe=0"
 end
 
 function base.getAdapter(people_column_pagetool,pos)

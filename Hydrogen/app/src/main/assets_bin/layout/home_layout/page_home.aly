@@ -14,7 +14,7 @@
         background=backgroundc;
         layout_width="fill",
         id="HometabLayout",
-        elevation ="4dp",
+        elevation ="1dp",
         tabMode=TabLayout.MODE_SCROLLABLE;
         layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)
       };
@@ -100,7 +100,7 @@
         background=backgroundc;
         layout_width="fill",
         id="followTab",
-        elevation ="4dp",
+        elevation ="1dp",
         tabMode=TabLayout.MODE_FIXED;
         tabGravity=TabLayout.GRAVITY_FILL,
         layoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING)

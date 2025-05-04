@@ -17,6 +17,7 @@ function base:getData(callback)
     if code==200 then
       local data=luajson.decode(content)
       self.id=data.id
+      self.url_token=data.url_token
       callback(data,self)
      elseif luajson.decode(content).error then
       提示(luajson.decode(content).error.message)
@@ -121,6 +122,11 @@ function base.resolvedata(v,data)
       table.insert(data,add)
     end
     return
+  end
+
+  --针对columm的支持
+  if v.column then
+    v=v.column
   end
 
   local 活动=v.action_text
@@ -232,94 +238,18 @@ function base.resolvedata(v,data)
   table.insert(data,add)
 end
 
-
-
-function base:putTabData(tabname,tabinfo)
-  local people_id=self.id
-  local taburl = {}
-  local newTabname = {}
-  local answerIndex
-  local activitiesIndex
-
-  local urls = {
-    activities = "https://api.zhihu.com/people/" .. people_id .. "/activities?limit=20",
-    zvideo = "https://api.zhihu.com/members/" .. people_id .. "/zvideos?offset=0&limit=20",
-    answer = "https://api.zhihu.com/members/" .. people_id .. "/answers?order_by=created&offset=0&limit=20",
-    vote = "https://api.zhihu.com/moments/" .. people_id .. "/vote?limit=20",
-    more = "https://api.zhihu.com/people/" .. people_id .. "/profile/tab/more?tab_type=1",
-    article = "https://api.zhihu.com/people/" .. people_id .. "/articles?offset=0&limit=20",
-    column="https://api.zhihu.com/people/"..people_id.."/columns?offset=0&limit=20",
-    pin="https://api.zhihu.com/v2/pins/"..people_id.."/moments",
-    question="https://api.zhihu.com/people/"..people_id.."/questions?offset=0&limit=20",
-  }
-
-  for i, v in ipairs(tabinfo) do
-    local key=v.key
-    local url = urls[key] or v.url
-    if url then
-      table.insert(taburl, url)
-      table.insert(newTabname, tabname[i])
-      if key == "activities" then
-        activitiesIndex = #taburl
-       elseif key == "answer" then
-        answerIndex = #taburl
-      end
-    end
-  end
-
-  if activitiesIndex and activitiesIndex > 1 then
-    local activitiesUrl = table.remove(taburl, activitiesIndex)
-    local activitiesName = table.remove(newTabname, activitiesIndex)
-    table.insert(taburl, 1, activitiesUrl)
-    table.insert(newTabname, 1, activitiesName)
-    if answerIndex then
-      if activitiesIndex < answerIndex then
-        answerIndex = answerIndex - 1
-       elseif activitiesIndex > answerIndex then
-        answerIndex = answerIndex + 1
-      end
-    end
-  end
-
-  if #taburl == 0 then
-    taburl = {urls["activities"]}
-    newTabname = {"动态"}
-    answerIndex = nil
-  end
-
-  return newTabname , taburl, answerIndex
-end
-
-
-local function getdata(v,tabname,tabinfo)
-  if v.name=="全部" or v.key=="all" then
-    return
-  end
-  local name=v.name
-  local key=v.key
-  local url=v.url
-  if v.number>0 then
-    name=name.." "..tostring(v.number)
-  end
-  table.insert(tabname,name)
-  local info={}
-  info.key=key
-  info.url=url
-  table.insert(tabinfo,info)
-end
-
-
 -- 根据用户ID构造各类标签对应的URL配置
 function base:getUrls()
   local people_id = self.id
+  local url_token=self.url_token
   return {
     activities = "https://api.zhihu.com/people/" .. people_id .. "/activities?limit=20",
     zvideo = "https://api.zhihu.com/members/" .. people_id .. "/zvideos?offset=0&limit=20",
     answer = "https://api.zhihu.com/members/" .. people_id .. "/answers?order_by=created&offset=0&limit=20",
     vote = "https://api.zhihu.com/moments/" .. people_id .. "/vote?limit=20",
     more = "https://api.zhihu.com/people/" .. people_id .. "/profile/tab/more?tab_type=1",
-    article = "https://api.zhihu.com/people/" .. people_id .. "/articles?offset=0&limit=20",
-    column = "https://api.zhihu.com/people/" .. people_id .. "/columns?offset=0&limit=20",
+    article = "https://www.zhihu.com/api/v4/members/" .. url_token .. "/articles?offset=0&limit=20",
+    column = "https://www.zhihu.com/api/v4/members/"..url_token.."/column-contributions?offset=0&limit=20",
     pin = "https://api.zhihu.com/v2/pins/" .. people_id .. "/moments",
     question = "https://api.zhihu.com/people/" .. people_id .. "/questions?offset=0&limit=20",
   }

@@ -180,179 +180,114 @@
       id="pg",
       layout_behavior="@string/appbar_scrolling_view_behavior";
     };
-    {LinearLayout,
-      layout_height="fill";
-      layout_width="fill";
-      layout_gravity="bottom";
-      orientation ="vertical";
-      {
-        CoordinatorLayout;
-        layout_height="fill";
-        layout_width="fill";
-        layout_gravity="bottom";
-        {
-          CardView;
-          elevation="6dp";
-          BackgroundColor=barbackgroundc;
-          layout_gravity="bottom";
-          {
-            LinearLayout;
-            layout_width="-1";
-            layout_height="-1";
-            id="底栏";
-            {
-              RelativeLayout,
-              layout_width="fill",
-              layout_height=dp2px(56),
-              clickable="true",
-              id="ll",
-              {LinearLayout;
-                layout_width="-1";
-                layout_height="-1";
-                orientation ="vertical";
-                {
-                  LinearLayout;
-                  layout_width="-1";
-                  layout_height="-1";
-                  gravity="left|center";
-                  paddingLeft="8dp";
-                  paddingRight="8dp";
-                  id="llb";
-                  {
-                    LinearLayout;
-                    orientation="horizontal";
-                    layout_height="-1";
-                    layout_width=activity.getWidth()/4,
-                    gravity="center";
-                    layout_weight="1";
-                    id="voteup";
-                    {
-                      ImageView;
-                      layout_height="24dp";
-                      layout_width="24dp";
-                      src=图标("vote_up_outline");
-                      ColorFilter=primaryc;
-                      id="vote_icon";
-                      PivotX="12dp";
-                      PivotY="24dp";
-                    };
-                    {
-                      TextView;
-                      layout_marginLeft="4dp",
-                      Text="0";
-                      Typeface=字体("product-Bold");
-                      textColor=stextc;
-                      id="vote_count";
-                      textSize="12sp";
-                    };
-                  };
-                  {
-                    LinearLayout;
-                    orientation="horizontal";
-                    layout_height="-1";
-                    layout_width=activity.getWidth()/4,
-                    gravity="center";
-                    layout_weight="1";
-                    id="thank";
-                    {
-                      ImageView;
-                      layout_height="24dp";
-                      layout_width="24dp";
-                      src=图标("favorite_outline");
-                      ColorFilter=primaryc;
-                      id="thanks_icon";
-                      PivotX="12dp";
-                      PivotY="24dp";
-                    };
-                    {
-                      TextView;
-                      textSize="12sp";
-                      layout_marginLeft="4dp",
-                      textColor=stextc;
-                      Typeface=字体("product-Bold");
-                      id="thanks_count";
-                      Text="0";
-                    };
-                  };
-                  {
-                    LinearLayout;
-                    orientation="horizontal";
-                    layout_height="-1";
-                    layout_width=activity.getWidth()/4;
-                    gravity="center";
-                    layout_weight="1";
-                    id="mark",
 
-                    {
-                      ImageView;
-                      layout_height="24dp";
-                      layout_width="24dp";
-                      src=图标("bookmarks");
-                      ColorFilter=primaryc;
-                      PivotX="12dp";
-                      PivotY="24dp";
-
-                    };
-                    {
-                      TextView;
-                      textSize="12sp";
-                      layout_marginLeft="4dp",
-                      textColor=stextc;
-                      Typeface=字体("product-Bold");
-                      id="favlists_count";
-                      Text="0";
-                    };
-                  };
-                  {
-                    LinearLayout;
-                    orientation="horizontal";
-                    layout_height="-1";
-                    layout_width=activity.getWidth()/4;
-                    gravity="center";
-                    layout_weight="1";
-                    onClick=function()end;
-                    {
-                      ImageView;
-                      layout_height="24dp";
-                      layout_width="24dp";
-                      ColorFilter=primaryc;
-                      PivotX="12dp";
-                      PivotY="24dp";
-                    };
-                  };
-                  {
-                    LinearLayout;
-                    layout_height="-1";
-                    layout_width="-2";
-                    layout_weight="1";
-                  };
-                };
-              };
-            };
-          },
-        };
-      };
-    };
-
-    {
-      CoordinatorLayout;
+    {luajava.bindClass "com.google.android.material.dockedtoolbar.DockedToolbarLayout";
+    --FrameLayout,
+--backgroundColor=0x441f1e33,
+      layout_width="-1";
       layout_height="wrap";
-      layout_width="fill";
       layout_gravity="bottom";
+      --layout_behavior=luajava.bindClass "com.google.android.material.behavior.HideViewOnScrollBehavior"(this,nil),
+      id="dtl";
       {
         LinearLayout;
         layout_width="-1";
         layout_height="-1";
-        orientation="vertical";
-        gravity="right|bottom";
-        id="comment_parent",
+        gravity="left|center";
+        paddingLeft="0dp";
+        paddingRight="8dp";
+        id="llb";
         {
-          CardView;
+          LinearLayout;
+          orientation="horizontal";
+          layout_height="-1";
+          layout_width=activity.getWidth()/4,
+          gravity="center";
+          layout_weight="1";
+          id="voteup";
+          {
+            ImageView;
+            layout_height="24dp";
+            layout_width="24dp";
+            src=图标("vote_up_outline");
+            ColorFilter=primaryc;
+            id="vote_icon";
+            PivotX="12dp";
+            PivotY="24dp";
+          };
+          {
+            TextView;
+            layout_marginLeft="4dp",
+            Text="0";
+            Typeface=字体("product-Bold");
+            textColor=stextc;
+            id="vote_count";
+            textSize="12sp";
+          };
+        };
+        {
+          LinearLayout;
+          orientation="horizontal";
+          layout_height="-1";
+          layout_width=activity.getWidth()/4,
+          gravity="center";
+          layout_weight="1";
+          id="thank";
+          {
+            ImageView;
+            layout_height="24dp";
+            layout_width="24dp";
+            src=图标("favorite_outline");
+            ColorFilter=primaryc;
+            id="thanks_icon";
+            PivotX="12dp";
+            PivotY="24dp";
+          };
+          {
+            TextView;
+            textSize="12sp";
+            layout_marginLeft="4dp",
+            textColor=stextc;
+            Typeface=字体("product-Bold");
+            id="thanks_count";
+            Text="0";
+          };
+        };
+        {
+          LinearLayout;
+          orientation="horizontal";
+          layout_height="-1";
+          layout_width=activity.getWidth()/4;
+          gravity="center";
+          layout_weight="1";
+          id="mark",
+
+          {
+            ImageView;
+            layout_height="24dp";
+            layout_width="24dp";
+            src=图标("bookmarks");
+            ColorFilter=primaryc;
+            PivotX="12dp";
+            PivotY="24dp";
+
+          };
+          {
+            TextView;
+            textSize="12sp";
+            layout_marginLeft="4dp",
+            textColor=stextc;
+            Typeface=字体("product-Bold");
+            id="favlists_count";
+            Text="0";
+          };
+        };
+        {
+          MaterialCardView;
           layout_width="56dp",
           layout_height="56dp",
+          layout_weight="1";
           radius="28dp";
-          y="-8dp",
-          layout_margin="28dp";
           CardBackgroundColor=barbackgroundc;
           elevation="0";
           alpha=1,
@@ -367,8 +302,9 @@
             id="comment";
           };
         };
-      },
+      };
     };
+
 
 
 
