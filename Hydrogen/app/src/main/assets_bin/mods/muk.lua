@@ -132,7 +132,6 @@ function newActivity(f,b,c)
   ff.tag=f
   ff.setTag(R.id.tag_last_time,nt)
   if nTView then
-    print(nTView)
     --https://developer.android.google.cn/reference/android/view/RoundedCorner#POSITION_BOTTOM_LEFT
     if WindowShape==nil then
       WindowShape=ShapeAppearanceModel.builder()
@@ -147,6 +146,15 @@ function newActivity(f,b,c)
         WindowShape.setTopRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(1).getRadius())
       end)
     end
+    --[[if inSekai
+      if ff==f1 then
+        WindowShape.setTopRightCornerSize(0)
+        WindowShape.setBottomRightCornerSize(0)
+       else
+        WindowShape.setTopLeftCornerSize(0)
+        WindowShape.setBottomLeftCornerSize(0)
+      end
+    end]]
     fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai,ff=ff,nOView=nTView,WindowShape=WindowShape})
     local forward=MaterialContainerTransform(activity,true)
     .setStartView(nTView)

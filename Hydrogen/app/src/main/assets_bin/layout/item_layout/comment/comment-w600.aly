@@ -80,6 +80,7 @@
         };
         {
           LinearLayout; 
+layout_weight="1";
           orientation="vertical";
           {Chip,
             id="赞";

@@ -181,30 +181,33 @@
       layout_behavior="@string/appbar_scrolling_view_behavior";
     };
 
-    {luajava.bindClass "com.google.android.material.dockedtoolbar.DockedToolbarLayout";
-    --FrameLayout,
---backgroundColor=0x441f1e33,
-      layout_width="-1";
+    {luajava.bindClass "com.google.android.material.floatingtoolbar.FloatingToolbarLayout";
+      --FrameLayout,
+      --backgroundColor=0x441f1e33,
+      layout_width="wrap";
       layout_height="wrap";
-      layout_gravity="bottom";
-      --layout_behavior=luajava.bindClass "com.google.android.material.behavior.HideViewOnScrollBehavior"(this,nil),
+      layout_gravity="bottom|center";
+      layout_behavior=luajava.bindClass "com.google.android.material.behavior.HideBottomViewOnScrollBehavior"(this,nil),
       id="dtl";
       {
         LinearLayout;
         layout_width="-1";
-        layout_height="-1";
         gravity="left|center";
-        paddingLeft="0dp";
+        paddingLeft="8dp";
         paddingRight="8dp";
+        --orientation="vertical";
+        LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
         id="llb";
         {
           LinearLayout;
-          orientation="horizontal";
           layout_height="-1";
-          layout_width=activity.getWidth()/4,
+          layout_width="80dp",
           gravity="center";
           layout_weight="1";
           id="voteup";
+          LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+
           {
             ImageView;
             layout_height="24dp";
@@ -229,10 +232,10 @@
           LinearLayout;
           orientation="horizontal";
           layout_height="-1";
-          layout_width=activity.getWidth()/4,
+          layout_width="80dp",
           gravity="center";
-          layout_weight="1";
-          id="thank";
+          id="thank",
+          LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
           {
             ImageView;
             layout_height="24dp";
@@ -257,11 +260,10 @@
           LinearLayout;
           orientation="horizontal";
           layout_height="-1";
-          layout_width=activity.getWidth()/4;
+          layout_width="80dp";
           gravity="center";
-          layout_weight="1";
           id="mark",
-
+          LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
           {
             ImageView;
             layout_height="24dp";

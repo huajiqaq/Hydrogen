@@ -468,6 +468,7 @@ pg.registerOnPageChangeCallback(OnPageChangeCallback{--除了名字变，其他�
   onPageScrolled=function(pos,positionOffset,positionOffsetPixels)
     if positionOffsetPixels==0 then
       appbar.setExpanded(true);
+      dtl.layoutParams.getBehavior().slideUp(dtl)
       --获取当前mviews
       local index=pg.getCurrentItem()
       local mviews=数据表[pg.adapter.getItem(index).id]

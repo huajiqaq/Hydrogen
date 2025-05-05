@@ -527,7 +527,7 @@ function 发送评论(id,title)
   local postdata
   local 请求链接
   回复id=id
-  local endicondrawable=BitmapDrawable(Bitmap.createScaledBitmap(loadbitmap(图标("face")), dp2px(48), dp2px(48), true))
+  local endicondrawable=BitmapDrawable(Bitmap.createScaledBitmap(loadbitmap(图标("face")), sp2px(48),sp2px(48), true))
 
 
   bottomSheetDialog = BottomSheetDialog(this)
@@ -562,6 +562,7 @@ function 发送评论(id,title)
         layout_height="wrap",
         layout_weight=1;
         layout_marginLeft="16dp";
+        layout_marginTop="12dp";
         layout_margin="8dp";
         boxStrokeColor=primaryc,
         boxCornerRadii = {dp2px(20),dp2px(20),dp2px(20),dp2px(20)},
@@ -633,13 +634,13 @@ function 发送评论(id,title)
   local adapter1=LuaRecyclerAdapter(activity,zemojip,{LinearLayout,id="mainlay",gravity="center",
     {ImageView,id="i",layout_width="32sp",layout_marginTop="8dp";layout_height="32sp";layout_marginLeft="4dp";layout_marginRight="4dp";layout_marginBottom="8dp";},
   })
+  pcall(function() bottomSheetDialog.getWindow().setDecorFitsSystemWindows(false)
+    bottomSheetDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+  end)
   bottomSheetDialog.show()
   .setCancelable(true)
   .behavior.setMaxWidth(dp2px(600))
-  if Build.VERSION.SDK_INT >= 30 then
-    pcall(function() bottomSheetDialog.getWindow().setDecorFitsSystemWindows(false)end)
-  end
-  bottomSheetDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+
   local view=bottomSheetDialog.window.getDecorView()
   view.setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener{
     onApplyWindowInsets=function(v,i)

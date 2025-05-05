@@ -72,14 +72,14 @@ MyWebViewUtils:initWebViewClient{
         ["cookie"] = 获取Cookie("https://www.zhihu.com/")
       }
       zHttp.get(myurl,head,function(code,content)
-        if code==200 then
+        if tostring(code)=="200" then
           local data=luajson.decode(content)
           local uid=data.id
           activity.setSharedData("idx",uid)
-          --activity.setResult(100)
-          --activity.finish()
+          --
           加载js(view,"document.cookie = document.cookie")
-          关闭页面()
+          activity.setResult(100)
+          activity.finish()
           --[=[AlertDialog.Builder(this)
           .setTitle("提示")
           .setMessage("登录后建议手动重启软件来保持数据一致性 不重启可能导致一些问题")
@@ -109,6 +109,7 @@ activity.recreate() --[[import "android.os.Process"
 MyWebViewUtils:initChromeClient({
   onConsoleMessage=function(consoleMessage)
     if consoleMessage.message():find("sign_data=")
+提示("登录成功")
       activity.setSharedData("signdata",consoleMessage.message():match("sign_data=(.+)"))
     end
   end
