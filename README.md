@@ -2,9 +2,9 @@
 
 **注意**：请勿在 Gitee 反馈问题或提交 PR，请前往 GitHub 提交。Gitee 仓库仅用于代码同步。
 
-[![License](https://img.shields.io/github/license/zhihu_lite/Hydrogen)](LICENSE)
+[![License](https://img.shields.io/github/license/zhihulite/Hydrogen)](LICENSE)
 [![Gitee 仓库](https://img.shields.io/badge/Gitee-仓库-C71D23?logo=gitee)](https://gitee.com/huajicloud/Hydrogen)
-[![Github 仓库](https://img.shields.io/badge/Github-仓库-0969DA?logo=github)](https://github.com/zhihu_lite/Hydrogen)
+[![Github 仓库](https://img.shields.io/badge/Github-仓库-0969DA?logo=github)](https://github.com/zhihulite/Hydrogen)
 
 ## 项目介绍
 
@@ -12,7 +12,7 @@ Hydrogen 是一个基于 Androlua+ 开发的项目，为了避免重打包可以
 
 本项目是原 Hydrogen 项目的维护版本。由于时间限制，我可能无法及时维护，因此决定开源此项目，欢迎有兴趣和能力的开发者继续为 Hydrogen 添加或维护功能。
 
-[关于 Hydrogen 项目维护延缓的说明](https://github.com/zhihu_lite/Hydrogen/issues/159)
+[关于 Hydrogen 项目维护延缓的说明](https://github.com/zhihulite/Hydrogen/issues/159)
 
 ## 特别致谢
 
