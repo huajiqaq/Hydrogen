@@ -16,7 +16,7 @@ android {
     
     signingConfigs {
         release {
-            storeFile file("${project.rootDir.parent}${File.separator}hydrogen.jks")
+            storeFile file("${project.rootDir}${File.separator}hydrogen.jks")
             storePassword "zhihu"
             keyAlias "hydrogen"
             keyPassword "android"
@@ -26,7 +26,7 @@ android {
             enableV4Signing true
         }
         debug {
-            storeFile file("${project.rootDir.parent}${File.separator}hydrogen.jks")
+            storeFile file("${project.rootDir}${File.separator}hydrogen.jks")
             storePassword "zhihu"
             keyAlias "hydrogen"
             keyPassword "android"
@@ -92,337 +92,240 @@ dependencies {
     implementation project(':mdc')
 }
 
+// 保存原始的 assets 和 resources 目录路径
+def originalAssetsDirs = null
+def originalResourcesDirs = null
 
-// 合并所有模块的 assets_bin 到临时目录
-tasks.register("mergeAssetsBin", Copy) {
-    group = "Custom Build"
-    description = "合并所有模块的 assets_bin 到临时目录"
+// 定义临时合并目录
+def mergedAssetsDir = file("${buildDir}${File.separator}temp-assets")
+def mergedLuaDir = file("${buildDir}${File.separator}temp-luaresources")
 
-    def mergedAssetsDir = file("${buildDir}${File.separator}merged-assets")
-    
-    doFirst {
-        mergedAssetsDir.deleteDir()
-        mergedAssetsDir.mkdirs()
-    }
+project.afterEvaluate { project ->
 
-    rootProject.subprojects.each { sub ->
-        def assetsBin = sub.file("src${File.separator}main${File.separator}assets_bin")
-        if (assetsBin.exists()) {
-            from(assetsBin)
-            logger.lifecycle("Merge assets_bin: ${sub.name} -> ${assetsBin}")
-        }
-    }
-    
-    into mergedAssetsDir
-    includeEmptyDirs = false
-    duplicatesStrategy = DuplicatesStrategy.WARN
-}
 
-// 合并所有模块的 luaLibs 到临时目录
-tasks.register("mergeLuaLibs", Copy) {
-    group = "Custom Build"
-    description = "合并所有模块的 luaLibs 到临时目录"
+    // 判断当前是否是带Lua的构建
+    def isLuaBuild = gradle.startParameter.taskNames.any { it.contains('assembleRelease') && !it.contains('unlua') }
 
-    def mergedLuaDir = file("${buildDir}${File.separator}merged-lua")
-    
-    doFirst {
-        mergedLuaDir.deleteDir()
-        mergedLuaDir.mkdirs()
-    }
-
-    rootProject.subprojects.each { sub ->
-        def luaLibs = sub.file("src${File.separator}main${File.separator}luaLibs")
-        if (luaLibs.exists()) {
-            from(luaLibs)
-            logger.lifecycle("Merge luaLibs: ${sub.name} -> ${luaLibs}")
-        }
-    }
-    
-    into mergedLuaDir
-    includeEmptyDirs = false
-    duplicatesStrategy = DuplicatesStrategy.WARN
-}
-
-tasks.register("configureRebuildApk") {
-    group = "Custom Build"
-    description = "配置 APK 重建任务的输入源"
-
-    dependsOn("assembleRelease")
-
-    doLast {
-        // 获取 Release 变体
-        def releaseVariant = android.applicationVariants.find { it.name == "release" }
-        if (!releaseVariant) {
-            throw new GradleException("Release variant not found")
+    // 任务1: 合并所有子模块的 assets_bin 到临时目录
+    tasks.register("mergeAssetsBin", Copy) {
+        group = "自定义构建"
+        description = "合并所有模块的 assets_bin 到临时目录"
+        
+        doFirst {
+            logger.lifecycle("Preparing to merge assets...")
+            if (mergedAssetsDir.exists()) {
+                logger.lifecycle("Cleaning existing temp dir: ${mergedAssetsDir}")
+                mergedAssetsDir.deleteDir()
+            }
+            mergedAssetsDir.mkdirs()
         }
 
-        // 原始 APK 路径
-        def originalApk = releaseVariant.outputs.first().outputFile
-        if (!originalApk?.exists()) {
-            throw new GradleException("Original APK not found: ${originalApk}")
+        rootProject.subprojects.each { sub ->
+            def assetsBin = sub.file("src${File.separator}main${File.separator}assets_bin")
+            if (assetsBin.exists()) {
+                from(assetsBin)
+                logger.lifecycle("Adding assets from: ${sub.name}")
+            }
+        }
+        
+        into mergedAssetsDir
+        includeEmptyDirs = false
+        duplicatesStrategy = DuplicatesStrategy.WARN
+        
+        enabled = isLuaBuild  // 只有Lua构建才启用
+    }
+
+    // 任务2: 合并所有子模块的 luaLibs 到临时目录
+    tasks.register("mergeLuaLibs", Copy) {
+        group = "自定义构建"
+        description = "合并所有模块的 luaLibs 到临时目录"
+        
+        doFirst {
+            logger.lifecycle("Preparing to merge Lua resources...")
+            if (mergedLuaDir.exists()) {
+                logger.lifecycle("Cleaning existing temp dir: ${mergedLuaDir}")
+                mergedLuaDir.deleteDir()
+            }
+            mergedLuaDir.mkdirs()
         }
 
-        // 设置任务属性
-        tasks.named("rebuildApk").configure {
-            from(zipTree(originalApk)) {
-                exclude "META-INF/**"
+        rootProject.subprojects.each { sub ->
+            def luaLibs = sub.file("src${File.separator}main${File.separator}luaLibs")
+            if (luaLibs.exists()) {
+                from(luaLibs)
+                logger.lifecycle("Adding Lua from: ${sub.name}")
+            }
+        }
+        
+        into file("${mergedLuaDir}${File.separator}lua")
+        includeEmptyDirs = false
+        duplicatesStrategy = DuplicatesStrategy.WARN
+        
+        enabled = isLuaBuild  // 只有Lua构建才启用
+    }
+
+    // 任务3: 修改源集目录配置
+    tasks.register("modifyAssetsAndResources") {
+        group = "自定义构建"
+        description = "修改源集目录配置"
+        
+        dependsOn mergeAssetsBin
+        dependsOn mergeLuaLibs
+        
+        doFirst {
+            if (isLuaBuild) {
+                // 保存原始目录配置
+                if (originalAssetsDirs == null) {
+                    originalAssetsDirs = android.sourceSets.main.assets.srcDirs.collect()
+                    originalResourcesDirs = android.sourceSets.main.resources.srcDirs.collect()
+                    logger.lifecycle("Original assets dirs saved")
+                }
+                
+                // 添加临时目录到源集
+                android.sourceSets.main.assets.srcDirs += mergedAssetsDir
+                android.sourceSets.main.resources.srcDirs += mergedLuaDir
+                
+                logger.lifecycle("Modified source sets for Lua build")
+                
+                logger.lifecycle("Adding Lua from: ${android.sourceSets.main.resources.srcDirs}")
+            } else {
+                logger.lifecycle("Skipping source set modification for non-Lua build")
             }
         }
     }
-}
 
-tasks.register("rebuildApk", Zip) {
-    group = "Custom Build"
-    description = "后处理注入资源到 APK 根目录"
-    
-
-    // 确保每次都执行
-    outputs.upToDateWhen { false }
-    outputs.cacheIf { false }
-
-    dependsOn("configureRebuildApk", "mergeAssetsBin", "mergeLuaLibs")
-
-    // 配置输入输出路径
-    def buildDir = project.buildDir
-    def mergedAssetsDir = "$buildDir${File.separator}merged-assets"
-    def mergedLuaDir = "$buildDir${File.separator}merged-lua"
-    def outputDir = project.layout.buildDirectory.dir("outputs${File.separator}custom-apk").get().asFile
-
-    // 声明输入目录
-    inputs.dir(mergedAssetsDir)
-    inputs.dir(mergedLuaDir)
-
-    // 设置输出位置
-    archiveFileName = "temp_unsigned.apk"
-    destinationDirectory = outputDir
-
-    // 添加输入源
-    from(mergedAssetsDir) { 
-        into "assets"
-        includeEmptyDirs = false
-    }
-    from(mergedLuaDir) { 
-        into "lua"
-        includeEmptyDirs = false
-    }
-    
-    
-    doLast {
-        def tempApk = setApkTimestamp(archiveFile.get().asFile)
-        def (alignedApk, alignSuccess) = zipalignApk(tempApk)
-        def (signedApk, signSuccess) = signApk(alignedApk)
-        def finalApk = renameApk(signedApk, signSuccess)
-        logger.lifecycle("Build completed: ${finalApk}")
-        delete(mergedAssetsDir, mergedLuaDir)
-    }
-}
-
-// 签名 APK（返回签名后的文件和是否成功）
-def signApk(File inputApk) {
-    if (!inputApk?.exists()) {
-        logger.error("Input APK file does not exist")
-        return new Tuple2(inputApk, false)
-    }
-    
-    def outputApk = null
-    try {
-        // 获取签名配置
-        def signingConfig = android.signingConfigs.findByName('release')
-        if (!signingConfig?.storeFile?.exists()) {
-            logger.lifecycle("Release signing config not found or keystore file missing")
-            return new Tuple2(inputApk, false)
-        }
-
-        // 构建 apksigner 路径
-        def buildTools = android.buildToolsVersion
-        def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
-        def apksignerPath = android.sdkDirectory.toPath()
-            .resolve("build-tools")
-            .resolve(buildTools)
-            .resolve("apksigner${isWindows ? '.bat' : ''}")
-            .normalize()
-
-        // 创建随机文件名
-        def randomName = String.format("sign_%d_%s", System.currentTimeMillis(), inputApk.name)
-        outputApk = new File(inputApk.parentFile, randomName)
-
-        // 执行签名命令
-        def process = new ProcessBuilder(
-            apksignerPath.toString(),
-            "sign",
-            "--ks", signingConfig.storeFile.absolutePath,
-            "--ks-pass", "pass:${signingConfig.storePassword}",
-            "--ks-key-alias", signingConfig.keyAlias,
-            "--key-pass", "pass:${signingConfig.keyPassword}",
-            "--out", outputApk.absolutePath,
-            inputApk.absolutePath
-        )
-        .redirectErrorStream(true)
-        .start()
-
-        // 捕获输出
-        process.inputStream.eachLine { line ->
-            logger.debug("[apksigner] $line")
-        }
-
-        // 等待完成
-        if (process.waitFor() != 0) {
-            logger.error("APK signing failed")
-            outputApk.delete()
-            return new Tuple2(inputApk, false)
-        }
-
-        // 删除原文件并重命名新文件
-        inputApk.delete()
-        outputApk.renameTo(inputApk)
-
-        logger.lifecycle("APK signed successfully: ${inputApk.size()}B")
-        return new Tuple2(inputApk, true)
+    // 任务4: 恢复原始配置
+    tasks.register("restoreAssetsAndResources") {
+        group = "自定义构建"
+        description = "恢复原始源集配置"
         
-    } catch (Exception e) {
-        logger.error("Signing error: ${e.message}")
-        if (outputApk?.exists()) {
-            outputApk.delete()
-        }
-        return new Tuple2(inputApk, false)
-    }
-}
-
-// 对齐 APK（使用 zipalign）
-def zipalignApk(File inputApk) {
-    if (!inputApk?.exists()) {
-        logger.error("Input APK file does not exist")
-        return new Tuple2(inputApk, false)
-    }
-
-    def outputApk = null
-    try {
-        // 构建 zipalign 路径
-        def buildTools = android.buildToolsVersion
-        def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
-        def zipAlignPath = android.sdkDirectory.toPath()
-            .resolve("build-tools")
-            .resolve(buildTools)
-            .resolve("zipalign${isWindows ? '.exe' : ''}")
-            .normalize()
-
-        // 创建随机文件名
-        def randomName = String.format("align_%d_%s", System.currentTimeMillis(), inputApk.name)
-        outputApk = new File(inputApk.parentFile, randomName)
         
-        // 执行 zipalign
-        def process = new ProcessBuilder(
-            zipAlignPath.toString(),
-            "-f",    // 强制覆盖
-            "-p",    // 保持修改时间
-            "4",     // 4字节对齐
-            inputApk.absolutePath,
-            outputApk.absolutePath
-        )
-        .redirectErrorStream(true)
-        .start()
-
-        process.inputStream.eachLine { line ->
-            logger.debug("[zipalign] $line")
+        doLast {
+            if (isLuaBuild && originalAssetsDirs != null) {
+                android.sourceSets.main.assets.setSrcDirs(originalAssetsDirs)
+                android.sourceSets.main.resources.setSrcDirs(originalResourcesDirs)
+                logger.lifecycle("Restored original source sets")
+                
+                // 清理临时目录
+                mergedAssetsDir.deleteDir()
+                mergedLuaDir.deleteDir()
+                logger.lifecycle("Cleaned temp directories")
+            }
         }
-
-        if (process.waitFor() != 0) {
-            logger.error("zipalign failed")
-            outputApk.delete()
-            return new Tuple2(inputApk, false)
-        }
-
-        // 删除原文件并重命名新文件
-        inputApk.delete()
-        outputApk.renameTo(inputApk)
-
-        logger.lifecycle("APK aligned successfully")
-        return new Tuple2(inputApk, true)
-
-    } catch (Exception e) {
-        logger.error("APK processing error: ${e.message}")
-        if (outputApk?.exists()) {
-            outputApk.delete()
-        }
-        return new Tuple2(inputApk, false)
     }
+
+    // 配置标准发布任务
+    tasks.named('assembleRelease') {
+        group = "自定义构建"
+        description = "带Lua资源合并的发布构建"
+        
+        // 必须要清理 否则概率无法打包
+        dependsOn cleanDynamicIntermediates
+        dependsOn modifyAssetsAndResources
+        finalizedBy restoreAssetsAndResources
+        
+
+        doLast {
+            if (isLuaBuild) {
+                renameApkWithMukVersion()
+            }
+        }
+    }
+
+    // 创建不带Lua的发布任务
+    tasks.register("assembleRelease_unlua") {
+        group = "自定义构建"
+        description = "标准发布构建(不带Lua资源合并)"
+        
+        dependsOn 'assembleRelease'
+        
+    }
+    
+    // 配置任务依赖关系
+    tasks.named('mergeReleaseAssets') {
+        mustRunAfter 'mergeAssetsBin'
+        dependsOn 'modifyAssetsAndResources'
+    }
+
+    tasks.named('processReleaseResources') {
+        mustRunAfter 'modifyAssetsAndResources'
+    }
+
+    
+    tasks.register('cleanDynamicIntermediates', Delete) {
+        group = "构建"
+        description = "彻底删除指定的intermediates目录"
+
+        doFirst {
+            // 直接删除整个文件夹（如果存在）
+            def dirsToDelete = [
+                "${buildDir}${File.separator}intermediates${File.separator}java_res${File.separator}release${File.separator}out${File.separator}lua",
+                "${buildDir}${File.separator}intermediates${File.separator}assets${File.separator}release",
+                "${buildDir}${File.separator}intermediates${File.separator}merged_java_res",
+                "${buildDir}${File.separator}temp-assets",
+                "${buildDir}${File.separator}temp-luaresources"
+            ]
+
+            dirsToDelete.each { dirPath ->
+                def dir = file(dirPath)
+                if (dir.exists()) {
+                    if (dir.deleteDir()) {
+                        logger.lifecycle("Deleted directory: ${dirPath}")
+                    } else {
+                        logger.error("Failed to delete: ${dirPath}")
+                    }
+                } else {
+                logger.lifecycle("Directory not found (skipped): ${dirPath}")
+                }
+            }
+        }
+    
+        enabled = isLuaBuild  // 只有Lua构建才启用
+    }
+
 }
 
-// 重命名 APK 文件
-File renameApk(File apkFile, boolean isSigned) {
-    // 读取版本信息    
-    def assetsDir = android.sourceSets.main.assets.srcDirs.first().parentFile
-    def mukFile = new File(assetsDir, "assets_bin${File.separator}mods${File.separator}muk.lua").canonicalFile
-    android.sourceSets.main.assets.srcDirs.first().parentFile
+
+// APK重命名方法
+def renameApkWithMukVersion() {
+    def releaseVariant = android.applicationVariants.find { it.name == 'release' }
+    if (!releaseVariant) {
+        throw new GradleException("Release variant not found")
+    }
+
+    def appName = "Hydrogen"
+    def appVersionName = releaseVariant.versionName
+    def isSigned = releaseVariant.buildType.signingConfig != null
+    def suffix = isSigned ? "" : "_unsigned"
+
+    // 查找muk.lua版本
+    def assetsDir = android.sourceSets.main.assets.srcDirs.find { it.path.contains("assets") }.parentFile
+    def mukFile = new File(assetsDir, "assets_bin${File.separator}mods${File.separator}muk.lua")
     if (!mukFile.exists()) {
-        throw new GradleException("muk.lua not found at ${mukFile}")
+        throw new GradleException("muk.lua not found at: ${mukFile.absolutePath}")
     }
-    
-    def text = mukFile.getText("UTF-8")
+
+    def text = mukFile.getText('UTF-8')
     def versionMatcher = text =~ /versionCode\s*=\s*([\d.]+)/
     if (!versionMatcher.find()) {
-        throw new GradleException("muk.lua version format error")
+        throw new GradleException("Invalid versionCode format in muk.lua")
     }
     def mukVersion = versionMatcher.group(1)
-    
-    // 构建新文件名
-    def newName = "Hydrogen_${android.defaultConfig.versionName}_${mukVersion}" +
-                  (isSigned ? "" : "_unsigned") + 
-                  ".apk"
-    
-    // 执行重命名
-    def destFile = new File(apkFile.parentFile, newName)
-    if (destFile.exists()) destFile.delete()
-    
-    if (!apkFile.renameTo(destFile)) {
-        throw new GradleException("Failed to rename APK to ${destFile.name}")
-    }
-    
-    logger.lifecycle("Final APK: ${destFile.name}")
-    return destFile
-}
 
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
-import org.apache.commons.compress.archivers.zip.ZipFile
-import java.util.TimeZone
-import java.text.SimpleDateFormat
-
-// 设置APK文件的时间戳为 1981-01-01 01:01:02 UTC
-def setApkTimestamp(File inputFile) {
-    TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+    // 重命名APK
+    def apkDir = new File(project.buildDir, "outputs${File.separator}apk${File.separator}release")
+    def latestApk = apkDir.listFiles()?.findAll { it.name.endsWith('.apk') }?.sort { -it.lastModified() }?.first()
     
-    // 解析输入的UTC时间
-    def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    sdf.setTimeZone(TimeZone.getTimeZone("UTC"))
-    def targetDate = sdf.parse("1981-01-01 01:01:02")
-    def targetTimestamp = targetDate.time
-    
-    def tempFile = new File(inputFile.parent, inputFile.name + ".tmp")
-    
-    def zipFile = new ZipFile(inputFile)
-    def out = new ZipArchiveOutputStream(tempFile)
-    
-    try {
-        zipFile.entries.each { entry ->
-            def newEntry = new ZipArchiveEntry(entry.name)
-            newEntry.time = targetTimestamp
-            out.putArchiveEntry(newEntry)
-            if (!entry.directory) {
-                out.write(zipFile.getInputStream(entry).bytes)
-            }
-            out.closeArchiveEntry()
+    if (latestApk) {
+        def newName = "${appName}_${appVersionName}_${mukVersion}${suffix}.apk"
+        def newApkPath = new File(apkDir, newName)
+        
+        if (latestApk.renameTo(newApkPath)) {
+            logger.lifecycle("APK renamed to: ${newName}")
+        } else {
+            throw new GradleException("Failed to rename APK")
         }
-    } finally {
-        out.close()
-        zipFile.close()
+    } else {
+        throw new GradleException("No APK file found")
     }
-    
-    // 替换原文件
-    inputFile.delete()
-    tempFile.renameTo(inputFile)
-    
-    logger.lifecycle("Successfully set apk timestamp: 1981-01-01 01:01:02 UTC")
-    
-    return inputFile
 }

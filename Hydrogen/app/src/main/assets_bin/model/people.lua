@@ -244,8 +244,8 @@ function base:getUrls()
   local url_token=self.url_token
   return {
     activities = "https://api.zhihu.com/people/" .. people_id .. "/activities?limit=20",
-    zvideo = "https://api.zhihu.com/members/" .. people_id .. "/zvideos?offset=0&limit=20",
-    answer = "https://api.zhihu.com/members/" .. people_id .. "/answers?order_by=created&offset=0&limit=20",
+    zvideo = "https://www.zhihu.com/api/v4/members/" .. url_token .. "/zvideos?offset=0&limit=20",
+    answer = "https://www.zhihu.com/api/v4/members/" .. people_id .. "/answers?order_by=created&offset=0&limit=20",
     vote = "https://api.zhihu.com/moments/" .. people_id .. "/vote?limit=20",
     more = "https://api.zhihu.com/people/" .. people_id .. "/profile/tab/more?tab_type=1",
     article = "https://www.zhihu.com/api/v4/members/" .. url_token .. "/articles?offset=0&limit=20",

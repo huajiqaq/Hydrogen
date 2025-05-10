@@ -9,8 +9,8 @@ on:
         type: choice
         options:
           - 'assembleRelease'
-          - 'rebuildApk'
-        default: 'rebuildApk'
+          - 'assembleRelease_unlua'
+        default: 'assembleRelease'
 
 jobs:
   build:
@@ -36,23 +36,9 @@ jobs:
         run: |
           if [ "${{ github.event.inputs.build_type }}" = "assembleRelease" ]; then
             (cd Hydrogen && ./gradlew app:assembleRelease)
-          elif [ "${{ github.event.inputs.build_type }}" = "rebuildApk" ]; then
-            (cd Hydrogen && ./gradlew app:rebuildApk)
+          elif [ "${{ github.event.inputs.build_type }}" = "assembleRelease_unlua" ]; then
+            (cd Hydrogen && ./gradlew app:assembleRelease_unlua)
           fi
-
-      # 调试步骤：仅当构建类型为 assembleRelease 时检查路径
-      - name: Debug assembleRelease Path
-        if: github.event.inputs.build_type == 'assembleRelease'
-        run: |
-          echo "---- assembleRelease APK 路径验证 ----"
-          ls -la Hydrogen/app/build/outputs/apk/release/
-
-      # 调试步骤：仅当构建类型为 rebuildApk 时检查路径
-      - name: Debug rebuildApk Path
-        if: github.event.inputs.build_type == 'rebuildApk'
-        run: |
-          echo "---- rebuildApk 自定义路径验证 ----"
-          ls -la Hydrogen/app/build/outputs/custom-apk/
 
       # 上传 assembleRelease 产物
       - name: Upload Release APK
@@ -64,12 +50,12 @@ jobs:
             Hydrogen/app/build/outputs/apk/release/*.apk
             Hydrogen/app/build/outputs/mapping/release/mapping.txt
 
-      # 上传 rebuildApk 产物
+      # 上传 assembleRelease_unlua 产物
       - name: Upload Rebuilt APK
-        if: github.event.inputs.build_type == 'rebuildApk'
+        if: github.event.inputs.build_type == 'assembleRelease_unlua'
         uses: actions/upload-artifact@v4
         with:
-          name: rebuild-apk
+          name: release-unlua-apk
           path: |
-            Hydrogen/app/build/outputs/custom-apk/*.apk
+            Hydrogen/app/build/outputs/apk/release/*.apk
             Hydrogen/app/build/outputs/mapping/release/mapping.txt
