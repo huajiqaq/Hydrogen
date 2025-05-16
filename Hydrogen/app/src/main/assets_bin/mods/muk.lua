@@ -268,27 +268,6 @@ function edgeToedge(顶栏,底栏,callback)
 
 end
 
-
-function webviewToBitmap(webView, func) --由于存在延迟，后续操作使用function(bitmap)传入
-  webView.measure(View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
-  View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
-  --webView.layout(0, 0, webView.getMeasuredWidth(), webView.getMeasuredHeight())
-
-  webView.setDrawingCacheEnabled(true)
-  webView.buildDrawingCache(true)
-  local bitmap = Bitmap.createBitmap(webView.getMeasuredWidth(), webView.getMeasuredHeight(), Bitmap.Config.ARGB_8888)
-  task(200, function() --必须延迟，否则会出现空白，大小根据页面可以调整
-    local canvas = Canvas(bitmap)
-    local paint = Paint()
-    local iHeight = bitmap.getHeight()
-    canvas.drawBitmap(bitmap, 0, iHeight, paint)
-    webView.draw(canvas)
-    webView.setDrawingCacheEnabled(false)
-    webView.setDrawingCacheEnabled(true)
-    func(bitmap)
-  end)
-end
-
 function base64ToBitmap(encodedImage)
   local prefix = "data:image/png;base64,"
   local imageData = string.sub(encodedImage, #prefix + 1)
@@ -309,7 +288,6 @@ function webviewToBitmap(webView, func) --由于存在延迟，后续操作使�
         webView.evaluateJavascript(
         "getScreenshot()",
         {onReceiveValue=function(b)
-            print(b)
             func(base64ToBitmap(b))
         end})
       end)
