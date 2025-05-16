@@ -269,14 +269,13 @@ function edgeToedge(顶栏,底栏,callback)
 end
 
 
-
 function webviewToBitmap(webView, func) --由于存在延迟，后续操作使用function(bitmap)传入
   webView.measure(View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
   View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
   --webView.layout(0, 0, webView.getMeasuredWidth(), webView.getMeasuredHeight())
+
   webView.setDrawingCacheEnabled(true)
   webView.buildDrawingCache(true)
-  webView.enableSlowWholeDocumentDraw()
   local bitmap = Bitmap.createBitmap(webView.getMeasuredWidth(), webView.getMeasuredHeight(), Bitmap.Config.ARGB_8888)
   task(200, function() --必须延迟，否则会出现空白，大小根据页面可以调整
     local canvas = Canvas(bitmap)
@@ -288,6 +287,33 @@ function webviewToBitmap(webView, func) --由于存在延迟，后续操作使�
     webView.setDrawingCacheEnabled(true)
     func(bitmap)
   end)
+end
+
+function base64ToBitmap(encodedImage)
+  local prefix = "data:image/png;base64,"
+  local imageData = string.sub(encodedImage, #prefix + 1)
+
+  local Base64 = luajava.bindClass "android.util.Base64"
+  local BitmapFactory = luajava.bindClass "android.graphics.BitmapFactory"
+
+  local decodedImage = Base64.decode(imageData, Base64.DEFAULT)
+  return BitmapFactory.decodeByteArray(decodedImage, 0, #decodedImage)
+end
+
+function webviewToBitmap(webView, func) --由于存在延迟，后续操作使用function(bitmap)传入
+  webView.evaluateJavascript("captureScreenshot()",
+  {onReceiveValue=function(b)
+      --偷懒 因为onReceiveValue回调不能直接处理异步
+      --应该使用js接口的 不过1秒似乎应该可以处理吧(
+      task(1000,function()
+        webView.evaluateJavascript(
+        "getScreenshot()",
+        {onReceiveValue=function(b)
+            print(b)
+            func(base64ToBitmap(b))
+        end})
+      end)
+  end});
 end
 
 function findDirectoryUpward(startPath)

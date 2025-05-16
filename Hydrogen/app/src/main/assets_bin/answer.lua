@@ -262,6 +262,7 @@ function 数据添加(t,b)
       加载js(view,获取js("answer_pages"))
       加载js(view,获取js("imgplus"))
       加载js(view,获取js("mdcopy"))
+      加载js(view,获取js("snap"))
     end,
     onPageFinished=function(view,url,favicon)
       t.content.setVisibility(0)
@@ -690,22 +691,27 @@ task(1,function()
           import "android.graphics.Bitmap"
           import "android.graphics.Canvas"
           import "android.graphics.Paint"
+          import "com.nwdxlgzs.view.photoview.PhotoView"
+
+
 
           webviewToBitmap(webView, function(bitmap)
+            local ids={}
             AlertDialog.Builder(this)
             .setTitle("预览")
-            .setView(loadlayout({
-              ScrollView;
-              layout_width="fill";
-              layout_height="fill";
+            .setView(loadlayout(
+            {
+              LinearLayout;
+              layout_width="-1";
+              layout_height="-1";
               {
-                ImageView;
+                PhotoView;
                 id="iv";
                 layout_width="fill";
                 layout_height="wrap";
-                adjustViewBounds="true"
+                adjustViewBounds="true";
               }
-            }))
+            },ids))
             .setPositiveButton("确认并分享", function()
               import "android.graphics.Bitmap"
               import "android.os.Environment"
@@ -738,7 +744,7 @@ task(1,function()
             end})
             .show()
 
-            iv.setImageBitmap(bitmap)
+            loadglide(ids.iv,bitmap)
 
           end)
 
@@ -809,6 +815,8 @@ task(1,function()
           写入文件(保存路径.."/detail.txt",写入内容)
           newActivity("saveweb",{pgids.content.getUrl(),保存路径,写入内容})
         end,
+
+
         onLongClick=function()
           local pgnum=pg.adapter.getItem(pg.getCurrentItem()).id
           local pgids=数据表[pgnum].ids
@@ -819,6 +827,8 @@ task(1,function()
               saf_writeText=b
               createDocumentLauncher.launch(_title.Text.."_"..username.Text..".md");
           end})
+
+
 
         end
       },
