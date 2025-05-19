@@ -8,6 +8,8 @@ function base:new(id)--类的new方法
   return child
 end
 
+--全局变量
+recommend_data={}
 
 function base.resolvedata(v,data)
   if v.type~="feed" then
@@ -33,6 +35,13 @@ function base.resolvedata(v,data)
     end
     if table.find(recommend_history,预览内容)
       提示("找到重复内容")
+      local postdata=luajson.encode(readdata)
+      postdata=urlEncode('[["r",'..postdata..']]')
+      postdata="targets="..postdata
+      zHttp.post("https://api.zhihu.com/lastread/touch/v2",postdata,apphead,function(code,content)
+        if code==200 then
+        end
+      end)
       return
      else
       if #recommend_history>tointeger(activity.getSharedData("feed_cache") or 100)
@@ -89,8 +98,12 @@ function base.resolvedata(v,data)
   add.点赞数=点赞数
   add.id内容=id内容
 
-  add.isread=isread
-  add.readdata=readdata
+  local extradata= {
+    isread=isread,
+    readdata=readdata
+  }
+  table.insert(recommend_data,extradata)
+  add.extradata=extradata
 
   table.insert(data,add)
 end
@@ -127,8 +140,9 @@ function base.getAdapter(home_pagetool,pos)
       local 评论数=data.评论数
       local 点赞数=data.点赞数
       local id内容=data.id内容
-      local isread=data.isread
-      local readdata=data.readdata
+      local extradata=data.extradata
+      local isread=extradata.isread
+      local readdata=extradata.readdata
 
       views.标题.text=标题
       views.预览内容.text=预览内容
@@ -142,7 +156,7 @@ function base.getAdapter(home_pagetool,pos)
 
       views.card.onClick=function()
         if getLogin() then
-          home_pagetool:getItemData()[position+1].isread='"r"'
+          home_pagetool:getItemData()[position+1].extradata.isread='"r"'
 
           local postdata=luajson.encode(readdata)
           postdata=urlEncode('[["r",'..postdata..']]')
@@ -153,6 +167,7 @@ function base.getAdapter(home_pagetool,pos)
             end
           end)
         end
+
         nTView=views.card
         点击事件判断(data.id内容,data.标题)
       end

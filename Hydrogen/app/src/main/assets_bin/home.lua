@@ -987,7 +987,7 @@ function 加载主页tab()
         })
         local tab=HometabLayout.newTab()
         tab.setText(v.section_name)
-        HometabLayout.addTab(tab)
+        HometabLayout.addTab(tab,false)
       end
 
       HometabLayout.addOnTabSelectedListener(TabLayout.OnTabSelectedListener {
@@ -1020,20 +1020,21 @@ function 加载主页tab()
         end,
       });
 
-      --[[      -- 当滑动结束发送请求 尝试解决重复数据问题
-      local data = home_pagetool:getItemData()
-      local 主页加载数据长度 = 6
+      -- 当滑动结束发送请求 尝试解决重复数据问题
       home_pagetool.urlfunc = function(url, head)
-        if #data < 主页加载数据长度 or not getLogin() then
+        if not getLogin() then
           return url, head
         end
 
         local postdatas = {}
-        for i = 1, 主页加载数据长度 do
-          local item = data[i]
-          local encoded_data = luajson.encode(item.readdata)
-          table.insert(postdatas, string.format("[%s,%s]", tostring(item.isread), encoded_data))
+        for _,v ipairs(recommend_data) do
+          if v.isread=='"r"' then continue end
+          local encoded_data = luajson.encode(v.readdata)
+          table.insert(postdatas, string.format("[%s,%s]", tostring(v.isread), encoded_data))
         end
+
+        table.clear(recommend_data)
+
         local postdata = "targets=" .. urlEncode("[" .. table.concat(postdatas, ",") .. "]")
 
         -- 修改URL尝试解决重复数据
@@ -1044,7 +1045,8 @@ function 加载主页tab()
         end)
 
         return url, head
-      end]]
+      end
+
       --延迟防止滑动
       HometabLayout.postDelayed(Runnable{
         run=function()
@@ -1059,9 +1061,6 @@ function 加载主页tab()
   end)
 end
 
-local pos=page_home.getCurrentItem()+1
-local home_item=home_items[pos]
-home_pageinfo[home_item].refer(true)
 
 function 成功登录回调()
   setHead()
@@ -1091,15 +1090,23 @@ function getuserinfo()
   local myurl= 'https://www.zhihu.com/api/v4/me'
 
   --不使用zHttp防止报错
-  Http.get(myurl,head,function(code,content)
-
+  Http.get(myurl, {
+    ["cookie"] = 获取Cookie("https://www.zhihu.com/");
+    },function(code,content,raw,headers)
     if code==200 then--判断网站状态
+
       local data=luajson.decode(content)
       local 名字=data.name
       local 头像=data.avatar_url
       local 签名=data.headline
       local uid=data.id
       activity.setSharedData("idx",uid)
+
+      local values= headers.get("x-udid");
+      if values and values.isEmpty()==false then
+        activity.setSharedData("udid",values.get(0))
+      end
+
       侧滑头.onClick=function()
         newActivity("people",{uid})
       end
