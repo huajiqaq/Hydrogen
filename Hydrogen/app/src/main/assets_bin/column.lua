@@ -54,6 +54,7 @@ if 类型=="本地" then
     end
     myid = 详情:match("(%d+)[^/]*$")
     local myuri = Uri.fromFile(html).toString();
+    content.getSettings().setAllowFileAccess(true)
     content.loadUrl(myuri)
   end)
 end
@@ -276,7 +277,7 @@ if 类型=="本地" then
           local dofun={
             function()
               import "android.print.PrintAttributes"
-              printManager = this.getSystemService(Context.PRINT_SERVICE);
+              printManager = this.getOriginalContext().getSystemService(Context.PRINT_SERVICE);
               printAdapter = content.createPrintDocumentAdapter();
               printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
 

@@ -102,6 +102,7 @@ function 设置视图(t)
     activity.setContentView(loadlayout(t))
   end
 end
+
 function newActivity(f,b,c)
   if f1 == nil
     return activity.newActivity(f,b)
@@ -192,8 +193,11 @@ function 关闭页面()
     if (fn[#fn][1]=="home")
       activity.finish()
      else]]
-  activity.getSupportFragmentManager().popBackStack()
-
+  if thisFragment then
+    activity.getSupportFragmentManager().popBackStack()
+   else
+    this.finish()
+  end
   --[[local a4=ObjectAnimator.ofFloat(fg, "x", {fg.x,fg.x+activity.width})
       .setDuration(200)
       .setInterpolator(OvershootInterpolator(2.0))

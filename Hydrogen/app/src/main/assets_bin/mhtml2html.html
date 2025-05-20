@@ -18,7 +18,7 @@
             let fakewindow = mhtml2html.convert(mhtml)
             return fakewindow.window.document.documentElement.outerHTML
         }
-        let mhtml = window.androlua.execute("getmhtml")
+        let mhtml = window.hydrogen.execute("getmhtml")
         let html=gethtml(mhtml)
         window.hydrogen.execute(html)
     </script>

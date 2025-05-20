@@ -96,21 +96,21 @@ pop={
         if not(文件夹是否存在(父文件夹路径)) then
           创建文件夹(父文件夹路径)
         end
-        --[[savedialog=AlertDialog.Builder(this)
+        savedialog=AlertDialog.Builder(this)
         .setTitle("提示")
         .setMessage("保存中 请耐心等待")
-        --.setCancelable(false)
-        .show()]]
+        .setCancelable(false)
+        .show()
         创建文件夹(保存路径)
         local 详情文件夹=保存路径.."/detail.txt"
         创建文件(详情文件夹)
         写入文件(详情文件夹,写入内容)
         content.saveWebArchive(保存路径.."/mht.mht")
         提示("保存成功 请稍等写入完成［一般2S内完成］")
-        --[[task(1000,function()
+        task(1000,function()
           content.loadUrl(mhtml2html)
           提示("转换中")
-        end)]]
+        end)
     end},
 
     {src=图标("share"),text="分享",onClick=function()

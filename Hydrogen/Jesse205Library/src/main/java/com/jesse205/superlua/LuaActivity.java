@@ -22,6 +22,8 @@ import android.content.res.Resources;
 
 import java.io.File;
 
+import java.lang.ref.WeakReference;
+
 public class LuaActivity extends com.androlua.LuaActivity {
   private long oldLastTime = 0;
   private long lastTime = 0;
@@ -34,8 +36,17 @@ public class LuaActivity extends com.androlua.LuaActivity {
   private LuaObject mOnBackPressed;
   private OnBackAnimationCallback OnBackAnimationCallback;
   
+  private WeakReference<Context> mOriginalContextRef;
+  
+  // 获取原始 Context
+  public Context getOriginalContext() {
+      return mOriginalContextRef != null ? mOriginalContextRef.get() : null;
+  }
+  
   @Override
   protected void attachBaseContext(Context base) {
+  
+    mOriginalContextRef = new WeakReference<>(base);
     // 获取字体大小设置
     Object fontSizeObj = this.getSharedData("font_size");
   
@@ -166,10 +177,11 @@ public class LuaActivity extends com.androlua.LuaActivity {
     super.onSaveInstanceState(outState);
     runFunc("onSaveInstanceState", outState);
   }
-
+  
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    mOriginalContextRef = null;  // 清理引用
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
         && OnBackAnimationCallback != null) {

@@ -1416,3 +1416,112 @@ if this.getSharedData("智能无图模式")=="true" then
     end
   end
 end
+
+--Fragment TalkBack适配
+function getLastFragmentInContainer(container)
+  local fm = this.getSupportFragmentManager()
+  local fragments = luajava.astable(fm.getFragments())
+  local fragmentsInContainer = {}
+
+  for _, v in ipairs(fragments) do
+    if v and v.getView() then
+      local parent = v.getView().getParent()
+      if parent == container then
+        table.insert(fragmentsInContainer, v)
+      end
+    end
+  end
+
+  if #fragmentsInContainer > 0 then
+    local lastFragment = table.remove(fragmentsInContainer)
+    return fragmentsInContainer, lastFragment
+  end
+
+  return nil, nil
+end
+
+function getLastFragmentInContainer(container)
+  local fm = this.getSupportFragmentManager()
+  local fragments = luajava.astable(fm.getFragments())
+  local fragmentsInContainer = {}
+
+  for _, v in ipairs(fragments) do
+    if v and v.getView() then
+      local parent = v.getView().getParent()
+      if parent == container then
+        table.insert(fragmentsInContainer, v)
+      end
+    end
+  end
+
+  if #fragmentsInContainer > 0 then
+    local lastFragment = table.remove(fragmentsInContainer)
+    return fragmentsInContainer, lastFragment
+  end
+
+  return nil, nil
+end
+
+function showLastFragment(container)
+  local fm = this.getSupportFragmentManager()
+  local fragmentsInContainer, lastFragment = getLastFragmentInContainer(container)
+
+  if not lastFragment then
+    return
+  end
+
+  local rootView = lastFragment.getView()
+  if not rootView then
+    return
+  end
+
+  -- 显示当前最后的 Fragment
+  rootView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+  -- 隐藏其他 Fragment
+  for _, fragment in ipairs(fragmentsInContainer) do
+    local view = fragment.getView()
+    if view and not fragment.isHidden() then
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
+    end
+  end
+end
+
+previousStackSize = 0;
+
+this.getSupportFragmentManager().addOnBackStackChangedListener(luajava.bindClass "androidx.fragment.app.FragmentManager".OnBackStackChangedListener{
+  onBackStackChanged=function()
+    currentStackSize = this.getSupportFragmentManager().getBackStackEntryCount();
+
+    if currentStackSize < previousStackSize then
+      -- Fragment 被删除了
+      local containers = {
+        f1,
+        f2,
+      }
+      for _, container in ipairs(containers) do
+        local fragmentsList, lastFragment = getLastFragmentInContainer(container)
+
+        if lastFragment then
+          local rootView = lastFragment.getView()
+          if not rootView then continue end
+          -- 获取当前 accessibility 状态
+          local currentFlag = rootView.getImportantForAccessibility()
+          -- 判断是否被当成“隐藏”
+          local isHidden = currentFlag == View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+          if isHidden then
+            -- 模拟 show：让系统渲染这个 fragment 的 view
+            rootView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+          end
+        end
+      end
+
+     elseif currentStackSize > previousStackSize then
+      -- 新增 Fragment 到栈中
+      local fragmemts=this.getSupportFragmentManager().getFragments()
+      local lastFragment=fragmemts[fragmemts.size()-1]
+      local container = lastFragment.getView().getParent()
+      showLastFragment(container)
+    end
+    previousStackSize = currentStackSize;
+  end
+});

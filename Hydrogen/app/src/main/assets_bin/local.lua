@@ -28,7 +28,7 @@ end
 
 if xxx:match("article") or xxx:match("pin") then
   关闭页面()
-  this.newActivity("column",{filedir,"本地"})
+  newActivity("column",{filedir,"本地"})
   return
 end
 
@@ -233,7 +233,7 @@ task(1,function()
           local dofun={
             function()
               import "android.print.PrintAttributes"
-              printManager = this.getSystemService(Context.PRINT_SERVICE);
+              printManager = this.getOriginalContext().getSystemService(Context.PRINT_SERVICE);
               printAdapter = t.content.createPrintDocumentAdapter();
               printManager.print("文档", printAdapter,PrintAttributes.Builder().build());
 
