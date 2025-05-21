@@ -19,7 +19,7 @@ if activity.getSharedData("searchv1") ==nil then
     activity.setSharedData("searchv1","x")
     newActivity("settings")
     关闭对话框(an)
-    end,function()
+    end,function(an)
     activity.setSharedData("searchv1","x")
     关闭对话框(an)
   end)
@@ -39,7 +39,7 @@ function 搜索(text)
       end
     end
     if this.getSharedData("搜索引擎")==nil
-      this.setSharedData("搜索引擎","https://www4.bing.com/search?q=site%3Azhihu.com%20")
+      this.setSharedData("搜索引擎","https://www.bing.com/search?q=site%3Azhihu.com%20")
 
     end
     search_eg=this.getSharedData("搜索引擎")

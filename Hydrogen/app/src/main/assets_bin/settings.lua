@@ -127,7 +127,7 @@ tab=processTable{
           layout_marginTop="10dp";
           layout_marginLeft="10dp",
           layout_marginRight="10dp",
-          Text='请使用?q=类似物为结尾，如下\n知乎搜索页面 "https://www.zhihu.com/search?type=content&q="\n bing "https://www4.bing.com/search?q=site%3Azhihu.com%20"';
+          Text='请使用?q=类似物为结尾，如下\n知乎搜索页面 "https://www.zhihu.com/search?type=content&q="\n bing "https://www.bing.com/search?q=site%3Azhihu.com%20"';
           Typeface=字体("product-Medium");
         },
         {
@@ -153,7 +153,7 @@ tab=processTable{
 提示("设置成功")
          else
           提示("无法读取")
-          this.setSharedData("搜索引擎","https://www4.bing.com/search?q=site%3Azhihu.com%20")
+          this.setSharedData("搜索引擎","https://www.bing.com/search?q=site%3Azhihu.com%20")
           return
         end
 
