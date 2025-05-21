@@ -784,7 +784,7 @@ tab=processTable{
       sta=0
       debugtip=AlertDialog.Builder(this)
       .setTitle("是否要开启?")
-      .setMessage("开启后会提示一些错误信息 在一定程度上会影响阅读")
+      .setMessage("开启后会提示一些错误信息 在一定程度上会影响阅读 注意 如果你的机型在安卓12或更高版本 错误信息最多显示两行 请手动修改软件的AndroidManifest.xml 的android:targetSdkVersion= 后的数字改为29 并重写打包 签名密钥在开源项目中 或联系开发者下载修改后安装包 或者使用logfox录制将日志文件发送给开发者")
       .setCancelable(false)
       .setPositiveButton("开启",{onClick=function()
           this.setSharedData("调式模式","true")
