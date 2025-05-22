@@ -44,7 +44,7 @@ function base.resolvedata(v,data)
   end
 
   local 底部内容=getBottomContent(v)
-  local 标题=v.common_card.feed_content.title.panel_text
+  local 标题=v.common_card.feed_content.title and v.common_card.feed_content.title.panel_text
   local 作者=v.common_card.feed_content.source_line.elements[2].text.panel_text
   local 预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
 
