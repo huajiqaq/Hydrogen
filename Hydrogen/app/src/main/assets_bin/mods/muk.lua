@@ -2881,6 +2881,12 @@ function setHead()
     followhead = table.clone(apphead)
     followhead["x-moments-ab-param"] = "follow_tab=1";
   end
+  
+
+  if homeapphead then
+    homeapphead=table.clone(apphead)
+    homeapphead["x-close-recommend"]="0"
+  end
 
 end
 

@@ -30,7 +30,10 @@ if url:find("https://www.zhihu.com/messages") then
 end
 
 
-content.loadUrl(url)
+--解决bing搜索白屏
+local headers = HashMap()
+headers.put("Referer", url)
+content.loadUrl(url, headers)
 
 
 _title.text="加载中"
