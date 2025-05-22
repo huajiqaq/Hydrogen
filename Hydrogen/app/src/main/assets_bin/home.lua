@@ -1477,6 +1477,7 @@ function showLastFragment(container)
 
   -- 显示当前最后的 Fragment
   rootView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+
   -- 隐藏其他 Fragment
   for _, fragment in ipairs(fragmentsInContainer) do
     local view = fragment.getView()
@@ -1486,42 +1487,59 @@ function showLastFragment(container)
   end
 end
 
-previousStackSize = 0;
+--保存先有返回栈数量
+previousStackSize = this.getSupportFragmentManager().getBackStackEntryCount();
+--可以使用 FragmentLifecycleCallbacks实现更精准判断 过快手势返回可能存在bug
+local handleBackStackChange=debounce(function()
+  currentStackSize = this.getSupportFragmentManager().getBackStackEntryCount();
+  --print("currstack"..tostring(currentStackSize))
+  --print("prevstack"..tostring(previousStackSize))
+  if currentStackSize < previousStackSize then
+    -- Fragment 被删除了
+    local containers = {
+      f1,
+      f2,
+    }
+    for _, container in ipairs(containers) do
+      local fragmentsList, lastFragment = getLastFragmentInContainer(container)
+      if lastFragment then
+        local rootView = lastFragment.getView()
+        if not rootView then continue end
+        -- 获取当前 accessibility 状态
+        local currentFlag = rootView.getImportantForAccessibility()
+        -- 判断是否被当成“隐藏”
+        local isHidden = currentFlag == View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+        if isHidden then
+          rootView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+          import "android.view.accessibility.AccessibilityEvent"
 
-this.getSupportFragmentManager().addOnBackStackChangedListener(luajava.bindClass "androidx.fragment.app.FragmentManager".OnBackStackChangedListener{
-  onBackStackChanged=function()
-    currentStackSize = this.getSupportFragmentManager().getBackStackEntryCount();
-
-    if currentStackSize < previousStackSize then
-      -- Fragment 被删除了
-      local containers = {
-        f1,
-        f2,
-      }
-      for _, container in ipairs(containers) do
-        local fragmentsList, lastFragment = getLastFragmentInContainer(container)
-
-        if lastFragment then
-          local rootView = lastFragment.getView()
-          if not rootView then continue end
-          -- 获取当前 accessibility 状态
-          local currentFlag = rootView.getImportantForAccessibility()
-          -- 判断是否被当成“隐藏”
-          local isHidden = currentFlag == View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-          if isHidden then
-            -- 模拟 show：让系统渲染这个 fragment 的 view
-            rootView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+          --只有主页使用LuaFragment
+          if luajava.instanceof(lastFragment,LuaFragment)
+            local rootView=_menu
+            rootView.requestFocus()
+            rootView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+           else
+            rootView.requestFocus()
+            rootView.getChildAt(0).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
           end
         end
       end
-
-     elseif currentStackSize > previousStackSize then
-      -- 新增 Fragment 到栈中
-      local fragmemts=this.getSupportFragmentManager().getFragments()
-      local lastFragment=fragmemts[fragmemts.size()-1]
-      local container = lastFragment.getView().getParent()
-      showLastFragment(container)
     end
-    previousStackSize = currentStackSize;
+
+   elseif currentStackSize > previousStackSize then
+    -- 新增 Fragment 到栈中
+    local fragmemts=this.getSupportFragmentManager().getFragments()
+    local lastFragment=fragmemts[fragmemts.size()-1]
+    local container = lastFragment.getView().getParent()
+    showLastFragment(container)
   end
-});
+  previousStackSize = this.getSupportFragmentManager().getBackStackEntryCount();
+end,500)
+local accessibilityManager = this.getSystemService(Context.ACCESSIBILITY_SERVICE);
+if accessibilityManager.isTouchExplorationEnabled() then
+  this.getSupportFragmentManager().addOnBackStackChangedListener(luajava.bindClass "androidx.fragment.app.FragmentManager".OnBackStackChangedListener{
+    onBackStackChanged=function()
+      handleBackStackChange()
+    end
+  });
+end

@@ -80,9 +80,12 @@ end
 function 设置视图(t)
   if thisFragment
     thisFragment.setContainerView(loadlayout(t))
+    --已二次优化 已经不用在这里写
+    --[[
     import "android.view.accessibility.AccessibilityEvent"
     thisFragment.container.requestFocus()
     thisFragment.container.getChildAt(0).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED)
+    ]]
     if nOView~=nil
       local r=0
       pcall(function()
