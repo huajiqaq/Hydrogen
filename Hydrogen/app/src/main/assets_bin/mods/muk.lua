@@ -2838,15 +2838,15 @@ function setHead()
 
     apphead = {
       ["x-api-version"] = "3.1.8";
-      ["x-app-za"] = "OS=Android&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
-      ["x-app-version"] = "9.13.0";
+      ["x-app-za"] = "OS=Android&VersionName=10.12.0&VersionCode=21210&Product=com.zhihu.android&Installer=Google+Play&DeviceType=AndroidPhone";
+      ["x-app-version"] = "10.12.0";
       ["x-app-bundleid"] = "com.zhihu.android";
-      ["x-app-flavor"] = "myapp";
+      ["x-app-flavor"] = "play";
       ["x-app-build"] = "release";
       ["x-network-type"] = "WiFi";
       ["authorization"] = access_token;
       ["x-udid"] = this.getSharedData("udid");
-      ["user-agent"] = "ZhihuHybrid com.zhihu.android/Futureve/9.13.0 Mozilla/5.0",
+      ["user-agent"] = "com.zhihu.android/Futureve/10.12.0",
     }
 
     postapphead=table.clone(apphead)
@@ -2863,14 +2863,15 @@ function setHead()
 
     apphead = {
       ["x-api-version"] = "3.1.8";
-      ["x-app-za"] = "OS=Android&Release&VersionName=9.13.0&VersionCode=16816&Product=com.zhihu.android&Installer=Market&DeviceType=AndroidPhone";
-      ["x-app-version"] = "9.13.0";
+      ["x-app-za"] = "OS=Android&VersionName=10.12.0&VersionCode=21210&Product=com.zhihu.android&Installer=Google+Play&DeviceType=AndroidPhone";
+      ["x-app-version"] = "10.12.0";
       ["x-app-bundleid"] = "com.zhihu.android";
-      ["x-app-flavor"] = "myapp";
+      ["x-app-flavor"] = "play";
       ["x-app-build"] = "release";
       ["x-network-type"] = "WiFi";
       ["cookie"] = 获取Cookie("https://www.zhihu.com/");
       ["x-udid"] = this.getSharedData("udid");
+      ["user-agent"] = "com.zhihu.android/Futureve/10.12.0",
     }
 
     postapphead=table.clone(apphead)
@@ -2881,7 +2882,6 @@ function setHead()
     followhead = table.clone(apphead)
     followhead["x-moments-ab-param"] = "follow_tab=1";
   end
-  
 
   if homeapphead then
     homeapphead=table.clone(apphead)

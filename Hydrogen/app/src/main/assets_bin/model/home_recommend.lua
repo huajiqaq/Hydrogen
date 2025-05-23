@@ -19,12 +19,30 @@ local function getBottomContent(v)
   if v.common_card and v.common_card.footline and v.common_card.footline.elements then
     local elements = v.common_card.footline.elements
     local count = #elements
+    if count == 1 or count == 2 then
+      local element = elements[count]
 
-    if count == 1 then
-      local element = elements[1]
-      if element and element.text and element.text.panel_text then
-        底部内容 = element.text.panel_text
+      if element and element.text then
+        local text= element.text
+        if text.panel_text then
+          底部内容 = text.panel_text
+         elseif text.timestamp then
+          底部内容 = 时间戳(text.timestamp.time_in_seconds)
+        end
       end
+     elseif count >= 3 then
+      local bottomTexts = {}
+      for i = 1, 3 do
+        local item = elements[i]
+        local text = ""
+        if item and item.interactive_button then
+          text = item.interactive_button.interactive_button.text.panel_text
+         elseif item and item.button then
+          text = item.button.text.panel_text
+        end
+        table.insert(bottomTexts, text)
+      end
+      底部内容 = string.format("%s 赞同 · %s 收藏 · %s 评论", unpack(bottomTexts))
     end
   end
 
@@ -46,7 +64,12 @@ function base.resolvedata(v,data)
   local 底部内容=getBottomContent(v)
   local 标题=v.common_card.feed_content.title and v.common_card.feed_content.title.panel_text
   local 作者=v.common_card.feed_content.source_line.elements[2].text.panel_text
-  local 预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
+  local 预览内容=作者.." : ".."无预览内容"
+  if v.common_card.feed_content.content then
+    预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
+   elseif v.common_card.feed_content.video then
+    预览内容=作者.." : ".."[视频]"
+  end
 
   local id =v.extra.id
   local 分割字符串;
@@ -104,13 +127,7 @@ function base.resolvedata(v,data)
     ]]
     return
   end
-
-  if v.common_card.feed_content.content then
-    预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
-   elseif v.common_card.feed_content.video
-    预览内容=作者.." : ".."[视频]"
-  end
-
+  
   local id内容=分割字符串..id
 
   local isread='"t"'
