@@ -11,7 +11,7 @@ function base:new(id)
 end
 
 function base:getData(callback)
-  local include='?include=voteup_count%2Cfollower_count%2Cfollowing_count'
+  local include='?include=voteup_count%2Cfollower_count%2Cfollowing_count%2Cis_following'
   local url="https://www.zhihu.com/api/v4/members/"..self.id..include
   zHttp.get(url,head,function(code,content)
     if code==200 then
