@@ -100,7 +100,8 @@ function 刷新()
     content.setVisibility(8)
 
     if 类型=="文章" then
-      content.loadUrl(base_column.weburl.."?use_hybrid_toolbar=1")
+      --omni=mix 防止文章点击赞同提示服务繁忙
+      content.loadUrl(base_column.weburl.."?omni=mix&use_hybrid_toolbar=1")
      else
       content.loadUrl(base_column.weburl)
     end
@@ -130,7 +131,7 @@ MyWebViewUtils:initWebViewClient{
   onPageStarted=function(view,url,favicon)
     加载js(view,获取js("imgplus"))
     加载js(view,获取js("mdcopy"))
-    --加载js(view,获取js("eruda"))
+    加载js(view,获取js("eruda"))
     if 全局主题值=="Night" then
       夜间模式主题(view)
     end
@@ -162,18 +163,16 @@ MyWebViewUtils:initChromeClient({
       newActivity("comment",{id,urltype.."s",保存路径})
      elseif consoleMessage.message()=="查看用户" then
       newActivity("people",{author_id})
-     elseif consoleMessage.message():find("收藏") then
+     elseif consoleMessage.message():find("收藏分割") then
       if not(getLogin()) then
         return 提示("请登录后使用本功能")
       end
       local func=function() end
-      if consoleMessage.message():find("分割") then
-        func=function(count)
-          if count==0 then
-            local callbackid=tostring(consoleMessage.message()):match("收藏分割(.+)")
-            local sendobj='{"id":"'..callbackid..'","type":"success","params":{"contentType":"'..urltype..'","contentId":"'..id..'","collected":false}}'
-            加载js(content,'window.zhihuWebApp && window.zhihuWebApp.callback('..sendobj..')')
-          end
+      func=function(count)
+        if count==0 then
+          local callbackid=tostring(consoleMessage.message()):match("收藏分割(.+)")
+          local sendobj='{"id":"'..callbackid..'","type":"success","params":{"contentType":"'..urltype..'","contentId":"'..id..'","collected":false}}'
+          加载js(content,'window.zhihuWebApp && window.zhihuWebApp.callback('..sendobj..')')
         end
       end
       加入收藏夹(id,urltype,func)

@@ -43,32 +43,40 @@ content.setVisibility(8)
 
 MyWebViewUtils:initWebViewClient{
   shouldOverrideUrlLoading=function(view,url)--回调参数，v控件，url网址
-    res=false
     if url:find("zhihu.com") and url:find("https://www.zhihu.com/account/unhuman") then
       view.stopLoading()
       activity.setResult(100)
+
       if url:find("zhihu.com/signin") then
         activity.newActivity("login")
-        return
+        return true
       end
+
       if url:find("need_login=true") and not(url:find("https://www.zhihu.com/account/unhuman")) then
         AlertDialog.Builder(this)
         .setTitle("提示")
         .setMessage("登录可减少验证的出现 多次出现验证知乎可能会暂时封禁一些功能 如果长期使用推荐登录 如已验证通过请自行退出 如退出后多次出现请尝试登录")
-        .setPositiveButton("我知道了",nil)
-        .setNeutralButton("登录",{onClick=function() activity.newActivity("login") end})
+        .setPositiveButton("我知道了", nil)
+        .setNeutralButton("登录", {
+          onClick = function() activity.newActivity("login") end
+        })
         .setCancelable(false)
         .show()
-        return
+        return true
       end
-      return
+
+      return true
     end
-    if url:sub(1,4)~="http" then
-      view.stopLoading()
-      if 检查意图(url,true) then
+
+    if url:sub(1,4) ~= "http" then
+      if 检查意图(url, true) then
         检查意图(url)
         关闭页面()
+        return true
        else
+        if url:find("zhihu://search") then
+          return true
+        end
         双按钮对话框("提示","是否用第三方软件打开本链接？","是","否",
         function(an)
           xpcall(function()
@@ -86,20 +94,25 @@ MyWebViewUtils:initWebViewClient{
         function(an)
           an.dismiss()
         end)
-      end
-     else
-      if 检查链接(url,true) then
-        if url:find("https://www.zhihu.com/answer/") then
-          url=url
-          return
-        end
-        view.stopLoading()
-        检查链接(url)
+        return true
       end
     end
-    if url=="https://www.zhihu.com" or url=="https://www.zhihu.com/" or url=="https://www.zhihu.com?utm" then
-      view.stopLoading()
+
+    if 检查链接(url, true) then
+      if url:find("https://www.zhihu.com/answer/") then
+        return true
+      end
+      检查链接(url)
+      return true
     end
+
+    if url == "https://www.zhihu.com"
+      or url == "https://www.zhihu.com/"
+      or url == "https://www.zhihu.com?utm" then
+      return true
+    end
+
+    return false
 
   end,
   onPageStarted=function(view,url,favicon)
@@ -126,7 +139,7 @@ MyWebViewUtils:initWebViewClient{
       加载js内容=获取js("model")
     end
 
-    加载js(view,获取js("native"))
+    --加载js(view,获取js("eruda"))
 
     a=MUKPopu(pop)
 
