@@ -107,47 +107,6 @@ end;
 
 回答容器=answer:new(回答id)
 
-import "androidx.core.content.ContextCompat"
-local 滑动配置保存路径=tostring(ContextCompat.getDataDir(activity)).."/回答页滑动配置.conf"
-
-function 获取回答滑动位置配置()
-  local 配置文件内容=读取文件(滑动配置保存路径)
-  local 配置={}
-  pcall(function()
-    配置=luajson.decode(配置文件内容)
-  end)
-  return 配置
-end
-
-function 设置回答滑动位置配置(isremove)
-  local pos=pg.getCurrentItem()
-  local mview=数据表[pg.adapter.getItem(pos).id]
-  local 回答id=mview.data.id
-
-  local content
-  if isremove==nil then
-    local scroll=mview.ids.content.getScrollY()
-    local height=userinfo.height
-    content=tostring(scroll-height)
-  end
-
-  local 配置=获取回答滑动位置配置()
-  配置[tostring(回答id)]=content
-  local 配置字符串=luajson.encode(配置)
-
-  --为空就写入为"" 更好看一点
-  if 配置字符串=="[]" then
-    配置字符串=""
-  end
-
-  写入文件(滑动配置保存路径,配置字符串)
-  return content
-end
-
-function 清空回答滑动位置配置()
-  写入文件(滑动配置保存路径,"")
-end
-
 mripple.onClick=function()
   local pos=pg.getCurrentItem()
   local mview=数据表[pg.adapter.getItem(pos).id]
@@ -275,15 +234,23 @@ function 数据添加(t,b)
 
       task(1000,function()
         加载js(view,获取js("answer_code"))
-        local 保存滑动位置=获取回答滑动位置配置()[tostring(b.id)] or 0
-        if tonumber(保存滑动位置)>0 then
-          local 实际滑动位置=保存滑动位置+userinfo.height
-          if 实际滑动位置>0 then
-            appbar.setExpanded(false);
-          end
-          t.content.scrollTo(0,实际滑动位置)
-          提示("已恢复到上次滑动位置")
-        end
+        加载js(view,获取js("scrollRestorer"))
+        view.evaluateJavascript("window.scrollRestorer.restoreScrollPosition()",
+        {onReceiveValue=function(b)
+            task(50,function()
+              view.evaluateJavascript(
+              "window.scrollRestorerPos",
+              {onReceiveValue=function(b)
+                  local 保存滑动位置 = tonumber(b) or 0
+                  if 保存滑动位置>userinfo.height then
+                    appbar.setExpanded(false);
+                    dtl.layoutParams.getBehavior().slideDown(dtl);
+                    提示("已恢复到上次滑动位置")
+                  end
+              end})
+            end)
+        end});
+        加载js(view,"window.scrollRestorer.restoreScrollPosition()")
       end)
 
       if this.getSharedData("代码块自动换行")=="true" then
@@ -768,31 +735,6 @@ task(1,function()
 
         end
       },
-      {src=图标("get_app"),text="保存滑动位置",onClick=function()
-          local pos=pg.getCurrentItem()
-          local mview=数据表[pg.adapter.getItem(pos).id]
-          if mview.load~=true
-            return 提示("请等待加载完毕进行该操作")
-          end
-
-          三按钮对话框("保存","是否保存当前滑动位置?","确认","取消","删除",
-          --点击第一个按钮的事件
-          function(an)
-            设置回答滑动位置配置()
-            提示("已保存")
-            an.dismiss()
-          end,
-          --点击第二个按钮事件
-          function(an)
-            an.dismiss()
-          end,
-          --点击第三个按钮事件
-          function(an)
-            设置回答滑动位置配置(true)
-            提示("已删除")
-            an.dismiss()
-          end)
-      end},
       {
         src=图标("get_app"),text="保存到本地",onClick=function()
 
@@ -874,7 +816,7 @@ if activity.getSharedData("回答提示0.04")==nil
   AlertDialog.Builder(this)
   .setTitle("小提示")
   .setCancelable(false)
-  .setMessage("你可双击标题回到顶部 长按标题来保存滑动位置(保存后下次打开会自动滑动到指定位置)")
+  .setMessage("你可双击标题回到顶部")
   .setPositiveButton("我知道了",{onClick=function() activity.setSharedData("回答提示0.04","true") end})
   .show()
 end
