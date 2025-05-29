@@ -1331,8 +1331,10 @@ if not(this.getSharedData("hometip0.02")) then
 end
 
 local allrecy={home_recy,hot_recy,think_recy}
-for i=1,follow_pagetool.allcount do
-  table.insert(allrecy,follow_pagetool.ids["list".."_"..i])
+if follow_pagetool then
+  for i=1,follow_pagetool.allcount do
+    table.insert(allrecy,follow_pagetool.ids["list".."_"..i])
+  end
 end
 
 addAutoHideListener(allrecy,{bottombar})

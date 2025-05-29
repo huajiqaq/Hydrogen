@@ -481,8 +481,8 @@ end)
 
 
 function onDestroy()
-  for i=1,#Fragments do
-    Fragments[i].ids.content.destroy()
+  for k,v pairs(数据表) do
+    v.ids.content.destroy()
     System.gc()
   end
 end
