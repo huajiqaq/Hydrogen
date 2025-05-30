@@ -31,7 +31,7 @@ function constructCallback(data) {
 
 function notifySupportStatus(data) {
     const action = data.params.action
-    const keywords = ['showAlert'];
+    const keywords = ['showAlert', 'showCommentList'];
     let isSupported = false
     if (keywords.some(keyword => action.includes(keyword))) {
         isSupported = true
@@ -147,6 +147,44 @@ function getPageLifecycleStatus(data) {
     sendZhihuWebAppCustomRequest(callbackData)
 }
 
+// 解决付费专栏无法点击赞同
+function showLoginDialog(data) {
+    const callbackData = {
+        id: data.callbackID,
+        type: "fail",
+        params: {
+            name: "ERR_ACOUNT_NOTGUEST",
+            message: "已登录"
+        }
+    }
+
+    sendZhihuWebAppCustomRequest(callbackData)
+}
+
+function transformUrl(url) {
+    // 匹配 /section/ 后接数字 ID 的路径
+    const pattern = /\/section\/(\d+)(?:\/|$)/;
+    const match = url.match(pattern);
+
+    if (match && match[1]) {
+        return `https://www.zhihu.com/comment/list/paid_column_section_manuscript/${match[1]}`;
+    } else {
+        const errorMsg = "获取id失败 目前仅支持收费专栏链接 请提供链接联系作者修复";
+        console.warn(errorMsg);
+        alert(errorMsg);
+        return null;
+    }
+}
+
+// 暂时测试只有付费专栏包含
+function showCommentList(data) {
+    const url=transformUrl(window.location.href)
+    if (url) {
+        window.location.href = url
+    }
+    triggerZhihuWebAppSuccessCallback(data)
+}
+
 function showToast(data) {
     console.log("toast分割" + data.params.text)
     triggerZhihuWebAppSuccessCallback(data)
@@ -161,6 +199,7 @@ function openImage(data) {
     images.push(index)
     window.androlua.execute(JSON.stringify(images));
 }
+
 
 // supportEvent没什么需要为true
 function supportEvent(data) {
@@ -186,11 +225,11 @@ window.zhihuNativeApp = new Proxy({}, {
         if (prop === 'sendToNative') {
             return function (arg) {
 
-                const keywords = ['log', 'setAssetStatus'];
+                const keywords = ['log', 'setAssetStatus', 'trackZA'];
                 const argObj = JSON.parse(arg)
                 const action = argObj.action
 
-                if (keywords.some(keyword => arg.includes(keyword))) {
+                if (keywords.some(keyword => action === keyword)) {
                     return false
                 }
 
@@ -212,12 +251,15 @@ window.zhihuNativeApp = new Proxy({}, {
                     "getCurrentTheme": getCurrentTheme,
                     "getPageLifecycleStatus": getPageLifecycleStatus,
                     "showToast": showToast,
+                    "showLoginDialog": showLoginDialog,
+                    "showCommentList" : showCommentList,
                     // 暂不支持的操作
                     "showShareActionSheet": () => alert("Hydrogen 暂不支持在网页内分享"),
                     "shareGoldenSentences": () => alert("Hydrogen 暂不支持在网页内分享"),
                     "closeCurrentPage": () => alert("Hydrogen 暂不支持在网页内返回"),
                     "askQuestion": () => alert("Hydrogen 暂不支持在网页内提问"),
                     "writeAnswer": () => alert("Hydrogen 暂不支持在网页内回答"),
+                    "showCatalog": () => alert("目录显示TODO中(懒得做了😋)"),
                     // 好像没什么用 在params传入HybridConfig
                     "getHybridConfig": () => { },
                     // 未知 看名字像获取广告推广信息
