@@ -1,6 +1,5 @@
 require "import"
 import "mods.muk"
-import "com.lua.*"
 
 collections_id=...
 
@@ -56,8 +55,6 @@ collections_base=require "model.collections":new(collections_id)
   end
 
 end)
-
-初始化历史记录数据(true)
 
 波纹({fh,_more},"圆主题")
 

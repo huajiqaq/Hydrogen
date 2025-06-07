@@ -25,27 +25,19 @@ if activity.getSharedData("searchv1") ==nil then
   end)
 end
 
+初始化搜索历史记录数据()
+
 function 搜索(text)
   local search_text=text or search_view.getQuery().toString();
   if #(tostring(search_text):gsub(" ",""))<1 then
     提示("请输入您要搜索的内容")
    else
-
-    for i, text in ipairs(search_history ) do
-      if search_text == text then
-        -- 如果记录已存在，先删除再添加
-        table.remove(search_history, i)
-        break
-      end
-    end
     if this.getSharedData("搜索引擎")==nil
       this.setSharedData("搜索引擎","https://www.bing.com/search?q=site%3Azhihu.com%20")
-
     end
     search_eg=this.getSharedData("搜索引擎")
-    table.insert(search_history, search_text)
-    清空并保存历史记录("search_history", search_history)
     newActivity("browser",{search_eg..urlEncode(search_text)})
+    保存搜索历史记录(text)
   end
 end
 
@@ -129,20 +121,11 @@ search.onClick=function()
 end
 
 _delete.onClick=function()
-  this.getSharedPreferences("search_history", 0).edit().clear().commit()
-  search_history={}
+  清除搜索历史记录()
   chipgroup.removeAllViews()
 end
 
-function getCheckedPos(str)
-  for i = 1,chipgroup.childCount do
-    if chipgroup.getChildAt(i-1).text==str then
-      return i-1
-    end
-  end
-end
-
-local function createchip(text)
+local function createchip(text,id)
   return loadlayout2({
     Chip_Input;
     layout_width="wrap_content";
@@ -151,9 +134,7 @@ local function createchip(text)
     checkable=false;
     EnsureMinTouchTargetSize=false,
     OnCloseIconClickListener=function(view)
-      local pos=getCheckedPos(view.text)+1
-      table.remove(search_history, pos)
-      清空并保存历史记录("search_history", search_history)
+      MySearchHistoryManager.remove(id)
       view.getParent().removeView(view)
     end,
     onClick=function()
@@ -162,12 +143,17 @@ local function createchip(text)
   })
 end
 
-search_history=loadSharedPreferences("search_history")
-chipgroup.removeAllViews()
-for i=1,#search_history do
-  local text=search_history[i]
-  chipgroup.addView(createchip(text,itemnum))
+function 加载搜索记录列表()
+  search_history=获取搜索历史记录()
+  chipgroup.removeAllViews()
+  for _,item ipairs(search_history) do
+    local text=item.value
+    local id=item.id
+    chipgroup.addView(createchip(text,id))
+  end
 end
+
+加载搜索记录列表()
 
 search_view.setFocusable(true);
 search_view.requestFocus();
@@ -180,10 +166,5 @@ search_view.postDelayed(Runnable{
 }, 100);
 
 function onStart()
-  search_history=loadSharedPreferences("search_history")
-  chipgroup.removeAllViews()
-  for i=1,#search_history do
-    local text=search_history[i]
-    chipgroup.addView(createchip(text,itemnum))
-  end
+  加载搜索记录列表()
 end

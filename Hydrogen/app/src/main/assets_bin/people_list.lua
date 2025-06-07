@@ -5,7 +5,6 @@ import "mods.muk"
 edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
   topbar.setLayoutParams(layoutParams); end)
-初始化历史记录数据(true)
 
 title,people_id=...
 _title.text=title

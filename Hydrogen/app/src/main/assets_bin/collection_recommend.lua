@@ -9,8 +9,6 @@ edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
 
 波纹({fh,_more},"圆主题")
 
-初始化历史记录数据(true)
-
 _title.text="推荐关注收藏夹"
 
 

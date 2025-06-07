@@ -1,6 +1,5 @@
 require "import"
 import "mods.muk"
-import "com.lua.*"
 
 设置视图("layout/local_list")
 
@@ -8,9 +7,9 @@ import "com.lua.*"
 
 波纹({fh,_more},"圆主题")
 _title.Text="已保存的内容"
-edgeToedge(nil,nil,function() local layoutParams = toolbar.LayoutParams;
+edgeToedge(nil,nil,function() local layoutParams = mainLay.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
-  toolbar.setLayoutParams(layoutParams); end)
+  mainLay.setLayoutParams(layoutParams); end)
 
 local_item=获取适配器项目布局("local_item/local_item")
 
@@ -30,8 +29,8 @@ end
 
 if Build.VERSION.SDK_INT >=30 then
 
-  if activity.getSharedData("安卓11迁移文件夹0.01")~="true" then
-    local tishi=AlertDialog.Builder(this)
+  if activity.getSharedData("安卓11迁移文件夹0.02")~="true" then
+    tishi=AlertDialog.Builder(this)
     .setTitle("提示")
     .setMessage("检测到系统版本大于安卓10 由于安卓的限制 导致无法保存文件在带有特殊字符串的文件夹 但应用私有目录无限制 你必须迁移文件才能使用本功能 请点击下方立即迁移 迁移后 卸载软件或清除软件数据也会删除对应保存的数据 为了应对 你可以在软件设置中手动管理文件")
     .setCancelable(false)
@@ -53,11 +52,16 @@ if Build.VERSION.SDK_INT >=30 then
         if not 文件夹是否存在(私有目录.."/Hydrogen") then
           创建文件夹(私有目录.."/Hydrogen")
         end
-        File(默认文件夹).renameTo(File(私有目录.."/Hydrogen"))
+        mvdir(默认文件夹,私有目录.."/Hydrogen",function()
+          activity.setSharedData("安卓11迁移文件夹0.02","true")
+          tishi.dismiss()
+          提示("迁移成功")
+        end)
+       else
+        activity.setSharedData("安卓11迁移文件夹0.02","true")
+        tishi.dismiss()
+        提示("无可迁移文件夹")
       end
-      activity.setSharedData("安卓11迁移文件夹0.01","true")
-      tishi.dismiss()
-      提示("迁移成功")
     end
 
     tishi.findViewById(android.R.id.message).TextIsSelectable=true
@@ -313,7 +317,8 @@ end
 
 function zip(input,output,callback)
   local function main(input,output)
-    local ZipUtil=luajava.bindClass "com.androlua.util.ZipUtil"
+    -- 不使用 com.androlua.util.ZipUtil 因为不能循环处理目录
+    local ZipUtil=luajava.bindClass "com.androlua.ZipUtil"
     ZipUtil.zip(input,output)
   end
   activity.newTask(main,function()
@@ -323,8 +328,21 @@ end
 
 function unzip(filePath,output,callback)
   local function main(filePath,output)
-    local ZipUtil=luajava.bindClass "com.androlua.util.ZipUtil"
-    ZipUtil.zip(filePath,output)
+    -- 不使用 com.androlua.util.ZipUtil 因为不能循环处理目录
+    local ZipUtil=luajava.bindClass "com.androlua.ZipUtil"
+    ZipUtil.unzip(filePath,output)
+  end
+  activity.newTask(main,function()
+    callback()
+  end).execute({filePath,output})
+end
+
+function mvdir(filePath,output,callback)
+  local function main(filePath,output)
+    local LuaUtil=luajava.bindClass "com.androlua.LuaUtil"
+    local File=luajava.bindClass "java.io.File"
+    LuaUtil.copyDir(filePath,output)
+    LuaUtil.rmDir(File(filePath))
   end
   activity.newTask(main,function()
     callback()

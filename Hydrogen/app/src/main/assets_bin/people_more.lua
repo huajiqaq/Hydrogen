@@ -5,8 +5,6 @@ import "com.google.android.material.tabs.TabLayout"
 
 波纹({fh,_more},"圆主题")
 
-初始化历史记录数据(true)
-
 
 id,title=...
 

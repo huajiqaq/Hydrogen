@@ -1,6 +1,5 @@
 require "import"
 import "mods.muk"
-import "com.lua.*"
 import "android.text.method.LinkMovementMethod"
 import "android.text.Html"
 import "java.net.URL"
@@ -16,12 +15,9 @@ title,author=...
 波纹({all_root},"方自适应")
 
 local 保存路径=内置存储文件("Download/"..title.."/"..author)
-filedir=保存路径.."/mht.mht"
+filedir=保存路径.."/html.html"
 xxx=读取文件(保存路径.."/detail.txt")
 
-if 文件是否存在(filedir)==false then
-  filedir=保存路径.."/html.html"
-end
 if 文件是否存在(filedir)==false then
   提示("当前保存内容需要重新保存 请手动点击右上角保存重新保存")
 end

@@ -13,7 +13,7 @@ edgeToedge(nil,nil,function() local layoutParams = topbar.LayoutParams;
   layoutParams.setMargins(layoutParams.leftMargin, 状态栏高度, layoutParams.rightMargin,layoutParams.bottomMargin);
   topbar.setLayoutParams(layoutParams); end)
 
-初始化历史记录数据(true)
+初始化历史记录数据()
 people_itemc=获取适配器项目布局("people/people")
 
 
@@ -39,7 +39,7 @@ local base_people=require "model.people":new(people_id)
     签名="无签名"
   end
 
-  保存历史记录("用户分割"..用户id,名字,签名)
+  保存历史记录(用户id,名字,签名,"用户")
 
   if 用户id~=nil and 用户id~="" and 用户id~=activity.getSharedData("idx") then
     people_o.setVisibility(View.VISIBLE)

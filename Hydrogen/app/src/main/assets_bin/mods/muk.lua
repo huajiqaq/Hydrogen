@@ -662,98 +662,51 @@ function 设置Cookie(url,b)
   return result
 end
 
--- 从 SharedPreferences 中加载数据
-function loadSharedPreferences(name)
-  local data = {}
-  for entry in each(this.getSharedPreferences(name, 0).getAll().entrySet()) do
-    data[tonumber(entry.getKey())] = entry.getValue()
-  end
-  return data
-end
-
--- 初始化历史记录数据
 function 初始化历史记录数据()
-  recordtitle = {}
-  recordid = {}
-  recordcontent = {}
-  -- 从 SharedPreferences 中加载数据
-  local titles = loadSharedPreferences("Historyrecordtitle")
-  local ids = loadSharedPreferences("Historyrecordid")
-  local content = loadSharedPreferences("Historyrecordcontent")
-  local id_count=#ids
-  -- 将数据排序并存储到记录数组中
-  local keys = {}
-  for key in pairs(ids) do
-    table.insert(keys, tonumber(key))
+  import "com.hydrogen.HistoryUtils.HistoryManager"
+  if MyHistoryManager then
+    return MyHistoryManager
   end
-  table.sort(keys, function(a, b) return a > b end)
-  for i, key in ipairs(keys) do
-    recordtitle[i] = titles[key]
-    recordid[i] = ids[key]
-    --防止不存在
-    recordcontent[i] = content[key] or "无预览内容"
-  end
+  MyHistoryManager = HistoryManager.getInstance()
+  MyHistoryManager.init(activity)
+  return MyHistoryManager
 end
 
-
-function saveHistoryRecord(id,title,content)
-  table.insert(recordtitle, title)
-  table.insert(recordcontent, content)
-  table.insert(recordid, id)
-
-  清空并保存历史记录("Historyrecordtitle", recordtitle)
-  清空并保存历史记录("Historyrecordid", recordid)
-  清空并保存历史记录("Historyrecordcontent", recordcontent)
-end
-
-if need_save_history==true then
-  function onStart()
-    初始化历史记录数据()
-  end
-end
-
-function 清空并保存历史记录(name, data)
-  -- 确保只保留最新的50条记录
-  local max_records = 50
-  if #data > max_records then
-    -- 截取最后50个元素
-    data = { unpack(data, math.max(1, #data - max_records + 1), #data) }
-  end
-  local editor = this.getSharedPreferences(name, 0).edit()
-  editor.clear().commit()
-  -- 反向遍历保存，以保证最新的记录保存为 "1" 键
-  for i = 1, #data do
-    editor.putString(tostring(i), tostring(data[#data - i + 1])).apply()
-  end
-end
-
-function 保存历史记录(id,title,content)
+function 保存历史记录(id, title, preview, _type)
   local id=tostring(id)
-  for i, existingId in ipairs(recordid) do
-    if id == existingId then
-      -- 如果记录已存在，先删除再添加
-      table.remove(recordtitle, i)
-      table.remove(recordcontent, i)
-      table.remove(recordid, i)
-      break
-    end
-  end
-
-  saveHistoryRecord(id,title,content)
+  MyHistoryManager.add(id, title, preview, _type)
 end
 
+function 获取历史记录()
+  return luajava.astable(MyHistoryManager.getRecentFirst())
+end
 
--- 清除所有历史记录
 function 清除历史记录()
-  -- 清空SharedPreferences和全局变量
-  this.getSharedPreferences("Historyrecordtitle", 0).edit().clear().commit()
-  this.getSharedPreferences("Historyrecordcontent", 0).edit().clear().commit()
-  this.getSharedPreferences("Historyrecordid", 0).edit().clear().commit()
-  recordtitle = {}
-  recordcontent = {}
-  recordid = {}
+  MyHistoryManager.clearAll()
 end
 
+function 初始化搜索历史记录数据()
+  import "com.hydrogen.HistoryUtils.SearchHistoryManager"
+  if MySearchHistoryManager then
+    return MySearchHistoryManager
+  end
+  MySearchHistoryManager = SearchHistoryManager.getInstance()
+  MySearchHistoryManager.init(activity)
+  return MySearchHistoryManager
+end
+
+function 保存搜索历史记录(content)
+  local content=tostring(content)
+  MySearchHistoryManager.add(content)
+end
+
+function 获取搜索历史记录()
+  return luajava.astable(MySearchHistoryManager.getRecentFirst())
+end
+
+function 清除搜索历史记录()
+  MySearchHistoryManager.clearAll()
+end
 
 function 获取系统夜间模式(isApplicationContext)
   local mactivity
@@ -2884,7 +2837,7 @@ function setHead()
   end
 
   if homeapphead then
-    homeapphead=table.clone(apphead)
+    homeapphead=table.clone(head)
     homeapphead["x-close-recommend"]="0"
   end
 

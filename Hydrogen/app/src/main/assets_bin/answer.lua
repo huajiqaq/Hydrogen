@@ -187,7 +187,7 @@ function 数据添加(t,b)
 
   if not(已记录) then
     初始化历史记录数据(true)
-    保存历史记录("回答分割"..回答id,b.question.title,b.excerpt)
+    保存历史记录(回答id,b.question.title,b.excerpt,"回答")
     已记录=true
   end
 

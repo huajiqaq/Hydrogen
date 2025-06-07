@@ -3,8 +3,6 @@ import "mods.muk"
 设置视图("layout/simple")
 波纹({fh,_more},"圆主题")
 
-初始化历史记录数据(true)
-
 搜索内容,类型,id=...
 
 

@@ -4,7 +4,6 @@ import "mods.muk"
 
 波纹({fh,_more},"圆主题")
 
-初始化历史记录数据(l)
 
 id=...
 _title.text="专栏"

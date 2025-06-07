@@ -162,7 +162,7 @@ question_base=require "model.question":new(question_id):getData(function(tab)
   title.text=tab.title
 
   初始化历史记录数据()
-  保存历史记录("问题分割"..question_id,tab.title,tab.excerpt)
+  保存历史记录(question_id,tab.title,tab.excerpt,"问题")
 
   _comment.Text=tostring((tab.comment_count))
   _star.Text=tostring((tab.follower_count))

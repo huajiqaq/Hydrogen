@@ -57,11 +57,58 @@
           lineHeight=内容行高;
         };
         {
-          TextView;
-          id="底部内容";
-          textColor=stextc;
-          textSize=内容文字大小;
-          Typeface=字体("product-Medium");
+          LinearLayout;
+          layout_marginTop="4dp";
+          orientation="horizontal";
+          
+          {
+            LinearLayout;
+            id="点赞数布局";
+            layout_gravity="center";
+            gravity="center";
+            {
+              ImageView;
+              src=图标("vote_up"),
+              ColorFilter=textc;
+              layout_height="wrap",
+              layout_width=内容文字大小,
+            };
+            {
+              TextView;
+              layout_marginLeft="6dp",
+              textColor=textc;
+              Typeface=字体("product");
+              id="点赞数";
+              textSize=内容文字大小,
+              padding=0;
+              IncludeFontPadding=false
+            };
+          };
+          {
+            LinearLayout;
+            id="评论数布局";
+            layout_gravity="center";
+            gravity="center";
+            {
+              ImageView;
+              layout_marginLeft="24dp",
+              src=图标("message"),
+              ColorFilter=textc;
+              layout_height="wrap",
+              layout_width=内容文字大小,
+            };
+            {
+              TextView;
+              layout_marginLeft="6dp",
+              textColor=textc;
+              Typeface=字体("product");
+              id="评论数";
+              textSize=内容文字大小,
+              padding=0;
+              IncludeFontPadding=false
+            };
+          };
+        
         };
       };
     };

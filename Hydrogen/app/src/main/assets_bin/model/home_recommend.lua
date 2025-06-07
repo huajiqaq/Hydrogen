@@ -10,129 +10,22 @@ end
 
 --全局变量
 recommend_data={}
-homeapphead=table.clone(apphead)
+homeapphead=table.clone(head)
 homeapphead["x-close-recommend"]="0"
 
-local function getBottomContent(v)
-  local 底部内容 = "未知"
-
-  if v.common_card and v.common_card.footline and v.common_card.footline.elements then
-    local elements = v.common_card.footline.elements
-    local count = #elements
-    if count == 1 or count == 2 then
-      local element = elements[count]
-
-      if element and element.text then
-        local text= element.text
-        if text.panel_text then
-          底部内容 = text.panel_text
-         elseif text.timestamp then
-          底部内容 = 时间戳(text.timestamp.time_in_seconds)
-        end
-      end
-     elseif count >= 3 then
-      local bottomTexts = {}
-      for i = 1, 3 do
-        local item = elements[i]
-        local text = ""
-        if item and item.interactive_button then
-          text = item.interactive_button.interactive_button.text.panel_text
-         elseif item and item.button then
-          text = item.button.text.panel_text
-        end
-        table.insert(bottomTexts, text)
-      end
-      底部内容 = string.format("%s 赞同 · %s 收藏 · %s 评论", unpack(bottomTexts))
-    end
-  end
-
-  return 底部内容:gsub("等 ", "")
-end
-
 function base.resolvedata(v,data)
-
-  v.extra.type=string.lower(v.extra.type)
-  if v.type~="common_card" then
-    return false
-  end
-
-  --对于推广的一些屏蔽
-  if v.deliver_type=="ZPlus" or v.promotion_extra then
+  if v.type~="feed" then
     return
   end
-
-  local 底部内容=getBottomContent(v)
-  local 标题=v.common_card.feed_content.title and v.common_card.feed_content.title.panel_text
-  local 作者=v.common_card.feed_content.source_line.elements[2].text.panel_text
-  local 预览内容=作者.." : ".."无预览内容"
-  if v.common_card.feed_content.content then
-    预览内容=作者.." : "..v.common_card.feed_content.content.panel_text
-   elseif v.common_card.feed_content.video then
-    预览内容=作者.." : ".."[视频]"
-  end
-
-  local id =v.extra.id
-  local 分割字符串;
-  local datatype
-  local content_type=v.extra.type
-  switch content_type
-   case "answer"
-    datatype=0
-    分割字符串="回答分割"
-   case "pin"
-    datatype=1
-    标题=作者.."发表了想法"
-    分割字符串="想法分割"
-   case "article"
-    datatype=2
-    分割字符串="文章分割"
-   case "zvideo"
-    datatype=3
-    分割字符串="视频分割"
-   case "drama"
-    datatype=4
-    分割字符串="直播分割"
-    预览内容="正在直播中"
-    --知乎图书 例如https://www.zhihu.com/pub/book/120202629
-    --不考虑适配
-   case v.extra.type=="ebook" then
-    return
-    --知乎训练 例如 https://www.zhihu.com/education/training/sku-detail/1699846867112804354
-    --不考虑适配
-   case v.extra.type=="training" then
-    return
-    --vip推荐
-    --不考虑适配
-   case v.extra.type:find("vip") then
-    return
-    --需要购买的专栏/小说
-    --不考虑适配
-   case v.extra.type:find("paid") then
-    return
-   default
-    --[[
-    提示("未知类型"..v.extra.type or "无法获取type".." id"..v.extra.id or "无法获取id")
-    AlertDialog.Builder(this)
-    .setTitle("小提示")
-    .setMessage("检测到未知类型的内容 为了方便软件的适配 建议提交问卷 如想提交 请点击下方立即跳转 点击立即跳转后会复制未知数据 请放心 数据内并没有账号信息和隐私数据")
-    .setCancelable(false)
-    .setPositiveButton("立即跳转",{onClick=function()
-        import "android.content.*"
-        activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(luajson.encode(v))
-        提示("已将未知内容复制到剪贴板内")
-        浏览器打开("https://wj.qq.com/s2/13337862/c006/")
-    end})
-    .setNegativeButton("取消",nil)
-    .show()
-    ]]
-    return
-  end
-  
-  local id内容=分割字符串..id
 
   local isread='"t"'
   local readdata=v.brief
-
+  local v=v.target or v
+  local 标题=v.title
+  local 点赞数=tostring(v.voteup_count or v.vote_count or v.reaction_count)
+  local 评论数=tostring(v.comment_count)
+  local 作者=v.author.name
+  local 预览内容=作者.." : "..(v.excerpt or v.excerpt_title)
   if activity.getSharedData("feed_cache")==nil
     activity.setSharedData("feed_cache",100)
   end
@@ -143,7 +36,7 @@ function base.resolvedata(v,data)
       recommend_history={}
     end
     if table.find(recommend_history,预览内容)
-      提示("找到重复内容")
+      --提示("找到重复内容")
       local postdata=luajson.encode(readdata)
       postdata=urlEncode('[["r",'..postdata..']]')
       postdata="targets="..postdata
@@ -160,12 +53,51 @@ function base.resolvedata(v,data)
       io.open(tostring(tostring(activity.getExternalCacheDir()).."/rc.json"),"w"):write(tostring(luajson.encode(recommend_history))):close()
     end
   end
+  local id=v.id
+  local 分割字符串
+
+  local datatype
+  local content_type=v.type
+  switch content_type
+   case "answer"
+    datatype=0
+    标题=v.question.title
+    分割字符串="回答分割"
+   case "pin"
+    datatype=1
+    标题=作者.."发表了想法"
+    分割字符串="想法分割"
+   case "article"
+    datatype=2
+    分割字符串="文章分割"
+   case "zvideo"
+    datatype=3
+    分割字符串="视频分割"
+   case "drama"
+    datatype=4
+    分割字符串="直播分割"
+  end
+
+  if not 预览内容 or 预览内容=="" or 预览内容=="无预览内容" then
+    预览内容=nil
+   else
+    预览内容=Html.fromHtml(预览内容)
+  end
+
+  if 点赞数 then
+    点赞数=tostring(点赞数)
+   else
+    点赞数="未知"
+  end
+
+  local id内容=分割字符串..id
 
 
   local add={}
   add.标题=标题
   add.预览内容=预览内容
-  add.底部内容=底部内容
+  add.评论数=评论数
+  add.点赞数=点赞数
   add.id内容=id内容
 
   local extradata= {
@@ -177,6 +109,7 @@ function base.resolvedata(v,data)
 
   table.insert(data,add)
 end
+
 
 
 function base.getAdapter(home_pagetool,pos)
@@ -206,7 +139,8 @@ function base.getAdapter(home_pagetool,pos)
 
       local 标题=data.标题
       local 预览内容=data.预览内容
-      local 底部内容=data.底部内容
+      local 评论数=data.评论数
+      local 点赞数=data.点赞数
       local id内容=data.id内容
       local extradata=data.extradata
       local isread=extradata.isread
@@ -214,7 +148,8 @@ function base.getAdapter(home_pagetool,pos)
 
       views.标题.text=标题
       views.预览内容.text=预览内容
-      views.底部内容.text=底部内容
+      views.评论数.text=评论数
+      views.点赞数.text=点赞数
 
       views.card.onTouch=function(v,event)
         downx=event.getRawX()

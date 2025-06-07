@@ -10,8 +10,6 @@ edgeToedge(nil,nil,function() local layoutParams = mainLay.LayoutParams;
 topic_id=...
 波纹({fh,_more},"圆主题")
 
-初始化历史记录数据()
-
 local topic_pages={
   ScrollView;
   nestedScrollingEnabled=true,

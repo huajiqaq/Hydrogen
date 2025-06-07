@@ -88,7 +88,7 @@ function base:getData(cb,issave)
           end
           --修复想法标题获取异常的问题
           b.title=title
-          保存历史记录(type1.."分割"..self.id,title,b.excerpt_title or b.excerpt or "")
+          保存历史记录(self.id,title,b.excerpt_title or b.excerpt or "",type1)
           local username=b.author.name
           b.savepath=内置存储文件("Download/"..title.."/"..username)
         end

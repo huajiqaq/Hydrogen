@@ -312,10 +312,7 @@ nav.addHeaderView(loadlayout {
 })
 
 
-初始化历史记录数据(true)
 设置toolbar(toolbar)
-
---初始化历史记录数据()
 
 if activity.getSharedData("第一次提示") ==nil then
   双按钮对话框("注意","该软件仅供交流学习，严禁用于商业用途，请于下载后的24小时内卸载","登录","知道了",function(an)

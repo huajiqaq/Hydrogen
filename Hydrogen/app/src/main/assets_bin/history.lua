@@ -13,11 +13,13 @@ edgeToedge(nil,nil,function() local layoutParams = mainLay.LayoutParams;
 初始化历史记录数据()
 
 history_list.setDividerHeight(0)
-if (#recordtitle==0)then
+local HistoryList = 获取历史记录()
+if (#HistoryList==0)then
   history_list.setVisibility(8)
   histab.ids.load.parent.setVisibility(8)
   empty.setVisibility(0)
 end
+
 
 
 itemc=获取适配器项目布局("history/history")
@@ -94,26 +96,32 @@ function 合成文本(type, htmlText)
   return combinedText;
 end
 
+function addItemData(item)
+  local 类型=item.type
+  local 预览内容=item.preview
+  local 标题=合成文本(类型,Html.fromHtml(item.title))
+  local id=item.id
+  local add={}
+  add.标题=标题
+  add.id内容=类型.."分割"..id
+  if 预览内容=="" then
+    预览内容="无预览内容"
+  end
+  add.预览内容=Html.fromHtml(预览内容)
+  adp.add(add)
+end
+
 function 加载历史记录()
   local find_type=find_type
   if find_type=="全部" or find_type==nil then
     find_type=""
   end
-  _,err=pcall(function()
-    for i=#recordid,1,-1 do
-      local id=recordid[i]
-      if id:find(find_type) then
-        local 类型=id:match("(.+)分割")
-        local 标题=合成文本(类型,Html.fromHtml(recordtitle[i]))
-        local 预览内容=recordcontent[i]
-        local add={}
-        add.标题=标题
-        add.id内容=id
-        if 预览内容=="" then
-          预览内容="无预览内容"
-        end
-        add.预览内容=Html.fromHtml(预览内容)
-        adp.add(add)
+  adp.clear()
+  local _,err=pcall(function()
+    for _,item ipairs(获取历史记录()) do
+      local 类型=item.type
+      if 类型:find(find_type) then
+        addItemData(item)
       end
     end
   end)
@@ -135,11 +143,11 @@ histab:showTab(1)
 加载历史记录()
 
 function checktitle(str)
-  local oridata=adp.getData()
-  for i=#oridata,1,-1 do
-    if not tostring(oridata[i].标题):find(str) then
-      table.remove(oridata, i)
-      adp.notifyDataSetChanged()
+  adp.clear()
+  for _,item ipairs(获取历史记录()) do
+    local 过滤内容=item.toString()
+    if 过滤内容:find(str) then
+      addItemData(item)
     end
   end
   提示("搜索完毕 共搜索到"..#adp.getData().."条数据")
@@ -148,22 +156,10 @@ function checktitle(str)
   end
 end
 
-function 获取位置(find_id)
-  for k,v ipairs(recordid) do
-    if v==find_id then
-      return k
-    end
-  end
-end
-
 history_list.onItemLongClick=function(l,v,c,b)
+  local _type, id = v.Tag.id内容.text:match("(.-)分割(.*)")
   双按钮对话框("删除","删除该历史记录？该操作不可撤消！","是的","点错了",function(an)
-    local pos=获取位置(v.Tag.id内容.text)
-    table.remove(recordtitle,pos)
-    table.remove(recordcontent,pos)
-    table.remove(recordid,pos)
-    adp.remove(c)
-    adp.notifyDataSetChanged()
+    MyHistoryManager.remove(id,_type)
     an.dismiss()
     提示("已删除")
   end
@@ -172,17 +168,7 @@ history_list.onItemLongClick=function(l,v,c,b)
 end
 
 history_list.onItemClick=function(l,v,c,b)
-  local id内容=v.Tag.id内容.text
-  点击事件判断(id内容)
-  local pos=获取位置(id内容)
-
-  local 标题=table.remove(recordtitle,pos)
-  local 预览内容=table.remove(recordcontent,pos)
-  local id内容=table.remove(recordid,pos)
-
-  table.insert(recordtitle,标题)
-  table.insert(recordcontent,预览内容)
-  table.insert(recordid,id内容)
+  点击事件判断(v.Tag.id内容.text)
 end
 
 
@@ -238,9 +224,3 @@ task(1,function()
     }
   })
 end)
-
-function onDestroy()
-  清空并保存历史记录("Historyrecordtitle", recordtitle)
-  清空并保存历史记录("Historyrecordcontent", recordcontent)
-  清空并保存历史记录("Historyrecordid", recordid)
-end
