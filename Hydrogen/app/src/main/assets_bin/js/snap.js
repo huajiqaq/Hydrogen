@@ -52,8 +52,8 @@ function captureScreenshot() {
         screenshotStatus = 'success';
       })
       .catch(error => {
+        //alert(error)
         screenshotData = error.message;
-        alert(error)
         screenshotStatus = 'error';
       });
 }

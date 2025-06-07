@@ -17,6 +17,7 @@ if 类型==nil or 类型:match("%d") then
   类型="文章"
 end
 
+初始化历史记录数据()
 
 设置视图("layout/column_parent")
 

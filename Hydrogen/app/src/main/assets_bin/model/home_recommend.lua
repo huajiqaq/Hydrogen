@@ -13,6 +13,8 @@ recommend_data={}
 homeapphead=table.clone(head)
 homeapphead["x-close-recommend"]="0"
 
+local accessibilityManager = this.getSystemService(Context.ACCESSIBILITY_SERVICE);
+
 function base.resolvedata(v,data)
   if v.type~="feed" then
     return
@@ -36,7 +38,10 @@ function base.resolvedata(v,data)
       recommend_history={}
     end
     if table.find(recommend_history,预览内容)
-      --提示("找到重复内容")
+      --开启无障碍后不提示找到重复内容
+      if not accessibilityManager.isTouchExplorationEnabled() then
+        提示("找到重复内容")
+      end
       local postdata=luajson.encode(readdata)
       postdata=urlEncode('[["r",'..postdata..']]')
       postdata="targets="..postdata
