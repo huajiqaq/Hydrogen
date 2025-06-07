@@ -250,7 +250,6 @@ function 数据添加(t,b)
               end})
             end)
         end});
-        加载js(view,"window.scrollRestorer.restoreScrollPosition()")
       end)
 
       if this.getSharedData("代码块自动换行")=="true" then
