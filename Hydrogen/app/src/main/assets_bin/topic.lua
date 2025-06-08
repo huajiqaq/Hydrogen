@@ -10,6 +10,8 @@ edgeToedge(nil,nil,function() local layoutParams = mainLay.LayoutParams;
 topic_id=...
 波纹({fh,_more},"圆主题")
 
+初始化历史记录数据()
+
 local topic_pages={
   ScrollView;
   nestedScrollingEnabled=true,
@@ -78,7 +80,7 @@ local base_topic=require "model.topic":new(topic_id)
 end)
 
 function 获取url(type)
-  return "https://api.zhihu.com/v5.1/topics/"..topic_id.."/feeds/"..type
+  return "https://www.zhihu.com/api/v5.1/topics/"..topic_id.."/feeds/"..type.."/v2"
 end
 
 urltypes={
