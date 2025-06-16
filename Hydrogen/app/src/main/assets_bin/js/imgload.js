@@ -116,8 +116,8 @@
 
         document.addEventListener('click', function (event) { // 判断点击的目标是否为img元素 
             let doc = event.target
-            // isTrusted判断是否为用户点击
-            if (event.isTrusted == false || isImageIsEnabled(doc) == false) return
+            if (isImageIsEnabled(doc) == false) return
+                        
             if (doc.tagName !== 'IMG') {
                 doc = checkClickTarget(event)
             }

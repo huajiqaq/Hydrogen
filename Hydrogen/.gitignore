@@ -14,3 +14,6 @@
 .cxx
 *.log
 local.properties
+.aidelua
+.androidide
+

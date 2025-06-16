@@ -47,8 +47,8 @@
     <string name="jesse205_theme_teal">鸭绿</string>
     <string name="jesse205_theme_orange">鲜橙</string>
     <string name="jesse205_theme_pink">嫩粉</string>
-	<string name="jesse205_ranking_random">排名不分先后顺序</string>
-	<string name="jesse205_clear">清空</string>
+    <string name="jesse205_ranking_random">排名不分先后顺序</string>
+    <string name="jesse205_clear">清空</string>
     <string name="lib_name">杰西205共享库</string>
     <string name="Jesse205_loading">请稍候...</string>
     <string name="Jesse205_toast_copied">已复制到剪贴板</string>
@@ -91,12 +91,13 @@
     <string name="Jesse205_step_finish">完成</string>
     <string name="Jesse205_theme_darkMode">夜间模式</string>
     <string name="Jesse205_theme_default">鸿蒙蓝</string>
+    <string name="Jesse205_theme_monet">Monet!</string>
     <string name="Jesse205_theme_red">中国红</string>
     <string name="Jesse205_theme_teal">水鸭绿</string>
     <string name="Jesse205_theme_orange">极客橙</string>
     <string name="Jesse205_theme_pink">舒适粉</string>
     <string name="Jesse205_theme_dark">无限黑</string>
-        <string name="windmill">快乐程序</string>
+    <string name="windmill">快乐程序</string>
     <string name="undo">撤销</string>
     <string name="redo">重做</string>
     <string name="run">运行</string>
@@ -133,15 +134,15 @@
     <string name="uncommentedCode">取消注释代码</string>
     <string name="logCat">日志猫</string>
     <string name="open">打开</string>
-    
+
     <string name="exit_toast">再按一次退出程序</string>
     <string name="res_references">引用资源</string>
-    
+
     <string name="create">新建</string>
     <string name="create_success">创建成功</string>
     <string name="create_failed">创建失败</string>
     <string name="creating">正在创建...</string>
-    
+
     <string name="save_succeed">保存成功</string>
     <string name="save_failed">保存失败</string>
     <string name="save_failed_withMessage">保存失败，%1$s</string>
@@ -151,7 +152,7 @@
 
     <string name="file">文件</string>
     <string name="file_popup">文件...</string>
-    <string name="file_cannot_open_compiled_file">不能打开已编译文件。</string>   
+    <string name="file_cannot_open_compiled_file">不能打开已编译文件。</string>
     <string name="file_not_find">未找到文件</string>
     <string name="file_not_supported">文件类型不支持</string>
     <string name="file_create">新建文件</string>
@@ -159,12 +160,12 @@
     <string name="file_exists">文件已存在</string>
     <string name="file_name">文件名</string>
     <string name="file_close">关闭文件</string>
-    
+
     <string name="directory">文件夹</string>
     <string name="directory_go_popup">打开目录...</string>
     <string name="directory_create">新建文件夹</string>
     <string name="directory_name">文件夹名</string>
-    
+
     <string name="project">项目</string>
     <string name="project_root">项目根目录</string>
     <string name="project_popup">项目...</string>
@@ -190,7 +191,7 @@
     <string name="project_appSubtitle_390dp">项目: %1$s</string>
     <string name="project_close">关闭项目</string>
     <string name="projects_path">项目路径</string>
-    
+
     <string name="binpoject_loading">正在打包...</string>
     <string name="binpoject_creating_variables">正在创建变量</string>
     <string name="binpoject_arrangement">正在整理App</string>
@@ -207,7 +208,7 @@
     <string name="binpoject_error_notfind">未找到 app.apk ，请先使用Aide打包。</string>
     <string name="binpoject_error_signer">签名失败，请手动签名\n路径：%1$s</string>
     <string name="binpoject_cannotFindTool">无法找到相应版本的 ReBuildTool，请检查 Aide Lua 是否有更新</string>
-    
+
     <string name="delete">删除</string>
     <string name="delete_withName">删除 %1$s</string>
     <string name="delete_warning">确定删除？删除后不可恢复。</string>
@@ -227,10 +228,10 @@
     <string name="javaApiViewer_methods">方法</string>
 
     <string name="layoutHelper">布局助手</string>
-    
+
     <string name="checkCode">检查错误</string>
     <string name="checkCode_noGrammaticalErrors">没有语法错误。</string>
-    
+
     <string name="settings_ui_richAnim">丰富的动画</string>
     <string name="settings_editor_highlight_Jesse205Library">Jesse205Library 代码提示</string>
     <string name="settings_editor_highlight_Jesse205Library_summary">提示 Jesse205 Library 高级用法</string>
@@ -243,17 +244,17 @@
     <string name="settings_needRestart">修改后重启生效</string>
     <string name="settings_addComplexLibrary">添加复杂库</string>
     <string name="settings_addComplexLibrary_summary">可以在“新建项目”等功能使用专属您的复杂库</string>
-    
+
     <string name="window_openNew">打开新窗口</string>
     <string name="window_openInNewWindow">在新窗口打开</string>
-    
+
     <string name="rename">重命名</string>
     <string name="rename_success">重命名成功</string>
     <string name="rename_fail">重命名失败</string>
-    
+
     <string name="runCode">运行代码</string>
     <string name="runCode_noApp">为了您更好地调试软件，请先打包并安装项目，并开放LuaActivity。</string>
     <string name="runCode_noPackageName">为了您更好地调试软件，请检查config.lua的packageName是否存在。</string>
-    
-    
+
+
 </resources>

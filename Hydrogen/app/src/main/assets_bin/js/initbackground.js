@@ -12,7 +12,7 @@
 
     // 设置其他元素的新字体颜色和背景颜色
     // appbackgroudc为软件backgroudc 加载js时会替换 如果调用需要赋值 apppbackgroudc 哦
-    styleElem = createCSS('body, body *', 'background-color: #' + appbackgroudc + ' !important; color: RGB(' + fontColor + '%,' + fontColor + '%,' + fontColor + '%) !important;', styleElem);
+    styleElem = createCSS('body, root, .AppMain *, .CommentSection *, css-79elbk, css-13o7eu2', 'background-color: #' + appbackgroudc + ' !important; color: RGB(' + fontColor + '%,' + fontColor + '%,' + fontColor + '%) !important;', styleElem);
 
     function createCSS(sel, decl, styleElem) {
         var doc = document,

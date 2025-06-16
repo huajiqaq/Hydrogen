@@ -367,10 +367,6 @@ return function(webview)
 
   local child=table.clone(Utils)
   child.webview=webview
-  --解决部分机型文字缩放无效的bug
-  webview.getSettings()
-  .setTextZoom(100*(tonumber(this.getSharedData("font_size") or 20)/20));
-
 
   return child
 end

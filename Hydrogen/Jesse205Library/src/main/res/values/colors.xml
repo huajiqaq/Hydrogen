@@ -32,10 +32,11 @@
     <color name="design_default_color_on_surface">#ff000000</color>
     <color name="design_dark_default_color_on_surface">#ffffffff</color>
 
-    <!--高亮文本颜色-->
+    <!-- 高亮文本颜色 -->
     <color name="textColorHighlight_blue">#663F51B5</color>
     <color name="textColorHighlight_green">#66009688</color>
     <color name="textColorHighlight_orange">#66FFA000</color>
     <color name="textColorHighlight_pink">#66FF4081</color>
     <color name="textColorHighlight_red">#66D32F2F</color>
+
 </resources>

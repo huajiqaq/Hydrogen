@@ -80,24 +80,15 @@ end
 function 设置视图(t)
   if thisFragment
     thisFragment.setContainerView(loadlayout(t))
-    --已二次优化 已经不用在这里写
-    --[[
-    import "android.view.accessibility.AccessibilityEvent"
-    thisFragment.container.requestFocus()
-    thisFragment.container.getChildAt(0).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED)
-    ]]
     if nOView~=nil
-      local r=0
-      pcall(function()
-        r=window.getDecorView().getRootWindowInsets().getRoundedCorner(1).getRadius()
-      end)
+      
       local backward=MaterialContainerTransform(activity,false)
       .setStartView(thisFragment.container)
       .setEndView(nOView)
       .setPathMotion(MaterialArcMotion())
       --.setScrimColor(0x00000000)
       .addTarget(nOView)
-      .setStartShapeAppearanceModel(WindowShape.build())
+      .setStartShapeAppearanceModel(OldWindowShape)
       thisFragment.setSharedElementReturnTransition(backward).setReenterTransition(backward).setExitTransition(backward).setReturnTransition(backward)
 
     end
@@ -105,7 +96,6 @@ function 设置视图(t)
     activity.setContentView(loadlayout(t))
   end
 end
-
 function newActivity(f,b,c)
   if f1 == nil
     return activity.newActivity(f,b)
@@ -137,20 +127,20 @@ function newActivity(f,b,c)
   ff.setTag(R.id.tag_last_time,nt)
   if nTView then
     --https://developer.android.google.cn/reference/android/view/RoundedCorner#POSITION_BOTTOM_LEFT
-    if WindowShape==nil then
-      WindowShape=ShapeAppearanceModel.builder()
-      .setBottomLeftCornerSize(0)
-      .setBottomRightCornerSize(0)
-      .setTopLeftCornerSize(0)
-      .setTopRightCornerSize(0)
-      pcall(function()
-        WindowShape.setBottomLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(3).getRadius())
-        WindowShape.setBottomRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(2).getRadius())
-        WindowShape.setTopLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(0).getRadius())
-        WindowShape.setTopRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(1).getRadius())
-      end)
+
+    WindowShape=ShapeAppearanceModel.builder()
+    .setBottomLeftCornerSize(0)
+    .setBottomRightCornerSize(0)
+    .setTopLeftCornerSize(0)
+    .setTopRightCornerSize(0)
+    if Build.VERSION.SDK_INT >30
+      WindowShape.setBottomLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(3).getRadius())
+      WindowShape.setBottomRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(2).getRadius())
+      WindowShape.setTopLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(0).getRadius())
+      WindowShape.setTopRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(1).getRadius())
     end
-    --[[if inSekai
+
+    if inSekai
       if ff==f1 then
         WindowShape.setTopRightCornerSize(0)
         WindowShape.setBottomRightCornerSize(0)
@@ -158,8 +148,8 @@ function newActivity(f,b,c)
         WindowShape.setTopLeftCornerSize(0)
         WindowShape.setBottomLeftCornerSize(0)
       end
-    end]]
-    fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai,ff=ff,nOView=nTView,WindowShape=WindowShape})
+    end
+    fragment=MyLuaFileFragment(srcLuaDir..f..".lua",b,{f1=f1,f2=f2,inSekai=inSekai,ff=ff,nOView=nTView,OldWindowShape=WindowShape.build()})
     local forward=MaterialContainerTransform(activity,true)
     .setStartView(nTView)
     .setEndView(ff)
@@ -275,6 +265,8 @@ function edgeToedge(顶栏,底栏,callback)
 
 end
 
+
+
 function base64ToBitmap(encodedImage)
   local prefix = "data:image/png;base64,"
   local imageData = string.sub(encodedImage, #prefix + 1)
@@ -295,6 +287,7 @@ function webviewToBitmap(webView, func) --由于存在延迟，后续操作使�
         webView.evaluateJavascript(
         "getScreenshot()",
         {onReceiveValue=function(b)
+            print(b)
             func(base64ToBitmap(b))
         end})
       end)
@@ -336,6 +329,7 @@ srcLuaDir = findDirectoryUpward(this.getLuaDir()) or this.getLuaDir()
 logopng=srcLuaDir.."/logo.png"
 
 function 设置toolbar属性(toolbar,title)
+
   local PorterDuffColorFilter=luajava.bindClass "android.graphics.PorterDuffColorFilter"
   local PorterDuff=luajava.bindClass "android.graphics.PorterDuff"
   local bitmap=loadbitmap(图标("arrow_back"))
@@ -708,6 +702,7 @@ function 清除搜索历史记录()
   MySearchHistoryManager.clearAll()
 end
 
+
 function 获取系统夜间模式(isApplicationContext)
   local mactivity
   if isApplicationContext==true then
@@ -749,13 +744,15 @@ function 主题(str)
     secondaryc="#fdd835"
     textc="#212121"
     stextc="#424242"
-    backgroundc="#ffffffff"
+    --backgroundc="#ffffffff"
+    backgroundc=dec2hex(res.color.attr.colorSurface)
     barbackgroundc=android.res.color.attr.colorBackground&0xFFFFFF+0xFF000000*0.8
     cardbackc="#fff1f1f1"
+    barc=dec2hex(res.color.attr.colorSurfaceContainerLow)
     viewshaderc="#00000000"
     grayc="#ECEDF1"
     ripplec="#559E9E9E"
-    cardedge=dec2hex(res.color.attr.colorSurface)
+    cardedge=dec2hex(res.color.attr.colorSurfaceContainer)
     oricardedge=dec2hex(res.color.attr.colorOutlineVariant)
 
     if 获取主题夜间模式() == true then
@@ -774,14 +771,16 @@ function 主题(str)
     secondaryc="#ffbfa328"
     textc="#FFCBCBCB"
     stextc="#808080"
-    backgroundc="#ff191919"
+    --backgroundc="#ff191919"
+    backgroundc=dec2hex(res.color.attr.colorSurface)
     barbackgroundc=android.res.color.attr.colorBackground&0xFFFFFF+0xFF000000*0.8
     cardbackc="#ff212121"
     viewshaderc="#80000000"
     grayc="#212121"
     ripplec="#559E9E9E"
-    cardedge=dec2hex(res.color.attr.colorSurface-0x4f000000)
-    oricardedge="#555555"
+    cardedge=dec2hex(res.color.attr.colorSurfaceContainer)
+    oricardedge=dec2hex(res.color.attr.colorOutlineVariant)
+    barc=dec2hex(res.color.attr.colorSurfaceContainerLow)
     pcall(function()
       local _window = activity.getWindow();
       _window.setBackgroundDrawable(ColorDrawable(0xff222222));
@@ -2617,10 +2616,14 @@ function 等待doc(view)
   加载js(view,js)
 end
 
-function 夜间模式回答页(view)
-  local js=获取js("darkanswer")
+function 初始化背景(view)
+  local js=获取js("initbackground")
+  if 全局主题值~="Night" then
+    js=js:gsub("80","5")
+  end
   local gsub_str='"'..backgroundc:sub(4,#backgroundc)..'"'
   js=js:gsub("appbackgroudc",gsub_str)
+
   加载js(view,js)
 end
 
@@ -3162,6 +3165,10 @@ end
 
 function 设置toolbar(toolbar)
   toolbar.setTitle("")
+  pcall(function()
+    toolbar.parent.setLifted(true)
+    toolbar.parent.setLiftOnScroll(true)
+  end)
   activity.setSupportActionBar(toolbar)
   toolbar.setContentInsetsRelative(0,0)
 end

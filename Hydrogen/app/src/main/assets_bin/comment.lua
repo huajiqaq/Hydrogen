@@ -18,7 +18,17 @@ import "com.google.android.material.floatingactionbutton.FloatingActionButton"
 comment_id,comment_type,保存路径,父回复id=...
 设置视图("layout/comment")
 addAutoHideListener({comment_recy},{send})
+comment_recy.addOnScrollListener(RecyclerView.OnScrollListener{
+  onScrolled=function(v,s,j) 
+    if !v.canScrollVertically(-1)
+      mainLay.backgroundColor=转0x(backgroundc)
+     else
+      mainLay.backgroundColor=转0x(barc)
+    end
 
+  end,
+
+})
 --activity.setContentView(loadlayout("layout/comment"))
 edgeToedge(mainLay,send)
 

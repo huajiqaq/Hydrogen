@@ -134,6 +134,6 @@ layout_height="wrap",
     --layout_marginRight="48dp";
     id="line";
     layout_width="fill";
-    backgroundColor=res.color.attr.colorSurfaceContainerHighest;
+    backgroundColor=res.color.attr.colorSurfaceVariant;
   };
 };

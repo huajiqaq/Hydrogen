@@ -265,7 +265,7 @@ public class LuaActivity extends com.androlua.LuaActivity {
         this.getTheme().obtainStyledAttributes(new int[] {android.R.attr.colorPrimary});
     taskDescription =
         new ActivityManager.TaskDescription(
-            taskDescription.getLabel(), taskDescription.getIcon(), array.getColor(0, 0xFF0000));
+            taskDescription.getLabel(), taskDescription.getIcon(), array.getColor(0, 0xFF0000) | 0xFF000000);
     array.recycle();
     super.setTaskDescription(taskDescription);
   }

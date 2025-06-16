@@ -6,6 +6,7 @@ local SDK_INT=Build.VERSION.SDK_INT
 
 local supportedThemeName={
   Default=true,
+  Monet=true,
   Teal=true,
   Orange=true,
   Pink=true,
@@ -18,6 +19,13 @@ function ThemeUtil.getAppThemes()
       name="Default",
       show={
         name=R.string.jesse205_theme_default,
+        preview=0xff3F51B5,
+      },
+    },
+    {--莫奈
+      name="Monet",
+      show={
+        name="monet",
         preview=0xff3F51B5,
       },
     },

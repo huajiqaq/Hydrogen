@@ -290,9 +290,7 @@ function 数据添加(t,b)
 
   MyWebViewUtils:initChromeClient({
     onProgressChanged=function(view,url,favicon)
-      if 全局主题值=="Night" then
-        夜间模式回答页(view)
-      end
+      初始化背景(view)
     end,
     onConsoleMessage=function(consoleMessage)
       --打印控制台信息

@@ -193,7 +193,7 @@
         LinearLayout;
         layout_width="-1";
         gravity="left|center";
-        paddingLeft="8dp";
+        paddingLeft="0dp";
         paddingRight="8dp";
         --orientation="vertical";
         LayoutTransition=LayoutTransition().enableTransitionType(LayoutTransition.CHANGING);

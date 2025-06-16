@@ -22,7 +22,10 @@
 
     <style name="Theme.Jesse205.Default" parent="AppTheme.Blue">
     </style>
-
+   
+    <style name="Theme.Jesse205.Monet" parent="AppTheme.Monet">
+    </style>
+    
     <style name="Theme.Jesse205.Red" parent="AppTheme.Red">
     </style>
 
@@ -50,6 +53,12 @@
     </style>
 
     <style name="Theme.Jesse205.Red.NoActionBar" parent="AppTheme.Red">
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    
+    <style name="Theme.Jesse205.Monet.NoActionBar" parent="AppTheme.Monet">
         <item name="windowActionModeOverlay">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
