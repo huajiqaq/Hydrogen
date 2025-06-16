@@ -368,8 +368,34 @@ function base.getAdapter(comment_pagetool,pos)
       end
       if comment_type=="comments"&&position==0
         local layoutParams = views.line.LayoutParams;
-        layoutParams.height=dp2px(6)
+        layoutParams.height=dp2px(24)
         views.line.setLayoutParams(layoutParams);
+        --感谢可爱的喵立方
+        function draw_sin(canvas, x, y, length, height, periods, paint)
+          local path = Path()
+          local density = 40
+          for i = 0, 1, 1 / periods / density do
+            path.lineTo(i * length, math.sin(i * periods * math.pi * 2) * height)
+          end
+          path.offset(x, y)
+          canvas.drawPath(path, paint)
+        end
+
+        local paint_qwq = Paint()
+        paint_qwq.setColor(res.color.attr.colorSurfaceVariant)
+        paint_qwq.setStrokeWidth(dp2px(1.5))
+        paint_qwq.setStyle(Paint.Style.STROKE)
+        paint_qwq.setStrokeCap(Paint.Cap.ROUND)
+
+        views.line.setBackground(LuaDrawable(
+        function(canvas, paint, drawable)
+          canvas.drawColor(转0x(backgroundc))
+          draw_sin(canvas, 0, views.line.height/2, views.line.width, views.line.height/4, 8, paint_qwq)
+        end
+        ))
+
+
+
         views.评论.visibility=8
         --[[已有加粗分割线，没必要 elseif comment_type=="comments"
         local layoutParams = views.card.LayoutParams;
