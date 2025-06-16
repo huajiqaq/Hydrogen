@@ -4,7 +4,7 @@ local base = {
 function base:getZemoji()
 
   if !self.isCached then
-    if File(activity.getExternalCacheDir().getPath().."/zemoji").isDirectory() then
+    if File(activity.getExternalCacheDir().getPath().."/zemoji/doge.png").exists() then
      else
       pcall(function()LuaUtil.unZip(srcLuaDir.."/res/zemoji.zip",activity.getExternalCacheDir().getPath())end,function()提示("ZEMOJI解压失败")end)
     end
