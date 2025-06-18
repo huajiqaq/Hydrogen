@@ -36,16 +36,10 @@ MyWebViewUtils:initWebViewClient{
       return true
     end
 
-    _info.onLongClick=function()
-      view.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36")
-      view.loadUrl(url)
-    end
-
     if not view.getUrl():find("https://www.zhihu.com/%?utm_id") and view.getUrl()~="https://www.zhihu.com/" then
       login_web.setVisibility(8)
       progress.setVisibility(0)
     end
-
 
     if url:find("qq.com") then
       view.stopLoading()
@@ -56,6 +50,11 @@ MyWebViewUtils:initWebViewClient{
 
   end,
   onPageStarted=function(view,url)
+    _info.onLongClick=function()
+      view.stopLoading()
+      view.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36")
+      view.loadUrl("https://www.zhihu.com/signin")
+    end
     if url:find("https://www.zhihu.com/signin") then
       加载js(view,获取js("login"))
     end
