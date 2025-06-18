@@ -1416,6 +1416,61 @@ if this.getSharedData("智能无图模式")=="true" then
   end
 end
 
+--侧滑栏手势
+function setupDrawerEdge(drawerLayout)
+  -- 获取 DrawerLayout 类
+  local drawerLayoutClass = drawerLayout.getClass()
+
+  -- 获取 mLeftDragger 字段（负责左侧拖动手势）
+  local leftDraggerField = drawerLayoutClass.getDeclaredField("mLeftDragger")
+  leftDraggerField.setAccessible(true)
+
+  -- 获取 ViewDragHelper 实例
+  local viewDragHelper = leftDraggerField.get(drawerLayout)
+  -- 获取 ViewDragHelper 中的 mDefaultEdgeSize 字段（控制触发边缘大小）
+  local edgeSizeField = viewDragHelper.getClass().getDeclaredField("mDefaultEdgeSize")
+  edgeSizeField.setAccessible(true)
+
+  -- 获取当前默认边缘大小
+  local defaultEdgeSize = edgeSizeField.getInt(viewDragHelper)
+
+  -- 获取屏幕尺寸用于设置更大边缘触发区域
+  -- 似乎无用的操作 只修改一次 横竖屏切换还是原来的值 建议改为足够大的值 如果想设置建议加上横竖屏切换动态修改
+  local display = activity.getWindowManager().getDefaultDisplay()
+  local Point = luajava.bindClass "android.graphics.Point"
+  local point = Point()
+  display.getRealSize(point)
+
+  -- 设置边缘大小为屏幕宽度或默认值中较大的一个
+  edgeSizeField.setInt(viewDragHelper, math.max(defaultEdgeSize, point.x))
+  -- 调整触摸滑动阈值（提升滑动灵敏度）
+  local touchSlopField = viewDragHelper.getClass().getDeclaredField("mTouchSlop")
+  touchSlopField.setAccessible(true)
+
+  local originalTouchSlop = touchSlopField.getInt(viewDragHelper)
+  -- 将滑动阈值调整为2.5倍避免滑动过于灵敏
+  touchSlopField.setInt(viewDragHelper, originalTouchSlop * 2.5)
+
+  -- 禁用长按唤出抽屉 替换 mPeekRunnable 为空实现
+  local leftCallbackField = drawerLayoutClass.getDeclaredField("mLeftCallback")
+  leftCallbackField.setAccessible(true)
+
+  local dragCallback = leftCallbackField.get(drawerLayout)
+
+  local peekRunnableField = dragCallback.getClass().getDeclaredField("mPeekRunnable")
+  peekRunnableField.setAccessible(true)
+
+  -- 创建空的 Runnable 来替代原有的 Runnable
+  local nullRunnable = luajava.createProxy("java.lang.Runnable", {
+    run = function()
+    end
+  })
+  
+  peekRunnableField.set(dragCallback, nullRunnable)
+end
+
+setupDrawerEdge(_drawer)
+
 --Fragment TalkBack适配
 function getLastFragmentInContainer(container)
   local fm = this.getSupportFragmentManager()

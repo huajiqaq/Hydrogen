@@ -36,6 +36,11 @@ MyWebViewUtils:initWebViewClient{
       return true
     end
 
+    _info.onLongClick=function()
+      view.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36")
+      view.loadUrl(url)
+    end
+
     if not view.getUrl():find("https://www.zhihu.com/%?utm_id") and view.getUrl()~="https://www.zhihu.com/" then
       login_web.setVisibility(8)
       progress.setVisibility(0)
@@ -109,7 +114,7 @@ activity.recreate() --[[import "android.os.Process"
 MyWebViewUtils:initChromeClient({
   onConsoleMessage=function(consoleMessage)
     if consoleMessage.message():find("sign_data=")
-提示("登录成功")
+      提示("登录成功")
       activity.setSharedData("signdata",consoleMessage.message():match("sign_data=(.+)"))
     end
   end

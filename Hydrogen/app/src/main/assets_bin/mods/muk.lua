@@ -742,7 +742,7 @@ function 主题(str)
   if 全局主题值=="Day" then
     primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#fdd835"
-    textc="#212121"
+    textc=dec2hex(res.color.attr.colorOnSurface)
     stextc="#424242"
     --backgroundc="#ffffffff"
     backgroundc=dec2hex(res.color.attr.colorSurface)
@@ -752,7 +752,7 @@ function 主题(str)
     viewshaderc="#00000000"
     grayc="#ECEDF1"
     ripplec="#559E9E9E"
-    cardedge=dec2hex(res.color.attr.colorSurfaceContainer)
+    cardedge=dec2hex(res.color.attr.colorSurfaceContainerLow)
     oricardedge=dec2hex(res.color.attr.colorOutlineVariant)
 
     if 获取主题夜间模式() == true then
@@ -769,7 +769,7 @@ function 主题(str)
    elseif 全局主题值=="Night" then
     primaryc=dec2hex(res.color.attr.colorPrimary)
     secondaryc="#ffbfa328"
-    textc="#FFCBCBCB"
+    textc=dec2hex(res.color.attr.colorOnSurface)
     stextc="#808080"
     --backgroundc="#ff191919"
     backgroundc=dec2hex(res.color.attr.colorSurface)
